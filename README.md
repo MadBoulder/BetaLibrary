@@ -1,10 +1,11 @@
 # BetaLibrary
 Locate where are the boulders listed in [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s Beta library.
 
-![preview](extras/preview.png "Title")
+![preview](extras/preview.png "Title"){:height="50%" width="50%"}
 
 ## Usage
 This project isn't hosted anywhere yet and hence it is not available through the web.
+
 To build it locally follow the next steps: 
 1. Make sure you have Python3, [Flask](http://flask.pocoo.org/) and [Folium](https://python-visualization.github.io/folium/) installed.
 2. Clone the repository by tipying in a terminal `$ git clone https://github.com/juangallostra/BetaLibrary.git`
