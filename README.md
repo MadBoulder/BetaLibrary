@@ -1,7 +1,7 @@
 # BetaLibrary
 Locate where are the boulders listed in [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s Beta library.
 
-![preview](extras/preview.png "Title"){:height="50%" width="50%"}
+<img src="/extras/preview.png" width="346" height="301">
 
 ## Usage
 This project isn't hosted anywhere yet and hence it is not available through the web.
