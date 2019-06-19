@@ -1,5 +1,5 @@
 # BetaLibrary
-Bouldering maps for organizing the Beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)
+Locate where are the boulders listed in [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s Beta library.
 
 ![preview](extras/preview.png "Title")
 
