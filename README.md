@@ -1,5 +1,5 @@
 # BetaLibrary
-Locate where are the boulders listed in [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s Beta library.
+Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA).
 
 <img src="/extras/preview.png" width="461" height="402">
 
