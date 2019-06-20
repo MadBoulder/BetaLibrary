@@ -7,16 +7,15 @@ app = Flask(__name__)
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    return render_template('home.html')  # return a string
+    return render_template('home.html')
 
 @app.route('/savassona')
 def savassona():
-	return render_template('savassona.html')  # render a template
+	return render_template('savassona.html')
 
 @app.route('/sant_joan')
 def sant_joan():
-	return render_template('sant_joan.html')  # render a template
-
+	return render_template('sant_joan.html')
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
