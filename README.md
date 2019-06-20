@@ -3,7 +3,13 @@ Your complement to bouldering guides. Check the beta provided by [MadBoulder](ht
 
 <img src="/extras/preview.png" width="461" height="402">
 
+## About
+
+This project complements [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s beta video library and makes it easier to navigate through the available information. It is **NOT** a topo guide of bouldering areas and has no intention of becoming so. It is intended to be used along the bouldering guides of each area and its main goal is to simplify and ease the process of finding beta. 
+
+
 ## Usage
+
 This project isn't hosted anywhere yet and hence it is not available through the web.
 
 To build it locally follow the next steps: 
