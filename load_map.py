@@ -24,7 +24,6 @@ def load_map(datafile, return_html=True):
 
     sectors = area_data['sectors']
     for sector in sectors:
-
         sector_map = folium.GeoJson(
             os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
             name=sector['name'],
@@ -34,8 +33,9 @@ def load_map(datafile, return_html=True):
                 'weight' : x['properties']['stroke-width'],
                 'opacity': 0.6,
                 'fillColor' : x['properties']['stroke'],
-        })
-        sector_html = '<p> <b><u>'+sector['name']+'</u></b><br><br><a href="'+sector['link']+'"target="_blank">Beta videos</a</p>'
+            }
+        )
+        sector_html = '<p> <b><u>{}</u></b><br><a href="{}"target="_blank">Beta videos</a</p>'.format(sector['name'], sector['link'])
         sector_map.add_child(folium.Popup(sector_html,
             max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
         sector_map.add_to(area_map)
