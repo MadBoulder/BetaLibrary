@@ -55,9 +55,9 @@ def load_map(datafile, return_html=True):
 
     area_map.add_child(sector_lyr)
 
-    # Add Hide and show functionalities
+    # Since folium does not support all the functionalities we need
+    # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
-
     map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 15)
 
     # marker_cluster = MarkerCluster().add_to(area_map)
