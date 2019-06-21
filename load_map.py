@@ -1,6 +1,6 @@
 import numpy as np
 import folium
-from folium.plugins import MarkerCluster
+from folium.plugins import MarkerCluster, BeautifyIcon
 # import base64
 import json
 import os
@@ -25,7 +25,7 @@ def load_map(datafile, return_html=True):
 
     sectors = area_data['sectors']
     #Create a Folium feature group for this layer, since we will be displaying multiple layers
-    sector_lyr = folium.FeatureGroup(name = 'sectors_layer')
+    sector_lyr = folium.FeatureGroup(name='sectors_layer')
     for sector in sectors:
         sector_map = folium.GeoJson(
             os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
@@ -44,21 +44,38 @@ def load_map(datafile, return_html=True):
         sector_lyr.add_child(sector_map)
 
     # Parking
-    parking_marker = folium.Marker(
-        location=[area_data['parking_latitude'],area_data['parking_longitude']],
-        popup='Parking',
-        tooltip='Parking',
-        icon=folium.Icon(color='red', icon='info-sign')
+    for parking in area_data['parkings']:
+        parking_marker = folium.Marker(
+            location=[parking['parking_latitude'], parking['parking_longitude']],
+            popup='Parking',
+            tooltip='Parking',
+            icon=folium.Icon(color='red', icon='info-sign')
+        )
+
+        sector_lyr.add_child(parking_marker)
+
+    # Sectors
+    zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
+    zoomed_out_icon = BeautifyIcon(icon_shape='marker',
+        number=len(area_data['sectors'])
+        )
+
+    sectors_marker = folium.Marker(
+        location=[area_data['latitude'],area_data['longitude']],
+        tooltip='Sectors',
+        icon=zoomed_out_icon
     )
 
-    sector_lyr.add_child(parking_marker)
+    zoomed_out_lyr.add_child(sectors_marker)
 
+    area_map.add_child(zoomed_out_lyr)
     area_map.add_child(sector_lyr)
 
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
     map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 15)
+    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 15, False, True)
 
     # marker_cluster = MarkerCluster().add_to(area_map)
 
