@@ -4,6 +4,7 @@ from folium.plugins import MarkerCluster
 # import base64
 import json
 import os
+import helpers
 
 POPUP_WIDTH = 100
 
@@ -37,21 +38,27 @@ def load_map(datafile, return_html=True):
                 'fillColor' : x['properties']['stroke'],
             }
         )
-        sector_html = '<p> <b><u>{}</u></b><br><a href="{}"target="_blank">Beta videos</a</p>'.format(sector['name'], sector['link'])
-        sector_map.add_child(folium.Popup(sector_html,
-            max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
+        sector_html = helpers.generate_sector_html(sector['name'], sector['link'])
+        sector_map.add_child(folium.Popup(sector_html, max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
 
         sector_lyr.add_child(sector_map)
-    
-    area_map.add_child(sector_lyr)
 
     # Parking
-    folium.Marker(
+    parking_marker = folium.Marker(
         location=[area_data['parking_latitude'],area_data['parking_longitude']],
         popup='Parking',
         tooltip='Parking',
         icon=folium.Icon(color='red', icon='info-sign')
-    ).add_to(area_map)
+    )
+
+    sector_lyr.add_child(parking_marker)
+
+    area_map.add_child(sector_lyr)
+
+    # Add Hide and show functionalities
+    map_html = area_map.get_root().render()
+
+    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 15)
 
     # marker_cluster = MarkerCluster().add_to(area_map)
 
@@ -74,4 +81,4 @@ def load_map(datafile, return_html=True):
     #         icon=folium.Icon(color='green', icon='info-sign')
     #     ).add_to(marker_cluster)
 
-    return area_map.get_root().render() if return_html else area_map
+    return map_html if return_html else area_map
