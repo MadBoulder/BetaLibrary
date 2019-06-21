@@ -12,9 +12,7 @@ def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible
     a layer depending on the zoom level
     """
     end_of_script = "\n\n</script>"
-    hide_by_default = """       map_name.removeLayer(layer_name);\n
-    """
-
+    hide_by_default = "       map_name.removeLayer(layer_name);\n"
     code_to_inject = """        map_name.on('zoomend', function() {
                 if (map_name.getZoom() <= zoom_level){
                     map_name.removeLayer(layer_name);
