@@ -23,6 +23,8 @@ def load_map(datafile, return_html=True):
         zoom_start=area_data['zoom'])
 
     sectors = area_data['sectors']
+    #Create a Folium feature group for this layer, since we will be displaying multiple layers
+    sector_lyr = folium.FeatureGroup(name = 'sectors_layer')
     for sector in sectors:
         sector_map = folium.GeoJson(
             os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
@@ -38,7 +40,10 @@ def load_map(datafile, return_html=True):
         sector_html = '<p> <b><u>{}</u></b><br><a href="{}"target="_blank">Beta videos</a</p>'.format(sector['name'], sector['link'])
         sector_map.add_child(folium.Popup(sector_html,
             max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
-        sector_map.add_to(area_map)
+
+        sector_lyr.add_child(sector_map)
+    
+    area_map.add_child(sector_lyr)
 
     # Parking
     folium.Marker(
