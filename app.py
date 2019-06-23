@@ -1,4 +1,3 @@
-# import the Flask class from the flask module
 import os
 from flask import Flask, render_template, send_from_directory, url_for
 

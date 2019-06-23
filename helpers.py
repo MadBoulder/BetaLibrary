@@ -4,7 +4,7 @@ def generate_sector_html(name, link):
     Generate the html code tat shows the sector name and the link to the playlist
     when clicking on the sector area
     """
-    return '<p> <b><u>{}</u></b><br><br><a href="{}"target="_blank">Beta videos</a><br></p>'.format(name, link)
+    return '<p><b><u>{}</u></b><br><br><a href="{}"target="_blank">Beta videos</a><br></p>'.format(name, link)
 
 def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible=True, reverse=False):
     """
