@@ -104,8 +104,8 @@ def load_map(datafile, return_html=True):
 def load_general_map(datafiles, return_html=True):
     """
     """
-    area_map = folium.Map(location=[-37.265625, 30.751277776257812],
-        zoom_start=1)
+    area_map = folium.Map(location=[-33.046875, 66.51326044311185],
+        zoom_start=2)
 
 
     layers = []
