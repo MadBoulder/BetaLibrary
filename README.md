@@ -1,9 +1,15 @@
 # BetaLibrary
 Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA).
 
+<p align="center">
 <img src="/extras/general_preview.png">
+Main Page
+</p>
 
+<p align="center">
 <img src="/extras/preview.png">
+Sector Map
+</p>
 
 ## About
 
