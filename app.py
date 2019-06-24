@@ -15,6 +15,10 @@ def favicon():
 def home():
     return render_template('home.html')
 
+@app.route('/all')
+def all():
+	return render_template('all.html')
+
 @app.route('/savassona')
 def savassona():
 	return render_template('savassona.html')
