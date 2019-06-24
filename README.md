@@ -1,5 +1,5 @@
 # BetaLibrary
-Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA).
+Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA). Powered by [Flask](http://flask.pocoo.org/) and [Folium](https://python-visualization.github.io/folium/).
 
 <p align="center" style="text-align:center;">
 <img src="/extras/general_preview.png"><br>
