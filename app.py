@@ -28,6 +28,6 @@ def sant_joan():
 	return render_template('sant_joan.html')
 
 
-# start the server with the 'run()' method
+# start the server
 if __name__ == '__main__':
     app.run(debug=True)
