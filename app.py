@@ -27,6 +27,10 @@ def savassona():
 def sant_joan():
 	return render_template('sant_joan.html')
 
+@app.route('/la_comarca')
+def la_comarca():
+	return render_template('la_comarca.html')
+
 
 # start the server
 if __name__ == '__main__':
