@@ -59,7 +59,7 @@ def load_map(datafile, return_html=True):
 
     sectors_marker = folium.Marker(
         location=[area_data['latitude'],area_data['longitude']],
-        tooltip='Sectors',
+        tooltip=area_data['name'],
         icon=zoomed_out_icon
     )
 
@@ -130,7 +130,7 @@ def load_general_map(datafiles, return_html=True):
 
         sectors_marker = folium.Marker(
             location=[area_data['latitude'],area_data['longitude']],
-            tooltip='Sectors',
+            tooltip=area_data['name'],
             icon=zoomed_out_icon
         )
 
