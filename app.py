@@ -31,6 +31,10 @@ def sant_joan():
 def la_comarca():
 	return render_template('la_comarca.html')
 
+@app.route('/can_bruguera')
+def can_bruguera():
+	return render_template('can_bruguera.html')
+
 
 # start the server
 if __name__ == '__main__':
