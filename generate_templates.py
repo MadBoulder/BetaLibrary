@@ -1,6 +1,8 @@
 import load_map
 
 def main():
+	"""
+	"""
 	with open('templates/maps/savassona.html', 'w') as template:
 	 	template.write(load_map.load_map("data/savassona/savassona.txt", True))
 	with open('templates/maps/sant_joan.html', 'w') as template:

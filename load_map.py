@@ -11,7 +11,9 @@ POPUP_WIDTH = 100
 
 def load_map(datafile, return_html=True):
     """
-    Create an area map with boulder markers and video links from a JSON file
+    Create a map for a bouldering area that shows the GEOJSON data, names and 
+    links to video playlists of its sectors as well as the parking areas. All 
+    this data should be provided via a JSON file
     """
     area_data = {}
     with open(datafile) as data:
@@ -21,7 +23,7 @@ def load_map(datafile, return_html=True):
         zoom_start=area_data['zoom'])
 
     sectors = area_data['sectors']
-    #Create a Folium feature group for this layer, since we will be displaying multiple layers
+    # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='sectors_layer')
     for sector in sectors:
         sector_map = folium.GeoJson(
@@ -40,7 +42,7 @@ def load_map(datafile, return_html=True):
 
         sector_lyr.add_child(sector_map)
 
-    # Parking
+    # Parking areas
     for parking in area_data['parkings']:
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'], parking['parking_longitude']],
@@ -79,7 +81,8 @@ def load_map(datafile, return_html=True):
 
 def load_general_map(datafiles, return_html=True):
     """
-    Create a map that contains all the bouldering areas.
+    Create a map that contains all the info provided by the list of datafiles
+    i.e. all areas combined
     """
     area_map = folium.Map(location=[-33.046875, 66.51326044311185],
         zoom_start=2)
