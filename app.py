@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, send_from_directory, url_for
+from flask import Flask, render_template, send_from_directory
 
 # create the application object
 app = Flask(__name__)
