@@ -19,6 +19,10 @@ def home():
 def all():
 	return render_template('all.html')
 
+@app.route('/about_us')
+def about():
+	return render_template('about_us.html')
+
 @app.route('/savassona')
 def savassona():
 	return render_template('savassona.html')
