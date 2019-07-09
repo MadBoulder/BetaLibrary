@@ -29,3 +29,14 @@ def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible
         hide_by_default =  hide_by_default.replace("map_name", map_name).replace("layer_name", layer_name)
         return map_html[:-9] + hide_by_default +  code_to_inject + end_of_script
     return map_html[:-9] + code_to_inject + end_of_script
+
+def zoom_on_click(map_html, map_name, marker_name, zoom_level):
+    """
+    """
+    end_of_script = "\n\n</script>"
+    code_to_inject = """        marker_name.on('click', function(e){
+            map_name.setView(e.latlng, zoom_level);
+        });"""
+
+    code_to_inject = code_to_inject.replace("map_name", map_name).replace("marker_name", marker_name).replace("zoom_level", str(zoom_level))
+    return map_html[:-9] + code_to_inject + end_of_script
