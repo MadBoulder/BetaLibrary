@@ -88,6 +88,11 @@ def load_general_map(datafiles, return_html=True):
         zoom_start=2)
 
     layers = []
+    sectors_markers = []
+
+    # Sectors layer
+    zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
+    areas_cluster = MarkerCluster()
 
     for areadatafile in datafiles:
         area_data = {}
@@ -125,8 +130,6 @@ def load_general_map(datafiles, return_html=True):
 
             sector_lyr.add_child(parking_marker)
 
-        # Sectors
-        zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
         zoomed_out_icon = BeautifyIcon(icon_shape='marker',
             number=len(area_data['sectors'])
             )
@@ -136,8 +139,10 @@ def load_general_map(datafiles, return_html=True):
             tooltip=area_data['name'],
             icon=zoomed_out_icon
         )
-
-        zoomed_out_lyr.add_child(sectors_marker)
+        sectors_markers += [sectors_marker]
+        # Group areas' markers when zoomed out
+        areas_cluster.add_child(sectors_marker)
+        zoomed_out_lyr.add_child(areas_cluster)
 
         area_map.add_child(zoomed_out_lyr)
         area_map.add_child(sector_lyr)
@@ -147,7 +152,10 @@ def load_general_map(datafiles, return_html=True):
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
     for sector_lyr, zoomed_out_lyr in layers:
+        # Hide or show layers depending on the zoom level
         map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 14, False, False)
         map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 14, True, True)
-
+        # Zoom into area when clicking
+        for marker in sectors_markers:
+            map_html = helpers.zoom_on_click(map_html, area_map.get_name(), marker.get_name(), 15)
     return map_html if return_html else area_map
