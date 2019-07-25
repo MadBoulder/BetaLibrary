@@ -13,6 +13,5 @@ def main():
 	with open('templates/maps/all.html', 'w') as template:
 	 	template.write(load_map.load_general_map(all_data, True))
 
-
 if __name__ == '__main__':
     main()
