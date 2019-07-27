@@ -15,30 +15,9 @@ def favicon():
 def home():
     return render_template('home.html')
 
-@app.route('/all')
-def all():
-	return render_template('all.html')
-
-@app.route('/about_us')
-def about():
-	return render_template('about_us.html')
-
-@app.route('/savassona')
-def savassona():
-	return render_template('savassona.html')
-
-@app.route('/sant_joan')
-def sant_joan():
-	return render_template('sant_joan.html')
-
-@app.route('/la_comarca')
-def la_comarca():
-	return render_template('la_comarca.html')
-
-@app.route('/can_bruguera')
-def can_bruguera():
-	return render_template('can_bruguera.html')
-
+@app.route('/<string:area>')
+def render_area(area):
+	return render_template(area+".html")
 
 # start the server
 if __name__ == '__main__':
