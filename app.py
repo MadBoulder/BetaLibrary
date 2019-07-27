@@ -17,7 +17,7 @@ def home():
 
 @app.route('/<string:area>')
 def render_area(area):
-	return render_template(area+".html")
+	return render_template(area + ".html")
 
 # start the server
 if __name__ == '__main__':
