@@ -33,6 +33,8 @@ def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible
 
 def zoom_on_click(map_html, map_name, marker_name, zoom_level):
     """
+    Inject a piece of js that applies zoom to the map when 
+    clicking the marker passed as an argument
     """
     code_to_inject = """        marker_name.on('click', function(e){
             map_name.setView(e.latlng, zoom_level);
