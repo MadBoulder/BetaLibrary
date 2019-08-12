@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request
 
 # create the application object
 app = Flask(__name__)
@@ -14,6 +14,12 @@ def favicon():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form['area']
+        return render_template(query + ".html")
 
 @app.route('/<string:area>')
 def render_area(area):
