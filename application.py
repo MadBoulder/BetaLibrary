@@ -21,4 +21,4 @@ def render_area(area):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
