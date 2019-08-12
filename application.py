@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, send_from_directory, request
+import helpers
 
 # create the application object
 app = Flask(__name__)
@@ -13,7 +14,7 @@ def favicon():
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', video_urls=helpers.get_videos_from_channel())
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():

@@ -1,3 +1,6 @@
+import urllib.request
+import json
+
 
 END_OF_SCRIPT = "\n\n</script>"
 
@@ -42,3 +45,22 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
 
     code_to_inject = code_to_inject.replace("map_name", map_name).replace("marker_name", marker_name).replace("zoom_level", str(zoom_level))
     return map_html[:-9] + code_to_inject + END_OF_SCRIPT
+
+def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
+    api_key = None
+    with open("credentials.txt", "r") as f:
+        api_key = f.read()
+
+    base_video_url = '//www.youtube.com/embed/'
+    base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
+
+    first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults={}&type=video'.format(api_key, channel_id, str(num_videos))
+
+    video_links = []
+    url = first_url
+    inp = urllib.request.urlopen(url)
+    resp = json.load(inp)
+    for i in resp['items']:
+        if i['id']['kind'] == "youtube#video":
+            video_links.append(base_video_url + i['id']['videoId'])
+    return video_links
