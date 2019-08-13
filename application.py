@@ -27,8 +27,12 @@ def render_latest():
         return render_template('latest_videos.html', video_urls=helpers.get_videos_from_channel())
 
 @app.route('/<string:page>')
-def render_area(page):
+def render_page(page):
 	return render_template(page + ".html")
+
+@app.route('/maps/<string:area>')
+def render_area(area):
+	return render_template('maps/' + area + ".html")
 
 # start the server
 if __name__ == '__main__':
