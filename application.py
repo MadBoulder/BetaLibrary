@@ -22,9 +22,9 @@ def search():
         query = request.form['area']
         return render_template(query + ".html")
 
-@app.route('/<string:area>')
-def render_area(area):
-	return render_template(area + ".html")
+@app.route('/<string:page>')
+def render_area(page):
+	return render_template(page + ".html")
 
 # start the server
 if __name__ == '__main__':
