@@ -73,8 +73,11 @@ def load_map(datafile, return_html=True):
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
-    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 15)
-    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 15, False, True)
+    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), sector_lyr.get_name(), 14)
+    map_html = helpers.make_layer_that_hides(map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 14, False, True)
+    # Zoom into area when clicking
+    map_html = helpers.zoom_on_click(map_html, area_map.get_name(), sectors_marker.get_name(), 15)
+
 
     return map_html if return_html else area_map
 
