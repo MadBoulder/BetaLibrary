@@ -14,13 +14,17 @@ def favicon():
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    return render_template('home.html', video_urls=helpers.get_videos_from_channel())
+    return render_template('home.html')
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
         query = request.form['area']
         return render_template(query + ".html")
+
+@app.route('/latest_videos')
+def render_latest():
+        return render_template('latest_videos.html', video_urls=helpers.get_videos_from_channel())
 
 @app.route('/<string:page>')
 def render_area(page):
