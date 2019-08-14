@@ -50,7 +50,8 @@ def load_map(datafile, return_html=True):
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
-            popup='Parking',
+            popup=helpers.generate_parking_html([parking['parking_latitude'],
+                                                 parking['parking_longitude']]),
             tooltip='Parking',
             icon=folium.Icon(color='red', icon='info-sign')
         )
@@ -136,7 +137,8 @@ def load_general_map(datafiles, return_html=True):
             parking_marker = folium.Marker(
                 location=[parking['parking_latitude'],
                           parking['parking_longitude']],
-                popup='Parking',
+                popup=helpers.generate_parking_html([parking['parking_latitude'],
+                                                     parking['parking_longitude']]),
                 tooltip='Parking',
                 icon=folium.Icon(color='red', icon='info-sign')
             )

@@ -5,6 +5,13 @@ import json
 END_OF_SCRIPT = "\n\n</script>"
 
 
+def generate_parking_html(coordinates):
+    """
+    Generate parking popup text
+    """
+    return '<p>{}<br><br>{}, {}<br></p>'.format('Parking', round(coordinates[0],4), round(coordinates[1],4))
+
+
 def generate_sector_html(name, link):
     """
     Generate the html code tat shows the sector name and the link to the playlist
