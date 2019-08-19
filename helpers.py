@@ -61,6 +61,9 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
 
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
+    """
+    Obtain the num_videos latest videos from MadBoulder's youtube channel
+    """
     api_key = None
     with open("credentials.txt", "r") as f:
         api_key = f.read()
