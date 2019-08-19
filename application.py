@@ -27,7 +27,7 @@ def search():
 
 
 @app.route('/latest_videos')
-@cache.cached(timeout=60)
+@cache.cached(timeout=900)
 def render_latest():
     return render_template('latest_videos.html', video_urls=helpers.get_videos_from_channel())
 
