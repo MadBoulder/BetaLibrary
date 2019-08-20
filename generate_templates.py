@@ -4,6 +4,8 @@ import os
 
 def main():
     """
+    Generate html map templates for all the areas located inside the data folder
+    as well as a general map that contains all the areas
     """
     areas = next(os.walk('data/'))[1]
     all_data = ['data/' + area + '/' + area + '.txt' for area in areas]

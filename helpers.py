@@ -9,7 +9,7 @@ def generate_parking_html(coordinates):
     """
     Generate parking popup text
     """
-    return '<p>{}<br><br>{}, {}<br></p>'.format('Parking', round(coordinates[0],4), round(coordinates[1],4))
+    return '<p>{}<br><br>{}, {}<br></p>'.format('Parking', round(coordinates[0], 4), round(coordinates[1], 4))
 
 
 def generate_sector_html(name, link):
@@ -71,12 +71,11 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     base_video_url = '//www.youtube.com/embed/'
     base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
 
-    first_url = base_search_url + \
+    url = base_search_url + \
         'key={}&channelId={}&part=snippet,id&order=date&maxResults={}&type=video'.format(
             api_key, channel_id, str(num_videos))
 
     video_links = []
-    url = first_url
     inp = urllib.request.urlopen(url)
     resp = json.load(inp)
     for i in resp['items']:

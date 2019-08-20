@@ -6,6 +6,8 @@ import os
 import helpers
 
 POPUP_WIDTH = 100
+DEFAULT_AREA_ZOOM = 14
+SECTOR_OPACITY = 0.6
 
 ### GENERATE MAP ###
 
@@ -34,7 +36,7 @@ def load_map(datafile, return_html=True):
             style_function=lambda x: {
                 'color': x['properties']['stroke'],
                 'weight': x['properties']['stroke-width'],
-                'opacity': 0.6,
+                'opacity': SECTOR_OPACITY,
                 'fillColor': x['properties']['stroke'],
             }
         )
@@ -79,12 +81,12 @@ def load_map(datafile, return_html=True):
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
     map_html = helpers.make_layer_that_hides(
-        map_html, area_map.get_name(), sector_lyr.get_name(), 14)
+        map_html, area_map.get_name(), sector_lyr.get_name(), DEFAULT_AREA_ZOOM)
     map_html = helpers.make_layer_that_hides(
-        map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 14, False, True)
+        map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, False, True)
     # Zoom into area when clicking
     map_html = helpers.zoom_on_click(
-        map_html, area_map.get_name(), sectors_marker.get_name(), 15)
+        map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
 
     return map_html if return_html else area_map
 
@@ -121,7 +123,7 @@ def load_general_map(datafiles, return_html=True):
                 style_function=lambda x: {
                     'color': x['properties']['stroke'],
                     'weight': x['properties']['stroke-width'],
-                    'opacity': 0.6,
+                    'opacity': SECTOR_OPACITY,
                     'fillColor': x['properties']['stroke'],
                 }
             )
@@ -169,11 +171,11 @@ def load_general_map(datafiles, return_html=True):
     for sector_lyr, zoomed_out_lyr in layers:
         # Hide or show layers depending on the zoom level
         map_html = helpers.make_layer_that_hides(
-            map_html, area_map.get_name(), sector_lyr.get_name(), 14, False, False)
+            map_html, area_map.get_name(), sector_lyr.get_name(), DEFAULT_AREA_ZOOM, False, False)
         map_html = helpers.make_layer_that_hides(
-            map_html, area_map.get_name(), zoomed_out_lyr.get_name(), 14, True, True)
+            map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, True, True)
         # Zoom into area when clicking
         for marker in sectors_markers:
             map_html = helpers.zoom_on_click(
-                map_html, area_map.get_name(), marker.get_name(), 15)
+                map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     return map_html if return_html else area_map

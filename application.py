@@ -3,6 +3,8 @@ from flask import Flask, render_template, send_from_directory, request
 from flask_caching import Cache
 import helpers
 
+EXTENSION = '.html'
+
 # create the application object
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -23,7 +25,7 @@ def home():
 def search():
     if request.method == 'POST':
         query = request.form['area']
-        return render_template(query + ".html")
+        return render_template(query + EXTENSION)
 
 
 @app.route('/latest_videos')
@@ -34,12 +36,12 @@ def render_latest():
 
 @app.route('/<string:page>')
 def render_page(page):
-    return render_template(page + ".html")
+    return render_template(page + EXTENSION)
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
 def render_area(area):
-    return render_template('maps/' + area + ".html")
+    return render_template('maps/' + area + EXTENSION)
 
 
 # start the server
