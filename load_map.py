@@ -9,6 +9,7 @@ import helpers
 POPUP_WIDTH = 100
 DEFAULT_AREA_ZOOM = 14
 SECTOR_OPACITY = 0.6
+MARKER_SIZE = 32
 
 ### GENERATE MAP ###
 
@@ -149,7 +150,7 @@ def load_general_map(datafiles, return_html=True):
             sector_lyr.add_child(parking_marker)
 
         zoomed_out_icon = CustomIcon(
-            'static/images/marker/marker-demo.png', icon_size=(46, 46))
+            'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
 
         sectors_marker = folium.Marker(
             location=[area_data['latitude'], area_data['longitude']],
