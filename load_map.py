@@ -1,6 +1,7 @@
 import numpy as np
 import folium
 from folium.plugins import MarkerCluster, BeautifyIcon
+from folium.features import CustomIcon
 import json
 import os
 import helpers
@@ -147,9 +148,8 @@ def load_general_map(datafiles, return_html=True):
 
             sector_lyr.add_child(parking_marker)
 
-        zoomed_out_icon = BeautifyIcon(icon_shape='marker',
-                                       number=len(area_data['sectors'])
-                                       )
+        zoomed_out_icon = CustomIcon(
+            'static/images/marker/marker-demo.png', icon_size=(46, 46))
 
         sectors_marker = folium.Marker(
             location=[area_data['latitude'], area_data['longitude']],
