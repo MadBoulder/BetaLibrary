@@ -16,8 +16,8 @@ MARKER_SIZE = 32
 
 def load_map(datafile, return_html=True):
     """
-    Create a map for a bouldering area that shows the GEOJSON data, names and 
-    links to video playlists of its sectors as well as the parking areas. All 
+    Create a map for a bouldering area that shows the GEOJSON data, names and
+    links to video playlists of its sectors as well as the parking areas. All
     this data should be provided via a JSON file
     """
     area_data = {}
@@ -64,9 +64,8 @@ def load_map(datafile, return_html=True):
 
     # Sectors
     zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
-    zoomed_out_icon = BeautifyIcon(icon_shape='marker',
-                                   number=len(area_data['sectors'])
-                                   )
+    zoomed_out_icon = CustomIcon(
+        'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
 
     sectors_marker = folium.Marker(
         location=[area_data['latitude'], area_data['longitude']],
@@ -152,10 +151,15 @@ def load_general_map(datafiles, return_html=True):
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
 
+        html_redirect, _ = os.path.splitext(
+            os.path.basename(os.path.normpath(areadatafile)))
+
         sectors_marker = folium.Marker(
             location=[area_data['latitude'], area_data['longitude']],
             tooltip=area_data['name'],
-            icon=zoomed_out_icon
+            icon=zoomed_out_icon,
+            popup=helpers.generate_area_popup_html(
+                area_data['name'], html_redirect),
         )
         sectors_markers += [sectors_marker]
         # Group areas' markers when zoomed out
@@ -176,7 +180,7 @@ def load_general_map(datafiles, return_html=True):
         map_html = helpers.make_layer_that_hides(
             map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, True, True)
         # Zoom into area when clicking
-        for marker in sectors_markers:
-            map_html = helpers.zoom_on_click(
-                map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
+        # for marker in sectors_markers:
+        #     map_html = helpers.zoom_on_click(
+        #         map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     return map_html if return_html else area_map
