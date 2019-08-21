@@ -64,9 +64,8 @@ def load_map(datafile, return_html=True):
 
     # Sectors
     zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
-    zoomed_out_icon = BeautifyIcon(icon_shape='marker',
-                                   number=len(area_data['sectors'])
-                                   )
+    zoomed_out_icon = CustomIcon(
+        'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
 
     sectors_marker = folium.Marker(
         location=[area_data['latitude'], area_data['longitude']],
