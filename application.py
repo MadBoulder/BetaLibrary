@@ -34,9 +34,19 @@ def render_latest():
     return render_template('latest_videos.html', video_urls=helpers.get_videos_from_channel())
 
 
+@app.route('/all')
+def render_all():
+    return render_template('all.html')
+
+
+@app.route('/about_us')
+def render_about_us():
+    return render_template('about_us.html')
+
+
 @app.route('/<string:page>')
 def render_page(page):
-    return render_template(page + EXTENSION)
+    return render_template('zones/' + page + EXTENSION)
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
