@@ -5,12 +5,17 @@ Your complement to bouldering guides. Check the beta provided by [MadBoulder](ht
 You can check a preview at: http://madboulder.azurewebsites.net/
 
 <p align="center" style="text-align:center;">
-<img src="/extras/general_preview.png"><br>
+<img src="/extras/home.PNG"><br>
 Main Page
 </p>
 
 <p align="center" style="text-align:center;">
-<img src="/extras/preview.png"><br>
+<img src="/extras/map.PNG"><br>
+Zones Map
+</p>
+
+<p align="center" style="text-align:center;">
+<img src="/extras/detail.PNG"><br>
 Sector Map
 </p>
 
