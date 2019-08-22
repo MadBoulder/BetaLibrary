@@ -11,7 +11,7 @@ Main Page
 
 <p align="center" style="text-align:center;">
 <img src="/extras/map.PNG"><br>
-Main Page
+Zones Map
 </p>
 
 <p align="center" style="text-align:center;">
