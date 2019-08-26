@@ -21,8 +21,10 @@ def main():
         with open(datafile) as data:
             area_data = json.load(data)
 
+        guides = [(guide['name'], guide['link']) for guide in area_data['guides']]
+
         template = template_env.get_template('templates/zone_layout.html')
-        output = template.render(name=area_data['name'], guide_list=area_data['guides'], map_url='maps/'+area)
+        output = template.render(name=area_data['name'], guide_list=guides, map_url='maps/'+area)
         with open('templates/zones/'+area+'.html', 'w') as template:
             template.write(output)
 
