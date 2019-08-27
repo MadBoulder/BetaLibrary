@@ -82,3 +82,11 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
         if i['id']['kind'] == "youtube#video":
             video_links.append(base_video_url + i['id']['videoId'])
     return video_links
+
+
+def generate_area_popup_html(area_name, redirect):
+    """
+    Generate the html code tat shows the sector name and the link to the playlist
+    when clicking on the sector area
+    """
+    return '<p><a href="{}"target="_blank">{}</a><br></p>'.format('/'+redirect, area_name)
