@@ -10,6 +10,7 @@ def main():
     areas = next(os.walk('data/zones/'))[1]
     all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
     for area in areas:
+        print(area)
         with open('templates/maps/'+area+'.html', 'w') as template:
             template.write(load_map.load_map(
                 'data/zones/' + area + '/' + area + '.txt', True))

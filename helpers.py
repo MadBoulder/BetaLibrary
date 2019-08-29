@@ -7,6 +7,10 @@ PLACEHOLDER = '_placeholder'
 
 
 class bidict(dict):
+    """
+    Bidirectional dictionary. Given a normal Python dict it enables to retrieve values by
+    key and keys by value
+    """
     def __init__(self, *args, **kwargs):
         super(bidict, self).__init__(*args, **kwargs)
         self.inverse = {}
