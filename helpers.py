@@ -59,6 +59,13 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
         "marker_name", marker_name).replace("zoom_level", str(zoom_level))
     return map_html[:-9] + code_to_inject + END_OF_SCRIPT
 
+def replace_placeholders(map_html):
+    """
+    """
+    placeholders = ['area_name']
+    for placeholder in placeholders:
+        map_html = map_html.replace(placeholder, '{{'+placeholder+'}}')
+    return map_html
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
     """

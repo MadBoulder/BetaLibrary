@@ -175,7 +175,7 @@ def load_general_map(datafiles, return_html=True):
         layers += [(sector_lyr, zoomed_out_lyr)]
 
     # Since folium does not support all the functionalities we need
-    # we obtain them by injecting JavaScript code in the map html
+    # we obtain them by injecting or editing JavaScript code in the map html
     map_html = area_map.get_root().render()
     for sector_lyr, zoomed_out_lyr in layers:
         # Hide or show layers depending on the zoom level
@@ -187,4 +187,6 @@ def load_general_map(datafiles, return_html=True):
         # for marker in sectors_markers:
         #     map_html = helpers.zoom_on_click(
         #         map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
+    map_html = helpers.replace_placeholders(map_html)
+    
     return map_html if return_html else area_map
