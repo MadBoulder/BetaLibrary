@@ -6,6 +6,25 @@ END_OF_SCRIPT = "\n\n</script>"
 PLACEHOLDER = '_placeholder'
 
 
+class bidict(dict):
+    def __init__(self, *args, **kwargs):
+        super(bidict, self).__init__(*args, **kwargs)
+        self.inverse = {}
+        for key, value in self.items():
+            self.inverse.setdefault(value, []).append(key)
+
+    def __setitem__(self, key, value):
+        if key in self:
+            self.inverse[self[key]].remove(key)
+        super(bidict, self).__setitem__(key, value)
+        self.inverse.setdefault(value, []).append(key)
+
+    def __delitem__(self, key):
+        self.inverse.setdefault(self[key], []).remove(key)
+        if self[key] in self.inverse and not self.inverse[self[key]]:
+            del self.inverse[self[key]]
+        super(bidict, self).__delitem__(key)
+
 def generate_parking_html(coordinates):
     """
     Generate parking popup text
@@ -60,6 +79,7 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
         "marker_name", marker_name).replace("zoom_level", str(zoom_level))
     return map_html[:-9] + code_to_inject + END_OF_SCRIPT
 
+
 def replace_custom_placeholders(map_html, placeholders):
     """
     """
@@ -67,6 +87,7 @@ def replace_custom_placeholders(map_html, placeholders):
         variable = placeholder.replace(PLACEHOLDER, '')
         map_html = map_html.replace(placeholder, '{{'+variable+'}}')
     return map_html
+
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
     """
@@ -90,6 +111,33 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
         if i['id']['kind'] == "youtube#video":
             video_links.append(base_video_url + i['id']['videoId'])
     return video_links
+
+
+def get_number_of_videos_from_playlists_file(file):
+    """
+    """
+    api_key = None
+    with open("credentials.txt", "r") as f:
+        api_key = f.read()
+    data = {}
+
+    with open(file, 'r') as f:
+        data = json.load(f)
+    playlists = list(data.values())
+    data = bidict(data)
+
+    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+        ','.join(playlists), api_key)
+    inp = urllib.request.urlopen(query_url)
+    resp = json.load(inp)
+
+    count = {}
+    for i in resp['items']:
+        zone = data.inverse[i['id']][0]
+        count[zone] = i['contentDetails']['itemCount']
+    print(count)
+    return count
+
 
 def generate_area_popup_html(area_name, redirect, placeholder):
     """
