@@ -89,4 +89,4 @@ def generate_area_popup_html(area_name, redirect):
     Generate the html code tat shows the sector name and the link to the playlist
     when clicking on the sector area
     """
-    return '<p><a href="{}"target="_blank">{}</a><br></p>'.format('/'+redirect, area_name)
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+r'</a><br></p><p>Beta Videos: </p>'

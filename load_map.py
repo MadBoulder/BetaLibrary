@@ -7,6 +7,7 @@ import os
 import helpers
 
 POPUP_WIDTH = 100
+WIDTH_MULTIPLIER = 15
 DEFAULT_AREA_ZOOM = 14
 SECTOR_OPACITY = 0.6
 MARKER_SIZE = 32
@@ -154,12 +155,15 @@ def load_general_map(datafiles, return_html=True):
         html_redirect, _ = os.path.splitext(
             os.path.basename(os.path.normpath(areadatafile)))
 
+        popup_html = folium.Html(helpers.generate_area_popup_html(
+            area_data['name'], html_redirect), script=True)
+        zone_popup = folium.Popup(popup_html, max_width=len(area_data['name'])*10)
+
         sectors_marker = folium.Marker(
             location=[area_data['latitude'], area_data['longitude']],
             tooltip=area_data['name'],
             icon=zoomed_out_icon,
-            popup=helpers.generate_area_popup_html(
-                area_data['name'], html_redirect),
+            popup=zone_popup,
         )
         sectors_markers += [sectors_marker]
         # Group areas' markers when zoomed out
