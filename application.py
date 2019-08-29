@@ -38,14 +38,23 @@ def render_latest():
 @app.route('/all')
 @cache.cached(timeout=60*60*24)
 def render_all():
+    # Since the map is rendered in an iframe inside 
+    # the main html of the page, jinja template variables
+    # that are inside the map are not replaced by default
+    # if we pass data to render_template. This is why we
+    # first load the maps/all template, replace the variables
+    # iniside the html by the data obtained at runtime, 
+    # and finally render the page template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
     data = helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
     template = template_env.get_template('templates/maps/all.html')
+    # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
     with open('templates/maps/all.html', 'w') as template:
         template.write(output)
+    # After the data has been replaced, render the template 
     return render_template('all.html')
 
 
