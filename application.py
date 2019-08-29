@@ -36,7 +36,7 @@ def render_latest():
 
 
 @app.route('/all')
-# @cache.cached(timeout=60*60*24)
+@cache.cached(timeout=60*60*24)
 def render_all():
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
@@ -46,7 +46,6 @@ def render_all():
     output = template.render(**data)
     with open('templates/maps/all.html', 'w') as template:
         template.write(output)
-    print(data)
     return render_template('all.html')
 
 
