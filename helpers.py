@@ -11,6 +11,7 @@ class bidict(dict):
     Bidirectional dictionary. Given a normal Python dict it enables to retrieve values by
     key and keys by value
     """
+
     def __init__(self, *args, **kwargs):
         super(bidict, self).__init__(*args, **kwargs)
         self.inverse = {}
@@ -28,6 +29,7 @@ class bidict(dict):
         if self[key] in self.inverse and not self.inverse[self[key]]:
             del self.inverse[self[key]]
         super(bidict, self).__delitem__(key)
+
 
 def generate_parking_html(coordinates):
     """
@@ -86,6 +88,12 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
 
 def replace_custom_placeholders(map_html, placeholders):
     """
+    This method replaces the custom defined placeholders by jinja's
+    default variable placeholders ({{var_name}}). A method is defined
+    for this because when adding custom html (via folium.Html) to the already 
+    folium generated html it gets executed and the curly braces are lost.
+    After that, the specified variables in the template are no longer
+    recognized and the values are not updated. 
     """
     for placeholder in placeholders:
         variable = placeholder.replace(PLACEHOLDER, '')
@@ -119,15 +127,30 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
 
 def get_number_of_videos_from_playlists_file(file):
     """
+    Given a file with the playlist from which we want to obtain the
+    number of videos, return a dict that maps a bouldering zone to
+    the current number of videos via a query to Youtube's v3 data API
+
+    The file should be structured like a Python dict in the following way:
+    {
+        'area_name':'playlist_link'
+    }
+
+    This function returns a dict that is structured like:
+    {
+        'area_name':video_count
+    } 
     """
     api_key = None
     with open("credentials.txt", "r") as f:
         api_key = f.read()
-    data = {}
 
+    data = {}
     with open(file, 'r') as f:
         data = json.load(f)
     playlists = list(data.values())
+    # We want to be able to get the playlist from the zone name
+    # but also the zone name from the playlist
     data = bidict(data)
 
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
@@ -136,16 +159,22 @@ def get_number_of_videos_from_playlists_file(file):
     resp = json.load(inp)
 
     count = {}
+    # Associate in a dict zone name with number of videos via
+    # the playlist id. This dict will be the return value of the
+    # function
     for i in resp['items']:
         zone = data.inverse[i['id']][0]
         count[zone] = i['contentDetails']['itemCount']
-    print(count)
     return count
 
 
 def generate_area_popup_html(area_name, redirect, placeholder):
     """
-    Generate the html code tat shows the sector name and the link to the playlist
-    when clicking on the sector area
+    Generate the html code tat shows the zone name and a link
+    to the page, as well as the number of videos of the zone
+
+    the placeholder variable should be the name of the zone + the
+    placeholder indicator. This value will be replaced by the number
+    of beta videos when rendering the pop up
     """
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+r'</a><br></p><p>Beta Videos: '+placeholder+'</p>'
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a><br></p><p>Beta Videos: '+placeholder+'</p>'
