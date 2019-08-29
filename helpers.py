@@ -3,6 +3,7 @@ import json
 
 
 END_OF_SCRIPT = "\n\n</script>"
+PLACEHOLDER = '_placeholder'
 
 
 def generate_parking_html(coordinates):
@@ -59,12 +60,12 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
         "marker_name", marker_name).replace("zoom_level", str(zoom_level))
     return map_html[:-9] + code_to_inject + END_OF_SCRIPT
 
-def replace_placeholders(map_html):
+def replace_custom_placeholders(map_html, placeholders):
     """
     """
-    placeholders = ['area_name']
     for placeholder in placeholders:
-        map_html = map_html.replace(placeholder, '{{'+placeholder+'}}')
+        variable = placeholder.replace(PLACEHOLDER, '')
+        map_html = map_html.replace(placeholder, '{{'+variable+'}}')
     return map_html
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
@@ -90,10 +91,9 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
             video_links.append(base_video_url + i['id']['videoId'])
     return video_links
 
-
-def generate_area_popup_html(area_name, redirect):
+def generate_area_popup_html(area_name, redirect, placeholder):
     """
     Generate the html code tat shows the sector name and the link to the playlist
     when clicking on the sector area
     """
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+r'</a><br></p><p>Beta Videos: area_name</p>'
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+r'</a><br></p><p>Beta Videos: '+placeholder+'</p>'

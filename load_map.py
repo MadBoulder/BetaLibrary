@@ -11,6 +11,7 @@ WIDTH_MULTIPLIER = 15
 DEFAULT_AREA_ZOOM = 14
 SECTOR_OPACITY = 0.6
 MARKER_SIZE = 32
+PLACEHOLDER = '_placeholder'
 
 ### GENERATE MAP ###
 
@@ -103,6 +104,7 @@ def load_general_map(datafiles, return_html=True):
 
     layers = []
     sectors_markers = []
+    placeholders = []
 
     # Sectors layer
     zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
@@ -155,9 +157,11 @@ def load_general_map(datafiles, return_html=True):
         html_redirect, _ = os.path.splitext(
             os.path.basename(os.path.normpath(areadatafile)))
 
+        placeholder = os.path.splitext(os.path.basename(areadatafile))[0]+PLACEHOLDER
         popup_html = folium.Html(helpers.generate_area_popup_html(
-            area_data['name'], html_redirect), script=True)
+            area_data['name'], html_redirect, placeholder), script=True)
         zone_popup = folium.Popup(popup_html, max_width=len(area_data['name'])*10)
+        placeholders.append(placeholder)
 
         sectors_marker = folium.Marker(
             location=[area_data['latitude'], area_data['longitude']],
@@ -187,6 +191,6 @@ def load_general_map(datafiles, return_html=True):
         # for marker in sectors_markers:
         #     map_html = helpers.zoom_on_click(
         #         map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    map_html = helpers.replace_placeholders(map_html)
+    map_html = helpers.replace_custom_placeholders(map_html, placeholders)
     
     return map_html if return_html else area_map
