@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, send_from_directory, request
+import random
+from flask import Flask, render_template, send_from_directory, request, abort
 from flask_caching import Cache
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
@@ -27,6 +28,13 @@ def search():
     if request.method == 'POST':
         query = request.form['area']
         return render_template(query + EXTENSION)
+
+@app.route('/random', methods=['GET', 'POST'])
+def search():
+    if request.method == 'GET':
+        zones = next(os.walk('data/zones/'))[1]
+        all_zones = ['zones/' + area for area in zones]
+        return render_template(random.choice(all_zones) + EXTENSION)
 
 
 @app.route('/latest_videos')
@@ -65,12 +73,24 @@ def render_about_us():
 
 @app.route('/<string:page>')
 def render_page(page):
-    return render_template('zones/' + page + EXTENSION)
+    try:
+        return render_template('zones/' + page + EXTENSION)
+    except:
+        abort(404)
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
 def render_area(area):
-    return render_template('maps/' + area + EXTENSION)
+    try:
+        return render_template('maps/' + area + EXTENSION)
+    except:
+        abort(404)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+	app.logger.error('Page not found: %s', (request.path))
+	return render_template('errors/404.html'), 404
 
 
 # start the server
