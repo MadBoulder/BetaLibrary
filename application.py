@@ -30,7 +30,7 @@ def search():
         return render_template(query + EXTENSION)
 
 @app.route('/random', methods=['GET', 'POST'])
-def search():
+def random_zone():
     if request.method == 'GET':
         zones = next(os.walk('data/zones/'))[1]
         all_zones = ['zones/' + area for area in zones]

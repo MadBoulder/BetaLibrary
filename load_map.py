@@ -18,7 +18,7 @@ PLACEHOLDER = '_placeholder'
 
 def load_map(datafile, return_html=True):
     """
-    Create a map for a bouldering area that shows the GEOJSON data, names and
+    Create a map for a bouldering zone that shows the GEOJSON data, names and
     links to video playlists of its sectors as well as the parking areas. All
     this data should be provided via a JSON file
     """
