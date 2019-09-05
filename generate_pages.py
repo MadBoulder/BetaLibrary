@@ -28,8 +28,8 @@ def main():
 
         base_url = "https://www.youtube.com/embed/?listType=playlist&list="
         playlists[area] = area_data['playlist']
-        sectors_playlists = [(playlist['sector'], base_url + playlist['link'])
-                             for playlist in area_data['sectors_playlists']]
+        sectors_playlists = [(sector['name'], base_url + sector['link'].split("list=")[1])
+                             for sector in area_data['sectors']]
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
