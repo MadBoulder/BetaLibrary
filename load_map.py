@@ -33,7 +33,7 @@ def load_map(datafile, return_html=True):
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='sectors_layer')
     for sector in sectors:
-        if not sector['sector_data']:
+        if not sector['sector_data'] or not sector['link']:
             continue
         sector_map = folium.GeoJson(
             os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
