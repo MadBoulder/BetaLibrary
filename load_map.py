@@ -33,6 +33,8 @@ def load_map(datafile, return_html=True):
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='sectors_layer')
     for sector in sectors:
+        if not sector['sector_data']:
+            continue
         sector_map = folium.GeoJson(
             os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
             name=sector['name'],
@@ -158,10 +160,12 @@ def load_general_map(datafiles, return_html=True):
         html_redirect, _ = os.path.splitext(
             os.path.basename(os.path.normpath(areadatafile)))
 
-        placeholder = os.path.splitext(os.path.basename(areadatafile))[0]+PLACEHOLDER
+        placeholder = os.path.splitext(os.path.basename(areadatafile))[
+            0]+PLACEHOLDER
         popup_html = folium.Html(helpers.generate_area_popup_html(
             area_data['name'], html_redirect, placeholder), script=True)
-        zone_popup = folium.Popup(popup_html, max_width=len(area_data['name'])*10)
+        zone_popup = folium.Popup(
+            popup_html, max_width=len(area_data['name'])*10)
         placeholders.append(placeholder)
 
         sectors_marker = folium.Marker(
@@ -193,5 +197,5 @@ def load_general_map(datafiles, return_html=True):
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     map_html = helpers.replace_custom_placeholders(map_html, placeholders)
-    
+
     return map_html if return_html else area_map

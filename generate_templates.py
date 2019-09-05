@@ -16,7 +16,8 @@ def main():
                 'data/zones/' + area + '/' + area + '.txt', True).encode('utf-8'))
 
     with open('templates/maps/all.html', 'wb') as template:
-        template.write(load_map.load_general_map(all_data, True).encode('utf-8'))
+        template.write(load_map.load_general_map(
+            all_data, True).encode('utf-8'))
 
 
 if __name__ == '__main__':
