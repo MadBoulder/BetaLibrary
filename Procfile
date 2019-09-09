@@ -1,1 +1,1 @@
-web gunicorn BetaLibrary:application
+web gunicorn application:application
