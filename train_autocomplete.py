@@ -10,8 +10,6 @@ def main():
     areas = next(os.walk('data/zones/'))[1]
     zones = []
     for area in areas:
-        # Create zone map
-        print(area)
         datafile = 'data/zones/' + area + '/' + area + '.txt'
         area_data = {}
         with open(datafile) as data:
@@ -21,6 +19,7 @@ def main():
     names = "a " + names
     models.train_models(names)
     models.save_models(path='search_data.pkl')
+    print("Model trained")
 
 
 if __name__ == "__main__":
