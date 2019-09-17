@@ -30,6 +30,14 @@ class bidict(dict):
             del self.inverse[self[key]]
         super(bidict, self).__delitem__(key)
 
+def prepare_search_query(query):
+    """
+    """
+    query = query.split(" ")
+    if len(query) > 1:
+        return query
+    elif len(query) == 1:
+        return ["a", *query]
 
 def generate_parking_html(coordinates):
     """
