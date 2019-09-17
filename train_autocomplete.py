@@ -17,10 +17,13 @@ def main():
         with open(datafile) as data:
             area_data = json.load(data)
         zones += [area_data['name']]
-    names = " ".join(zones)
+    names = " a ".join(zones)
+    names = "a " + names 
+    # models.load_models(load_path="search_data.pkl")
     models.train_models(names)
+    models.save_models(path='search_data.pkl')
     print(names)
-    print(autocomplete.predict('Bagni', 'd'))
+    print(autocomplete.predict('La', 'Pedr'))
 
 if __name__ == "__main__":
     main()
