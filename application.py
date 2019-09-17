@@ -5,6 +5,9 @@ from flask_caching import Cache
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 
+import autocomplete
+from autocomplete import models
+
 EXTENSION = '.html'
 
 # create the application object
@@ -27,7 +30,12 @@ def home():
 def search():
     if request.method == 'POST':
         query = request.form['area']
-        return render_template(query + EXTENSION)
+        # Do search
+        models.load_models(load_path="search_data.pkl")
+        search_query = helpers.prepare_search_query(query)
+        query_results = autocomplete.predict(*search_query)
+        print(query_results)
+        # return render_template('search_results.html', search_results=results)
 
 @app.route('/random', methods=['GET', 'POST'])
 def random_zone():
