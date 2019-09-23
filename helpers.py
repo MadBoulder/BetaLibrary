@@ -60,7 +60,7 @@ def iterative_levenshtein(s, t, costs=(1, 1, 3)):
                      i defines the costs for an insertion and
                      s defines the costs for a substitution
 
-        TODO: cite source
+        Source: https://www.python-course.eu/levenshtein_distance.php
     """
     rows = len(s)+1
     cols = len(t)+1
