@@ -148,7 +148,9 @@ def search_zone(query, num_results=4):
     if len(to_show) < num_results:
         # First remove already added zones
         zones = [zone for zone in zones if zone['score'] != 0]
+        # Sort by score
         zones.sort(key=lambda x: x['score'])
+        # Add the ones with the lowest score
         to_show += zones[0:num_results-len(to_show)]
 
     return to_show
