@@ -125,9 +125,9 @@ def lcw(u, v):
 def measure_similarity(query, zone):
     """
     """
-    base_score = iterative_levenshtein(query, zone)
-    divider, _, _ = lcw(query.lower(), zone.lower())
-    return base_score / (divider ** 4 +  1)
+    levenshtein = iterative_levenshtein(query, zone)
+    longest_sub, _, _ = lcw(query.lower(), zone.lower())
+    return levenshtein, longest_sub
 
 
 def search_zone(query, num_results=4):
@@ -135,9 +135,23 @@ def search_zone(query, num_results=4):
     """
     zones = load_zones()
     for zone in zones:
-        zone['distance'] = measure_similarity(query, zone['name'])
-    zones.sort(key=lambda x: x['distance'])
-    return zones[0:num_results]
+        lev, long_sub = measure_similarity(query, zone['name'])
+        score = lev / (long_sub ** 4 + 1)
+        zone['score'] = score
+        # If the inputed text is entirely matched in a zone,
+        # add a score of 0
+        if long_sub == len(query):
+            zone['score'] = 0
+    to_show = [zone for zone in zones if zone['score'] == 0]
+
+    # Add zones required to reach min number of results
+    if len(to_show) < num_results:
+        # First remove already added zones
+        zones = [zone for zone in zones if zone['score'] != 0]
+        zones.sort(key=lambda x: x['score'])
+        to_show += zones[0:num_results-len(to_show)]
+
+    return to_show
 
 
 def generate_parking_html(coordinates):
