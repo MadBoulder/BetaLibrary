@@ -59,6 +59,8 @@ def iterative_levenshtein(s, t, costs=(1, 1, 3)):
                where d defines the costs for a deletion
                      i defines the costs for an insertion and
                      s defines the costs for a substitution
+
+        TODO: cite source
     """
     rows = len(s)+1
     cols = len(t)+1
