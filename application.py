@@ -31,8 +31,7 @@ def search():
         query = request.form['area']
         # Do search
         search_results = helpers.search_zone(query, NUM_RESULTS)
-        print(search_results)
-        # return render_template('search_results.html', search_results=results)
+        return render_template('search_results.html', zones=search_results)
 
 
 @app.route('/random', methods=['GET', 'POST'])
