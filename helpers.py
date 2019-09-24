@@ -1,5 +1,6 @@
 import urllib.request
 import json
+import os
 
 
 END_OF_SCRIPT = "\n\n</script>"
@@ -29,6 +30,132 @@ class bidict(dict):
         if self[key] in self.inverse and not self.inverse[self[key]]:
             del self.inverse[self[key]]
         super(bidict, self).__delitem__(key)
+
+
+def load_zones():
+    """
+    """
+    areas = next(os.walk('data/zones/'))[1]
+    zones = []
+    for area in areas:
+        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        area_data = {}
+        with open(datafile) as data:
+            area_data = json.load(data)
+        zones += [{'name': area_data['name'], 'file': area}]
+    return zones
+
+
+def iterative_levenshtein(s, t, costs=(1, 1, 3)):
+    """ 
+        iterative_levenshtein(s, t) -> ldist
+        ldist is the Levenshtein distance between the strings 
+        s and t.
+        For all i and j, dist[i,j] will contain the Levenshtein 
+        distance between the first i characters of s and the 
+        first j characters of t
+
+        costs: a tuple or a list with three integers (d, i, s)
+               where d defines the costs for a deletion
+                     i defines the costs for an insertion and
+                     s defines the costs for a substitution
+
+        Source: https://www.python-course.eu/levenshtein_distance.php
+    """
+    rows = len(s)+1
+    cols = len(t)+1
+    deletes, inserts, substitutes = costs
+
+    dist = [[0 for x in range(cols)] for x in range(rows)]
+    # source prefixes can be transformed into empty strings
+    # by deletions:
+    for row in range(1, rows):
+        dist[row][0] = row * deletes
+    # target prefixes can be created from an empty source string
+    # by inserting the characters
+    for col in range(1, cols):
+        dist[0][col] = col * inserts
+
+    for col in range(1, cols):
+        for row in range(1, rows):
+            if s[row-1] == t[col-1]:
+                cost = 0
+            else:
+                cost = substitutes
+            dist[row][col] = min(dist[row-1][col] + deletes,
+                                 dist[row][col-1] + inserts,
+                                 dist[row-1][col-1] + cost)  # substitution
+    #  for r in range(rows):
+    #      print(dist[r])
+    return dist[row][col]
+
+
+def lcw(u, v):
+    """
+    Return length of an LCW of strings u and v and its starting indexes.
+
+    (l, i, j) is returned where l is the length of an LCW of the strings u, v
+    where the LCW starts at index i in u and index j in v.
+
+    Source: https://www.sanfoundry.com/python-program-find-longest-common-substring-using-dynamic-programming-bottom-up-approach/
+    """
+    # c[i][j] will contain the length of the LCW at the start of u[i:] and
+    # v[j:].
+    c = [[-1]*(len(v) + 1) for _ in range(len(u) + 1)]
+
+    for i in range(len(u) + 1):
+        c[i][len(v)] = 0
+    for j in range(len(v)):
+        c[len(u)][j] = 0
+
+    lcw_i = lcw_j = -1
+    length_lcw = 0
+    for i in range(len(u) - 1, -1, -1):
+        for j in range(len(v)):
+            if u[i] != v[j]:
+                c[i][j] = 0
+            else:
+                c[i][j] = 1 + c[i + 1][j + 1]
+                if length_lcw < c[i][j]:
+                    length_lcw = c[i][j]
+                    lcw_i = i
+                    lcw_j = j
+
+    return length_lcw, lcw_i, lcw_j
+
+
+def measure_similarity(query, zone):
+    """
+    """
+    levenshtein = iterative_levenshtein(query, zone)
+    longest_sub, _, _ = lcw(query.lower(), zone.lower())
+    return levenshtein, longest_sub
+
+
+def search_zone(query, num_results=4):
+    """
+    """
+    zones = load_zones()
+    for zone in zones:
+        lev, long_sub = measure_similarity(query, zone['name'])
+        score = lev / (long_sub ** 4 + 1)
+        zone['score'] = score
+        # If the inputed text is entirely matched in a zone,
+        # add a score of 0
+        if long_sub == len(query):
+            zone['score'] = 0
+    to_show = [zone for zone in zones if zone['score'] == 0]
+
+    # Add zones required to reach min number of results
+    if len(to_show) < num_results:
+        # First remove already added zones
+        zones = [zone for zone in zones if zone['score'] != 0]
+        # Sort by score
+        zones.sort(key=lambda x: x['score'])
+        # Add the ones with the lowest score
+        to_show += zones[0:num_results-len(to_show)]
+
+    return to_show
 
 
 def generate_parking_html(coordinates):

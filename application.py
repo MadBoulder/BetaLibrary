@@ -5,7 +5,9 @@ from flask_caching import Cache
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 
+
 EXTENSION = '.html'
+NUM_RESULTS = 4
 
 # create the application object
 app = Flask(__name__)
@@ -27,7 +29,10 @@ def home():
 def search():
     if request.method == 'POST':
         query = request.form['area']
-        return render_template(query + EXTENSION)
+        # Do search
+        search_results = helpers.search_zone(query, NUM_RESULTS)
+        return render_template('search_results.html', zones=search_results)
+
 
 @app.route('/random', methods=['GET', 'POST'])
 def random_zone():
@@ -46,12 +51,12 @@ def render_latest():
 @app.route('/all')
 @cache.cached(timeout=60*60*24)
 def render_all():
-    # Since the map is rendered in an iframe inside 
+    # Since the map is rendered in an iframe inside
     # the main html of the page, jinja template variables
     # that are inside the map are not replaced by default
     # if we pass data to render_template. This is why we
     # first load the maps/all template, replace the variables
-    # iniside the html by the data obtained at runtime, 
+    # iniside the html by the data obtained at runtime,
     # and finally render the page template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
@@ -62,7 +67,7 @@ def render_all():
     output = template.render(**data)
     with open('templates/maps/all.html', 'w') as template:
         template.write(output)
-    # After the data has been replaced, render the template 
+    # After the data has been replaced, render the template
     return render_template('all.html')
 
 
@@ -89,8 +94,8 @@ def render_area(area):
 
 @app.errorhandler(404)
 def page_not_found(error):
-	app.logger.error('Page not found: %s', (request.path))
-	return render_template('errors/404.html'), 404
+    app.logger.error('Page not found: %s', (request.path))
+    return render_template('errors/404.html'), 404
 
 
 # start the server
