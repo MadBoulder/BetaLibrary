@@ -4,7 +4,7 @@ from folium.plugins import MarkerCluster, BeautifyIcon
 from folium.features import CustomIcon
 import json
 import os
-import helpers
+import js_helpers
 
 POPUP_WIDTH = 100
 WIDTH_MULTIPLIER = 15
@@ -46,7 +46,7 @@ def load_map(datafile, return_html=True):
                 'fillColor': x['properties']['stroke'],
             }
         )
-        sector_html = helpers.generate_sector_html(
+        sector_html = js_helpers.generate_sector_html(
             sector['name'], sector['link'])
         sector_map.add_child(folium.Popup(
             sector_html, max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
@@ -58,7 +58,7 @@ def load_map(datafile, return_html=True):
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
-            popup=helpers.generate_parking_html([parking['parking_latitude'],
+            popup=js_helpers.generate_parking_html([parking['parking_latitude'],
                                                  parking['parking_longitude']]),
             tooltip='Parking',
             icon=folium.Icon(color='red', icon='info-sign')
@@ -85,12 +85,12 @@ def load_map(datafile, return_html=True):
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
-    map_html = helpers.make_layer_that_hides(
+    map_html = js_helpers.make_layer_that_hides(
         map_html, area_map.get_name(), sector_lyr.get_name(), DEFAULT_AREA_ZOOM)
-    map_html = helpers.make_layer_that_hides(
+    map_html = js_helpers.make_layer_that_hides(
         map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, False, True)
     # Zoom into area when clicking
-    map_html = helpers.zoom_on_click(
+    map_html = js_helpers.zoom_on_click(
         map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
 
     return map_html if return_html else area_map
@@ -162,7 +162,7 @@ def load_general_map(datafiles, return_html=True):
 
         placeholder = os.path.splitext(os.path.basename(areadatafile))[
             0]+PLACEHOLDER
-        popup_html = folium.Html(helpers.generate_area_popup_html(
+        popup_html = folium.Html(js_helpers.generate_area_popup_html(
             area_data['name'], html_redirect, placeholder), script=True)
         zone_popup = folium.Popup(
             popup_html, max_width=len(area_data['name'])*10)
@@ -196,6 +196,6 @@ def load_general_map(datafiles, return_html=True):
     #     for marker in sectors_markers:
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    map_html = helpers.replace_custom_placeholders(map_html, placeholders)
+    map_html = js_helpers.replace_custom_placeholders(map_html, placeholders)
 
     return map_html if return_html else area_map
