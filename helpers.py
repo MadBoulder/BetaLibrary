@@ -30,6 +30,8 @@ class bidict(dict):
 
 def load_zones():
     """
+    Load the files and names of all the bouldering zones defined
+    in ./data/zones.
     """
     areas = next(os.walk('data/zones/'))[1]
     zones = []
@@ -44,19 +46,19 @@ def load_zones():
 
 def iterative_levenshtein(s, t, costs=(1, 1, 3)):
     """ 
-        iterative_levenshtein(s, t) -> ldist
-        ldist is the Levenshtein distance between the strings 
-        s and t.
-        For all i and j, dist[i,j] will contain the Levenshtein 
-        distance between the first i characters of s and the 
-        first j characters of t
+    iterative_levenshtein(s, t) -> ldist
+    ldist is the Levenshtein distance between the strings 
+    s and t.
+    For all i and j, dist[i,j] will contain the Levenshtein 
+    distance between the first i characters of s and the 
+    first j characters of t
 
-        costs: a tuple or a list with three integers (d, i, s)
-               where d defines the costs for a deletion
-                     i defines the costs for an insertion and
-                     s defines the costs for a substitution
+    costs: a tuple or a list with three integers (d, i, s)
+           where d defines the costs for a deletion
+                 i defines the costs for an insertion and
+                 s defines the costs for a substitution
 
-        Source: https://www.python-course.eu/levenshtein_distance.php
+    Source: https://www.python-course.eu/levenshtein_distance.php
     """
     rows = len(s)+1
     cols = len(t)+1
@@ -122,6 +124,9 @@ def lcw(u, v):
 
 def measure_similarity(query, zone):
     """
+    Measure both levenshtein distance and lowest common string between
+    the search query and the name of bouldering zone and return both values.
+    This can be later used to determine search matches.
     """
     levenshtein = iterative_levenshtein(query, zone)
     longest_sub, _, _ = lcw(query.lower(), zone.lower())
@@ -130,6 +135,16 @@ def measure_similarity(query, zone):
 
 def search_zone(query, num_results=4):
     """
+    From an input search query, return at least the 4 best
+    matches from the bouldring zones. A perfect match 
+    (which is achieved when the input query is completely contained
+    in the zone's name) is always returned. If the number of perfect
+    matches is less than 4 then we add partial matches, via a score,
+    until the list of results contains 4 entries.
+
+    The score is computed as:
+        - 0 if perfect match
+        - levenshtein / (longest substring ^ 4 + 1) otherwise
     """
     zones = load_zones()
     for zone in zones:
