@@ -59,7 +59,7 @@ def load_map(datafile, return_html=True):
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
             popup=js_helpers.generate_parking_html([parking['parking_latitude'],
-                                                 parking['parking_longitude']]),
+                                                    parking['parking_longitude']]),
             tooltip='Parking',
             icon=folium.Icon(color='red', icon='info-sign')
         )
@@ -102,7 +102,8 @@ def load_general_map(datafiles, return_html=True):
     i.e. all areas combined in one map. This map only shows the markers that 
     indicate the 
     """
-    area_map = folium.Map(location=[-33.046875, 66.51326044311185],
+    area_map = folium.Map(location=[-23.0390625,
+                                    -18.299051014581817],
                           zoom_start=2)
 
     layers = []
