@@ -62,7 +62,7 @@ def render_all():
     template_env = Environment(loader=template_loader)
     data = helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
-    template = template_env.get_template('templates/maps/all.html')
+    template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
     with open('templates/maps/all.html', 'w', encoding="utf-8") as template:

@@ -15,7 +15,7 @@ def main():
             template.write(load_map.load_map(
                 'data/zones/' + area + '/' + area + '.txt', True))
 
-    with open('templates/maps/all.html', 'w') as template:
+    with open('templates/maps/all_to_render.html', 'w') as template:
         template.write(load_map.load_general_map(
             all_data, True))
 
