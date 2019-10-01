@@ -2,6 +2,7 @@ import os
 import random
 from flask import Flask, render_template, send_from_directory, request, abort
 from flask_caching import Cache
+from flask_babel import Babel, _
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 
@@ -11,7 +12,14 @@ NUM_RESULTS = 4
 
 # create the application object
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
+babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -62,7 +70,8 @@ def render_all():
     template_env = Environment(loader=template_loader)
     data = helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
-    template = template_env.get_template('templates/maps/all_to_render.html')
+    template = template_env.get_template('templates/maps/all.html')
+    print(template)
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
     with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
@@ -100,4 +109,4 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
