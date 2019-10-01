@@ -65,7 +65,7 @@ def render_all():
     template = template_env.get_template('templates/maps/all.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
-    with open('templates/maps/all.html', 'w') as template:
+    with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
         template.write(output)
     # After the data has been replaced, render the template
     return render_template('all.html')
