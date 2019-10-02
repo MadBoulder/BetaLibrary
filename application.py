@@ -108,5 +108,4 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
-    os.system('pybabel compile -d translations')
     app.run(debug=False)
