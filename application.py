@@ -1,6 +1,6 @@
 import os
 import random
-from flask import Flask, render_template, send_from_directory, request, abort
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for
 from flask_caching import Cache
 from flask_babel import Babel, _
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -13,13 +13,30 @@ NUM_RESULTS = 4
 # create the application object
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+app.secret_key = os.urandom(24)
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+# Set language
+@app.route('/language/<language>')
+def set_language(language=None):
+    session['language'] = language
+    return redirect('/')
 
 
 @babel.localeselector
 def get_locale():
+    # if the user has set up the language manually it will be stored in the session,
+    # so we use the locale from the user settings
+    try:
+        language = session['language']
+    except KeyError:
+        language = None
+    if language is not None:
+        print(language)
+        return language
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
 
 # Load favicon
 @app.route('/favicon.ico')
