@@ -17,6 +17,33 @@ app.secret_key = os.urandom(24)
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+
+# Cached functions
+@cache.cached(timeout=900, key_prefix='videos_from_channel')
+def get_videos_from_channel():
+    return helpers.get_videos_from_channel()
+
+
+@cache.cached(timeout=60*60*24, key_prefix="map_all")
+def get_map_all():
+    # Since the map is rendered in an iframe inside
+    # the main html of the page, jinja template variables
+    # that are inside the map are not replaced by default
+    # if we pass data to render_template. This is why we
+    # first load the maps/all template, replace the variables
+    # iniside the html by the data obtained at runtime,
+    # and finally render the page template
+    template_loader = FileSystemLoader(searchpath=".")
+    template_env = Environment(loader=template_loader)
+    data = helpers.get_number_of_videos_from_playlists_file(
+        'data/playlist.txt')
+    template = template_env.get_template('templates/maps/all.html')
+    # Here we replace zone_name in maps/all by the number of beta videos
+    output = template.render(**data)
+    with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
+        template.write(output)
+
+
 # Set language
 @app.route('/language/<language>')
 def set_language(language=None):
@@ -44,6 +71,7 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/images/logo'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+
 # use decorators to link the function to a url
 @app.route('/')
 def home():
@@ -68,30 +96,13 @@ def random_zone():
 
 
 @app.route('/latest_videos')
-@cache.cached(timeout=900)
 def render_latest():
-    return render_template('latest_videos.html', video_urls=helpers.get_videos_from_channel())
+    return render_template('latest_videos.html', video_urls=get_videos_from_channel())
 
 
 @app.route('/all')
-@cache.cached(timeout=60*60*24)
 def render_all():
-    # Since the map is rendered in an iframe inside
-    # the main html of the page, jinja template variables
-    # that are inside the map are not replaced by default
-    # if we pass data to render_template. This is why we
-    # first load the maps/all template, replace the variables
-    # iniside the html by the data obtained at runtime,
-    # and finally render the page template
-    template_loader = FileSystemLoader(searchpath=".")
-    template_env = Environment(loader=template_loader)
-    data = helpers.get_number_of_videos_from_playlists_file(
-        'data/playlist.txt')
-    template = template_env.get_template('templates/maps/all.html')
-    # Here we replace zone_name in maps/all by the number of beta videos
-    output = template.render(**data)
-    with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
-        template.write(output)
+    get_map_all()
     # After the data has been replaced, render the template
     return render_template('all.html')
 
