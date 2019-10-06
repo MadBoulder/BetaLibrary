@@ -60,7 +60,6 @@ def get_locale():
     except KeyError:
         language = None
     if language is not None:
-        print(language)
         return language
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
