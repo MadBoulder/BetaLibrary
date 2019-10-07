@@ -11,11 +11,11 @@ def main():
     all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
     for area in areas:
         print(area)
-        with open('templates/maps/'+area+'.html', 'w') as template:
+        with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(load_map.load_map(
                 'data/zones/' + area + '/' + area + '.txt', True))
 
-    with open('templates/maps/all_to_render.html', 'w') as template:
+    with open('templates/maps/all_to_render.html', 'w', encoding='utf-8') as template:
         template.write(load_map.load_general_map(
             all_data, True))
 

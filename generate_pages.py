@@ -36,7 +36,7 @@ def main():
             name=area_data['name'], guide_list=guides,
             map_url='maps/'+area, full_playlist=base_url + area_data['playlist'],
             playlists=sectors_playlists)
-        with open('templates/zones/'+area+'.html', 'w') as template:
+        with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
     # Update playlists file
