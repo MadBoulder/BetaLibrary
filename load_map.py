@@ -23,7 +23,7 @@ def load_map(datafile, return_html=True):
     this data should be provided via a JSON file
     """
     area_data = {}
-    with open(datafile) as data:
+    with open(datafile, encoding='utf-8') as data:
         area_data = json.load(data)
 
     area_map = folium.Map(location=[area_data['latitude'], area_data['longitude']],
@@ -116,7 +116,7 @@ def load_general_map(datafiles, return_html=True):
 
     for areadatafile in datafiles:
         area_data = {}
-        with open(areadatafile) as data:
+        with open(areadatafile, encoding='utf-8') as data:
             area_data = json.load(data)
 
         # sectors = area_data['sectors']

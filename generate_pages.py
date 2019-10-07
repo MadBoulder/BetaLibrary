@@ -20,7 +20,7 @@ def main():
         print(area)
         datafile = 'data/zones/' + area + '/' + area + '.txt'
         area_data = {}
-        with open(datafile) as data:
+        with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
 
         guides = [(guide['name'], guide['link'])
@@ -40,7 +40,7 @@ def main():
             template.write(output)
 
     # Update playlists file
-    with open('data/playlist.txt', 'w') as playlists_file:
+    with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
 
 

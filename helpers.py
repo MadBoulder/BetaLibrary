@@ -38,7 +38,7 @@ def load_zones():
     for area in areas:
         datafile = 'data/zones/' + area + '/' + area + '.txt'
         area_data = {}
-        with open(datafile) as data:
+        with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
         zones += [{'name': area_data['name'], 'file': area}]
     return zones
@@ -174,7 +174,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     Obtain the num_videos latest videos from MadBoulder's youtube channel
     """
     api_key = None
-    with open("credentials.txt", "r") as f:
+    with open("credentials.txt", "r", encoding='utf-8') as f:
         api_key = f.read()
 
     base_video_url = '//www.youtube.com/embed/'
@@ -210,11 +210,11 @@ def get_number_of_videos_from_playlists_file(file):
     } 
     """
     api_key = None
-    with open("credentials.txt", "r") as f:
+    with open("credentials.txt", "r", encoding='utf-8') as f:
         api_key = f.read()
 
     data = {}
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     playlists = list(data.values())
     # We want to be able to get the playlist from the zone name
