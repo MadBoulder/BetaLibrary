@@ -29,7 +29,30 @@ This project isn't hosted anywhere yet and hence it is not available through the
 
 To build it locally follow the next steps:
 
-1. Make sure you have Python3, [Flask](http://flask.pocoo.org/), [Folium](https://python-visualization.github.io/folium/) and [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#) installed. I recomend to do so in a [virtual environment](https://virtualenv.pypa.io/en/latest/). (After cloning the repository you can install the required packages with: `$ pip install -r /path/to/requirements.txt`)
+1. Make sure you have Python3, [Flask](http://flask.pocoo.org/), [Folium](https://python-visualization.github.io/folium/), [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#) and [Flask-Babel](https://pythonhosted.org/Flask-Babel/) installed. I recomend to do so in a [virtual environment](https://virtualenv.pypa.io/en/latest/). (After cloning the repository you can install the required packages with: `$ pip install -r /path/to/requirements.txt`)
 2. Clone the repository by tipying in a terminal `$ git clone https://github.com/juangallostra/BetaLibrary.git`
 3. `cd` to `BetaLibrary` and run `$ python generate_templates.py` and `$ python generate_pages.py`
 4. Run `$ python application.py` and visit `http://127.0.0.1:5000/`
+
+## Information for developers and contributors
+
+### Translations
+
+Documentation: https://pythonhosted.org/Flask-Babel/
+
+#### Add new language
+
+1. Open `config.py` and add the desired language locale to the `LANGUAGES` list.
+2. Create the language catalog: `$ pybabel init -i messages.pot -d translations -l [LOCALE]`, where `[LOCALE]` should be replaced by the new locale.
+
+#### Extracting/Updating translations
+
+To extract all the texts that are to be translated to the `.pot` file use the following command: 
+`$ pybabel extract -F babel.cfg -k _l -o messages.pot .`
+
+To update all catalogs with the latest set of messages:
+`$ pybabel update -i messages.pot -d translations`
+
+#### Compile translations
+
+After all translations have been added or updated in the respective `.po` files (found under `translations/[LOCALE]/LC_MESSAGES/messages.po`), to make the changes effective the translations have to be recompiled. This is achieved with the following command: `$ pybabel compile -d translations`
