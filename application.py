@@ -13,7 +13,7 @@ NUM_RESULTS = 4
 # create the application object
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-app.secret_key = os.urandom(24)
+app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
