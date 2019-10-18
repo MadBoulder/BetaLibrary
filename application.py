@@ -113,10 +113,10 @@ def render_about_us():
 
 @app.route('/<string:page>')
 def render_page(page):
-    # try:
+    try:
         return render_template('zones/' + page + EXTENSION)
-    # except:
-        # abort(404)
+    except:
+        abort(404)
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
