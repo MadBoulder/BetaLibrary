@@ -86,6 +86,21 @@ def search():
         return render_template('search_results.html', zones=search_results)
 
 
+@app.route('/upload')
+def upload_file():
+   return render_template('upload.html')
+
+
+@app.route('/uploader', methods=['GET', 'POST'])
+def uploader():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save('/tmp/'+f.filename)
+        helpers.upload(f.filename)
+        return 'file uploaded successfully'
+
+
+
 @app.route('/random', methods=['GET', 'POST'])
 def random_zone():
     if request.method == 'GET':
