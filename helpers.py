@@ -245,7 +245,7 @@ def get_number_of_videos_from_playlists_file(file):
     return count
 
 
-def upload(file):
+def upload(path, filename):
     """ """
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -255,6 +255,7 @@ def upload(file):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
+    # TODO: Remove this section
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -268,28 +269,17 @@ def upload(file):
 
     service = build('drive', 'v3', credentials=creds)
 
-    # Call the Drive v3 API
-    # results = service.files().list(
-    #     pageSize=10, fields="nextPageToken, files(id, name)").execute()
-    # items = results.get('files', [])
-
-    # if not items:
-    #     print('No files found.')
-    # else:
-    #     print('Files:')
-    #     for item in items:
-    #         print(u'{0} ({1})'.format(item['name'], item['id']))
-
     # Upload File
-    file_metadata = {'name': file.filename}
+    file_metadata = {'name': filename}
 
     media = MediaFileUpload(
-        file, resumable=True)
+        path + filename, resumable=True)
     request = service.files().create(
-        media_body=media, body={'name': file.filename})
+        media_body=media, body={'name': filename})
     response = None
     while response is None:
         status, response = request.next_chunk()
-        if status:
-            print("Uploaded %d%%." % int(status.progress() * 100))
-    print("Upload Complete!")
+        if response['id']:
+            return 1
+        else:
+            return 0

@@ -5,10 +5,12 @@ from flask_caching import Cache
 from flask_babel import Babel, _
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
+from werkzeug.utils import secure_filename
 
 
 EXTENSION = '.html'
 NUM_RESULTS = 4
+UPLOAD_FOLDER = './uploads/'
 
 # create the application object
 app = Flask(__name__)
@@ -17,6 +19,7 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
 
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
@@ -88,16 +91,21 @@ def search():
 
 @app.route('/upload')
 def upload_file():
-   return render_template('upload.html')
+    return render_template('upload.html')
 
 
 @app.route('/uploader', methods=['GET', 'POST'])
 def uploader():
     if request.method == 'POST':
         f = request.files['file']
-        f.save('/tmp/'+f.filename)
-        helpers.upload(f.filename)
-        return 'file uploaded successfully'
+        if f:
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            success = helpers.upload(app.config['UPLOAD_FOLDER'], filename)
+            if success:
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                # TODO: Show some sign of success
+                return redirect('/')
 
 
 
