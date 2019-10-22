@@ -245,7 +245,7 @@ def get_number_of_videos_from_playlists_file(file):
     return count
 
 
-def upload(path, filename):
+def upload_first_chunk(path, filename):
     """ """
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -276,10 +276,16 @@ def upload(path, filename):
         path + filename, resumable=True)
     request = service.files().create(
         media_body=media, body={'name': filename})
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
-        if response['id']:
-            return 1
-        else:
-            return 0
+    status, response = request.next_chunk()
+    if status:
+        return True, (status.resumable_progress/status.total_size)*100, request
+    if not status and response and response['id']:
+        return False, 100, None
+
+
+def upload_next_chunk(request):
+    status, response = request.next_chunk()
+    if status:
+        return True, (status.resumable_progress/status.total_size)*100, request
+    if not status and response and response['id']:
+        return False, 100, None
