@@ -90,13 +90,8 @@ def search():
         return render_template('search_results.html', zones=search_results)
 
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    return render_template('upload.html', uploading=False)
-
-
-@app.route('/uploader', methods=['GET', 'POST'])
-def uploader():
     if request.method == 'POST':
         f = request.files['file']
         if f:
@@ -115,6 +110,7 @@ def uploader():
                 os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 # TODO: Show some sign of success
                 return redirect('/')
+    return render_template('upload.html', uploading=False)
 
 
 @app.route('/random', methods=['GET', 'POST'])
