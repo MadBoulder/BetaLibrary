@@ -48,7 +48,8 @@ def get_map_all():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    return redirect('/')
+    args = '&'.join(['{}={}'.format(str(key), str(value)) for key,value in request.args.items() if key!='origin'])
+    return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
 
 
 @babel.localeselector
@@ -83,7 +84,14 @@ def search():
         query = request.form['area']
         # Do search
         search_results = helpers.search_zone(query, NUM_RESULTS)
-        return render_template('search_results.html', zones=search_results)
+        return render_template('search_results.html', zones=search_results, search_term=query)
+    if request.method == 'GET':
+        print(request.args)
+        query = request.args.get('search_query', '')
+        # Do search
+        search_results = helpers.search_zone(query, NUM_RESULTS)
+        return render_template('search_results.html', zones=search_results, search_term=query)
+
 
 
 @app.route('/random', methods=['GET', 'POST'])
@@ -114,7 +122,7 @@ def render_about_us():
 @app.route('/<string:page>')
 def render_page(page):
     try:
-        return render_template('zones/' + page + EXTENSION)
+        return render_template('zones/' + page + EXTENSION, current_url=page)
     except:
         abort(404)
 
