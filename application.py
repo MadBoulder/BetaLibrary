@@ -48,7 +48,7 @@ def get_map_all():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    return redirect('/')
+    return redirect('/{}'.format(request.args.get('origin', '')))
 
 
 @babel.localeselector
@@ -114,7 +114,7 @@ def render_about_us():
 @app.route('/<string:page>')
 def render_page(page):
     try:
-        return render_template('zones/' + page + EXTENSION)
+        return render_template('zones/' + page + EXTENSION, current_url=page)
     except:
         abort(404)
 
