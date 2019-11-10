@@ -2,7 +2,7 @@
 
 Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA). Powered by [Flask](http://flask.pocoo.org/) and [Folium](https://python-visualization.github.io/folium/), with a little help from [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#).
 
-You can check a preview at: http://madboulder.org/
+You can check a preview at: http://www.madboulder.org/
 
 <p align="center" style="text-align:center;">
 <img src="/extras/home.PNG"><br>
