@@ -11,6 +11,7 @@ WIDTH_MULTIPLIER = 15
 DEFAULT_AREA_ZOOM = 12
 SECTOR_OPACITY = 0.6
 MARKER_SIZE = 32
+ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
 
 ### GENERATE MAP ###
@@ -54,14 +55,19 @@ def load_map(datafile, return_html=True):
         sector_lyr.add_child(sector_map)
 
     # Parking areas
+
     for parking in area_data['parkings']:
+        parking_icon = CustomIcon(
+            'static/images/icons/parking.png',
+             icon_size=(ICON_SIZE, ICON_SIZE)
+            )
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
             popup=js_helpers.generate_parking_html([parking['parking_latitude'],
                                                     parking['parking_longitude']]),
             tooltip='Parking',
-            icon=folium.Icon(color='red', icon='info-sign')
+            icon=parking_icon
         )
 
         sector_lyr.add_child(parking_marker)
