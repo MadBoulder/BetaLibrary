@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 
 
-def main():
+def main(log_process=True):
     """
     Generate html map templates for all the areas located inside the data folder
     as well as a general map that contains all the areas
@@ -12,7 +12,8 @@ def main():
     areas = next(os.walk('data/zones/'))[1]
     all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
     for area in areas:
-        print(area)
+        if log_process:
+            print(area)
         with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(load_map.load_map(
                 'data/zones/' + area + '/' + area + '.txt', True))

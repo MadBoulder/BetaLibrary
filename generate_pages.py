@@ -3,7 +3,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 
 
-def main():
+def main(log_process=True):
     """
     Generate html map templates for all the areas located inside the data folder
     as well as a general map that contains all the areas
@@ -17,7 +17,8 @@ def main():
     playlists = {}
     for area in areas:
         # Create zone map
-        print(area)
+        if log_process:
+            print(area)
         datafile = 'data/zones/' + area + '/' + area + '.txt'
         area_data = {}
         with open(datafile, encoding='utf-8') as data:

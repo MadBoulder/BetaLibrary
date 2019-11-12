@@ -1,10 +1,35 @@
 import os
 import random
+
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for
 from flask_caching import Cache
 from flask_babel import Babel, _
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
 import helpers
+
+import generate_pages as gp
+import generate_templates as gt
+from babel.messages.frontend import CommandLineInterface
+
+
+def before_startup():
+    """
+    Set of actions to run before startup:
+    1. Update zone maps
+    2. Update zone pages
+    3. Update translations
+    """
+    # Update zone maps
+    gt.main(log_process=False)
+    # Update zone pages
+    gp.main(log_process=False)
+    # Update translations
+    CommandLineInterface().run(['pybabel', 'extract', '-F', 'babel.cfg',
+                                '-k', '_l', '-o', 'messages.pot', '.'])
+    CommandLineInterface().run(
+        ['pybabel', 'update', '-i', 'messages.pot', '-d', 'translations'])
+    CommandLineInterface().run(['pybabel', 'compile', '-d', 'translations'])
 
 
 EXTENSION = '.html'
@@ -48,7 +73,8 @@ def get_map_all():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    args = '&'.join(['{}={}'.format(str(key), str(value)) for key,value in request.args.items() if key!='origin'])
+    args = '&'.join(['{}={}'.format(str(key), str(value))
+                     for key, value in request.args.items() if key != 'origin'])
     return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
 
 
@@ -91,7 +117,6 @@ def search():
         # Do search
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
-
 
 
 @app.route('/random', methods=['GET', 'POST'])
@@ -143,4 +168,5 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
+    before_startup()
     app.run(debug=True)
