@@ -169,4 +169,4 @@ def page_not_found(error):
 # start the server
 if __name__ == '__main__':
     before_startup()
-    app.run(debug=True)
+    app.run(debug=False)
