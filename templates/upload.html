@@ -15,6 +15,8 @@
     />
     <!-- Development -->
     <link rel="stylesheet" href="../static/css/all.css" />
+    <!-- JQuery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
     <!-- Header contains Main site image, subtitle and links to social networks-->
@@ -67,7 +69,13 @@
           <br />
           <br />
           <br />
+          <div style="text-align:center;">
+            <div id="loader" style="display: inline-block;"></div>
+          </div>
+          <br />
+          <br />
           <form
+            id="uploadForm"
             action="{{ url_for('upload_file') }}"
             method="POST"
             enctype="multipart/form-data"
@@ -126,4 +134,51 @@
   ul#lang-selector li {
     display: inline;
   }
+
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #333;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 1s linear infinite; /* Safari */
+    animation: spin 1s linear infinite;
+  }
+
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 </style>
+
+<script>
+  $("#uploadForm").submit(function() {
+    $("#loader").addClass("loader");
+    return true;
+  });
+
+  $("#loader").on("pageinit", function(e) {
+    $("#loader").removeClass("loader");
+  });
+
+  var myCustomEvent =
+    navigator.userAgent.match("iPhone") != null ? "popstate" : "pageshow";
+
+  $(window).on(myCustomEvent, function(e) {
+    $("#loader").removeClass("loader");
+  });
+</script>
