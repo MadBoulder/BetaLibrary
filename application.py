@@ -10,8 +10,6 @@ from werkzeug.utils import secure_filename
 
 EXTENSION = '.html'
 NUM_RESULTS = 4
-COMPLETED = 100
-UPLOAD_FOLDER = './uploads/'
 
 # create the application object
 app = Flask(__name__)
