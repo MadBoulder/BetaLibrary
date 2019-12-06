@@ -52,7 +52,8 @@ def get_map_all():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    args = '&'.join(['{}={}'.format(str(key), str(value)) for key,value in request.args.items() if key!='origin'])
+    args = '&'.join(['{}={}'.format(str(key), str(value))
+                     for key, value in request.args.items() if key != 'origin'])
     return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
 
 
@@ -97,7 +98,6 @@ def search():
         return render_template('search_results.html', zones=search_results, search_term=query)
 
 
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -118,7 +118,11 @@ def upload_file():
                 os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 # TODO: Show some sign of success
                 return redirect('/')
-    return render_template('upload.html', uploading=False)
+    return render_template(
+        'upload.html',
+        uploading=False,
+        locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()]
+    )
 
 
 @app.route('/random', methods=['GET', 'POST'])
