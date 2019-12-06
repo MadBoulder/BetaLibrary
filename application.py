@@ -20,8 +20,6 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
 def get_videos_from_channel():
@@ -101,23 +99,7 @@ def search():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        f = request.files['file']
-        if f:
-            filename = secure_filename(f.filename)
-            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            print("Saved to server")
-            more_chunks, status, req = helpers.upload_first_chunk(
-                app.config['UPLOAD_FOLDER'], filename)
-            print("First chunk uploaded")
-            # render_template('upload.html', loading_progress=status)
-            while more_chunks:
-                more_chunks, status, req = helpers.upload_next_chunk(req)
-                print(status)
-                # render_template('upload.html', loading_progress=status)
-            if status == COMPLETED:
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                # TODO: Show some sign of success
-                return redirect('/')
+
     return render_template(
         'upload.html',
         uploading=False,
