@@ -66,6 +66,8 @@ def replace_custom_placeholders(map_html, placeholders):
     After that, the specified variables in the template are no longer
     recognized and the values are not updated. 
     """
+    placeholders.sort(key = lambda s: len(s))
+    placeholders.reverse()
     for placeholder in placeholders:
         variable = placeholder.replace(PLACEHOLDER, '')
         map_html = map_html.replace(placeholder, '{{'+variable+'}}')
