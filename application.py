@@ -99,7 +99,8 @@ def search():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-
+        # TODO: Send e-mail with file data
+        pass
     return render_template(
         'upload.html',
         uploading=False,
