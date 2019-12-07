@@ -25,9 +25,9 @@ This project complements [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHn
 
 ## Usage
 
-This project isn't hosted anywhere yet and hence it is not available through the web.
+You can visit the page at: http://www.madboulder.org
 
-To build it locally follow the next steps:
+To build the project locally follow the next steps:
 
 1. Make sure you have Python3, [Flask](http://flask.pocoo.org/), [Folium](https://python-visualization.github.io/folium/), [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#) and [Flask-Babel](https://pythonhosted.org/Flask-Babel/) installed. I recomend to do so in a [virtual environment](https://virtualenv.pypa.io/en/latest/). (After cloning the repository you can install the required packages with: `$ pip install -r /path/to/requirements.txt`)
 2. Clone the repository by tipying in a terminal `$ git clone https://github.com/juangallostra/BetaLibrary.git`
