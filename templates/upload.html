@@ -2,7 +2,7 @@
 <html>
   <head>
     <!-- Navigation bar title-->
-    <title>{{ _("Latest Videos") }}</title>
+    <title>Upload</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
@@ -65,86 +65,55 @@
             }
           </script>
           <br />
-          <!--Latest videos-->
-          <div class="container">
-            <br /><br />
-            <h2>{{ _("Latest videos") }}</h2>
-            <br />
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[0] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
+          <br />
+          <!-- Upload form -->
+          <div class="form-container">
+            <form
+              id="uploadForm"
+              action="{{ url_for('upload_file') }}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <h4>{{_("Upload Form")}}</h4>
+              <br />
+              <!-- We Transfer upload snippet -->
+              <div data-widget-host="habitat" id="wt_embed">
+                <script type="text/props">
+                  {
+                    "wtEmbedKey": "fcec02cd-f871-4310-9ffd-af4637baca2d",
+                    "wtEmbedOutput": ".wt_embed_output",
+                    "wtEmbedLanguage": "{{ locale }}"
+                  }
+                </script>
               </div>
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[1] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[2] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[3] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[4] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div style="position:relative;padding-top:56.25%;">
-                  <iframe
-                    src="{{ video_urls[5] }}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                  >
-                  </iframe>
-                </div>
-              </div>
-            </div>
+              <script
+                async
+                src="https://prod-embed-cdn.wetransfer.net/v1/latest.js"
+              ></script>
+              <!--
+            The next input element will hold the transfer link. For testing purposes, you
+            could change the type attribute to "text", instead of "hidden".
+            -->
+              <input
+                type="hidden"
+                name="wt_embed_output"
+                class="wt_embed_output"
+              />
+              <br />
+              <!-- Rest of fields -->
+              <br />
+              {{ _("Name") }}: <input required type="text" name="name" /><br />
+              {{ _("Climber") }}: <input type="text" name="climber" /><br />
+              {{ _("Zone") }}: <input required type="text" name="zone" /><br />
+              {{ _("Sector") }}: <input type="text" name="sector" /><br />
+              {{ _("Grade") }}: <input type="text" name="grade" /><br />
+              {{ _("Notes") }}: <br />
+              <textarea name="notes" rows="5"></textarea><br />
+              <br />
+              <input type="submit" />
+            </form>
           </div>
         </div>
-        <!-- Footer contains links to social networks and language selector-->
         <footer>
           <br />
           <div style="text-align:center;">
@@ -162,15 +131,21 @@
             <div style="display: inline-block">
               <ul id="lang-selector" style="padding: 0;list-style: none;">
                 <li>
-                  <a href="/language/en?origin=latest_videos" title="English"> {{ _("English") }} </a>
+                  <a href="/language/en?origin=upload" title="English">
+                    {{ _("English") }}
+                  </a>
                 </li>
                 &nbsp;
                 <li>
-                  <a href="/language/es?origin=latest_videos" title="Spanish"> {{ _("Español") }} </a>
+                  <a href="/language/es?origin=upload" title="Spanish">
+                    {{ _("Español") }}
+                  </a>
                 </li>
                 &nbsp;
                 <li>
-                  <a href="/language/ca?origin=latest_videos" title="Catalan"> {{ _("Català") }} </a>
+                  <a href="/language/ca?origin=upload" title="Catalan">
+                    {{ _("Català ") }}
+                  </a>
                 </li>
               </ul>
             </div>
@@ -182,7 +157,32 @@
 </html>
 
 <style>
+  form {
+    margin: 0 auto;
+    width: 75%;
+  }
   ul#lang-selector li {
     display: inline;
+  }
+
+  .form-container {
+    display: inline;
+    justify-content: center;
+    clear: both;
+  }
+
+  .form-container input {
+    width: 100%;
+    clear: both;
+  }
+  .form-container select {
+    width: 100%;
+    clear: both;
+  }
+  textarea {
+    width: 100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
   }
 </style>

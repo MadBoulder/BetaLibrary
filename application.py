@@ -3,8 +3,10 @@ import random
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for
 from flask_caching import Cache
 from flask_babel import Babel, _
+from flask_mail import Mail,  Message
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
+from werkzeug.utils import secure_filename
 
 
 EXTENSION = '.html'
@@ -17,6 +19,18 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['EMAIL_USER'],
+    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":")
+}
+
+app.config.update(mail_settings)
+mail = Mail(app)
 
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
@@ -48,7 +62,8 @@ def get_map_all():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    args = '&'.join(['{}={}'.format(str(key), str(value)) for key,value in request.args.items() if key!='origin'])
+    args = '&'.join(['{}={}'.format(str(key), str(value))
+                     for key, value in request.args.items() if key != 'origin'])
     return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
 
 
@@ -92,6 +107,26 @@ def search():
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
 
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # build email text
+        video_data = ("\n").join(["{}: {}".format(key, value)
+                                  for key, value in request.form.items()])
+        video_data = video_data.replace('wt_embed_output', 'download link')
+        # build email
+        msg = Message(subject="New Beta!",
+                      sender=app.config.get("MAIL_USERNAME"),
+                      recipients=app.config.get("MAIL_RECIPIENTS"),
+                      body=video_data)
+        mail.send(msg)
+        # TODO: show some sign of success
+    return render_template(
+        'upload.html',
+        uploading=False,
+        locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()]
+    )
 
 
 @app.route('/random', methods=['GET', 'POST'])
