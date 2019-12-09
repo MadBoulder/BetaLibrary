@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 
 EXTENSION = '.html'
 NUM_RESULTS = 4
+EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 
 # create the application object
 app = Flask(__name__)
@@ -116,15 +117,16 @@ def upload_file():
                                   for key, value in request.form.items()])
         video_data = video_data.replace('wt_embed_output', 'download link')
         # build email
-        msg = Message(subject="New Beta!",
-                      sender=app.config.get("MAIL_USERNAME"),
-                      recipients=app.config.get("MAIL_RECIPIENTS"),
-                      body=video_data)
+        msg = Message(
+            subject=(", ").join([request.form[field]
+                                 for field in EMAIL_SUBJECT_FIELDS]),
+            sender=app.config.get("MAIL_USERNAME"),
+            recipients=app.config.get("MAIL_RECIPIENTS"),
+            body=video_data)
         mail.send(msg)
         # TODO: show some sign of success
     return render_template(
         'upload.html',
-        uploading=False,
         locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()]
     )
 
