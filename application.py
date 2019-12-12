@@ -111,8 +111,9 @@ def search():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    upload_complete = False
     if request.method == 'POST':
-        # build email text
+        # build email text/body
         video_data = ("\n").join(["{}: {}".format(key, value)
                                   for key, value in request.form.items()])
         video_data = video_data.replace('wt_embed_output', 'download link')
@@ -124,10 +125,12 @@ def upload_file():
             recipients=app.config.get("MAIL_RECIPIENTS"),
             body=video_data)
         mail.send(msg)
-        # TODO: show some sign of success
+        # If no errors are raised, assume the action was successful
+        upload_complete = True
     return render_template(
         'upload.html',
-        locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()]
+        locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
+        success=upload_complete
     )
 
 

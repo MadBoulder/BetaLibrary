@@ -67,7 +67,8 @@
           <br />
           <br />
           <!-- Upload form -->
-          <div class="form-container">
+          {% if not success %}
+          <div id="upload-container" class="form-container">
             <form
               id="uploadForm"
               action="{{ url_for('upload_file') }}"
@@ -103,17 +104,46 @@
               <br />
               <!-- Rest of fields -->
               <br />
-              {{ _("Name") }}: <input required type="text" name="name" /><br />
+              <div class="required-field">{{ _("Name") }}:</div>
+              <input required type="text" name="name" /><br />
               {{ _("Climber") }}: <input type="text" name="climber" /><br />
-              {{ _("Zone") }}: <input required type="text" name="zone" /><br />
+              <div class="required-field">{{ _("Zone") }}:</div>
+              <input required type="text" name="zone" /><br />
               {{ _("Sector") }}: <input type="text" name="sector" /><br />
               {{ _("Grade") }}: <input type="text" name="grade" /><br />
               {{ _("Notes") }}: <br />
               <textarea name="notes" rows="5"></textarea><br />
               <br />
-              <input type="submit" />
+              <input class="mad-button" type="submit" value='{{_("Submit")}}' />
             </form>
           </div>
+          {% endif %}
+          <!-- Upload success-->
+          {% if success %}
+          <div id="upload-success">
+            <div class="success-checkmark">
+              <div class="check-icon">
+                <span class="icon-line line-tip"></span>
+                <span class="icon-line line-long"></span>
+                <div class="icon-circle"></div>
+                <div class="icon-fix"></div>
+              </div>
+            </div>
+            <div style="text-align:center;">
+              <h3>{{_("Your file was sent successfully")}}</h3>
+            </div>
+            <br />
+            <div style="text-align:center;">
+              <form action="/upload" method="get">
+                <input
+                  class="mad-button"
+                  type="submit"
+                  value="{{ _('Upload another video') }}"
+                />
+              </form>
+            </div>
+          </div>
+          {% endif %}
         </div>
         <footer>
           <br />
@@ -186,13 +216,166 @@
     -moz-box-sizing: border-box; /* Firefox, other Gecko */
     box-sizing: border-box; /* Opera/IE 8+ */
   }
+
+  .required-field::after {
+    content: "*";
+    color: red;
+  }
+</style>
+
+<style>
+  /** * Extracted from: SweetAlert * Modified by: Istiak Tridip */
+  .success-checkmark {
+    width: 80px;
+    height: 115px;
+    margin: 0 auto;
+  }
+  .success-checkmark .check-icon {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    border-radius: 50%;
+    box-sizing: content-box;
+    border: 4px solid #4caf50;
+  }
+  .success-checkmark .check-icon::before {
+    top: 3px;
+    left: -2px;
+    width: 30px;
+    transform-origin: 100% 50%;
+    border-radius: 100px 0 0 100px;
+  }
+  .success-checkmark .check-icon::after {
+    top: 0;
+    left: 30px;
+    width: 60px;
+    transform-origin: 0 50%;
+    border-radius: 0 100px 100px 0;
+    animation: rotate-circle 4.25s ease-in;
+  }
+  .success-checkmark .check-icon::before,
+  .success-checkmark .check-icon::after {
+    content: "";
+    height: 100px;
+    position: absolute;
+    background: #fff;
+    transform: rotate(-45deg);
+  }
+  .success-checkmark .check-icon .icon-line {
+    height: 5px;
+    background-color: #4caf50;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 10;
+  }
+  .success-checkmark .check-icon .icon-line.line-tip {
+    top: 46px;
+    left: 14px;
+    width: 25px;
+    transform: rotate(45deg);
+    animation: icon-line-tip 0.75s;
+  }
+  .success-checkmark .check-icon .icon-line.line-long {
+    top: 38px;
+    right: 8px;
+    width: 47px;
+    transform: rotate(-45deg);
+    animation: icon-line-long 0.75s;
+  }
+  .success-checkmark .check-icon .icon-circle {
+    top: -4px;
+    left: -4px;
+    z-index: 10;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    position: absolute;
+    box-sizing: content-box;
+    border: 4px solid rgba(76, 175, 80, 0.5);
+  }
+  .success-checkmark .check-icon .icon-fix {
+    top: 8px;
+    width: 5px;
+    left: 26px;
+    z-index: 1;
+    height: 85px;
+    position: absolute;
+    transform: rotate(-45deg);
+    background-color: #fff;
+  }
+  @keyframes rotate-circle {
+    0% {
+      transform: rotate(-45deg);
+    }
+    5% {
+      transform: rotate(-45deg);
+    }
+    12% {
+      transform: rotate(-405deg);
+    }
+    100% {
+      transform: rotate(-405deg);
+    }
+  }
+  @keyframes icon-line-tip {
+    0% {
+      width: 0;
+      left: 1px;
+      top: 19px;
+    }
+    54% {
+      width: 0;
+      left: 1px;
+      top: 19px;
+    }
+    70% {
+      width: 50px;
+      left: -8px;
+      top: 37px;
+    }
+    84% {
+      width: 17px;
+      left: 21px;
+      top: 48px;
+    }
+    100% {
+      width: 25px;
+      left: 14px;
+      top: 45px;
+    }
+  }
+  @keyframes icon-line-long {
+    0% {
+      width: 0;
+      right: 46px;
+      top: 54px;
+    }
+    65% {
+      width: 0;
+      right: 46px;
+      top: 54px;
+    }
+    84% {
+      width: 55px;
+      right: 0px;
+      top: 35px;
+    }
+    100% {
+      width: 47px;
+      right: 8px;
+      top: 38px;
+    }
+  }
 </style>
 
 <script>
   function validateForm() {
     var form = document.forms["uploadForm"];
     if (form["wt_embed_output"].value == "") {
-      alert("Please select a file or wait until the selected file has been uploaded");
+      alert(
+        "Please select a file or wait until the selected file has been uploaded"
+      );
       return false;
     }
   }
