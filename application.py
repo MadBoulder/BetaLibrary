@@ -130,7 +130,7 @@ def upload_file():
     return render_template(
         'upload.html',
         locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
-        success=upload_complete
+        success=upload_complete,
         wt_key=os.environ["WT_KEY"]
     )
 
