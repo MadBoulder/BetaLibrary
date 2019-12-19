@@ -131,6 +131,7 @@ def upload_file():
         'upload.html',
         locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
         success=upload_complete
+        wt_key=os.environ["WT_KEY"]
     )
 
 
