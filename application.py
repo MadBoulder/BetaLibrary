@@ -75,10 +75,10 @@ def get_locale():
     try:
         language = session['language']
     except KeyError:
-        language = None
+        language = request.accept_languages.best_match(app.config['LANGUAGES'])
     if language is not None:
         return language
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return 'en'
 
 
 # Load favicon
