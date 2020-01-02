@@ -24,7 +24,10 @@ mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
     "MAIL_PORT": 465,
     "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['EMAIL_USER'],
+    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":")
 }
 
 app.config.update(mail_settings)
@@ -88,7 +91,22 @@ def favicon():
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    return render_template('home.html')
+    channel_info = helpers.get_channel_info()
+    zones = helpers.load_zones()
+    sectors = sum([helpers.count_sectors_in_zone(zone['file'])
+                   for zone in zones])
+    data = {
+        'videos': channel_info['items'][0]['statistics']['videoCount'],
+        'sectors': sectors,
+        'zones': len(zones),
+        'visualizations': channel_info['items'][0]['statistics']['viewCount']
+    }
+    return render_template('home.html', data=data)
+
+
+@app.route('/zones')
+def zones():
+    return render_template('zones.html')
 
 
 @app.route('/search', methods=['GET', 'POST'])
