@@ -1,15 +1,7 @@
 import urllib.request
 import json
 import os
-import pickle
 import os.path
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from apiclient.http import MediaFileUpload
-
-# If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/drive']
 
 
 class bidict(dict):
@@ -51,6 +43,13 @@ def load_zones():
             area_data = json.load(data)
         zones += [{'name': area_data['name'], 'file': area}]
     return zones
+
+
+def count_sectors_in_zone(zone):
+    datafile = 'data/zones/' + zone + '/' + zone + '.txt'
+    with open(datafile, encoding='utf-8') as data:
+        area_data = json.load(data)
+        return len(area_data['sectors'])
 
 
 def iterative_levenshtein(s, t, costs=(1, 1, 3)):
@@ -202,6 +201,16 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     return video_links
 
 
+def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+    api_key = None
+    with open("credentials.txt", "r", encoding='utf-8') as f:
+        api_key = f.read()
+    query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
+        channel_id, api_key)
+    inp = urllib.request.urlopen(query_url)
+    return json.load(inp)
+
+
 def get_number_of_videos_from_playlists_file(file):
     """
     Given a file with the playlist from which we want to obtain the
@@ -243,49 +252,3 @@ def get_number_of_videos_from_playlists_file(file):
         zone = data.inverse[i['id']][0]
         count[zone] = i['contentDetails']['itemCount']
     return count
-
-
-def upload_first_chunk(path, filename):
-    """ """
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    # TODO: Remove this section
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
-
-    service = build('drive', 'v3', credentials=creds)
-
-    # Upload File
-    file_metadata = {'name': filename}
-
-    media = MediaFileUpload(
-        path + filename, resumable=True)
-    request = service.files().create(
-        media_body=media, body={'name': filename})
-    status, response = request.next_chunk()
-    if status:
-        return True, (status.resumable_progress/status.total_size)*100, request
-    if not status and response and response['id']:
-        return False, 100, None
-
-
-def upload_next_chunk(request):
-    status, response = request.next_chunk()
-    if status:
-        return True, (status.resumable_progress/status.total_size)*100, request
-    if not status and response and response['id']:
-        return False, 100, None
