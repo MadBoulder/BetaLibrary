@@ -2,6 +2,7 @@ import numpy as np
 import folium
 from folium.plugins import MarkerCluster, BeautifyIcon
 from folium.features import CustomIcon
+from flask_babel import Babel, _
 import json
 import os
 import js_helpers

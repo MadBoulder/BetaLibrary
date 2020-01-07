@@ -76,6 +76,11 @@ def replace_custom_placeholders(map_html, placeholders):
     return map_html
 
 
+def replace_sectors_placeholders_for_translations(map_html, sector_placeholder='sector_placeholder'):
+    map_html = map_html.replace(sector_placeholder, '{{ _("Sectors") }}')
+    return map_html
+
+
 def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     """
     Generate the html code tat shows the zone name and a link
@@ -86,4 +91,4 @@ def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     of beta videos when rendering the pop up
     """
     sector_count = helpers.count_sectors_in_zone(area_filename)
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>Sectors: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>sector_placeholder: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
