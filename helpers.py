@@ -46,6 +46,10 @@ def load_zones():
 
 
 def count_sectors_in_zone(zone):
+    """
+    Given a zone name, return the number of sectors based on the
+    zone's datafile specified sectors.
+    """
     datafile = 'data/zones/' + zone + '/' + zone + '.txt'
     with open(datafile, encoding='utf-8') as data:
         area_data = json.load(data)
@@ -202,6 +206,9 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
 
 
 def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+    """
+    Get the info of a youtube channel from the channel's id
+    """
     api_key = None
     with open("credentials.txt", "r", encoding='utf-8') as f:
         api_key = f.read()
