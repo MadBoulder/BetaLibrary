@@ -77,6 +77,10 @@ def replace_custom_placeholders(map_html, placeholders):
 
 
 def replace_sectors_placeholders_for_translations(map_html, sector_placeholder='sector_placeholder'):
+    """
+    Replace the sector's text placeholder in the HTML by the localized string.
+    This is to avoid the render() function throwing an error when processing the map's html
+    """
     map_html = map_html.replace(sector_placeholder, '{{ _("Sectors") }}')
     return map_html
 
