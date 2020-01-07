@@ -59,8 +59,8 @@ def load_map(datafile, return_html=True):
     for parking in area_data['parkings']:
         parking_icon = CustomIcon(
             'static/images/icons/parking.png',
-             icon_size=(ICON_SIZE, ICON_SIZE)
-            )
+            icon_size=(ICON_SIZE, ICON_SIZE)
+        )
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
@@ -166,11 +166,10 @@ def load_general_map(datafiles, return_html=True):
 
         html_redirect, _ = os.path.splitext(
             os.path.basename(os.path.normpath(areadatafile)))
-
-        placeholder = os.path.splitext(os.path.basename(areadatafile))[
-            0]+PLACEHOLDER
+        area_name = os.path.splitext(os.path.basename(areadatafile))[0]
+        placeholder = area_name + PLACEHOLDER
         popup_html = folium.Html(js_helpers.generate_area_popup_html(
-            area_data['name'], html_redirect, placeholder), script=True)
+            area_data['name'], area_name, html_redirect, placeholder), script=True)
         zone_popup = folium.Popup(
             popup_html, max_width=len(area_data['name'])*10)
         placeholders.append(placeholder)

@@ -1,3 +1,5 @@
+import helpers
+
 END_OF_SCRIPT = "\n\n</script>"
 PLACEHOLDER = '_placeholder'
 
@@ -66,7 +68,7 @@ def replace_custom_placeholders(map_html, placeholders):
     After that, the specified variables in the template are no longer
     recognized and the values are not updated. 
     """
-    placeholders.sort(key = lambda s: len(s))
+    placeholders.sort(key=lambda s: len(s))
     placeholders.reverse()
     for placeholder in placeholders:
         variable = placeholder.replace(PLACEHOLDER, '')
@@ -74,7 +76,7 @@ def replace_custom_placeholders(map_html, placeholders):
     return map_html
 
 
-def generate_area_popup_html(area_name, redirect, placeholder):
+def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     """
     Generate the html code tat shows the zone name and a link
     to the page, as well as the number of videos of the zone
@@ -83,4 +85,5 @@ def generate_area_popup_html(area_name, redirect, placeholder):
     placeholder indicator. This value will be replaced by the number
     of beta videos when rendering the pop up
     """
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a><br></p><p>Beta Videos: '+placeholder+'</p>'
+    sector_count = helpers.count_sectors_in_zone(area_filename)
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>Sectors: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
