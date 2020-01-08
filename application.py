@@ -96,15 +96,29 @@ def favicon():
 def home():
     channel_info = helpers.get_channel_info()
     zones = helpers.load_zones()
-    sectors = sum([helpers.count_sectors_in_zone(zone['file'])
-                   for zone in zones])
-    data = {
-        'videos': channel_info['items'][0]['statistics']['videoCount'],
-        'sectors': sectors,
-        'zones': len(zones),
-        'visualizations': channel_info['items'][0]['statistics']['viewCount']
-    }
-    return render_template('home.html', data=data)
+    stats_list = [
+        {
+            'logo': "fa fa-globe-americas",
+            'text': _("Zones"),
+            'data': len(zones)
+        },
+        {
+            'logo': "fa fa-map-marked",
+            'text': _("Sectors"),
+            'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
+        },
+        {
+            'logo': "fab fa-youtube",
+            'text': _("Videos"),
+            'data': channel_info['items'][0]['statistics']['videoCount']
+        },
+        {
+            'logo': "fa fa-eye",
+            'text': _("Views"),
+            'data': channel_info['items'][0]['statistics']['viewCount']
+        }
+    ]
+    return render_template('home.html', stats_list=stats_list)
 
 
 @app.route('/zones')
