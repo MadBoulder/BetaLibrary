@@ -38,7 +38,7 @@ To build the project locally follow the next steps:
 
 ### Translations
 
-Documentation: https://pythonhosted.org/Flask-Babel/
+Documentation: [https://pythonhosted.org/Flask-Babel/](https://pythonhosted.org/Flask-Babel/)
 
 #### Add new language
 
@@ -47,7 +47,7 @@ Documentation: https://pythonhosted.org/Flask-Babel/
 
 #### Extracting/Updating translations
 
-To extract all the texts that are to be translated to the `.pot` file use the following command: 
+To extract all the texts that are to be translated to the `.pot` file use the following command:
 `$ pybabel extract -F babel.cfg -k _l -o messages.pot .`
 
 To update all catalogs with the latest set of messages:
