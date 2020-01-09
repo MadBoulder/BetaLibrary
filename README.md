@@ -2,7 +2,7 @@
 
 Your complement to bouldering guides. Check the beta provided by [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA). Powered by [Flask](http://flask.pocoo.org/) and [Folium](https://python-visualization.github.io/folium/), with a little help from [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#).
 
-You can check a preview at: http://www.madboulder.org/
+You can check it at: http://madboulder.org
 
 <p align="center" style="text-align:center;">
 <img src="/extras/home.PNG"><br>
@@ -25,11 +25,11 @@ This project complements [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHn
 
 ## Usage
 
-You can visit the page at: http://www.madboulder.org
+You can visit the page at: http://madboulder.org
 
 To build the project locally follow the next steps:
 
-1. Make sure you have Python3, [Flask](http://flask.pocoo.org/), [Folium](https://python-visualization.github.io/folium/), [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#) and [Flask-Babel](https://pythonhosted.org/Flask-Babel/) installed. I recomend to do so in a [virtual environment](https://virtualenv.pypa.io/en/latest/). (After cloning the repository you can install the required packages with: `$ pip install -r /path/to/requirements.txt`)
+1. Make sure you have Python3, [Flask](http://flask.pocoo.org/), [Folium](https://python-visualization.github.io/folium/), [Flask-Caching](https://flask-caching.readthedocs.io/en/latest/#) and [Flask-Babel](https://pythonhosted.org/Flask-Babel/) installed. [Flask Mail](https://pythonhosted.org/Flask-Mail/) is also used but it is not required. I recomend to install everything in a [virtual environment](https://virtualenv.pypa.io/en/latest/). (After cloning the repository you can install the required packages with: `$ pip install -r /path/to/requirements.txt`)
 2. Clone the repository by tipying in a terminal `$ git clone https://github.com/juangallostra/BetaLibrary.git`
 3. `cd` to `BetaLibrary` and run `$ python generate_templates.py` and `$ python generate_pages.py`
 4. Run `$ python application.py` and visit `http://127.0.0.1:5000/`
