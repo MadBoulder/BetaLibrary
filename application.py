@@ -134,10 +134,11 @@ def search():
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
     if request.method == 'GET':
-        query = request.args.get('search_query', '')
-        # Do search
-        search_results = helpers.search_zone(query, NUM_RESULTS)
-        return render_template('search_results.html', zones=search_results, search_term=query)
+        return redirect('/')
+        # query = request.args.get('search_query', '')
+        # # Do search
+        # search_results = helpers.search_zone(query, NUM_RESULTS)
+        # return render_template('search_results.html', zones=search_results, search_term=query)
 
 @app.route('/search_beta', methods=['GET', 'POST'])
 def search_beta():
@@ -150,6 +151,8 @@ def search_beta():
             videos=search_results,
             search_term=query
         )
+    if request.method == 'GET':
+        return redirect('/')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
