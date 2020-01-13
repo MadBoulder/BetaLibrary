@@ -134,12 +134,22 @@ def search():
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
     if request.method == 'GET':
-        print(request.args)
         query = request.args.get('search_query', '')
         # Do search
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
 
+@app.route('/search_beta', methods=['GET', 'POST'])
+def search_beta():
+    if request.method == 'POST':
+        query = request.form['beta']
+        # Do search
+        search_results = helpers.get_video_from_channel(query)
+        return render_template(
+            'search_beta_results.html',
+            videos=search_results,
+            search_term=query
+        )
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():

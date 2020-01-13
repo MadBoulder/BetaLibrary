@@ -1,4 +1,4 @@
-import urllib.request
+import urllib.request, urllib.parse
 import json
 import os
 import os.path
@@ -216,6 +216,25 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
         channel_id, api_key)
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
+
+
+def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+    """
+    API query format:
+    https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
+    """
+    api_key = None
+    with open("credentials.txt", "r", encoding='utf-8') as f:
+        api_key = f.read()
+    base_video_url = '//www.youtube.com/embed/' # to embed video
+    query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
+        urllib.parse.quote(video_name), channel_id, api_key)
+    inp = urllib.request.urlopen(query_url)
+    resp = json.load(inp)
+    for i in resp['items']:
+        if i['id']['kind'] == "youtube#video":
+            i['video_url'] = base_video_url + i['id']['videoId']
+    return resp['items']
 
 
 def get_number_of_videos_from_playlists_file(file):
