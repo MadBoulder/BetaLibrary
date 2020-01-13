@@ -21,18 +21,18 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# mail_settings = {
-#     "MAIL_SERVER": 'smtp.gmail.com',
-#     "MAIL_PORT": 465,
-#     "MAIL_USE_TLS": False,
-#     "MAIL_USE_SSL": True,
-#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
-#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":")
-# }
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['EMAIL_USER'],
+    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":")
+}
 
-# app.config.update(mail_settings)
-# mail = Mail(app)
+app.config.update(mail_settings)
+mail = Mail(app)
 
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
@@ -160,13 +160,13 @@ def upload_file():
                                   for key, value in request.form.items()])
         video_data = video_data.replace('wt_embed_output', 'download link')
         # build email
-        # msg = Message(
-        #     subject=(", ").join([request.form[field]
-        #                          for field in EMAIL_SUBJECT_FIELDS]),
-        #     sender=app.config.get("MAIL_USERNAME"),
-        #     recipients=app.config.get("MAIL_RECIPIENTS"),
-        #     body=video_data)
-        # mail.send(msg)
+        msg = Message(
+            subject=(", ").join([request.form[field]
+                                 for field in EMAIL_SUBJECT_FIELDS]),
+            sender=app.config.get("MAIL_USERNAME"),
+            recipients=app.config.get("MAIL_RECIPIENTS"),
+            body=video_data)
+        mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
