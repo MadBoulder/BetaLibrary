@@ -134,6 +134,11 @@ def search():
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
     if request.method == 'GET':
+        query = request.args.get('search_query', '')
+        # Do search
+        if query:
+            search_results = helpers.search_zone(query, NUM_RESULTS)
+            return render_template('search_results.html', zones=search_results, search_term=query)
         return render_template('search_results.html', zones=[], search_term='')
 
 @app.route('/search_beta', methods=['GET', 'POST'])
@@ -148,6 +153,15 @@ def search_beta():
             search_term=query
         )
     if request.method == 'GET':
+        query = request.args.get('search_query', '')
+        # Do search
+        if query:
+            search_results = helpers.get_video_from_channel(query)
+            return render_template(
+                'search_beta_results.html',
+                videos=search_results,
+                search_term=query
+            )
         return render_template(
             'search_beta_results.html',
             videos=[],
