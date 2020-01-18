@@ -52,7 +52,7 @@
     <div id="holder">
       <div id="body">
         <br />
-        <div class="container">
+        <div class="container" id="mainContainer">
           <!-- main menu with links to HOME, ZONES and MAP-->
           <div class="topnav" id="myTopnav">
             <a href="/">{{ _("HOME") }}</a>
@@ -65,17 +65,21 @@
               href="javascript:void(0);"
               style="font-size:15px;"
               class="icon"
-              onclick="myFunction()"
+              onclick="loadMenu()"
               >&#9776;</a
             >
           </div>
           <script>
-            function myFunction() {
+            function loadMenu() {
               var x = document.getElementById("myTopnav");
-              if (x.className === "topnav") {
+              if (!x.classList.contains("responsive")) {
                 x.className += " responsive";
               } else {
-                x.className = "topnav";
+                if (x.classList.contains("sticky")) {
+                  x.className = "topnav sticky";
+                } else {
+                  x.className = "topnav";
+                }
               }
             }
           </script>
@@ -83,7 +87,7 @@
           <!-- Stats section -->
           <!-- <h3>{{ _("Stats")}}</h3> -->
           <br />
-          <div>
+          <div id="pageContent">
             <div class="row justify-content-center">
               {% for stat in stats_list %}
               <div class="col-md-3 col-sm-2 stats-col">
@@ -163,6 +167,20 @@
 </html>
 
 <style scoped>
+  /* The sticky class is added to the navbar with JS when it reaches its scroll position */
+  .sticky {
+    position: fixed;
+    top: 0;
+    overflow: hidden;
+    z-index: 100;
+    box-sizing: border-box;
+  }
+
+  /* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+  /* .sticky + .content {
+    padding-top: 200px;
+  } */
+
   ul#lang-selector li {
     display: inline;
   }
@@ -202,3 +220,44 @@
     }
   }
 </style>
+
+<script>
+  // When the user scrolls the page, execute myFunction
+  window.onscroll = function() {
+    myFunction();
+  };
+
+  // Get the navbar
+  var navbar = document.getElementById("myTopnav");
+  var header = document.getElementById("header");
+  var mainContainer = document.getElementById("mainContainer");
+  var pageContent = document.getElementById("pageContent");
+  var paddingAll =
+    2 *
+    parseInt(
+      window
+        .getComputedStyle(mainContainer, null)
+        .getPropertyValue("padding-left")
+    );
+
+  // Get the offset position of the navbar
+  var sticky = navbar.offsetTop;
+
+  // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+  function myFunction() {
+    if (window.pageYOffset >= sticky + header.offsetHeight) {
+      navbar.classList.add("sticky");
+      navbar.setAttribute(
+        "style",
+        "width:" + (mainContainer.clientWidth - paddingAll) + "px;"
+      );
+      pageContent.setAttribute(
+        "style",
+        "padding-top:" + navbar.clientHeight + "px;"
+      );
+    } else {
+      navbar.classList.remove("sticky");
+      pageContent.setAttribute("style", "padding-top:0px;");
+    }
+  }
+</script>
