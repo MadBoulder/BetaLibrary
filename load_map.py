@@ -98,7 +98,9 @@ def load_map(datafile, return_html=True):
     # Zoom into area when clicking
     map_html = js_helpers.zoom_on_click(
         map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
-
+    
+    map_html = js_helpers.enable_links_from_iframe(map_html)
+    map_html = js_helpers.replace_maps_placeholder(map_html)
     return map_html if return_html else area_map
 
 
@@ -203,5 +205,4 @@ def load_general_map(datafiles, return_html=True):
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     map_html = js_helpers.replace_custom_placeholders(map_html, placeholders)
-
     return map_html if return_html else area_map
