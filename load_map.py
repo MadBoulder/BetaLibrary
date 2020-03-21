@@ -30,9 +30,12 @@ def load_map(datafile, return_html=True):
     area_map = folium.Map(location=[area_data['latitude'], area_data['longitude']],
                           zoom_start=area_data['zoom'])
 
+    folium.TileLayer(tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', name="Satellite",
+     attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community').add_to(area_map)
+
     sectors = area_data['sectors']
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
-    sector_lyr = folium.FeatureGroup(name='sectors_layer')
+    sector_lyr = folium.FeatureGroup(name='Zone Markers')
     for sector in sectors:
         if not sector['sector_data'] or not sector['link']:
             continue
@@ -73,7 +76,7 @@ def load_map(datafile, return_html=True):
         sector_lyr.add_child(parking_marker)
 
     # Sectors
-    zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
+    zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
     zoomed_out_icon = CustomIcon(
         'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
 
@@ -88,6 +91,8 @@ def load_map(datafile, return_html=True):
     area_map.add_child(zoomed_out_lyr)
     area_map.add_child(sector_lyr)
 
+    folium.LayerControl().add_to(area_map)
+
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
@@ -98,7 +103,9 @@ def load_map(datafile, return_html=True):
     # Zoom into area when clicking
     map_html = js_helpers.zoom_on_click(
         map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
-
+    
+    map_html = js_helpers.enable_links_from_iframe(map_html)
+    map_html = js_helpers.replace_maps_placeholder(map_html)
     return map_html if return_html else area_map
 
 
@@ -112,12 +119,15 @@ def load_general_map(datafiles, return_html=True):
                                     -18.299051014581817],
                           zoom_start=2)
 
+    folium.TileLayer(tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', name="Satellite",
+     attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community').add_to(area_map)
+    
     layers = []
     sectors_markers = []
     placeholders = []
 
     # Sectors layer
-    zoomed_out_lyr = folium.FeatureGroup(name='zoomed_out_layer')
+    zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
     areas_cluster = MarkerCluster()
 
     for areadatafile in datafiles:
@@ -189,6 +199,9 @@ def load_general_map(datafiles, return_html=True):
         # area_map.add_child(sector_lyr)
         # layers += [(sector_lyr, zoomed_out_lyr)]
 
+
+    folium.LayerControl().add_to(area_map)
+
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting or editing JavaScript code in the map html
     map_html = area_map.get_root().render()
@@ -203,5 +216,4 @@ def load_general_map(datafiles, return_html=True):
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     map_html = js_helpers.replace_custom_placeholders(map_html, placeholders)
-
     return map_html if return_html else area_map
