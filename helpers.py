@@ -3,6 +3,7 @@ import json
 import os
 import os.path
 
+MAX_ITEMS_API_QUERY = 50
 
 class bidict(dict):
     """
@@ -264,17 +265,18 @@ def get_number_of_videos_from_playlists_file(file):
     # We want to be able to get the playlist from the zone name
     # but also the zone name from the playlist
     data = bidict(data)
-
-    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-        ','.join(playlists), api_key)
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-
+    total_resp = []
+    for i in range(len(playlists)//MAX_ITEMS_API_QUERY + 1):
+        query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+            ','.join(playlists[i*MAX_ITEMS_API_QUERY:(i+1)*MAX_ITEMS_API_QUERY]), api_key)
+        inp = urllib.request.urlopen(query_url)
+        resp = json.load(inp)
+        total_resp += resp['items']
     count = {}
     # Associate in a dict zone name with number of videos via
     # the playlist id. This dict will be the return value of the
     # function
-    for i in resp['items']:
+    for i in total_resp:
         zone = data.inverse[i['id']][0]
         count[zone] = i['contentDetails']['itemCount']
     return count
