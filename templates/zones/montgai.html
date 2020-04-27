@@ -34,7 +34,7 @@
 </header>
     <div id="holder">
       <div id="body">
-        <div class="container">
+        <div class="container" id="mainContainer">
           <!-- main menu with links to HOME, ZONES and MAP-->
           <div class="topnav" id="myTopnav">
             <a href="/">
@@ -56,25 +56,32 @@
               href="javascript:void(0);"
               style="font-size:15px;"
               class="icon"
-              onclick="myFunction()"
+              onclick="loadMenu()"
               >&#9776;</a
             >
           </div>
           <script>
-            function myFunction() {
+            function loadMenu() {
               var x = document.getElementById("myTopnav");
-              if (x.className === "topnav") {
+              if (!x.classList.contains("responsive")) {
                 x.className += " responsive";
               } else {
-                x.className = "topnav";
+                if (x.classList.contains("sticky")) {
+                  x.className = "topnav sticky";
+                } else {
+                  x.className = "topnav";
+                }
               }
             }
           </script>
         </div>
-        <br />
-        <h2 style="text-align:center;"> Montgai </h2>
-        <br />
-        <p>
+        <div id="pageContent">
+          <br />
+          <h2 style="text-align:center;">
+             Montgai 
+          </h2>
+          <br />
+          <p>
 <div class="container">
   
   <h4>{{ _("Guides") }}</h4>
@@ -91,8 +98,8 @@
   </ul>
 </div>
 </p>
-        <br />
-        
+          <br />
+          
 <!-- Zone Map -->
 <div class="container">
   
@@ -147,6 +154,7 @@
   
 </div>
 
+        </div>
       </div>
       <!-- Footer contains links to social networks and language selector-->
       <footer>
@@ -197,3 +205,44 @@
     display: inline;
   }
 </style>
+
+<script>
+  // When the user scrolls the page, execute myFunction
+  window.onscroll = function() {
+    myFunction();
+  };
+
+  // Get the navbar
+  var navbar = document.getElementById("myTopnav");
+  var header = document.getElementById("header");
+  var mainContainer = document.getElementById("mainContainer");
+  var pageContent = document.getElementById("pageContent");
+  var paddingAll =
+    2 *
+    parseInt(
+      window
+        .getComputedStyle(mainContainer, null)
+        .getPropertyValue("padding-left")
+    );
+
+  // Get the offset position of the navbar
+  var sticky = navbar.offsetTop;
+
+  // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+  function myFunction() {
+    if (window.pageYOffset >= sticky + header.offsetHeight) {
+      navbar.classList.add("sticky");
+      navbar.setAttribute(
+        "style",
+        "width:" + (mainContainer.clientWidth - paddingAll) + "px;"
+      );
+      pageContent.setAttribute(
+        "style",
+        "padding-top:" + navbar.clientHeight + "px;"
+      );
+    } else {
+      navbar.classList.remove("sticky");
+      pageContent.setAttribute("style", "padding-top:0px;");
+    }
+  }
+</script>
