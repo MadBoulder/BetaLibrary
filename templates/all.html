@@ -64,6 +64,12 @@
               var x = document.getElementById("myTopnav");
               if (!x.classList.contains("responsive")) {
                 x.className += " responsive";
+              } else {
+                if (x.classList.contains("sticky")) {
+                  x.className = "topnav sticky";
+                } else {
+                  x.className = "topnav";
+                }
               }
             }
           </script>
@@ -72,7 +78,7 @@
         <h2 style="text-align:center;">{{ _("All Areas") }}</h2>
         <br />
         <p></p>
-
+        <div class="container" id="pageContent">
         <div style="position:relative;padding-top:56%;" class="container">
           <iframe
             src="maps/all"
@@ -82,7 +88,7 @@
           >
           </iframe>
         </div>
-
+        </div>
         <!-- Footer contains links to social networks and language selector-->
         <footer>
           <br />
@@ -155,14 +161,19 @@
 
   // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
   function myFunction() {
-    navbar.classList.add("sticky");
-    navbar.setAttribute(
-      "style",
-      "width:" + (mainContainer.clientWidth - paddingAll) + "px;"
-    );
-    pageContent.setAttribute(
-      "style",
-      "padding-top:" + navbar.clientHeight + "px;"
-    );
+    if (window.pageYOffset >= sticky + 1) {
+      navbar.classList.add("sticky");
+      navbar.setAttribute(
+        "style",
+        "width:" + (mainContainer.clientWidth - paddingAll) + "px;"
+      );
+      pageContent.setAttribute(
+        "style",
+        "padding-top:" + navbar.clientHeight + "px;"
+      );
+    } else {
+      navbar.classList.remove("sticky");
+      pageContent.setAttribute("style", "padding-top:0px;");
+    }
   }
 </script>
