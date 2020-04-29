@@ -3,6 +3,7 @@ import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 import js_helpers
+from id_generator import IDGenerator
 
 
 def main():
@@ -10,17 +11,28 @@ def main():
     Generate html map templates for all the areas located inside the data folder
     as well as a general map that contains all the areas
     """
+    generate_ids = IDGenerator()
     areas = next(os.walk('data/zones/'))[1]
     all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
     for area in areas:
         print(area)
         with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
-            template.write(load_map.load_map(
-                'data/zones/' + area + '/' + area + '.txt', True))
+            template.write(
+                load_map.load_map(
+                    'data/zones/' + area + '/' + area + '.txt',
+                    generate_ids,
+                    True
+                )
+            )
 
     with open('templates/maps/all_to_render.html', 'w', encoding='utf-8') as template:
-        template.write(load_map.load_general_map(
-            all_data, True))
+        template.write(
+            load_map.load_general_map(
+                all_data,
+                generate_ids,
+                True
+                )
+            )
 
     # When generating templates update also the all template
     template_loader = FileSystemLoader(searchpath=".")
