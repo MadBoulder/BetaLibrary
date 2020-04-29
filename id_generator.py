@@ -8,4 +8,4 @@ class IDGenerator():
         self.rd.seed(0)
     
     def next_id(self):
-        return str(uuid.UUID(int=self.rd.getrandbits(128)))
+        return str(uuid.UUID(int=self.rd.getrandbits(128))).translate({ord(i):None for i in '-'})
