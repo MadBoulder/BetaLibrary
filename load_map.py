@@ -65,7 +65,7 @@ def load_map(datafile, generate_ids, return_html=True):
             max_width=POPUP_WIDTH,
             min_width=POPUP_WIDTH
         )
-        sector_popup._id = generate_ids.next() # reassign id 
+        sector_popup._id = generate_ids.next_id() # reassign id 
         sector_map.add_child(sector_popup)
 
         sector_lyr.add_child(sector_map)
