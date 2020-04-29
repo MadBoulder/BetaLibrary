@@ -35,8 +35,8 @@ def load_map(datafile, generate_ids, return_html=True):
         name="Satellite",
         attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     )
-    tile_layer.add_to(area_map)
     tile_layer._id = generate_ids.next_id() # reassign id
+    tile_layer.add_to(area_map)
 
     sectors = area_data['sectors']
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
@@ -60,13 +60,17 @@ def load_map(datafile, generate_ids, return_html=True):
         sector_map._id = generate_ids.next_id() # reassign id
         sector_html = js_helpers.generate_sector_html(
             sector['name'], sector['link'])
-        sector_map.add_child(folium.Popup(
-            sector_html, max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
+        sector_popup = folium.Popup(
+            sector_html,
+            max_width=POPUP_WIDTH,
+            min_width=POPUP_WIDTH
+        )
+        sector_popup._id = generate_ids.next() # reassign id 
+        sector_map.add_child(sector_popup)
 
         sector_lyr.add_child(sector_map)
 
     # Parking areas
-
     for parking in area_data['parkings']:
         parking_icon = CustomIcon(
             'static/images/icons/parking.png',
@@ -200,6 +204,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
         placeholder = area_name + PLACEHOLDER
         popup_html = folium.Html(js_helpers.generate_area_popup_html(
             area_data['name'], area_name, html_redirect, placeholder), script=True)
+        popup_html._id = generate_ids.next() # reassign id
         zone_popup = folium.Popup(
             popup_html, max_width=len(area_data['name'])*10)
         zone_popup._id = generate_ids.next_id() # reassign id
