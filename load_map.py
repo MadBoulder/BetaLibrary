@@ -92,6 +92,9 @@ def load_map(datafile, generate_ids, return_html=True):
             icon=parking_icon
         )
         parking_marker._id = generate_ids.next_id() # reassign id
+        for child in parking_marker._children.values():
+            child._id = generate_ids.next_id()
+
         sector_lyr.add_child(parking_marker)
 
     # Sectors
