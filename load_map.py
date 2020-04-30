@@ -31,6 +31,8 @@ def load_map(datafile, generate_ids, return_html=True):
     area_map = folium.Map(location=[area_data['latitude'], area_data['longitude']],
                           zoom_start=area_data['zoom'])
     area_map._id = generate_ids.next_id() # reassign id
+    for child in area_map._children.values():
+        child._id = generate_ids.next_id()
     tile_layer = folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         name="Satellite",
