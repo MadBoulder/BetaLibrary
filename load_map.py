@@ -23,6 +23,7 @@ def load_map(datafile, generate_ids, return_html=True):
     links to video playlists of its sectors as well as the parking areas. All
     this data should be provided via a JSON file
     """
+    generate_ids.reset_seed()
     area_data = {}
     with open(datafile, encoding='utf-8') as data:
         area_data = json.load(data)
@@ -65,7 +66,10 @@ def load_map(datafile, generate_ids, return_html=True):
             max_width=POPUP_WIDTH,
             min_width=POPUP_WIDTH
         )
-        sector_popup._id = generate_ids.next_id() # reassign id 
+        sector_popup._id = generate_ids.next_id() # reassign id
+        for child in sector_popup._children.values():
+            child._id = generate_ids.next_id()
+
         sector_map.add_child(sector_popup)
 
         sector_lyr.add_child(sector_map)
@@ -122,6 +126,8 @@ def load_map(datafile, generate_ids, return_html=True):
     
     map_html = js_helpers.enable_links_from_iframe(map_html)
     map_html = js_helpers.replace_maps_placeholder(map_html)
+    # replace the ids of all the html tags
+    map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
 
 
@@ -131,10 +137,17 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     i.e. all areas combined in one map. This map only shows the markers that 
     indicate the 
     """
-    area_map = folium.Map(location=[-23.0390625,
-                                    -18.299051014581817],
-                          zoom_start=2)
+    generate_ids.reset_seed()
+    area_map = folium.Map(
+        location=[
+            -23.0390625,
+            -18.299051014581817
+        ],
+        zoom_start=2
+    )
     area_map._id = generate_ids.next_id() # reassign id
+    for child in area_map._children.values():
+        child._id = generate_ids.next_id()
 
     tile_layer = folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -245,4 +258,5 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     map_html = js_helpers.replace_custom_placeholders(map_html, placeholders)
+    map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map

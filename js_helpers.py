@@ -1,9 +1,29 @@
 import helpers
+import re
 
 END_OF_SCRIPT = "\n\n</script>"
 PLACEHOLDER = '_placeholder'
 GM_PLACEHOLDER = 'GM_PH'
 
+
+def replace_tag_ids(map_html, tags_to_replace, generate_ids):
+    """
+    Control tags ids
+    """
+    for tag_to_replace in tags_to_replace:
+        html_tags = re.findall(tag_to_replace+'_\w*', map_html)
+        # find tag indexes
+        positions = []
+        tags = set(html_tags) # remove duplicates
+        for tag in tags:
+            position = map_html.index(tag)
+            positions.append((tag, position))
+        # sort by position
+        sorted_tags = sorted(positions, key = lambda x: x[1])
+        replacements = {i: tag_to_replace+'_'+generate_ids.next_id() for i, v in sorted_tags}
+        for to_replace, index in sorted_tags:
+            map_html = map_html.replace(to_replace, replacements[to_replace])
+    return map_html
 
 def generate_parking_html(coordinates):
     """
