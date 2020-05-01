@@ -14,8 +14,9 @@ MARKER_SIZE = 32
 ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
 
-### GENERATE MAP ###
-
+#####################
+### GENERATE MAPS ###
+#####################
 
 def load_map(datafile, generate_ids, return_html=True):
     """
