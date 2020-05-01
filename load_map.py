@@ -1,6 +1,6 @@
 import numpy as np
 import folium
-from folium.plugins import MarkerCluster, BeautifyIcon
+from folium.plugins import MarkerCluster, BeautifyIcon, Fullscreen
 from folium.features import CustomIcon
 import json
 import os
@@ -41,6 +41,11 @@ def load_map(datafile, generate_ids, return_html=True):
     )
     tile_layer._id = generate_ids.next_id() # reassign id
     tile_layer.add_to(area_map)
+
+    # Add fullscreen button to map
+    fs = Fullscreen()
+    fs._id = generate_ids.next_id() 
+    fs.add_to(area_map)
 
     sectors = area_data['sectors']
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
@@ -163,6 +168,11 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     tile_layer._id = generate_ids.next_id() # reassign id
     tile_layer.add_to(area_map)
     
+    # Add fullscreen button to map
+    fs = Fullscreen()
+    fs._id = generate_ids.next_id() 
+    fs.add_to(area_map)
+
     layers = []
     sectors_markers = []
     placeholders = []
