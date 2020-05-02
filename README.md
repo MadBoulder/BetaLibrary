@@ -5,23 +5,26 @@ Your complement to bouldering guides. Check the beta provided by [MadBoulder](ht
 You can check it at: [https://madboulder.org](https://madboulder.org)
 
 <p align="center" style="text-align:center;">
-<img src="/extras/home.PNG"><br>
+<img src="/extras/home.png"><br>
 Main Page
 </p>
 
 <p align="center" style="text-align:center;">
-<img src="/extras/map.PNG"><br>
+<img src="/extras/map.png"><br>
 Zones Map
 </p>
 
 <p align="center" style="text-align:center;">
-<img src="/extras/detail.PNG"><br>
+<img src="/extras/detail.png"><br>
 Sector Map
 </p>
 
 ## About
 
 This project complements [MadBoulder](https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA)'s beta video library and makes it easier to navigate through the available information. It is **NOT** a topo guide of bouldering areas and has no intention of becoming so. It is intended to be used along the bouldering guides of each area and its main goal is to simplify and ease the process of finding beta for specific problems.
+
+If you have any beta recorded feel free to drop it at https://madboulder.org/upload
+
 
 ## Usage
 
