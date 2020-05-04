@@ -28,7 +28,8 @@ mail_settings = {
     "MAIL_USE_SSL": True,
     "MAIL_USERNAME": os.environ['EMAIL_USER'],
     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":")
+    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
 }
 
 app.config.update(mail_settings)
@@ -141,6 +142,7 @@ def search():
             return render_template('search_results.html', zones=search_results, search_term=query)
         return render_template('search_results.html', zones=[], search_term='')
 
+
 @app.route('/search_beta', methods=['GET', 'POST'])
 def search_beta():
     if request.method == 'POST':
@@ -167,6 +169,7 @@ def search_beta():
             videos=[],
             search_term=''
         )
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -214,8 +217,20 @@ def render_all():
     return render_template('all.html')
 
 
-@app.route('/about_us')
+@app.route('/about_us', methods=['GET', 'POST'])
 def render_about_us():
+    if request.method == 'POST':
+        # build email text/body
+        feedback_data = request.form['feedback']
+        # build email
+        print(feedback_data)
+        msg = Message(
+            subject='madboulder.org feedback',
+            sender=app.config.get("MAIL_USERNAME"),
+            recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
+            body=feedback_data)
+        mail.send(msg)
+        # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
 
