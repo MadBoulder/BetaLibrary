@@ -255,14 +255,14 @@ def render_page(page):
             session['video_count'] = {page: video_count}
     data = [
     {
+        'logo': "fa fa-map-marked",
+        'text': _("Sectors"),
+        'data': helpers.count_sectors_in_zone(page)
+    },
+    {
         'logo': "fab fa-youtube",
         'text': _("Videos"),
         'data': video_count
-    },
-    {
-            'logo': "fa fa-map-marked",
-            'text': _("Sectors"),
-            'data': helpers.count_sectors_in_zone(page)
     }]
     try:
         return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
