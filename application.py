@@ -54,6 +54,8 @@ def get_map_all():
     template_env = Environment(loader=template_loader)
     data = helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
+    # store num videos in session to avoid repeating calls
+    session['video_count'] = data
     template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
@@ -91,6 +93,9 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/images/logo'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+# cache keys for zones
+def zone_cache_key():
+    return request.url
 
 # use decorators to link the function to a url
 @app.route('/')
@@ -233,11 +238,34 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
-
+# cache page results for one hour
 @app.route('/<string:page>')
+@cache.cached(timeout=3600, key_prefix=zone_cache_key)
 def render_page(page):
     try:
-        return render_template('zones/' + page + EXTENSION, current_url=page)
+        video_count = session['video_count'][page]
+    except:
+        # if cache has expired and the session does not contain the data,
+        # compute it again and store it. Worst case scenario,
+        # number of videos will be updated once a day
+        video_count = helpers.get_number_of_videos_for_zone(page)
+        if session.get('video_count', None) is not None:
+            session['video_count'][page] = video_count
+        else:
+            session['video_count'] = {page: video_count}
+    data = [
+    {
+        'logo': "fa fa-map-marked",
+        'text': _("Sectors"),
+        'data': helpers.count_sectors_in_zone(page)
+    },
+    {
+        'logo': "fab fa-youtube",
+        'text': _("Videos"),
+        'data': video_count
+    }]
+    try:
+        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
 
