@@ -1,8 +1,10 @@
-import urllib.request, urllib.parse
+import urllib.request
+import urllib.parse
 import json
 import os
 import os.path
 import time
+from datetime import date
 import re
 
 MAX_ITEMS_API_QUERY = 50
@@ -38,11 +40,12 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
 
     progress = 0
     videos = []
-    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
-    
+    total_video_count = int(
+        get_channel_info()['items'][0]['statistics']['videoCount'])
+
     while progress < total_video_count:
-        print(str(round((progress/total_video_count)*100,2))+'%')
-        
+        print(str(round((progress/total_video_count)*100, 2))+'%')
+
         get_videos_url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}".format(
             MAX_ITEMS_API_QUERY, upload_playlist, api_key
         )
@@ -50,7 +53,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
             get_videos_url += '&pageToken=' + resp['nextPageToken']
 
         inp = urllib.request.urlopen(get_videos_url)
-        resp = json.load(inp)     
+        resp = json.load(inp)
         for video in resp['items']:
             v_data = {}
             v_data['title'] = video['snippet']['title']
@@ -59,7 +62,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
             v_data['id'] = video['snippet']['resourceId']['videoId']
             v_data['url'] = get_video_url_from_id(v_data['id'])
             videos.append(v_data)
-        
+
         progress += 50
 
         if resp.get('nextPageToken', False):
@@ -79,7 +82,8 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
 
     video_ids = [v['id'] for v in video_data]
 
-    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
+    total_video_count = int(
+        get_channel_info()['items'][0]['statistics']['videoCount'])
     if len(video_data) >= total_video_count:
         print('Already up to date')
         return video_data
@@ -100,7 +104,7 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
     new_videos = []
     while progress < missing_videos:
         print(str(round((progress/missing_videos)*100, 2)) + '%')
-        
+
         get_videos_url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}".format(
             MAX_ITEMS_API_QUERY, upload_playlist, api_key
         )
@@ -108,7 +112,7 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
             get_videos_url += '&pageToken=' + resp['nextPageToken']
 
         inp = urllib.request.urlopen(get_videos_url)
-        resp = json.load(inp)     
+        resp = json.load(inp)
         for video in resp['items']:
             if video['snippet']['resourceId']['videoId'] not in video_ids:
                 v_data = {}
@@ -117,12 +121,13 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
                 v_data['id'] = video['snippet']['resourceId']['videoId']
                 v_data['url'] = get_video_url_from_id(v_data['id'])
                 new_videos.append(v_data)
-        
+
         progress = len(new_videos)
 
         if resp.get('nextPageToken', False):
             page_token = resp.get('nextPageToken')
     return new_videos + video_data
+
 
 def get_video_url_from_id(video_id):
     return 'https://www.youtube.com/watch?v={}'.format(video_id)
@@ -141,6 +146,7 @@ def load_data(infile=None, data=None):
         video_data = data
     return video_data
 
+
 def match_regex_and_add_field(pattern, infield, outfield, video_data):
     reg_pattern = re.compile(pattern)
     for video in video_data:
@@ -151,11 +157,13 @@ def match_regex_and_add_field(pattern, infield, outfield, video_data):
             video[outfield] = 'Unknown'
     return video_data
 
+
 def process_grade_data(infile=None, data=None):
     video_data = load_data(infile, data)
     # This regex only matches french grades.
     grade_regex = ', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
     return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data)
+
 
 def process_climber_data(infile=None, data=None):
     video_data = load_data(infile, data)
@@ -163,11 +171,13 @@ def process_climber_data(infile=None, data=None):
     climber_regex = '(?:Climber: ?)(@?\w+ ?(?:\w+)?)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
+
 def process_zone_data(infile=None, data=None):
     video_data = load_data(infile, data)
     # regex to match zones.
     zone_regex = '(?:\.+.+)?(?:\. )(.+)$'
-    video_data = match_regex_and_add_field(zone_regex, 'title', 'zone', video_data)
+    video_data = match_regex_and_add_field(
+        zone_regex, 'title', 'zone', video_data)
     for video in video_data:
         if video['zone'][-1] == '.':
             video['zone'] = video['zone'][:-1]
@@ -192,14 +202,20 @@ def get_channel_data(outfile='data/channel/raw_video_data.json', is_update=True)
 
     with open(outfile, 'w', encoding='utf-8') as f:
         print('Videos retrieved: ' + str(len(video_data)))
-        json.dump({'items': video_data}, f, indent=4)
+        json.dump({'date': str(date.today()),
+                   'items': video_data}, f, indent=4)
 
-    processed_data = process_grade_data(infile='data/channel/raw_video_data.json')
+    processed_data = process_grade_data(
+        infile='data/channel/raw_video_data.json')
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
 
     with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
-        json.dump({'items': processed_data}, f, indent=4)
+        json.dump({'date': str(date.today()),
+                   'items': processed_data}, f, indent=4)
 
-if __name__=="__main__":
+    return {'date': str(date.today()), 'items': processed_data}
+
+
+if __name__ == "__main__":
     get_channel_data()
