@@ -7,7 +7,12 @@ from flask_mail import Mail,  Message
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 import js_helpers
+import dashboard
 from werkzeug.utils import secure_filename
+
+from bokeh.embed import components
+from bokeh.plotting import figure
+from bokeh.resources import INLINE
 
 
 EXTENSION = '.html'
@@ -277,6 +282,21 @@ def render_area(area):
     except:
         abort(404)
 
+@app.route('/statistics')
+def statistics():
+    layout = dashboard.get_dashboard()
+    # grab the static resources
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    # render template
+    script, div = components(layout)
+    return render_template(
+        'dashboard.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=js_resources,
+        css_resources=css_resources,
+    )
 
 @app.errorhandler(404)
 def page_not_found(error):
