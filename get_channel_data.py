@@ -194,7 +194,7 @@ def process_zone_data(infile=None, data=None):
     return video_data
 
 
-def get_channel_data(outfile='data/channel/raw_video_data.json', is_update=True):
+def get_data(outfile='data/channel/raw_video_data.json', is_update=True):
     if is_update:
         video_data = update_videos_from_channel(page_token=None)
     else:
@@ -218,4 +218,4 @@ def get_channel_data(outfile='data/channel/raw_video_data.json', is_update=True)
 
 
 if __name__ == "__main__":
-    get_channel_data()
+    get_data()
