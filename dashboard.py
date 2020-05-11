@@ -57,9 +57,9 @@ def prepare_barchart_data(data, axis):
 
 def get_dashboard():
     # Load data
-    data = pd.json_normalize(pd.read_json('data/processed_data.json')['items'])
+    data = pd.json_normalize(pd.read_json('data/channel/processed_data.json')['items'])
     video_data = {}
-    with open('data/processed_data.json', 'r') as f:
+    with open('data/channel/processed_data.json', 'r') as f:
         video_data = json.load(f)['items']
         last_update = json.load(f)['date']
     # Update data if required
