@@ -252,7 +252,7 @@ def statistics():
     # render template
     script, div = components(layout)
     return render_template(
-        'dashboard.html',
+        'statistics.html',
         plot_script=script,
         plot_div=div,
         js_resources=js_resources,
