@@ -14,6 +14,27 @@ from bokeh.palettes import Spectral6
 
 from bokeh.models.callbacks import CustomJS
 
+SORT_FUNCTION = """
+            function sortData(jsObj, sort_method){
+                var sortedArray = [];
+                // Push each JSON Object entry in array by [key, value]
+                for(var i in jsObj)
+                {
+                    sortedArray.push([i, jsObj[i]]);
+                }
+                // Run native sort function and returns sorted array.
+                if (sort_method === 0) {
+                    return sortedArray.sort();
+                }
+                if (sort_method === 1) {
+                    return sortedArray.sort(function(a, b) { return b[1] - a[1]; });
+                }
+                if (sort_method === 2) {
+                    return sortedArray.sort(function(a, b) { return a[1] - b[1]; });
+                }
+            }
+"""
+
 def prepare_barchart_data(data, axis):
     """
     Group data by different categories so that it is ready
@@ -104,25 +125,7 @@ def get_dashboard():
             x_axis=x_axis,
             fig=p
         ),
-        code="""
-            function sortData(jsObj, sort_method){
-                var sortedArray = [];
-                // Push each JSON Object entry in array by [key, value]
-                for(var i in jsObj)
-                {
-                    sortedArray.push([i, jsObj[i]]);
-                }
-                // Run native sort function and returns sorted array.
-                if (sort_method === 0) {
-                    return sortedArray.sort();
-                }
-                if (sort_method === 1) {
-                    return sortedArray.sort(function(a, b) { return b[1] - a[1]; });
-                }
-                if (sort_method === 2) {
-                    return sortedArray.sort(function(a, b) { return a[1] - b[1]; });
-                }
-            }
+        code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
@@ -157,25 +160,7 @@ def get_dashboard():
             sort_order=sort_order,
             fig=p
         ),
-        code="""
-            function sortData(jsObj, sort_method){
-                var sortedArray = [];
-                // Push each JSON Object entry in array by [key, value]
-                for(var i in jsObj)
-                {
-                    sortedArray.push([i, jsObj[i]]);
-                }
-                // Run native sort function and returns sorted array.
-                if (sort_method === 0) {
-                    return sortedArray.sort();
-                }
-                if (sort_method === 1) {
-                    return sortedArray.sort(function(a, b) { return b[1] - a[1]; });
-                }
-                if (sort_method === 2) {
-                    return sortedArray.sort(function(a, b) { return a[1] - b[1]; });
-                }
-            }
+        code=SORT_FUNCTION + """
             var data = o_data[axis_map[cb_obj.value]];
             var x = data['x'];
             var y = data['y'];
@@ -210,25 +195,7 @@ def get_dashboard():
             range_slider=range_slider,
             fig=p
         ),
-        code="""
-            function sortData(jsObj, sort_method){
-                var sortedArray = [];
-                // Push each JSON Object entry in array by [key, value]
-                for(var i in jsObj)
-                {
-                    sortedArray.push([i, jsObj[i]]);
-                }
-                // Run native sort function and returns sorted array.
-                if (sort_method === 0) {
-                    return sortedArray.sort();
-                }
-                if (sort_method === 1) {
-                    return sortedArray.sort(function(a, b) { return b[1] - a[1]; });
-                }
-                if (sort_method === 2) {
-                    return sortedArray.sort(function(a, b) { return a[1] - b[1]; });
-                }
-            }
+        code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
