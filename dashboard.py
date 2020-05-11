@@ -36,6 +36,7 @@ SORT_FUNCTION = """
             }
 """
 
+
 def prepare_barchart_data(data, axis):
     """
     Group data by different categories so that it is ready
@@ -45,13 +46,14 @@ def prepare_barchart_data(data, axis):
     for k, v in axis.items():
         x_data = [datum[v].lower() for datum in data]
         unique_x_data = set(x_data)
-        data_subset = {'x':[], 'y':[], 'raw':{}}
+        data_subset = {'x': [], 'y': [], 'raw': {}}
         for datum in unique_x_data:
             data_subset['x'].append(datum)
             data_subset['y'].append(x_data.count(datum))
             data_subset['raw'][datum] = x_data.count(datum)
         processed_data[v] = data_subset
     return processed_data
+
 
 def get_dashboard():
     # Load data
@@ -63,7 +65,6 @@ def get_dashboard():
     # Update data if required
     if datetime.strptime(last_update, "%Y-%m-%d") < date.today():
         video_data = get_channel_data.get_data()['items']
-
 
     # X axis categories
     axis_map = {
@@ -88,7 +89,8 @@ def get_dashboard():
     }
     # initial data source fill
     data_to_plot = barchart_data['grade']['raw']
-    od = collections.OrderedDict(sorted(data_to_plot.items(), key=sort_functions[0]))
+    od = collections.OrderedDict(
+        sorted(data_to_plot.items(), key=sort_functions[0]))
 
     x_to_plot = np.array([key for key, val in od.items()])
     y_to_plot = np.array([val for key, val in od.items()])
@@ -96,7 +98,8 @@ def get_dashboard():
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
 
     # Create Input controls
-    range_slider = RangeSlider(title="Value Range", start=0, end=max(y_to_plot), value=(0, max(y_to_plot)), step=1)
+    range_slider = RangeSlider(title="Value Range", start=0, end=max(
+        y_to_plot), value=(0, max(y_to_plot)), step=1)
     min_year = Slider(title="From", start=2015, end=2020, value=2015, step=1)
     max_year = Slider(title="To", start=2015, end=2020, value=2020, step=1)
     sort_order = RadioButtonGroup(
@@ -107,12 +110,13 @@ def get_dashboard():
         ],
         active=0
     )
-    x_axis = Select(title="X Axis", options=sorted(axis_map.keys()), value="Grade")
+    x_axis = Select(title="X Axis", options=sorted(
+        axis_map.keys()), value="Grade")
     y_axis = Select(title="Y Axis", options=["Count"], value="Count")
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0,max(y_to_plot)), plot_height=250, title="{} Count".format(x_axis.value),
-            toolbar_location=None, tools="")
+    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} Count".format(x_axis.value),
+               toolbar_location=None, tools="")
     # Fill it with data and format it
     p.vbar(x='x', top='y', width=0.9, source=source)
     p.xaxis.major_label_orientation = math.pi/2
@@ -120,7 +124,7 @@ def get_dashboard():
 
     # Controls
     controls = [range_slider, min_year, max_year, sort_order, x_axis, y_axis]
-    
+
     # Callbacks for controls
     range_callback = CustomJS(
         args=dict(
@@ -189,7 +193,7 @@ def get_dashboard():
             }
         """
     )
-    
+
     x_axis.js_on_change('value', x_axis_callback)
 
     sort_order_callback = CustomJS(
