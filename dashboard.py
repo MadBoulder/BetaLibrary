@@ -2,6 +2,7 @@ from os.path import dirname, join
 import json
 import collections
 import math
+from datetime import date, datetime
 
 import numpy as np
 import pandas as pd
@@ -11,6 +12,8 @@ from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, Range
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
+
+import get_channel_data
 
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method){
@@ -52,10 +55,15 @@ def prepare_barchart_data(data, axis):
 
 def get_dashboard():
     # Load data
-    data = pd.json_normalize(pd.read_json('data/processed_data.json')['items']) 
+    data = pd.json_normalize(pd.read_json('data/processed_data.json')['items'])
     video_data = {}
     with open('data/processed_data.json', 'r') as f:
         video_data = json.load(f)['items']
+        last_update = json.load(f)['date']
+    # Update data if required
+    if datetime.strptime(last_update, "%Y-%m-%d") < date.today():
+        video_data = get_channel_data.get_data()['items']
+
 
     # X axis categories
     axis_map = {
