@@ -64,7 +64,7 @@ def get_dashboard():
         video_data = data['items']
         last_update = data['date']
     # Update data if required
-    if datetime.strptime(last_update, "%Y-%m-%d") < date.today():
+    if datetime.date(datetime.strptime(last_update, "%Y-%m-%d")) < date.today():
         video_data = get_channel_data.get_data()['items']
 
     # X axis categories
