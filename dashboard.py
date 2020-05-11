@@ -6,11 +6,9 @@ import math
 import numpy as np
 import pandas as pd
 
-from bokeh.io import curdoc
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput, HoverTool, RangeSlider, RadioButtonGroup
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup
 from bokeh.plotting import figure
-from bokeh.palettes import Spectral6
 
 from bokeh.models.callbacks import CustomJS
 
