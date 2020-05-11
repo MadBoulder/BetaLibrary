@@ -60,8 +60,9 @@ def get_dashboard():
     data = pd.json_normalize(pd.read_json('data/channel/processed_data.json')['items'])
     video_data = {}
     with open('data/channel/processed_data.json', 'r') as f:
-        video_data = json.load(f)['items']
-        last_update = json.load(f)['date']
+        data = json.load(f)
+        video_data = data['items']
+        last_update = data['date']
     # Update data if required
     if datetime.strptime(last_update, "%Y-%m-%d") < date.today():
         video_data = get_channel_data.get_data()['items']
