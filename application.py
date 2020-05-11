@@ -7,7 +7,12 @@ from flask_mail import Mail,  Message
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import helpers
 import js_helpers
+import dashboard
 from werkzeug.utils import secure_filename
+
+from bokeh.embed import components
+from bokeh.plotting import figure
+from bokeh.resources import INLINE
 
 
 EXTENSION = '.html'
@@ -238,6 +243,22 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
+@app.route('/statistics')
+def statistics():
+    layout = dashboard.get_dashboard()
+    # grab the static resources
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    # render template
+    script, div = components(layout)
+    return render_template(
+        'statistics.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=js_resources,
+        css_resources=css_resources,
+    )
+
 # cache page results for one hour
 @app.route('/<string:page>')
 @cache.cached(timeout=3600, key_prefix=zone_cache_key)
@@ -276,7 +297,6 @@ def render_area(area):
         return render_template('maps/' + area + EXTENSION)
     except:
         abort(404)
-
 
 @app.errorhandler(404)
 def page_not_found(error):
