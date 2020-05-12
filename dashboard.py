@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup, DataTable, TableColumn
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
@@ -111,6 +111,14 @@ def get_dashboard():
         axis_map.keys()), value="Grade")
     y_axis = Select(title="Y Axis", options=["Count"], value="Count")
 
+    # show number of categories
+    x_count_source = ColumnDataSource(data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
+    columns = [
+        TableColumn(field="category", title="Category"),
+        TableColumn(field="x_count", title="Count"),
+    ]
+    x_count_data_table = DataTable(source=x_count_source, columns=columns, width=320, height=280)
+
     # Generate the actual plot
     p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} Count".format(x_axis.value),
                toolbar_location=None, tools="")
@@ -127,7 +135,8 @@ def get_dashboard():
         sort_order,
         x_axis,
         y_axis,
-        label_slider
+        label_slider,
+        x_count_data_table
     ]
 
     # Callbacks for controls
@@ -144,6 +153,7 @@ def get_dashboard():
     range_callback = CustomJS(
         args=dict(
             source=source,
+            x_source=x_count_source,
             o_data=barchart_data,
             sort_order=sort_order,
             axis_map=axis_map,
@@ -164,6 +174,9 @@ def get_dashboard():
                     new_y.push(sorted_data[i][1]);
                 }
             }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.data['category'] = [x_axis.value];
+            x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
@@ -179,6 +192,7 @@ def get_dashboard():
     x_axis_callback = CustomJS(
         args=dict(
             source=source,
+            x_source=x_count_source,
             o_data=barchart_data,
             axis_map=axis_map,
             range_slider=range_slider,
@@ -196,6 +210,9 @@ def get_dashboard():
                 new_x.push(sorted_data[i][0]);
                 new_y.push(sorted_data[i][1]);
             }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.data['category'] = [cb_obj.value];
+            x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
@@ -215,6 +232,7 @@ def get_dashboard():
     sort_order_callback = CustomJS(
         args=dict(
             source=source,
+            x_source=x_count_source,
             o_data=barchart_data,
             axis_map=axis_map,
             x_axis=x_axis,
@@ -235,6 +253,9 @@ def get_dashboard():
                     new_y.push(sorted_data[i][1]);
                 }
             }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.data['category'] = [x_axis.value];
+            x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
