@@ -137,7 +137,7 @@ def get_dashboard():
     x_count_data_table = DataTable(source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} Count".format(x_axis.value),
+    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
                toolbar_location=None, tools="")
     # Fill it with data and format it
     p.vbar(x='x', top='y', width=0.9, source=source)
@@ -218,9 +218,11 @@ def get_dashboard():
             y_axis=y_axis,
             range_slider=range_slider,
             sort_order=sort_order,
-            fig=p
+            fig=p,
+            title=p.title
         ),
         code=SORT_FUNCTION + """
+            title.text = cb_obj.value.concat(" ", y_axis.value);
             var data = o_data[x_axis_map[cb_obj.value]];
             var x = data['x'];
             var y = data['y'];
@@ -260,9 +262,11 @@ def get_dashboard():
             y_axis_map=y_axis_map,
             range_slider=range_slider,
             sort_order=sort_order,
-            fig=p
+            fig=p,
+            title=p.title
         ),
         code=SORT_FUNCTION + """
+            title.text = x_axis.value.concat(" ", cb_obj.value);
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
