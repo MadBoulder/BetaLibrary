@@ -16,12 +16,12 @@ from bokeh.models.callbacks import CustomJS
 import get_channel_data
 
 SORT_FUNCTION = """
-            function sortData(jsObj, sort_method){
+            function sortData(jsObj, sort_method, category){
                 var sortedArray = [];
                 // Push each JSON Object entry in array by [key, value]
                 for(var i in jsObj)
                 {
-                    sortedArray.push([i, jsObj[i]]);
+                    sortedArray.push([i, jsObj[i][category]]);
                 }
                 // Run native sort function and returns sorted array.
                 if (sort_method === 0) {
@@ -44,13 +44,20 @@ def prepare_barchart_data(data, axis):
     """
     processed_data = {}
     for k, v in axis.items():
-        x_data = [datum[v].lower() for datum in data]
+        x_data = [datum[v] for datum in data]
         unique_x_data = set(x_data)
         data_subset = {'x': [], 'y': [], 'raw': {}}
         for datum in unique_x_data:
             data_subset['x'].append(datum)
             data_subset['y'].append(x_data.count(datum))
-            data_subset['raw'][datum] = x_data.count(datum)
+            data_subset['raw'][datum] = { 
+                'count': x_data.count(datum),
+                'viewCount': sum([int(vid['stats']['viewCount']) for vid in data if vid[v]==datum]),
+                'favoriteCount': sum([int(vid['stats']['favoriteCount']) for vid in data if vid[v]==datum]),
+                'likeCount': sum([int(vid['stats']['likeCount']) for vid in data if vid[v]==datum]),
+                'dislikeCount':sum([int(vid['stats']['dislikeCount']) for vid in data if vid[v]==datum]),
+                'commentCount':sum([int(vid['stats']['commentCount']) for vid in data if vid[v]==datum])
+            }
         processed_data[v] = data_subset
     return processed_data
 
@@ -68,14 +75,23 @@ def get_dashboard():
         video_data = get_channel_data.get_data()['items']
 
     # X axis categories
-    axis_map = {
+    x_axis_map = {
         "Climber": "climber",
         "Zone": "zone",
         "Grade": "grade",
     }
+    # Y axis categories
+    y_axis_map = {
+        "Count": "count",
+        "Views": "viewCount",
+        # "Favourites": "favoriteCount",
+        "Likes": "likeCount",
+        "Dislikes": "dislikeCount",
+        "Comments": "commentCount"
+    }
 
     # get ready to plot data
-    barchart_data = prepare_barchart_data(video_data, axis_map)
+    barchart_data = prepare_barchart_data(video_data, x_axis_map)
 
     # html template to place the plots
     desc = Div(
@@ -89,7 +105,7 @@ def get_dashboard():
         sorted(data_to_plot.items(), key=lambda x: x[0]))
 
     x_to_plot = np.array([key for key, val in od.items()])
-    y_to_plot = np.array([val for key, val in od.items()])
+    y_to_plot = np.array([val['count'] for key, val in od.items()])
 
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
 
@@ -108,8 +124,9 @@ def get_dashboard():
         active=0
     )
     x_axis = Select(title="X Axis", options=sorted(
-        axis_map.keys()), value="Grade")
-    y_axis = Select(title="Y Axis", options=["Count"], value="Count")
+        x_axis_map.keys()), value="Grade")
+    y_axis = Select(title="Y Axis", options=sorted(
+        y_axis_map.keys()), value="Count")
 
     # show number of categories
     x_count_source = ColumnDataSource(data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
@@ -156,16 +173,18 @@ def get_dashboard():
             x_source=x_count_source,
             o_data=barchart_data,
             sort_order=sort_order,
-            axis_map=axis_map,
+            x_axis_map=x_axis_map,
             x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis=y_axis,
             fig=p
         ),
         code=SORT_FUNCTION + """
-            var data = o_data[axis_map[x_axis.value]];
+            var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
             // Sort data
-            var sorted_data = sortData(data['raw'], sort_order.active);
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {
@@ -194,16 +213,18 @@ def get_dashboard():
             source=source,
             x_source=x_count_source,
             o_data=barchart_data,
-            axis_map=axis_map,
+            x_axis_map=x_axis_map,
+            y_axis_map=y_axis_map,
+            y_axis=y_axis,
             range_slider=range_slider,
             sort_order=sort_order,
             fig=p
         ),
         code=SORT_FUNCTION + """
-            var data = o_data[axis_map[cb_obj.value]];
+            var data = o_data[x_axis_map[cb_obj.value]];
             var x = data['x'];
             var y = data['y'];
-            var sorted_data = sortData(data['raw'], sort_order.active);
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {
@@ -228,23 +249,68 @@ def get_dashboard():
 
     x_axis.js_on_change('value', x_axis_callback)
 
+    # variable to group data
+    y_axis_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            range_slider=range_slider,
+            sort_order=sort_order,
+            fig=p
+        ),
+        code=SORT_FUNCTION + """
+            var data = o_data[x_axis_map[x_axis.value]];
+            var x = data['x'];
+            var y = data['y'];
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[cb_obj.value]);
+            var new_y = [];
+            var new_x = [];
+            for (var i = 0; i < x.length; i++) {
+                new_x.push(sorted_data[i][0]);
+                new_y.push(sorted_data[i][1]);
+            }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.data['category'] = [x_axis.value];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = new_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                range_slider.value = [0, Math.max.apply(Math, new_y)]; 
+                range_slider.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, new_y);
+            }
+        """
+    )
+
+    y_axis.js_on_change('value', y_axis_callback)
+
     # sort order control
     sort_order_callback = CustomJS(
         args=dict(
             source=source,
             x_source=x_count_source,
             o_data=barchart_data,
-            axis_map=axis_map,
+            x_axis_map=x_axis_map,
             x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis=y_axis,
             range_slider=range_slider,
             fig=p
         ),
         code=SORT_FUNCTION + """
-            var data = o_data[axis_map[x_axis.value]];
+            var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
             // Sort data
-            var sorted_data = sortData(data['raw'], cb_obj.active);
+            var sorted_data = sortData(data['raw'], cb_obj.active, y_axis_map[y_axis.value]);
+            console.log(sorted_data);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {

@@ -22,6 +22,17 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
+def get_video_info(id, api_key):
+    """
+    Get the details of a YouTube video from its id
+    """
+    # api_key = None
+    # with open('credentials.txt', 'r', encoding='utf-8') as f:
+    #     api_key = f.read()
+    query_url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'.format(
+        id, api_key)
+    inp = urllib.request.urlopen(query_url)
+    return json.load(inp)
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None):
     """
@@ -61,6 +72,8 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
             v_data['description'] = video['snippet']['description']
             v_data['id'] = video['snippet']['resourceId']['videoId']
             v_data['url'] = get_video_url_from_id(v_data['id'])
+            v_stats = get_video_info(v_data['id'], api_key)
+            v_data['stats'] = v_stats['items'][0]['statistics']
             videos.append(v_data)
 
         progress += 50
