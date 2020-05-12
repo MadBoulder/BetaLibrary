@@ -134,11 +134,13 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
+            var x = data['x'];
+            var y = data['y'];
             // Sort data
             var sorted_data = sortData(data['raw'], sort_order.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < data['raw'].length; i++) {
+            for (var i = 0; i < x.length; i++) {
                 if (sorted_data[i][1] >= cb_obj.value[0] && sorted_data[i][1] <= cb_obj.value[1]) {
                     new_x.push(sorted_data[i][0]);
                     new_y.push(sorted_data[i][1]);
@@ -167,10 +169,12 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[cb_obj.value]];
+            var x = data['x'];
+            var y = data['y'];
             var sorted_data = sortData(data['raw'], sort_order.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < data['raw'].length; i++) {
+            for (var i = 0; i < x.length; i++) {
                 new_x.push(sorted_data[i][0]);
                 new_y.push(sorted_data[i][1]);
             }
@@ -201,11 +205,13 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
+            var x = data['x'];
+            var y = data['y'];
             // Sort data
             var sorted_data = sortData(data['raw'], cb_obj.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < data['raw'].length; i++) {
+            for (var i = 0; i < x.length; i++) {
                 if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
                     new_x.push(sorted_data[i][0]);
                     new_y.push(sorted_data[i][1]);
