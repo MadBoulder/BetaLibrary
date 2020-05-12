@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup, DataTable, TableColumn
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup, DataTable, TableColumn, CheckboxGroup
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
@@ -16,12 +16,17 @@ from bokeh.models.callbacks import CustomJS
 import get_channel_data
 
 SORT_FUNCTION = """
-            function sortData(jsObj, sort_method, category){
+            function sortData(jsObj, sort_method, category, isRatio){
                 var sortedArray = [];
                 // Push each JSON Object entry in array by [key, value]
                 for(var i in jsObj)
                 {
-                    sortedArray.push([i, jsObj[i][category]]);
+                    if (isRatio)
+                    {
+                        sortedArray.push([i, jsObj[i][category]/jsObj[i]["count"]]);
+                    } else {
+                        sortedArray.push([i, jsObj[i][category]]);
+                    }
                 }
                 // Run native sort function and returns sorted array.
                 if (sort_method === 0) {
@@ -127,6 +132,8 @@ def get_dashboard():
         x_axis_map.keys()), value="Grade")
     y_axis = Select(title="Y Axis", options=sorted(
         y_axis_map.keys()), value="Count")
+    checkbox = CheckboxGroup(
+        labels=["Show ratio with respect to number of videos"], active=[])
 
     # show number of categories
     x_count_source = ColumnDataSource(data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
@@ -152,6 +159,7 @@ def get_dashboard():
         sort_order,
         x_axis,
         y_axis,
+        checkbox,
         label_slider,
         x_count_data_table
     ]
@@ -166,6 +174,56 @@ def get_dashboard():
         """
     )
     label_slider.js_on_change('value', label_callback)
+
+    # ratio checkbox
+    checkbox_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            sort_order=sort_order,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis=y_axis,
+            range_slider=range_slider,
+            fig=p,
+            title=p.title
+        ),
+        code=SORT_FUNCTION + """
+            var data = o_data[x_axis_map[x_axis.value]];
+            var x = data['x'];
+            var y = data['y'];
+            var is_ratio = cb_obj.active.length > 0;
+            title.text = x_axis.value.concat(" ", y_axis.value);
+            if (is_ratio)
+            {
+                title.text = x_axis.value.concat(" ", y_axis.value, " per video");   
+            }
+            // Sort data
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
+            var new_y = [];
+            var new_x = [];
+            for (var i = 0; i < x.length; i++) {
+                if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1]);
+                }
+            }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.data['category'] = [x_axis.value];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = new_x;
+            if (Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, new_y);
+            }
+        """
+    )
+    checkbox.js_on_change('active', checkbox_callback)
     # range slider
     range_callback = CustomJS(
         args=dict(
@@ -177,14 +235,16 @@ def get_dashboard():
             x_axis=x_axis,
             y_axis_map=y_axis_map,
             y_axis=y_axis,
+            checkbox=checkbox,
             fig=p
         ),
         code=SORT_FUNCTION + """
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
+            var is_ratio = checkbox.active.length > 0;
             // Sort data
-            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value]);
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {
@@ -218,6 +278,7 @@ def get_dashboard():
             y_axis=y_axis,
             range_slider=range_slider,
             sort_order=sort_order,
+            checkbox=checkbox,
             fig=p,
             title=p.title
         ),
@@ -226,7 +287,12 @@ def get_dashboard():
             var data = o_data[x_axis_map[cb_obj.value]];
             var x = data['x'];
             var y = data['y'];
-            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value]);
+            var is_ratio = checkbox.active.length > 0;
+            if (is_ratio)
+            {
+                title.text = title.text.concat(" per video");   
+            }
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {
@@ -262,6 +328,7 @@ def get_dashboard():
             y_axis_map=y_axis_map,
             range_slider=range_slider,
             sort_order=sort_order,
+            checkbox=checkbox,
             fig=p,
             title=p.title
         ),
@@ -270,7 +337,12 @@ def get_dashboard():
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
-            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[cb_obj.value]);
+            var is_ratio = checkbox.active.length > 0;
+            if (is_ratio)
+            {
+                title.text = x_axis.value.concat(" ", cb_obj.value, " per video");   
+            }
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[cb_obj.value], is_ratio);
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < x.length; i++) {
@@ -306,6 +378,7 @@ def get_dashboard():
             y_axis_map=y_axis_map,
             y_axis=y_axis,
             range_slider=range_slider,
+            checkbox=checkbox,
             fig=p
         ),
         code=SORT_FUNCTION + """
@@ -313,7 +386,8 @@ def get_dashboard():
             var x = data['x'];
             var y = data['y'];
             // Sort data
-            var sorted_data = sortData(data['raw'], cb_obj.active, y_axis_map[y_axis.value]);
+            var is_ratio = checkbox.active.length > 0;
+            var sorted_data = sortData(data['raw'], cb_obj.active, y_axis_map[y_axis.value], is_ratio);
             console.log(sorted_data);
             var new_y = [];
             var new_x = [];
