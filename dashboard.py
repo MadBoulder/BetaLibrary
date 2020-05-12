@@ -94,6 +94,7 @@ def get_dashboard():
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
 
     # Create Input controls
+    label_slider = Slider(start=0, end=90, value=90, step=1, title="Label Angle")
     range_slider = RangeSlider(title="Value Range", start=0, end=max(
         y_to_plot), value=(0, max(y_to_plot)), step=1)
     min_year = Slider(title="From", start=2015, end=2020, value=2015, step=1)
@@ -119,9 +120,26 @@ def get_dashboard():
     p.add_tools(HoverTool(tooltips=[("name", "@x"), ("count", "@y")]))
 
     # Controls
-    controls = [range_slider, min_year, max_year, sort_order, x_axis, y_axis]
+    controls = [
+        range_slider,
+        min_year,
+        max_year,
+        sort_order,
+        x_axis,
+        y_axis,
+        label_slider
+    ]
 
     # Callbacks for controls
+    label_callback = CustomJS(
+        args=dict(
+            axis=p.xaxis[0]
+        ),
+        code="""
+        axis.major_label_orientation = cb_obj.value * Math.PI / 180;
+        """
+    )
+    label_slider.js_on_change('value', label_callback)
     # range slider
     range_callback = CustomJS(
         args=dict(
