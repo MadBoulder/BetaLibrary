@@ -82,16 +82,11 @@ def get_dashboard():
         text=open(join(dirname(__file__), "templates/stats.html")).read(),
         sizing_mode="stretch_width"
     )
-    # this must be replaced by js
-    sort_functions = {
-        0: lambda x: x[0],
-        1: lambda x: x[1],
-        2: lambda x: -x[1]
-    }
+
     # initial data source fill
     data_to_plot = barchart_data['grade']['raw']
     od = collections.OrderedDict(
-        sorted(data_to_plot.items(), key=sort_functions[0]))
+        sorted(data_to_plot.items(), key=lambda x: x[0]))
 
     x_to_plot = np.array([key for key, val in od.items()])
     y_to_plot = np.array([val for key, val in od.items()])
@@ -127,6 +122,7 @@ def get_dashboard():
     controls = [range_slider, min_year, max_year, sort_order, x_axis, y_axis]
 
     # Callbacks for controls
+    # range slider
     range_callback = CustomJS(
         args=dict(
             source=source,
@@ -138,13 +134,11 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
-            var x = data['x'];
-            var y = data['y'];
             // Sort data
             var sorted_data = sortData(data['raw'], sort_order.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < x.length; i++) {
+            for (var i = 0; i < data['raw'].length; i++) {
                 if (sorted_data[i][1] >= cb_obj.value[0] && sorted_data[i][1] <= cb_obj.value[1]) {
                     new_x.push(sorted_data[i][0]);
                     new_y.push(sorted_data[i][1]);
@@ -161,7 +155,7 @@ def get_dashboard():
         """
     )
     range_slider.js_on_change('value', range_callback)
-
+    # variable to group data
     x_axis_callback = CustomJS(
         args=dict(
             source=source,
@@ -173,12 +167,10 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[cb_obj.value]];
-            var x = data['x'];
-            var y = data['y'];
             var sorted_data = sortData(data['raw'], sort_order.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < x.length; i++) {
+            for (var i = 0; i < data['raw'].length; i++) {
                 new_x.push(sorted_data[i][0]);
                 new_y.push(sorted_data[i][1]);
             }
@@ -197,6 +189,7 @@ def get_dashboard():
 
     x_axis.js_on_change('value', x_axis_callback)
 
+    # sort order control
     sort_order_callback = CustomJS(
         args=dict(
             source=source,
@@ -208,13 +201,11 @@ def get_dashboard():
         ),
         code=SORT_FUNCTION + """
             var data = o_data[axis_map[x_axis.value]];
-            var x = data['x'];
-            var y = data['y'];
             // Sort data
             var sorted_data = sortData(data['raw'], cb_obj.active);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < x.length; i++) {
+            for (var i = 0; i < data['raw'].length; i++) {
                 if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
                     new_x.push(sorted_data[i][0]);
                     new_y.push(sorted_data[i][1]);
