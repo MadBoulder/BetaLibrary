@@ -138,7 +138,7 @@ def get_dashboard():
 
     # Generate the actual plot
     p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
-               toolbar_location=None, tools="")
+               toolbar_location="above")
     # Fill it with data and format it
     p.vbar(x='x', top='y', width=0.9, source=source)
     p.xaxis.major_label_orientation = math.pi/2
