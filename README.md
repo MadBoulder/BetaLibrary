@@ -72,7 +72,7 @@ To create a new zone and its sectors:
 3. If the zone has sectors (which is not mandatory), create a new folder inside `data/zones/NEW_ZONE_NAME` and name it `sectors` (`data/zones/NEW_ZONE_NAME/sectors`).
 4. For each sector, create a `SECTOR_NAME.txt` inside the `sectors` folder.
 
-So far the zone structure should be:
+Taking the previous points into account, the final zone structure should be:
 
 ```bash
 data/zones
