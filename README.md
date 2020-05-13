@@ -59,3 +59,33 @@ To update all catalogs with the latest set of messages:
 #### Compile translations
 
 After all translations have been added or updated in the respective `.po` files (found under `translations/[LOCALE]/LC_MESSAGES/messages.po`), to make the changes effective the translations have to be recompiled. This is achieved with the following command: `$ pybabel compile -d translations`
+
+### Zones and Sectors
+
+The sections below outline how new zone and sector data should be added to the project.
+
+### Folder Structure
+
+To create a new zone and its sectors:
+1. Create a new folder inside `data/zones` with the name of the zone (`data/zones/NEW_ZONE_NAME`).
+2. Inside this new folder `data/zones/NEW_ZONE_NAME` create a `NEW_ZONE_NAME.txt`.
+3. If the zone has sectors (which is not mandatory), create a new folder inside `data/zones/NEW_ZONE_NAME` and name it `sectors` (`data/zones/NEW_ZONE_NAME/sectors`).
+4. For each sector, create a `SECTOR_NAME.txt` inside the `sectors` folder.
+
+So far the zone structure should be:
+
+```bash
+data/zones
+       |
+       --- NEW_ZONE_NAME
+                |
+                --- NEW_ZONE_NAME.txt
+                |
+                --- sectors
+                      |
+                      --- SECTOR_NAME_1.txt
+                      |
+                      --- SECTOR_NAME_2.txt
+```
+
+### Zone and Sector Data
