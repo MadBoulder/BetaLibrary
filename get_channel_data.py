@@ -8,7 +8,7 @@ from datetime import date
 import re
 
 MAX_ITEMS_API_QUERY = 50
-
+Y_CRED = "AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g"
 
 def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     """
@@ -33,6 +33,19 @@ def get_video_info(id, api_key):
         id, api_key)
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
+
+def update_video_stats(video_data):
+    """
+    Update the stats of the channel videos
+    """
+    total = len(video_data)
+    current = 0
+    for video in video_data:
+        print(current * 100 /total)
+        v_stats = get_video_info(video['id'], Y_CRED)
+        video['stats'] = v_stats['items'][0]['statistics']
+        current += 1
+    return video_data
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None):
     """
@@ -98,7 +111,8 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
     total_video_count = int(
         get_channel_info()['items'][0]['statistics']['videoCount'])
     if len(video_data) >= total_video_count:
-        print('Already up to date')
+        print('Already up to date, updating stats')
+        video_data = update_video_stats(video_data)
         return video_data
     # there are new videos, get them
     api_key = None
@@ -141,7 +155,8 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
 
         if resp.get('nextPageToken', False):
             page_token = resp.get('nextPageToken')
-    return new_videos + video_data
+    updated_data = update_video_stats(new_videos + video_data)
+    return updated_data
 
 
 def get_video_url_from_id(video_id):
