@@ -133,6 +133,8 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
                 v_data['description'] = video['snippet']['description']
                 v_data['id'] = video['snippet']['resourceId']['videoId']
                 v_data['url'] = get_video_url_from_id(v_data['id'])
+                v_stats = get_video_info(v_data['id'], api_key)
+                v_data['stats'] = v_stats['items'][0]['statistics']
                 new_videos.append(v_data)
 
         progress = len(new_videos)
