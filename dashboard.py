@@ -67,17 +67,17 @@ def prepare_barchart_data(data, axis):
     return processed_data
 
 
-def get_dashboard():
+def get_dashboard(local_data=False):
     # Load data
-    data = pd.json_normalize(pd.read_json('data/channel/processed_data.json')['items'])
     video_data = {}
-    with open('data/channel/processed_data.json', 'r') as f:
-        data = json.load(f)
-        video_data = data['items']
-        last_update = data['date']
-    # Update data if required
-    if datetime.date(datetime.strptime(last_update, "%Y-%m-%d")) < date.today():
-        video_data = get_channel_data.get_data()['items']
+    if local_data:
+        data = pd.json_normalize(pd.read_json('data/channel/processed_data.json')['items'])
+        with open('data/channel/processed_data.json', 'r') as f:
+            data = json.load(f)
+            video_data = data['items']
+            last_update = data['date']
+    else:
+        video_data = get_channel_data.get_data_firebase()['items']
 
     # X axis categories
     x_axis_map = {

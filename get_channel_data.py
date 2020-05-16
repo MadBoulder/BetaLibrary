@@ -7,6 +7,10 @@ import time
 from datetime import date
 import re
 
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = "AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g"
 
@@ -93,19 +97,15 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
 
         if resp.get('nextPageToken', False):
             page_token = resp.get('nextPageToken')
+        else:
+            page_token = None
 
     return videos
 
 
-def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, infile='data/channel/raw_video_data.json', page_token=None):
+def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None, data=None):
     # compare number of videos
-    video_data = []
-    with open(infile, 'r', encoding='utf-8') as f:
-        try:
-            video_data = json.load(f)['items']
-        except:
-            pass
-
+    video_data = data['items']
     video_ids = [v['id'] for v in video_data]
 
     total_video_count = int(
@@ -114,6 +114,7 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
         print('Already up to date, updating stats')
         video_data = update_video_stats(video_data)
         return video_data
+
     # there are new videos, get them
     api_key = None
     with open('credentials.txt', 'r', encoding='utf-8') as f:
@@ -128,8 +129,10 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
 
     missing_videos = total_video_count - len(video_data)
     progress = 0
+    current_iter = 0
+    max_iters = math.ceil(total_video_count/MAX_ITEMS_API_QUERY)
     new_videos = []
-    while progress < missing_videos:
+    while progress < missing_videos and current_iter < max_iters:
         print(str(round((progress/missing_videos)*100, 2)) + '%')
 
         get_videos_url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}".format(
@@ -144,6 +147,7 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
             if video['snippet']['resourceId']['videoId'] not in video_ids:
                 v_data = {}
                 v_data['title'] = video['snippet']['title']
+                v_data['date'] = video['snippet']['publishedAt']
                 v_data['description'] = video['snippet']['description']
                 v_data['id'] = video['snippet']['resourceId']['videoId']
                 v_data['url'] = get_video_url_from_id(v_data['id'])
@@ -152,9 +156,12 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
                 new_videos.append(v_data)
 
         progress = len(new_videos)
+        current_iter += 1
 
         if resp.get('nextPageToken', False):
             page_token = resp.get('nextPageToken')
+        else:
+            page_token = None
     updated_data = update_video_stats(new_videos + video_data)
     return updated_data
 
@@ -224,9 +231,20 @@ def process_zone_data(infile=None, data=None):
     return video_data
 
 
-def get_data(outfile='data/channel/raw_video_data.json', is_update=True):
+def get_and_update_data_local(
+        outfile='data/channel/raw_video_data.json',
+        infile='data/channel/raw_video_data.json',
+        is_update=True
+    ):
+    video_data = []
+    with open(infile, 'r', encoding='utf-8') as f:
+        try:
+            video_data = json.load(f)
+        except:
+            pass
+
     if is_update:
-        video_data = update_videos_from_channel(page_token=None)
+        video_data = update_videos_from_channel(page_token=None, data=video_data)
     else:
         video_data = get_videos_from_channel(page_token=None)
 
@@ -235,8 +253,7 @@ def get_data(outfile='data/channel/raw_video_data.json', is_update=True):
         json.dump({'date': str(date.today()),
                    'items': video_data}, f, indent=4)
 
-    processed_data = process_grade_data(
-        infile='data/channel/raw_video_data.json')
+    processed_data = process_grade_data(data=video_data)
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
 
@@ -246,6 +263,60 @@ def get_data(outfile='data/channel/raw_video_data.json', is_update=True):
 
     return {'date': str(date.today()), 'items': processed_data}
 
+def get_and_update_data_firebase(is_update=True):
+    print("Updating data")
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://madboulder.firebaseio.com'
+        })
+
+    root = db.reference()
+
+    # retrieve current videos
+    if is_update:
+        videos = root.child('video_data').get()
+        video_data = update_videos_from_channel(page_token=None, data=videos)
+    else:
+        video_data = get_videos_from_channel(page_token=None)
+
+    processed_data = process_grade_data(data=video_data)
+    processed_data = process_climber_data(data=processed_data)
+    processed_data = process_zone_data(data=processed_data)
+
+    video_data =  {
+        'date': str(date.today()),
+        'items': processed_data
+    }
+
+    # Update videos
+    root.child('video_data').set(video_data)
+
+    return video_data
+
+def get_data_firebase():
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://madboulder.firebaseio.com'
+        })
+
+    root = db.reference()
+    return root.child('video_data').get()
+
+def get_data_local():
+    video_data = {}
+    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
+        video_data = json.load(f)
+    return video_data
+
 
 if __name__ == "__main__":
-    get_data()
+    # for local update
+    # get_and_update_data_local()
+    # for firebase
+    updated_data = get_and_update_data_firebase(is_update=True)
+    # local update
+    with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
+        json.dump(updated_data, f, indent=4)
+
