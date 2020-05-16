@@ -5,6 +5,7 @@ from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+import datetime
 import helpers
 import js_helpers
 import dashboard
@@ -39,6 +40,15 @@ mail_settings = {
 
 app.config.update(mail_settings)
 mail = Mail(app)
+
+def _get_seconds_to_next_time(hour=11, minute=10, second=0):
+    now = datetime.datetime.now()  # need 'import datetime'
+    if now.hour >= 11 and now.minute > 10:
+        wait_seconds = 24*60*60 - ((now.hour - 11)*60*60 + 10*60)
+    else:
+        next_time = now.replace(hour=hour, minute=minute, second=second)
+        wait_seconds = (next_time - now).seconds
+    return wait_seconds
 
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
@@ -243,7 +253,12 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
+# Cache until 
 @app.route('/statistics')
+@cache.cached(
+    timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
+    key_prefix="mad_statistics"
+)
 def statistics():
     layout = dashboard.get_dashboard()
     # grab the static resources
