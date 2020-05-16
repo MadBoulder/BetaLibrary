@@ -103,6 +103,22 @@ def load_map(datafile, generate_ids, return_html=True):
 
         sector_lyr.add_child(parking_marker)
 
+    # Approximation
+    if area_data.get('approximation', None) is not None:
+        zone_approximation = folium.GeoJson(
+            area_data['approximation'],
+            name="Approximation",
+            tooltip="Approximation",
+            style_function=lambda x: {
+                'color': x['properties']['stroke'],
+                'weight': x['properties']['stroke-width'],
+                'opacity': SECTOR_OPACITY,
+                'fillColor': x['properties']['stroke'],
+            }
+        )
+        zone_approximation._id = generate_ids.next_id() # reassign id
+        sector_lyr.add_child(zone_approximation)
+
     # Sectors
     zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
     zoomed_out_lyr._id = generate_ids.next_id() # reassign id
