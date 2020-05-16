@@ -243,7 +243,6 @@ def render_about_us():
         # build email text/body
         feedback_data = request.form['feedback']
         # build email
-        print(feedback_data)
         msg = Message(
             subject='madboulder.org feedback',
             sender=app.config.get("MAIL_USERNAME"),
