@@ -13,6 +13,7 @@ SECTOR_OPACITY = 0.6
 MARKER_SIZE = 32
 ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
+APPROX_PLACEHOLDER = 'approx_placeholder'
 
 #####################
 ### GENERATE MAPS ###
@@ -108,7 +109,7 @@ def load_map(datafile, generate_ids, return_html=True):
         zone_approximation = folium.GeoJson(
             area_data['approximation'],
             name="Approximation",
-            tooltip="Approximation",
+            tooltip=APPROX_PLACEHOLDER,
             style_function=lambda x: {
                 'color': x['properties']['stroke'],
                 'weight': x['properties']['stroke-width'],
@@ -153,6 +154,7 @@ def load_map(datafile, generate_ids, return_html=True):
     
     map_html = js_helpers.enable_links_from_iframe(map_html)
     map_html = js_helpers.replace_maps_placeholder(map_html)
+    map_html = js_helpers.replace_approx_placeholders_for_translations(map_html, APPROX_PLACEHOLDER)
     # replace the ids of all the html tags
     map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map

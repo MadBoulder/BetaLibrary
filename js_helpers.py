@@ -117,6 +117,14 @@ def replace_sectors_placeholders_for_translations(map_html, sector_placeholder='
     map_html = map_html.replace(sector_placeholder, '{{ _("Sectors") }}')
     return map_html
 
+def replace_approx_placeholders_for_translations(map_html, approx_placeholder='approx_placeholder'):
+    """
+    Replace the sector's text placeholder in the HTML by the localized string.
+    This is to avoid the render() function throwing an error when processing the map's html
+    """
+    map_html = map_html.replace(approx_placeholder, '{{ _("Approximation") }}')
+    return map_html
+
 
 def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     """
