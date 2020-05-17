@@ -43,8 +43,8 @@ mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()  # need 'import datetime'
-    if now.hour >= 11 and now.minute > 10:
-        wait_seconds = 24*60*60 - ((now.hour - 11)*60*60 + 10*60)
+    if now.hour >= hour and now.minute > minute:
+        wait_seconds = 24*60*60 - ((now.hour - hour)*60*60 + minute*60)
     else:
         next_time = now.replace(hour=hour, minute=minute, second=second)
         wait_seconds = (next_time - now).seconds
