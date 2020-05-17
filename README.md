@@ -121,7 +121,24 @@ Data structure, which can be used as a template:
             "link":""
         }
     ],
-    "playlist":""
+    "playlist":"",
+    "approximation": {
+        "type": "Feature",
+        "properties": {
+            "stroke": "#1f1a95",
+            "stroke-opacity": 1,
+            "stroke-width": 2
+        },
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [
+                [
+                    0,
+                    0
+                ]
+            ]
+        }
+    }
 }
 ```
 
@@ -153,6 +170,9 @@ Where each of the fields is:
 * `playlist`:
     * Type: **string**
     * Description: YouTube's id of the zone playlist.
+* `approximation`: **Optional**
+    * Type: **GeoJSON**
+    * Description: Approximation from parking to the zone.
 
 **Subfields**
 
@@ -171,9 +191,12 @@ In each of the main fields, there can be as many of these subfields as required.
     * `name`: **string**, the name of the Guide that will be shown.
     * `link`: **string**, the full link to the Guide's webpage.
 
+* Approximation
+    * GeoJSON Line Feature. Can be created at [geojson.io](http://geojson.io). Make sure that the properties are the same as the ones shown above.
+
 ##### Sector data
 
-Data structure that represents a GEOJSON with the area the sector covers. You can use [geojson.io](http://geojson.io) to draw the area and copy its output to this file. Just make sure that the properties are the same as the ones shown below. 
+Data structure that represents a GeoJSON with the area the sector covers. You can use [geojson.io](http://geojson.io) to draw the area and copy its output to this file. Just make sure that the properties are the same as the ones shown below. 
 
 The general structure, which can be used as a template, is shown below:
 
