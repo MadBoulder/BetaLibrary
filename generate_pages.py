@@ -28,7 +28,7 @@ def main():
         
         approximation = None
         if area_data.get('approximation', None) is not None:
-            track_path = '/data/zones/' + area + '/' + area_data.get('approximation')
+            track_path = '/download/' + area + '/' + area_data.get('approximation')
             approximation = ('{{ _("Approximation track") }}', track_path)
 
 
