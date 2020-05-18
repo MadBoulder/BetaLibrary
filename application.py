@@ -312,7 +312,7 @@ def render_area(area):
     except:
         abort(404)
 
-@app.route("data/zones/<string:path>")
+@app.route("/data/zones/<string:path>")
 def download_track (path = None):
     try:
         return send_file('data/zones/' + path, as_attachment=True)
