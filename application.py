@@ -55,6 +55,9 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
 def get_videos_from_channel():
     return helpers.get_videos_from_channel()
 
+@cache.memoize(timeout=3600)
+def get_zone_video_count(page):
+    return helpers.get_number_of_videos_for_zone(page)
 
 @cache.cached(timeout=60*60*24, key_prefix="map_all")
 def get_map_all():
@@ -273,9 +276,8 @@ def statistics():
         css_resources=css_resources,
     )
 
-# cache page results for one hour
+# video count is cached for one hour
 @app.route('/<string:page>')
-@cache.cached(timeout=3600, key_prefix=zone_cache_key)
 def render_page(page):
     try:
         try:
@@ -284,7 +286,7 @@ def render_page(page):
             # if cache has expired and the session does not contain the data,
             # compute it again and store it. Worst case scenario,
             # number of videos will be updated once a day
-            video_count = helpers.get_number_of_videos_for_zone(page)
+            video_count = get_zone_video_count(page)
             if session.get('video_count', None) is not None:
                 session['video_count'][page] = video_count
             else:
