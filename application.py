@@ -278,28 +278,28 @@ def statistics():
 @cache.cached(timeout=3600, key_prefix=zone_cache_key)
 def render_page(page):
     try:
-        video_count = session['video_count'][page]
-    except:
-        # if cache has expired and the session does not contain the data,
-        # compute it again and store it. Worst case scenario,
-        # number of videos will be updated once a day
-        video_count = helpers.get_number_of_videos_for_zone(page)
-        if session.get('video_count', None) is not None:
-            session['video_count'][page] = video_count
-        else:
-            session['video_count'] = {page: video_count}
-    data = [
-    {
-        'logo': "fa fa-map-marked",
-        'text': _("Sectors"),
-        'data': helpers.count_sectors_in_zone(page)
-    },
-    {
-        'logo': "fab fa-youtube",
-        'text': _("Videos"),
-        'data': video_count
-    }]
-    try:
+        try:
+            video_count = session['video_count'][page]
+        except:
+            # if cache has expired and the session does not contain the data,
+            # compute it again and store it. Worst case scenario,
+            # number of videos will be updated once a day
+            video_count = helpers.get_number_of_videos_for_zone(page)
+            if session.get('video_count', None) is not None:
+                session['video_count'][page] = video_count
+            else:
+                session['video_count'] = {page: video_count}
+        data = [
+        {
+            'logo': "fa fa-map-marked",
+            'text': _("Sectors"),
+            'data': helpers.count_sectors_in_zone(page)
+        },
+        {
+            'logo': "fab fa-youtube",
+            'text': _("Videos"),
+            'data': video_count
+        }]
         return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
