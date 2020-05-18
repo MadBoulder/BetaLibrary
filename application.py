@@ -1,6 +1,6 @@
 import os
 import random
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -312,6 +312,12 @@ def render_area(area):
     except:
         abort(404)
 
+@app.route("data/zones/<string:path>")
+def download_track (path = None):
+    try:
+        return send_file('data/zones/' + path, as_attachment=True)
+    except:
+        abort(404)
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.error('Page not found: %s', (request.path))
