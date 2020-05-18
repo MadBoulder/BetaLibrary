@@ -29,7 +29,7 @@ def main():
         approximation = None
         if area_data.get('approximation', None) is not None:
             track_path = '/download/' + area + '/' + area_data.get('approximation')
-            approximation = ('{{ _("Approximation track") }}', track_path)
+            approximation = ('{{ _("Approximation track") }} (GPX)', track_path)
 
 
         base_url = "https://www.youtube.com/embed/?listType=playlist&list="
