@@ -315,7 +315,7 @@ def render_area(area):
 @app.route("/data/zones/<string:path>")
 def download_track (path = None):
     try:
-        return send_file('data/zones/' + path, as_attachment=True)
+        return send_file('/data/zones/' + path, as_attachment=True)
     except:
         abort(404)
 @app.errorhandler(404)
