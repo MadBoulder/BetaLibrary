@@ -201,7 +201,7 @@ The general structure, which can be used as a template, is shown below:
 				0
 			  ]
 			]
-		  ]
+		]
       }
     }
   ]
