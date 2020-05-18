@@ -318,7 +318,11 @@ def download_track (path = None):
         with app.app_context():
             filepath, filename = path.split('/')
             track_path = os.path.join(app.root_path, 'data/zones/' + filepath)
-            return send_from_directory(directory=track_path, filename=filename)
+            return send_from_directory(
+                directory=track_path,
+                filename=filename,
+                as_attachment=True
+            )
     except:
         abort(404)
 
