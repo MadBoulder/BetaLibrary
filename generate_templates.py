@@ -19,6 +19,7 @@ def main():
         with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
+                    area,
                     'data/zones/' + area + '/' + area + '.txt',
                     generate_ids,
                     True

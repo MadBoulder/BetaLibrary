@@ -19,7 +19,7 @@ APPROX_PLACEHOLDER = 'approx_placeholder'
 ### GENERATE MAPS ###
 #####################
 
-def load_map(datafile, generate_ids, return_html=True):
+def load_map(area, datafile, generate_ids, return_html=True):
     """
     Create a map for a bouldering zone that shows the GEOJSON data, names and
     links to video playlists of its sectors as well as the parking areas. All
@@ -106,8 +106,32 @@ def load_map(datafile, generate_ids, return_html=True):
 
     # Approximation
     if area_data.get('approximation', None) is not None:
+        import gpxpy
+        import gpxpy.gpx
+
+        approximation_geojson = {
+            "type": "Feature",
+            "properties": {
+                "stroke": "#1f1a95",
+                "stroke-opacity": 1,
+                "stroke-width": 2
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": []
+            }
+        }
+
+        gpx_path = 'data/zones/' + area + '/' + area_data.get('approximation')
+        with open(gpx_path, 'r') as gpx_file:
+            gpx = gpxpy.parse(gpx_file)
+            for track in gpx.tracks:
+                for segment in track.segments:
+                    for point in segment.points:
+                            approximation_geojson['geometry']['coordinates'].append([point.longitude, point.latitude])
+
         zone_approximation = folium.GeoJson(
-            area_data['approximation'],
+            approximation_geojson,
             name="Approximation",
             tooltip=APPROX_PLACEHOLDER,
             style_function=lambda x: {
