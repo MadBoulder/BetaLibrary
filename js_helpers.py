@@ -46,11 +46,18 @@ def enable_links_from_iframe(map_html):
 
 def generate_sector_html(name, link):
     """
-    Generate the html code tat shows the sector name and the link to the playlist
+    Generate the html code that shows the sector name and the link to the playlist
     when clicking on the sector area
     """
     return '<p><b><u>{}</u></b><br><br><a href="{}" target="_blank">Beta videos</a><br></p>'.format(name, link)
 
+def generate_track_html(area, track_name):
+    """
+    Generate the html code that adds the link to the downloadable approximation
+    track
+    """
+    track_url = '/download/' + area + '/' + track_name
+    return '<a href="{}">Track</a><br>'.format(track_url)
 
 def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible=True, reverse=False):
     """
@@ -122,7 +129,7 @@ def replace_approx_placeholders_for_translations(map_html, approx_placeholder='a
     Replace the sector's text placeholder in the HTML by the localized string.
     This is to avoid the render() function throwing an error when processing the map's html
     """
-    map_html = map_html.replace(approx_placeholder, '{{ _("Approximation") }}')
+    map_html = map_html.replace(approx_placeholder, '{{ _("Approximation\n(Click to download track)") }}')
     return map_html
 
 

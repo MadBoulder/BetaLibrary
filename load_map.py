@@ -142,7 +142,24 @@ def load_map(area, datafile, generate_ids, return_html=True):
             }
         )
         zone_approximation._id = generate_ids.next_id() # reassign id
+        
+        zone_approx_html = js_helpers.generate_track_html(
+            area, area_data.get('approximation'))
+        
+        track_popup = folium.Popup(
+            zone_approx_html,
+            max_width=POPUP_WIDTH,
+            min_width=POPUP_WIDTH
+        )
+        track_popup._id = generate_ids.next_id() # reassign id
+        
+        for child in track_popup._children.values():
+            child._id = generate_ids.next_id()
+        
+        zone_approximation.add_child(track_popup)
+
         sector_lyr.add_child(zone_approximation)
+        
 
     # Sectors
     zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')

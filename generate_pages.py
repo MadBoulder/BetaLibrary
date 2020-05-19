@@ -26,11 +26,6 @@ def main():
         guides = [(guide['name'], guide['link'])
                   for guide in area_data['guides']]
         
-        approximation = None
-        if area_data.get('approximation', None) is not None:
-            track_path = '/download/' + area + '/' + area_data.get('approximation')
-            approximation = ('{{ _("Approximation track") }} (GPX)', track_path)
-
 
         base_url = "https://www.youtube.com/embed/?listType=playlist&list="
         playlists[area] = area_data['playlist']
@@ -41,7 +36,7 @@ def main():
         output = template.render(
             name=area_data['name'], guide_list=guides,
             map_url='maps/'+area, full_playlist=base_url + area_data['playlist'],
-            playlists=sectors_playlists, approx_track=approximation)
+            playlists=sectors_playlists)
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
