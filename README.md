@@ -39,7 +39,7 @@ To build the project locally follow the next steps:
 
 ## Information for developers and contributors
 
-Check the [wiki]((https://github.com/MadBoulder/BetaLibrary/wiki) for more information. 
+Check the [wiki](https://github.com/MadBoulder/BetaLibrary/wiki) for more information. 
 
 ### Translations
 
