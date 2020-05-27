@@ -153,7 +153,7 @@ def zones():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        query = request.form['area']
+        query = request.form.get('area', '')
         # Do search
         search_results = helpers.search_zone(query, NUM_RESULTS)
         return render_template('search_results.html', zones=search_results, search_term=query)
@@ -169,7 +169,7 @@ def search():
 @app.route('/search_beta', methods=['GET', 'POST'])
 def search_beta():
     if request.method == 'POST':
-        query = request.form['beta']
+        query = request.form.get('beta', '')
         # Do search
         search_results = helpers.get_video_from_channel(query)
         return render_template(

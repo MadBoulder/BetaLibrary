@@ -159,6 +159,8 @@ def search_zone(query, num_results=4):
         - 0 if perfect match
         - levenshtein / (longest substring ^ 4 + 1) otherwise
     """
+    if not query:
+        return []
     zones = load_zones()
     for zone in zones:
         lev, long_sub = measure_similarity(query, zone['name'])
