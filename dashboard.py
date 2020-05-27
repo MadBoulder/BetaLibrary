@@ -41,6 +41,8 @@ SORT_FUNCTION = """
             }
 """
 
+def get_last_dashboard_update():
+    return get_channel_data.get_last_update_date()
 
 def prepare_barchart_data(data, axis):
     """

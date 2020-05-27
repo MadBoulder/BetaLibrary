@@ -304,6 +304,16 @@ def get_data_firebase():
     root = db.reference()
     return root.child('video_data').get()
 
+def get_last_update_date():
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://madboulder.firebaseio.com'
+        })
+
+    root = db.reference()
+    return root.child('video_data/date').get()
+
 def get_data_local():
     video_data = {}
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
@@ -316,7 +326,7 @@ if __name__ == "__main__":
     # get_and_update_data_local()
     # for firebase
     updated_data = get_and_update_data_firebase(is_update=True)
+
     # local update
     with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
         json.dump(updated_data, f, indent=4)
-

@@ -274,6 +274,7 @@ def statistics():
         plot_div=div,
         js_resources=js_resources,
         css_resources=css_resources,
+        last_update=dashboard.get_last_dashboard_update()
     )
 
 # video count is cached for one hour
