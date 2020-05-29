@@ -196,6 +196,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
     map_html = js_helpers.enable_links_from_iframe(map_html)
     map_html = js_helpers.replace_maps_placeholder(map_html)
     map_html = js_helpers.replace_approx_placeholders_for_translations(map_html, APPROX_PLACEHOLDER)
+    # Avoid zooming in when clicking on a sector area
+    map_html = js_helpers.remove_geojson_zoom_on_click(map_html)
     # replace the ids of all the html tags
     map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map

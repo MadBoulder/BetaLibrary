@@ -144,3 +144,10 @@ def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     """
     sector_count = helpers.count_sectors_in_zone(area_filename)
     return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>sector_placeholder: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
+
+def remove_geojson_zoom_on_click(map_html):
+    """
+    Remove calls to fitBounds in GeoJSON features to avoid zooming in when clicking
+    """
+    map_html = re.sub(r'(map_\w+.fitBounds\(e.target.getBounds\(\)\);)', '', map_html)
+    return map_html
