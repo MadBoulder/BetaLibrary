@@ -27,19 +27,19 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-}
+# mail_settings = {
+#     "MAIL_SERVER": 'smtp.gmail.com',
+#     "MAIL_PORT": 465,
+#     "MAIL_USE_TLS": False,
+#     "MAIL_USE_SSL": True,
+#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
+#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+#     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
+# }
 
-app.config.update(mail_settings)
-mail = Mail(app)
+# app.config.update(mail_settings)
+# mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()  # need 'import datetime'
@@ -123,26 +123,26 @@ def home():
     stats_list = [
         {
             'logo': "fa fa-globe-americas",
-            'text': _("Zones"),
+            'text': _("ZONES"),
             'data': len(zones)
         },
         {
             'logo': "fa fa-map-marked",
-            'text': _("Sectors"),
+            'text': _("SECTORS"),
             'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
         },
         {
             'logo': "fab fa-youtube",
-            'text': _("Videos"),
+            'text': _("BETAS"),
             'data': channel_info['items'][0]['statistics']['videoCount']
         },
         {
             'logo': "fa fa-eye",
-            'text': _("Views"),
+            'text': _("VIEWS"),
             'data': channel_info['items'][0]['statistics']['viewCount']
         }
     ]
-    return render_template('home.html', stats_list=stats_list)
+    return render_template('home_remake.html', stats_list=stats_list)
 
 
 @app.route('/zones')
@@ -209,7 +209,7 @@ def upload_file():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("MAIL_RECIPIENTS"),
             body=video_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
@@ -251,7 +251,7 @@ def render_about_us():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
             body=feedback_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
