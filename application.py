@@ -123,22 +123,22 @@ def home():
     stats_list = [
         {
             'logo': "fa fa-globe-americas",
-            'text': _("ZONES"),
+            'text': _("Zones"),
             'data': len(zones)
         },
         {
             'logo': "fa fa-map-marked",
-            'text': _("SECTORS"),
+            'text': _("Sectors"),
             'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
         },
         {
             'logo': "fab fa-youtube",
-            'text': _("BETAS"),
+            'text': _("Videos"),
             'data': channel_info['items'][0]['statistics']['videoCount']
         },
         {
             'logo': "fa fa-eye",
-            'text': _("VIEWS"),
+            'text': _("Views"),
             'data': channel_info['items'][0]['statistics']['viewCount']
         }
     ]
