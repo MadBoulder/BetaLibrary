@@ -45,6 +45,20 @@ def load_zones():
         zones += [{'name': area_data['name'], 'file': area}]
     return zones
 
+def load_sectors():
+    """
+    Load all sectors defined in the bouldering zones at ./data/zones.
+    """
+    areas = next(os.walk('data/zones/'))[1]
+    sectors = []
+    for area in areas:
+        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        area_data = {}
+        with open(datafile, encoding='utf-8') as data:
+            area_data = json.load(data)
+        for sector in area_data.get('sectors', []):
+            sectors += [{'name': sector['name'], 'link': sector['link']}]
+    return sectors
 
 def count_sectors_in_zone(zone):
     """
@@ -149,7 +163,7 @@ def measure_similarity(query, zone):
 def search_zone(query, num_results=4):
     """
     From an input search query, return at least the 4 best
-    matches from the bouldring zones. A perfect match 
+    matches from the bouldering zones. A perfect match 
     (which is achieved when the input query is completely contained
     in the zone's name) is always returned. If the number of perfect
     matches is less than 4 then we add partial matches, via a score,
@@ -183,6 +197,42 @@ def search_zone(query, num_results=4):
 
     return to_show
 
+def search_sector(query, num_results=4):
+    """
+    From an input search query, return at least the 4 best
+    matches from the sector list. A perfect match 
+    (which is achieved when the input query is completely contained
+    in the sector's name) is always returned. If the number of perfect
+    matches is less than 4 then we add partial matches, via a score,
+    until the list of results contains 4 entries.
+
+    The score is computed as:
+        - 0 if perfect match
+        - levenshtein / (longest substring ^ 4 + 1) otherwise
+    """
+    if not query:
+        return []
+    sectors = load_sectors()
+    for sector in sectors:
+        lev, long_sub = measure_similarity(query, sector['name'])
+        score = lev / (long_sub ** 4 + 1)
+        sector['score'] = score
+        # If the inputed text is entirely matched in a zone,
+        # add a score of 0
+        if long_sub == len(query):
+            sector['score'] = 0
+    to_show = [sector for sector in sectors if sector['score'] == 0]
+
+    # Add zones required to reach min number of results
+    if len(to_show) < num_results:
+        # First remove already added zones
+        sectors = [sector for sector in sectors if sector['score'] != 0]
+        # Sort by score
+        sectors.sort(key=lambda x: x['score'])
+        # Add the ones with the lowest score
+        to_show += sectors[0:num_results-len(to_show)]
+
+    return to_show
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
     """
