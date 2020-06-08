@@ -181,17 +181,47 @@ def zones():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        query = request.form.get('area', '')
-        # Do search
-        search_results = helpers.search_zone(query, NUM_RESULTS)
-        return render_template('search_results.html', zones=search_results, search_term=query)
+        query = request.form.get('searchterm', '')
+        if not query:
+            query = request.form.get('searchterm-small', '')
+        if not query: # Backwards compatibility
+            query = request.form.get('area', '')
+        # Search betas, sectors, zones
+        # Zones
+        search_zone_results = helpers.search_zone(query, NUM_RESULTS)
+        # Sectors
+        search_sector_results = helpers.search_sector(query, NUM_RESULTS)
+        # Betas
+        search_beta_results = helpers.get_video_from_channel(query)
+        return render_template(
+            'search_results.html',
+            zones=search_zone_results,
+            sectors=search_sector_results,
+            videos=search_beta_results[0:3],
+            search_term=query
+        )
     if request.method == 'GET':
         query = request.args.get('search_query', '')
         # Do search
         if query:
-            search_results = helpers.search_zone(query, NUM_RESULTS)
-            return render_template('search_results.html', zones=search_results, search_term=query)
-        return render_template('search_results.html', zones=[], search_term='')
+            search_zone_results = helpers.search_zone(query, NUM_RESULTS)
+            # Sectors
+            search_sector_results = helpers.search_sector(query, NUM_RESULTS)
+            # Betas
+            search_beta_results = helpers.get_video_from_channel(query)
+            return render_template(
+                'search_results.html',
+                zones=search_zone_results,
+                sectors=search_sector_results,
+                videos=search_beta_results[0:3],
+                search_term=query
+            )
+        return render_template(
+            'search_results.html',
+            zones=[],
+            sectors=[],
+            videos=[],
+            search_term='')
 
 
 @app.route('/search_beta', methods=['GET', 'POST'])
