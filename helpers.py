@@ -160,7 +160,7 @@ def measure_similarity(query, zone):
     return levenshtein, longest_sub
 
 
-def search_zone(query, num_results=4):
+def search_zone(query, num_results=4, exact_match=False):
     """
     From an input search query, return at least the 4 best
     matches from the bouldering zones. A perfect match 
@@ -185,8 +185,12 @@ def search_zone(query, num_results=4):
         if long_sub == len(query):
             zone['score'] = 0
     to_show = [zone for zone in zones if zone['score'] == 0]
+    
+    if exact_match:
+        return to_show
 
-    # Add zones required to reach min number of results
+    # Add zones required to reach min number of results if non exact
+    # matches should be included
     if len(to_show) < num_results:
         # First remove already added zones
         zones = [zone for zone in zones if zone['score'] != 0]
@@ -197,7 +201,7 @@ def search_zone(query, num_results=4):
 
     return to_show
 
-def search_sector(query, num_results=4):
+def search_sector(query, num_results=4, exact_match=False):
     """
     From an input search query, return at least the 4 best
     matches from the sector list. A perfect match 
@@ -223,7 +227,11 @@ def search_sector(query, num_results=4):
             sector['score'] = 0
     to_show = [sector for sector in sectors if sector['score'] == 0]
 
-    # Add zones required to reach min number of results
+    if exact_match:
+        return to_show
+
+    # Add zones required to reach min number of results if non exact
+    # matches should be included
     if len(to_show) < num_results:
         # First remove already added zones
         sectors = [sector for sector in sectors if sector['score'] != 0]

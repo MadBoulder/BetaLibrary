@@ -188,9 +188,9 @@ def search():
             query = request.form.get('area', '')
         # Search betas, sectors, zones
         # Zones
-        search_zone_results = helpers.search_zone(query, NUM_RESULTS)
+        search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
         # Sectors
-        search_sector_results = helpers.search_sector(query, NUM_RESULTS)
+        search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
         # Betas
         search_beta_results = helpers.get_video_from_channel(query)
         return render_template(
@@ -204,9 +204,9 @@ def search():
         query = request.args.get('search_query', '')
         # Do search
         if query:
-            search_zone_results = helpers.search_zone(query, NUM_RESULTS)
+            search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
             # Sectors
-            search_sector_results = helpers.search_sector(query, NUM_RESULTS)
+            search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
             # Betas
             search_beta_results = helpers.get_video_from_channel(query)
             return render_template(
