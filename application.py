@@ -190,13 +190,13 @@ def search():
         # Zones
         search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
         # Sectors
-        search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
+        # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
         # Betas
         search_beta_results = helpers.get_video_from_channel(query)
         return render_template(
             'search_results.html',
             zones=search_zone_results,
-            sectors=search_sector_results,
+            # sectors=search_sector_results,
             videos=search_beta_results[0:3],
             search_term=query
         )
@@ -206,13 +206,13 @@ def search():
         if query:
             search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
             # Sectors
-            search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
+            # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
             # Betas
             search_beta_results = helpers.get_video_from_channel(query)
             return render_template(
                 'search_results.html',
                 zones=search_zone_results,
-                sectors=search_sector_results,
+                # sectors=search_sector_results,
                 videos=search_beta_results[0:3],
                 search_term=query
             )
