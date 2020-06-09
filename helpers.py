@@ -295,6 +295,7 @@ def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     for i in resp['items']:
         if i['id']['kind'] == "youtube#video":
             i['video_url'] = base_video_url + i['id']['videoId']
+            i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
     return resp['items']
 
 
