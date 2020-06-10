@@ -73,18 +73,17 @@
             }
           }
         </script>
-        <div class="container" id="mainContainer">
-          <!-- Search beta bar -->
+        <div class="container">
           <br />
           <br />
           <br />
           <br />
-          <h4>{{ _('Beta search') }}</h4>
-          <form method="post" action="{{ url_for('search_beta') }}">
+          <!-- Search bar -->
+          <form method="post" action="{{ url_for('search_zone') }}">
             <input
               type="text"
-              placeholder="{{ _('Search beta by name') }}"
-              name="beta"
+              placeholder="{{ _('SEARCH') }}"
+              name="searchterm"
               value="{{ search_term }}"
             />
             <button type="submit" class="btn btn-default">
@@ -92,39 +91,18 @@
             </button>
           </form>
           <br />
-          <br />
           <h3>{{ _("You might be looking for") }}...</h3>
           <br />
           <!--Search results-->
-          <div class="container">
-            {% for video in videos %}
-            <div class="row">
-              <div class="col-sm-3"></div>
-              <div class="col-sm-6">
-                <h5>{{ video["snippet"]["title"] }}</h5>
-                <div style="position: relative; padding-top: 56.25%;">
-                  <iframe
-                    src="{{ video['video_url']}}"
-                    frameborder="0"
-                    allowfullscreen
-                    style="
-                      position: absolute;
-                      top: 0;
-                      left: 0;
-                      width: 100%;
-                      height: 100%;
-                    "
-                  >
-                  </iframe>
-                </div>
-              </div>
-              <div class="col-sm-3"></div>
-            </div>
-            <br />
-            {% endfor %} {%- if not videos -%}
-            <p>{{ _("No betas matched your query") }}</p>
-            {%- endif -%}
-          </div>
+          {%- if zones -%}
+          <h4>{{ _("Zones") }}</h4>
+          <br />
+          {% for zone in zones %}
+          <p>&bull;<a href="/{{ zone['file'] }}"> {{ zone["name"] }}</a></p>
+          {% endfor %} {%- endif -%} {%- if not zones -%}
+          <p>{{ _("No results matched your query")}}</p>
+          {%- endif -%}
+          <br />
         </div>
         <br />
         <br />
@@ -156,7 +134,7 @@
                 <li>
                   <a
                     style="color: #555;"
-                    href="/language/en?origin=search_beta&search_query={{search_term}}"
+                    href="/language/en?origin=search&search_query={{search_term}}"
                     title="English"
                   >
                     {{ _("EN") }}
@@ -166,7 +144,7 @@
                 <li>
                   <a
                     style="color: #555;"
-                    href="/language/es?origin=search_beta&search_query={{search_term}}"
+                    href="/language/es?origin=search&search_query={{search_term}}"
                     title="Spanish"
                   >
                     {{ _("ES") }}
@@ -176,7 +154,7 @@
                 <li>
                   <a
                     style="color: #555;"
-                    href="/language/ca?origin=search_beta&search_query={{search_term}}"
+                    href="/language/ca?origin=search&search_query={{search_term}}"
                     title="Catalan"
                   >
                     {{ _("CAT") }}

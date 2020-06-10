@@ -177,6 +177,32 @@ def test_home():
 def zones():
     return render_template('zones.html')
 
+@app.route('/search_zone', methods=['GET', 'POST'])
+def search_zone():
+    if request.method == 'POST':
+        query = request.form.get('searchterm', '')
+        # Search zones
+        # Zones
+        search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+        return render_template(
+            'search_zone_results.html',
+            zones=search_zone_results,
+            search_term=query
+        )
+    if request.method == 'GET':
+        query = request.args.get('search_query', '')
+        # Do search
+        if query:
+            search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+            return render_template(
+                'search_zone_results.html',
+                zones=search_zone_results,
+                search_term=query
+            )
+        return render_template(
+            'search_zone_results.html',
+            zones=[],
+            search_term='')
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -184,8 +210,6 @@ def search():
         query = request.form.get('searchterm', '')
         if not query:
             query = request.form.get('searchterm-small', '')
-        if not query: # Backwards compatibility
-            query = request.form.get('area', '')
         # Search betas, sectors, zones
         # Zones
         search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
