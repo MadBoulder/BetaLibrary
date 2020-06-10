@@ -221,7 +221,7 @@ def search():
             'search_results.html',
             zones=search_zone_results,
             # sectors=search_sector_results,
-            videos=search_beta_results[0:3],
+            videos=search_beta_results[0:5],
             search_term=query
         )
     if request.method == 'GET':
@@ -237,7 +237,7 @@ def search():
                 'search_results.html',
                 zones=search_zone_results,
                 # sectors=search_sector_results,
-                videos=search_beta_results[0:3],
+                videos=search_beta_results[0:5],
                 search_term=query
             )
         return render_template(
@@ -246,34 +246,6 @@ def search():
             sectors=[],
             videos=[],
             search_term='')
-
-
-@app.route('/search_beta', methods=['GET', 'POST'])
-def search_beta():
-    if request.method == 'POST':
-        query = request.form.get('beta', '')
-        # Do search
-        search_results = helpers.get_video_from_channel(query)
-        return render_template(
-            'search_beta_results.html',
-            videos=search_results,
-            search_term=query
-        )
-    if request.method == 'GET':
-        query = request.args.get('search_query', '')
-        # Do search
-        if query:
-            search_results = helpers.get_video_from_channel(query)
-            return render_template(
-                'search_beta_results.html',
-                videos=search_results,
-                search_term=query
-            )
-        return render_template(
-            'search_beta_results.html',
-            videos=[],
-            search_term=''
-        )
 
 
 @app.route('/upload', methods=['GET', 'POST'])
