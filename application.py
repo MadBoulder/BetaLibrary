@@ -216,12 +216,12 @@ def search():
         # Sectors
         # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
         # Betas
-        search_beta_results = helpers.get_video_from_channel(query)
+        search_beta_results = helpers.get_video_from_channel(query, results=5)
         return render_template(
             'search_results.html',
             zones=search_zone_results,
             # sectors=search_sector_results,
-            videos=search_beta_results[0:5],
+            videos=search_beta_results,
             search_term=query
         )
     if request.method == 'GET':
@@ -232,12 +232,12 @@ def search():
             # Sectors
             # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
             # Betas
-            search_beta_results = helpers.get_video_from_channel(query)
+            search_beta_results = helpers.get_video_from_channel(query, results=5)
             return render_template(
                 'search_results.html',
                 zones=search_zone_results,
                 # sectors=search_sector_results,
-                videos=search_beta_results[0:5],
+                videos=search_beta_results,
                 search_term=query
             )
         return render_template(

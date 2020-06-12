@@ -279,7 +279,7 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     return json.load(inp)
 
 
-def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA", results=5):
     """
     API query format:
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
@@ -296,7 +296,7 @@ def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
         if i['id']['kind'] == "youtube#video":
             i['video_url'] = base_video_url + i['id']['videoId']
             i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
-    return resp['items']
+    return resp['items'][0:results]
 
 
 def get_number_of_videos_from_playlists_file(file):
