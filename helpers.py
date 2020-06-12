@@ -1,5 +1,6 @@
 import urllib.request, urllib.parse
 import json
+import html
 import os
 import os.path
 
@@ -261,6 +262,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     inp = urllib.request.urlopen(url)
     resp = json.load(inp)
     for i in resp['items']:
+        i['snippet']['title'] = html.unescape(i['snippet']['title'])
         if i['id']['kind'] == "youtube#video":
             video_links.append(base_video_url + i['id']['videoId'])
     return video_links
@@ -294,6 +296,7 @@ def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA", re
     resp = json.load(inp)
     for i in resp['items']:
         if i['id']['kind'] == "youtube#video":
+            i['snippet']['title'] = html.unescape(i['snippet']['title'])
             i['video_url'] = base_video_url + i['id']['videoId']
             i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
     return resp['items'][0:results]
