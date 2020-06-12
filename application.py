@@ -42,7 +42,7 @@ app.config.update(mail_settings)
 mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
-    now = datetime.datetime.now()  # need 'import datetime'
+    now = datetime.datetime.now()
     if now.hour >= hour and now.minute > minute:
         wait_seconds = 24*60*60 - ((now.hour - hour)*60*60 + minute*60)
     else:
