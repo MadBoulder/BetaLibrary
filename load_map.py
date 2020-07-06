@@ -19,6 +19,7 @@ APPROX_PLACEHOLDER = 'approx_placeholder'
 ### GENERATE MAPS ###
 #####################
 
+
 def load_map(area, datafile, generate_ids, return_html=True):
     """
     Create a map for a bouldering zone that shows the GEOJSON data, names and
@@ -32,7 +33,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
 
     area_map = folium.Map(location=[area_data['latitude'], area_data['longitude']],
                           zoom_start=area_data['zoom'])
-    area_map._id = generate_ids.next_id() # reassign id
+    area_map._id = generate_ids.next_id()  # reassign id
     for child in area_map._children.values():
         child._id = generate_ids.next_id()
     tile_layer = folium.TileLayer(
@@ -40,19 +41,19 @@ def load_map(area, datafile, generate_ids, return_html=True):
         name="Satellite",
         attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     )
-    tile_layer._id = generate_ids.next_id() # reassign id
+    tile_layer._id = generate_ids.next_id()  # reassign id
     tile_layer.add_to(area_map)
 
     # Add fullscreen button to map
     fs = Fullscreen()
-    fs._id = generate_ids.next_id() 
+    fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
     sectors = area_data['sectors']
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='Zone Markers')
-    sector_lyr._id = generate_ids.next_id() # reassign id
-    
+    sector_lyr._id = generate_ids.next_id()  # reassign id
+
     for sector in sectors:
         if not sector['sector_data'] or not sector['link']:
             continue
@@ -67,7 +68,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
                 'fillColor': x['properties']['stroke'],
             }
         )
-        sector_map._id = generate_ids.next_id() # reassign id
+        sector_map._id = generate_ids.next_id()  # reassign id
         sector_html = js_helpers.generate_sector_html(
             sector['name'], sector['link'])
         sector_popup = folium.Popup(
@@ -75,7 +76,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             max_width=POPUP_WIDTH,
             min_width=POPUP_WIDTH
         )
-        sector_popup._id = generate_ids.next_id() # reassign id
+        sector_popup._id = generate_ids.next_id()  # reassign id
         for child in sector_popup._children.values():
             child._id = generate_ids.next_id()
 
@@ -89,7 +90,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             'static/images/icons/parking.png',
             icon_size=(ICON_SIZE, ICON_SIZE)
         )
-        parking_icon._id = generate_ids.next_id() # reassign id
+        parking_icon._id = generate_ids.next_id()  # reassign id
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
@@ -98,7 +99,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             tooltip='Parking',
             icon=parking_icon
         )
-        parking_marker._id = generate_ids.next_id() # reassign id
+        parking_marker._id = generate_ids.next_id()  # reassign id
         for child in parking_marker._children.values():
             child._id = generate_ids.next_id()
 
@@ -128,7 +129,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
             for track in gpx.tracks:
                 for segment in track.segments:
                     for point in segment.points:
-                            approximation_geojson['geometry']['coordinates'].append([point.longitude, point.latitude])
+                        approximation_geojson['geometry']['coordinates'].append(
+                            [point.longitude, point.latitude])
 
         zone_approximation = folium.GeoJson(
             approximation_geojson,
@@ -141,45 +143,44 @@ def load_map(area, datafile, generate_ids, return_html=True):
                 'fillColor': x['properties']['stroke'],
             }
         )
-        zone_approximation._id = generate_ids.next_id() # reassign id
-        
+        zone_approximation._id = generate_ids.next_id()  # reassign id
+
         zone_approx_html = js_helpers.generate_track_html(
             area, area_data.get('approximation'))
-        
+
         track_popup = folium.Popup(
             zone_approx_html,
             max_width=POPUP_WIDTH,
             min_width=POPUP_WIDTH
         )
-        track_popup._id = generate_ids.next_id() # reassign id
-        
+        track_popup._id = generate_ids.next_id()  # reassign id
+
         for child in track_popup._children.values():
             child._id = generate_ids.next_id()
-        
+
         zone_approximation.add_child(track_popup)
 
         sector_lyr.add_child(zone_approximation)
-        
 
     # Sectors
     zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
-    zoomed_out_lyr._id = generate_ids.next_id() # reassign id
+    zoomed_out_lyr._id = generate_ids.next_id()  # reassign id
     zoomed_out_icon = CustomIcon(
         'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
-    zoomed_out_icon._id = generate_ids.next_id() # reassign id
+    zoomed_out_icon._id = generate_ids.next_id()  # reassign id
     sectors_marker = folium.Marker(
         location=[area_data['latitude'], area_data['longitude']],
         tooltip=area_data['name'],
         icon=zoomed_out_icon
     )
-    sectors_marker._id = generate_ids.next_id() # reassign id
+    sectors_marker._id = generate_ids.next_id()  # reassign id
     zoomed_out_lyr.add_child(sectors_marker)
 
     area_map.add_child(zoomed_out_lyr)
     area_map.add_child(sector_lyr)
 
     layer_control = folium.LayerControl()
-    layer_control._id = generate_ids.next_id() # reassign id
+    layer_control._id = generate_ids.next_id()  # reassign id
     layer_control.add_to(area_map)
 
     # Since folium does not support all the functionalities we need
@@ -192,10 +193,11 @@ def load_map(area, datafile, generate_ids, return_html=True):
     # Zoom into area when clicking
     map_html = js_helpers.zoom_on_click(
         map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    
+
     map_html = js_helpers.enable_links_from_iframe(map_html)
     map_html = js_helpers.replace_maps_placeholder(map_html)
-    map_html = js_helpers.replace_approx_placeholders_for_translations(map_html, APPROX_PLACEHOLDER)
+    map_html = js_helpers.replace_approx_placeholders_for_translations(
+        map_html, APPROX_PLACEHOLDER)
     # Avoid zooming in when clicking on a sector area
     map_html = js_helpers.remove_geojson_zoom_on_click(map_html)
     # replace the ids of all the html tags
@@ -217,7 +219,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
         ],
         zoom_start=2
     )
-    area_map._id = generate_ids.next_id() # reassign id
+    area_map._id = generate_ids.next_id()  # reassign id
     for child in area_map._children.values():
         child._id = generate_ids.next_id()
 
@@ -226,12 +228,12 @@ def load_general_map(datafiles, generate_ids, return_html=True):
         name="Satellite",
         attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     )
-    tile_layer._id = generate_ids.next_id() # reassign id
+    tile_layer._id = generate_ids.next_id()  # reassign id
     tile_layer.add_to(area_map)
-    
+
     # Add fullscreen button to map
     fs = Fullscreen()
-    fs._id = generate_ids.next_id() 
+    fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
     layers = []
@@ -240,9 +242,9 @@ def load_general_map(datafiles, generate_ids, return_html=True):
 
     # Sectors layer
     zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
-    zoomed_out_lyr._id = generate_ids.next_id() # reassign id
+    zoomed_out_lyr._id = generate_ids.next_id()  # reassign id
     areas_cluster = MarkerCluster()
-    areas_cluster._id = generate_ids.next_id() # reassign id
+    areas_cluster._id = generate_ids.next_id()  # reassign id
 
     for areadatafile in datafiles:
         area_data = {}
@@ -287,17 +289,17 @@ def load_general_map(datafiles, generate_ids, return_html=True):
 
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
-        zoomed_out_icon._id = generate_ids.next_id() # reassign id
+        zoomed_out_icon._id = generate_ids.next_id()  # reassign id
         html_redirect, _ = os.path.splitext(
             os.path.basename(os.path.normpath(areadatafile)))
         area_name = os.path.splitext(os.path.basename(areadatafile))[0]
         placeholder = area_name + PLACEHOLDER
         popup_html = folium.Html(js_helpers.generate_area_popup_html(
             area_data['name'], area_name, html_redirect, placeholder), script=True)
-        popup_html._id = generate_ids.next_id() # reassign id
+        popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
             popup_html, max_width=len(area_data['name'])*10)
-        zone_popup._id = generate_ids.next_id() # reassign id
+        zone_popup._id = generate_ids.next_id()  # reassign id
         placeholders.append(placeholder)
 
         sectors_marker = folium.Marker(
@@ -306,7 +308,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
             icon=zoomed_out_icon,
             popup=zone_popup,
         )
-        sectors_marker._id = generate_ids.next_id() # reassign id
+        sectors_marker._id = generate_ids.next_id()  # reassign id
         sectors_markers += [sectors_marker]
         # Group areas' markers when zoomed out
         areas_cluster.add_child(sectors_marker)
@@ -316,9 +318,8 @@ def load_general_map(datafiles, generate_ids, return_html=True):
         # area_map.add_child(sector_lyr)
         # layers += [(sector_lyr, zoomed_out_lyr)]
 
-
     layer_control = folium.LayerControl()
-    layer_control._id = generate_ids.next_id() # reassign id
+    layer_control._id = generate_ids.next_id()  # reassign id
     layer_control.add_to(area_map)
 
     # Since folium does not support all the functionalities we need

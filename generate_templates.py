@@ -32,8 +32,8 @@ def main():
                 all_data,
                 generate_ids,
                 True
-                )
             )
+        )
 
     # When generating templates update also the all template
     template_loader = FileSystemLoader(searchpath=".")

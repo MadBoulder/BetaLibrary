@@ -25,7 +25,6 @@ def main():
 
         guides = [(guide['name'], guide['link'])
                   for guide in area_data['guides']]
-        
 
         base_url = "https://www.youtube.com/embed/?listType=playlist&list="
         playlists[area] = area_data['playlist']

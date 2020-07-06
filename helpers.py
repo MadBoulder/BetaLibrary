@@ -1,9 +1,11 @@
-import urllib.request, urllib.parse
+import urllib.request
+import urllib.parse
 import json
 import os
 import os.path
 
 MAX_ITEMS_API_QUERY = 50
+
 
 class bidict(dict):
     """
@@ -229,7 +231,7 @@ def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     api_key = None
     with open("credentials.txt", "r", encoding='utf-8') as f:
         api_key = f.read()
-    base_video_url = '//www.youtube.com/embed/' # to embed video
+    base_video_url = '//www.youtube.com/embed/'  # to embed video
     query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
         urllib.parse.quote(video_name), channel_id, api_key)
     inp = urllib.request.urlopen(query_url)
