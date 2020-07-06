@@ -41,8 +41,10 @@ SORT_FUNCTION = """
             }
 """
 
+
 def get_last_dashboard_update():
     return get_channel_data.get_last_update_date()
+
 
 def prepare_barchart_data(data, axis):
     """
@@ -57,13 +59,13 @@ def prepare_barchart_data(data, axis):
         for datum in unique_x_data:
             data_subset['x'].append(datum)
             data_subset['y'].append(x_data.count(datum))
-            data_subset['raw'][datum] = { 
+            data_subset['raw'][datum] = {
                 'count': x_data.count(datum),
-                'viewCount': sum([int(vid['stats']['viewCount']) for vid in data if vid[v]==datum]),
-                'favoriteCount': sum([int(vid['stats']['favoriteCount']) for vid in data if vid[v]==datum]),
-                'likeCount': sum([int(vid['stats']['likeCount']) for vid in data if vid[v]==datum]),
-                'dislikeCount':sum([int(vid['stats']['dislikeCount']) for vid in data if vid[v]==datum]),
-                'commentCount':sum([int(vid['stats']['commentCount']) for vid in data if vid[v]==datum])
+                'viewCount': sum([int(vid['stats']['viewCount']) for vid in data if vid[v] == datum]),
+                'favoriteCount': sum([int(vid['stats']['favoriteCount']) for vid in data if vid[v] == datum]),
+                'likeCount': sum([int(vid['stats']['likeCount']) for vid in data if vid[v] == datum]),
+                'dislikeCount': sum([int(vid['stats']['dislikeCount']) for vid in data if vid[v] == datum]),
+                'commentCount': sum([int(vid['stats']['commentCount']) for vid in data if vid[v] == datum])
             }
         processed_data[v] = data_subset
     return processed_data
@@ -73,7 +75,8 @@ def get_dashboard(local_data=False):
     # Load data
     video_data = {}
     if local_data:
-        data = pd.json_normalize(pd.read_json('data/channel/processed_data.json')['items'])
+        data = pd.json_normalize(pd.read_json(
+            'data/channel/processed_data.json')['items'])
         with open('data/channel/processed_data.json', 'r') as f:
             data = json.load(f)
             video_data = data['items']
@@ -117,7 +120,8 @@ def get_dashboard(local_data=False):
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
 
     # Create Input controls
-    label_slider = Slider(start=0, end=90, value=90, step=1, title="Label Angle")
+    label_slider = Slider(start=0, end=90, value=90,
+                          step=1, title="Label Angle")
     range_slider = RangeSlider(title="Value Range", start=0, end=max(
         y_to_plot), value=(0, max(y_to_plot)), step=1)
     min_year = Slider(title="From", start=2015, end=2020, value=2015, step=1)
@@ -138,12 +142,14 @@ def get_dashboard(local_data=False):
         labels=["Show ratio with respect to number of videos"], active=[])
 
     # show number of categories
-    x_count_source = ColumnDataSource(data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
+    x_count_source = ColumnDataSource(
+        data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
     columns = [
         TableColumn(field="category", title="Category"),
         TableColumn(field="x_count", title="Count"),
     ]
-    x_count_data_table = DataTable(source=x_count_source, columns=columns, width=320, height=280)
+    x_count_data_table = DataTable(
+        source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
     p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),

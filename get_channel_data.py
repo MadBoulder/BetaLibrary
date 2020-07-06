@@ -6,6 +6,7 @@ import os.path
 import time
 from datetime import date
 import re
+import math
 
 import firebase_admin
 from firebase_admin import credentials
@@ -13,6 +14,7 @@ from firebase_admin import db
 
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = "AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g"
+
 
 def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     """
@@ -26,6 +28,7 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
+
 def get_video_info(id, api_key):
     """
     Get the details of a YouTube video from its id
@@ -38,6 +41,7 @@ def get_video_info(id, api_key):
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
+
 def update_video_stats(video_data):
     """
     Update the stats of the channel videos
@@ -45,11 +49,12 @@ def update_video_stats(video_data):
     total = len(video_data)
     current = 0
     for video in video_data:
-        print(current * 100 /total)
+        print(current * 100 / total)
         v_stats = get_video_info(video['id'], Y_CRED)
         video['stats'] = v_stats['items'][0]['statistics']
         current += 1
     return video_data
+
 
 def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None):
     """
@@ -232,10 +237,10 @@ def process_zone_data(infile=None, data=None):
 
 
 def get_and_update_data_local(
-        outfile='data/channel/raw_video_data.json',
-        infile='data/channel/raw_video_data.json',
-        is_update=True
-    ):
+    outfile='data/channel/raw_video_data.json',
+    infile='data/channel/raw_video_data.json',
+    is_update=True
+):
     video_data = []
     with open(infile, 'r', encoding='utf-8') as f:
         try:
@@ -244,7 +249,8 @@ def get_and_update_data_local(
             pass
 
     if is_update:
-        video_data = update_videos_from_channel(page_token=None, data=video_data)
+        video_data = update_videos_from_channel(
+            page_token=None, data=video_data)
     else:
         video_data = get_videos_from_channel(page_token=None)
 
@@ -263,12 +269,13 @@ def get_and_update_data_local(
 
     return {'date': str(date.today()), 'items': processed_data}
 
+
 def get_and_update_data_firebase(is_update=True):
     print("Updating data")
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://madboulder.firebaseio.com'
+            'databaseURL': 'https://madboulder.firebaseio.com'
         })
 
     root = db.reference()
@@ -284,7 +291,7 @@ def get_and_update_data_firebase(is_update=True):
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
 
-    video_data =  {
+    video_data = {
         'date': str(date.today()),
         'items': processed_data
     }
@@ -294,25 +301,28 @@ def get_and_update_data_firebase(is_update=True):
 
     return video_data
 
+
 def get_data_firebase():
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://madboulder.firebaseio.com'
+            'databaseURL': 'https://madboulder.firebaseio.com'
         })
 
     root = db.reference()
     return root.child('video_data').get()
 
+
 def get_last_update_date():
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://madboulder.firebaseio.com'
+            'databaseURL': 'https://madboulder.firebaseio.com'
         })
 
     root = db.reference()
     return root.child('video_data/date').get()
+
 
 def get_data_local():
     video_data = {}
