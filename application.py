@@ -9,6 +9,7 @@ import datetime
 import helpers
 import js_helpers
 import dashboard
+import dashboard_custom
 from werkzeug.utils import secure_filename
 
 from bokeh.embed import components
@@ -308,7 +309,7 @@ def statistics():
     key_prefix="mad_custom_statistics"
 )
 def custom_statistics():
-    layout = dashboard.get_dashboard()
+    layout = dashboard_custom.get_dashboard()
     # grab the static resources
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
