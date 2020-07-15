@@ -144,35 +144,6 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
-@app.route('/testhome')
-def test_home():
-    channel_info = helpers.get_channel_info()
-    zones = helpers.load_zones()
-    stats_list = [
-        {
-            'logo': "fa fa-globe-americas",
-            'text': _("ZONES"),
-            'data': len(zones)
-        },
-        {
-            'logo': "fa fa-map-marked",
-            'text': _("SECTORS"),
-            'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
-        },
-        {
-            'logo': "fab fa-youtube",
-            'text': _("BETAS"),
-            'data': channel_info['items'][0]['statistics']['videoCount']
-        },
-        {
-            'logo': "fa fa-eye",
-            'text': _("VIEWS"),
-            'data': channel_info['items'][0]['statistics']['viewCount']
-        }
-    ]
-    return render_template('testhome.html', stats_list=stats_list)
-
-
 @app.route('/zones')
 def zones():
     return render_template('zones.html')
