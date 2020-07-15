@@ -27,19 +27,19 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-}
+# mail_settings = {
+#     "MAIL_SERVER": 'smtp.gmail.com',
+#     "MAIL_PORT": 465,
+#     "MAIL_USE_TLS": False,
+#     "MAIL_USE_SSL": True,
+#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
+#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+#     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
+# }
 
-app.config.update(mail_settings)
-mail = Mail(app)
+# app.config.update(mail_settings)
+# mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
@@ -234,7 +234,7 @@ def upload_file():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("MAIL_RECIPIENTS"),
             body=video_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
@@ -276,7 +276,7 @@ def render_about_us():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
             body=feedback_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
@@ -295,6 +295,27 @@ def statistics():
     script, div = components(layout)
     return render_template(
         'dashboard.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=js_resources,
+        css_resources=css_resources,
+        last_update=dashboard.get_last_dashboard_update()
+    )
+
+@app.route('/custom_statistics')
+@cache.cached(
+    timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
+    key_prefix="mad_custom_statistics"
+)
+def custom_statistics():
+    layout = dashboard.get_dashboard()
+    # grab the static resources
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    # render template
+    script, div = components(layout)
+    return render_template(
+        'dashboard_custom.html',
         plot_script=script,
         plot_div=div,
         js_resources=js_resources,
