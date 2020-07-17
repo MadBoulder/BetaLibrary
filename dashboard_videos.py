@@ -17,27 +17,16 @@ from bokeh.models.callbacks import CustomJS
 import get_channel_data
 
 SORT_FUNCTION = """
-            function sortData(jsObj, sort_method, category, isRatio){
-                var sortedArray = [];
-                // Push each JSON Object entry in array by [key, value]
-                for(var i in jsObj)
-                {
-                    if (isRatio)
-                    {
-                        sortedArray.push([i, jsObj[i][category]/jsObj[i]["count"]]);
-                    } else {
-                        sortedArray.push([i, jsObj[i][category]]);
-                    }
-                }
+            function sortData(jsObj, sort_method, category){
                 // Run native sort function and returns sorted array.
                 if (sort_method === 0) {
-                    return sortedArray.sort();
+                    return jsObj.sort();
                 }
                 if (sort_method === 1) {
-                    return sortedArray.sort(function(a, b) { return b[1] - a[1]; });
+                    return jsObj.sort(function(a, b) { return b[1][category] - a[1][category]; });
                 }
                 if (sort_method === 2) {
-                    return sortedArray.sort(function(a, b) { return a[1] - b[1]; });
+                    return jsObj.sort(function(a, b) { return a[1][category] - b[1][category]; });
                 }
             }
 """
@@ -65,7 +54,6 @@ def get_dashboard(local_data=False):
     }
     # Y axis categories
     y_axis_map = {
-        "Count": "count",
         "Views": "viewCount",
         # "Favourites": "favoriteCount",
         "Likes": "likeCount",
@@ -110,7 +98,7 @@ def get_dashboard(local_data=False):
     )
 
     x_axis = Select(title="X Axis", options=sorted(
-        x_axis_map.keys()), value="Grade")
+        x_axis_map.keys()), value="Title")
 
     y_axis = Select(title="Y Axis", options=sorted(
         y_axis_map.keys()), value="Views")
@@ -145,7 +133,7 @@ def get_dashboard(local_data=False):
 
     # show number of categories
     x_count_source = ColumnDataSource(
-        data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
+        data=dict(x_count=[len(x_to_plot)], category=["Videos"]))
     columns = [
         TableColumn(field="category", title="Category"),
         TableColumn(field="x_count", title="Count"),
@@ -154,7 +142,7 @@ def get_dashboard(local_data=False):
         source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
+    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title=y_axis.value,
                toolbar_location="above")
     
     # hide x axis
@@ -207,25 +195,15 @@ def get_dashboard(local_data=False):
             title=p.title
         ),
         code=SORT_FUNCTION + """
-            title.text = x_axis.value.concat(" ", cb_obj.value);
-            var data = o_data;
-            console.log(o_data);
-            var x = data['x'];
-            var y = data['y'];
-            var is_ratio = checkbox.active.length > 0;
-            if (is_ratio)
-            {
-                title.text = x_axis.value.concat(" ", cb_obj.value, " per video");   
-            }
-            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[cb_obj.value], is_ratio);
+            title.text = cb_obj.value;
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[cb_obj.value]);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < x.length; i++) {
+            for (var i = 0; i < sorted_data.length; i++) {
                 new_x.push(sorted_data[i][0]);
-                new_y.push(sorted_data[i][1]);
+                new_y.push(sorted_data[i][1][y_axis_map[cb_obj.value]]);
             }
             x_source.data['x_count'] = [new_x.length];
-            x_source.data['category'] = [x_axis.value];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
@@ -233,8 +211,6 @@ def get_dashboard(local_data=False):
             fig.x_range.factors = [];
             fig.x_range.factors = new_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                range_slider.value = [0, Math.max.apply(Math, new_y)]; 
-                range_slider.end = Math.max.apply(Math, new_y);
                 fig.y_range.end = Math.max.apply(Math, new_y);
             }
         """
@@ -255,23 +231,15 @@ def get_dashboard(local_data=False):
             fig=p
         ),
         code=SORT_FUNCTION + """
-            var data = o_data[x_axis_map[x_axis.value]];
-            var x = data['x'];
-            var y = data['y'];
             // Sort data
-            var is_ratio = checkbox.active.length > 0;
-            var sorted_data = sortData(data['raw'], cb_obj.active, y_axis_map[y_axis.value], is_ratio);
-            console.log(sorted_data);
+            var sorted_data = sortData(Object.entries(o_data), cb_obj.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
-            for (var i = 0; i < x.length; i++) {
-                if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
+            for (var i = 0; i < sorted_data.length; i++) {
                     new_x.push(sorted_data[i][0]);
-                    new_y.push(sorted_data[i][1]);
-                }
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
             }
             x_source.data['x_count'] = [new_x.length];
-            x_source.data['category'] = [x_axis.value];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
