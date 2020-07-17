@@ -170,6 +170,16 @@ def get_dashboard(local_data=False):
     )
     label_slider.js_on_change('value', label_callback)
 
+    label_checkbox_callback = CustomJS(
+        args=dict(
+            x_axis=p.xaxis[0]
+        ),
+        code="""
+        x_axis.visible = cb_obj.active.length > 0 ? true : false;
+        """
+    )
+    label_checkbox.js_on_change('active', label_checkbox_callback)
+
     # variable to group data
     y_axis_callback = CustomJS(
         args=dict(
