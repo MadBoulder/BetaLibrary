@@ -107,20 +107,20 @@ def get_dashboard(local_data=False):
     climbers = sorted(list({video['climber'] for video in video_data}))
     ac_climber = AutocompleteInput(
         title="Select Climber",
-        value=climbers[0],
+        value="",
         completions=climbers)
     
 
     zones = sorted(list({video['zone'] for video in video_data}))
     ac_zones = AutocompleteInput(
         title="Select Zone",
-        value=zones[0],
+        value="",
         completions=zones)
 
     grades = sorted(list({video['grade'] for video in video_data}))
     ac_grades = AutocompleteInput(
         title="Select Grade",
-        value=grades[0],
+        value="",
         completions=grades)
 
     # show number of categories
