@@ -110,8 +110,6 @@ def get_dashboard(local_data=False):
         value=climbers[0],
         completions=climbers)
     
-    climber_checkbox = CheckboxGroup(
-        labels=["Apply filter"], active=[])
 
     zones = sorted(list({video['zone'] for video in video_data}))
     ac_zones = AutocompleteInput(
@@ -119,17 +117,11 @@ def get_dashboard(local_data=False):
         value=zones[0],
         completions=zones)
 
-    zone_checkbox = CheckboxGroup(
-        labels=["Apply filter"], active=[])
-
     grades = sorted(list({video['grade'] for video in video_data}))
     ac_grades = AutocompleteInput(
         title="Select Grade",
         value=grades[0],
         completions=grades)
-
-    grade_checkbox = CheckboxGroup(
-        labels=["Apply filter"], active=[])
 
     # show number of categories
     x_count_source = ColumnDataSource(
@@ -162,11 +154,8 @@ def get_dashboard(local_data=False):
         label_slider,
         label_checkbox,
         ac_climber,
-        climber_checkbox,
         ac_zones,
-        zone_checkbox,
         ac_grades,
-        grade_checkbox,
         x_count_data_table,
     ]
 
