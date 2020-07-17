@@ -265,7 +265,9 @@ def get_dashboard(local_data=False):
             y_axis = y_axis,
             sort_order=sort_order,
             fig=p,
-            title=p.title
+            title=p.title,
+            grade_filter=ac_grades,
+            zone_filter=ac_zones
         ),
         code= SORT_FUNCTION + """
             // Filter by set value
@@ -273,7 +275,17 @@ def get_dashboard(local_data=False):
             var new_y = [];
             var new_x = [];
             for (var i = 0; i < sorted_data.length; i++) {
-                if (sorted_data[i][1]['climber'].localeCompare(cb_obj.value) == 0) {
+                var include = true;
+                if (cb_obj.value !== '' && sorted_data[i][1]['climber'].localeCompare(cb_obj.value) !== 0) {
+                    include = false;
+                }
+                if (zone_filter.value !== '' && sorted_data[i][1]['zone'].localeCompare(zone_filter.value) !== 0) {
+                    include = false;
+                }
+                if (grade_filter.value !== '' && sorted_data[i][1]['grade'].localeCompare(grade_filter.value) !== 0) {
+                    include = false;
+                }
+                if (include) {
                     new_x.push(sorted_data[i][0]);
                     new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
                 }
@@ -291,6 +303,106 @@ def get_dashboard(local_data=False):
         """
     )
     ac_climber.js_on_change('value', ac_climber_callback)
+
+    ac_zone_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis = y_axis,
+            sort_order=sort_order,
+            fig=p,
+            title=p.title,
+            grade_filter=ac_grades,
+            climber_filter=ac_climber
+        ),
+        code= SORT_FUNCTION + """
+            // Filter by set value
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
+            var new_y = [];
+            var new_x = [];
+            for (var i = 0; i < sorted_data.length; i++) {
+                var include = true;
+                if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
+                    include = false;
+                }
+                if (cb_obj.value !== '' && sorted_data[i][1]['zone'].localeCompare(cb_obj.value) !== 0) {
+                    include = false;
+                }
+                if (grade_filter.value !== '' && sorted_data[i][1]['grade'].localeCompare(grade_filter.value) !== 0) {
+                    include = false;
+                }
+                if (include) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
+                }
+            }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = new_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, new_y);
+            }
+        """
+    )
+    ac_zones.js_on_change('value', ac_zone_callback)
+    
+    ac_grade_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis = y_axis,
+            sort_order=sort_order,
+            fig=p,
+            title=p.title,
+            zone_filter=ac_zones,
+            climber_filter=ac_climber
+        ),
+        code= SORT_FUNCTION + """
+            // Filter by set value
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
+            var new_y = [];
+            var new_x = [];
+            for (var i = 0; i < sorted_data.length; i++) {
+                var include = true;
+                if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
+                    include = false;
+                }
+                if (zone_filter.value !== '' && sorted_data[i][1]['zone'].localeCompare(zone_filter.value) !== 0) {
+                    include = false;
+                }
+                if (cb_obj.value !== '' && sorted_data[i][1]['grade'].localeCompare(cb_obj.value) !== 0) {
+                    include = false;
+                }
+                if (include) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
+                }
+            }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = new_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, new_y);
+            }
+        """
+    )
+    ac_grades.js_on_change('value', ac_grade_callback)
 
     # Define layout
     inputs = column(*controls, width=320, height=1000)
