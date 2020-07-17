@@ -113,9 +113,7 @@ def get_dashboard(local_data=False):
         x_axis_map.keys()), value="Grade")
 
     y_axis = Select(title="Y Axis", options=sorted(
-        y_axis_map.keys()), value="Count")
-    checkbox = CheckboxGroup(
-        labels=["Show ratio with respect to number of videos"], active=[])
+        y_axis_map.keys()), value="Views")
 
     # autocomplete inputs
     climbers = sorted(list({video['climber'] for video in video_data}))
@@ -173,7 +171,6 @@ def get_dashboard(local_data=False):
         max_year,
         sort_order,
         y_axis,
-        checkbox,
         label_slider,
         label_checkbox,
         ac_climber,
@@ -196,105 +193,6 @@ def get_dashboard(local_data=False):
     )
     label_slider.js_on_change('value', label_callback)
 
-    # ratio checkbox
-    checkbox_callback = CustomJS(
-        args=dict(
-            source=source,
-            x_source=x_count_source,
-            o_data=barchart_data,
-            sort_order=sort_order,
-            x_axis_map=x_axis_map,
-            x_axis=x_axis,
-            y_axis_map=y_axis_map,
-            y_axis=y_axis,
-            fig=p,
-            title=p.title
-        ),
-        code=SORT_FUNCTION + """
-            var data = o_data[x_axis_map[x_axis.value]];
-            var x = data['x'];
-            var y = data['y'];
-            var is_ratio = cb_obj.active.length > 0;
-            title.text = x_axis.value.concat(" ", y_axis.value);
-            if (is_ratio)
-            {
-                title.text = x_axis.value.concat(" ", y_axis.value, " per video");   
-            }
-            // Sort data
-            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
-            var new_y = [];
-            var new_x = [];
-            for (var i = 0; i < x.length; i++) {
-                if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
-                    new_x.push(sorted_data[i][0]);
-                    new_y.push(sorted_data[i][1]);
-                }
-            }
-            x_source.data['x_count'] = [new_x.length];
-            x_source.data['category'] = [x_axis.value];
-            x_source.change.emit();
-            source.data['x'] = new_x;
-            source.data['y'] = new_y;
-            source.change.emit();
-            fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
-            if (Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
-            }
-        """
-    )
-    checkbox.js_on_change('active', checkbox_callback)
-
-    # variable to group data
-    # x_axis_callback = CustomJS(
-    #     args=dict(
-    #         source=source,
-    #         x_source=x_count_source,
-    #         o_data=barchart_data,
-    #         x_axis_map=x_axis_map,
-    #         y_axis_map=y_axis_map,
-    #         y_axis=y_axis,
-    #         range_slider=range_slider,
-    #         sort_order=sort_order,
-    #         checkbox=checkbox,
-    #         fig=p,
-    #         title=p.title
-    #     ),
-    #     code=SORT_FUNCTION + """
-    #         title.text = cb_obj.value.concat(" ", y_axis.value);
-    #         var data = o_data[x_axis_map[cb_obj.value]];
-    #         var x = data['x'];
-    #         var y = data['y'];
-    #         var is_ratio = checkbox.active.length > 0;
-    #         if (is_ratio)
-    #         {
-    #             title.text = title.text.concat(" per video");   
-    #         }
-    #         var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
-    #         var new_y = [];
-    #         var new_x = [];
-    #         for (var i = 0; i < x.length; i++) {
-    #             new_x.push(sorted_data[i][0]);
-    #             new_y.push(sorted_data[i][1]);
-    #         }
-    #         x_source.data['x_count'] = [new_x.length];
-    #         x_source.data['category'] = [cb_obj.value];
-    #         x_source.change.emit();
-    #         source.data['x'] = new_x;
-    #         source.data['y'] = new_y;
-    #         source.change.emit();
-    #         fig.x_range.factors = [];
-    #         fig.x_range.factors = new_x;
-    #         if (new_y && Array.isArray(new_y) && new_y.length) {
-    #             range_slider.value = [0, Math.max.apply(Math, new_y)]; 
-    #             range_slider.end = Math.max.apply(Math, new_y);
-    #             fig.y_range.end = Math.max.apply(Math, new_y);
-    #         }
-    #     """
-    # )
-
-    # x_axis.js_on_change('value', x_axis_callback)
-
     # variable to group data
     y_axis_callback = CustomJS(
         args=dict(
@@ -305,13 +203,13 @@ def get_dashboard(local_data=False):
             x_axis=x_axis,
             y_axis_map=y_axis_map,
             sort_order=sort_order,
-            checkbox=checkbox,
             fig=p,
             title=p.title
         ),
         code=SORT_FUNCTION + """
             title.text = x_axis.value.concat(" ", cb_obj.value);
-            var data = o_data[x_axis_map[x_axis.value]];
+            var data = o_data;
+            console.log(o_data);
             var x = data['x'];
             var y = data['y'];
             var is_ratio = checkbox.active.length > 0;
@@ -354,7 +252,6 @@ def get_dashboard(local_data=False):
             x_axis=x_axis,
             y_axis_map=y_axis_map,
             y_axis=y_axis,
-            checkbox=checkbox,
             fig=p
         ),
         code=SORT_FUNCTION + """
