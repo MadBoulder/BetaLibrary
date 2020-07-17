@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup, DataTable, TableColumn, CheckboxGroup
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider
+from bokeh.models import  RadioButtonGroup, DataTable, TableColumn, CheckboxGroup, AutocompleteInput
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
@@ -141,6 +142,34 @@ def get_dashboard(local_data=False):
     checkbox = CheckboxGroup(
         labels=["Show ratio with respect to number of videos"], active=[])
 
+    # autocomplete inputs
+    climbers = sorted(list({video['climber'] for video in video_data}))
+    ac_climber = AutocompleteInput(
+        title="Select Climber",
+        value=climbers[0],
+        completions=climbers)
+    
+    climber_checkbox = CheckboxGroup(
+        labels=["Apply filter"], active=[])
+
+    zones = sorted(list({video['zone'] for video in video_data}))
+    ac_zones = AutocompleteInput(
+        title="Select Zone",
+        value=zones[0],
+        completions=zones)
+
+    zone_checkbox = CheckboxGroup(
+        labels=["Apply filter"], active=[])
+
+    grades = sorted(list({video['grade'] for video in video_data}))
+    ac_grades = AutocompleteInput(
+        title="Select Grade",
+        value=grades[0],
+        completions=grades)
+
+    grade_checkbox = CheckboxGroup(
+        labels=["Apply filter"], active=[])
+
     # show number of categories
     x_count_source = ColumnDataSource(
         data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
@@ -169,7 +198,13 @@ def get_dashboard(local_data=False):
         y_axis,
         checkbox,
         label_slider,
-        x_count_data_table
+        ac_climber,
+        climber_checkbox,
+        ac_zones,
+        zone_checkbox,
+        ac_grades,
+        grade_checkbox,
+        x_count_data_table,
     ]
 
     # Callbacks for controls
