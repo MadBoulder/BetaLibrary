@@ -56,7 +56,6 @@ def get_dashboard(local_data=False):
         with open('data/channel/processed_data.json', 'r') as f:
             data = json.load(f)
             video_data = data['items']
-            last_update = data['date']
     else:
         video_data = get_channel_data.get_data_firebase()['items']
 
