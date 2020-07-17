@@ -147,8 +147,8 @@ def get_dashboard(local_data=False):
 
     # Controls
     controls = [
-        min_year,
-        max_year,
+        # min_year,
+        # max_year,
         sort_order,
         y_axis,
         label_slider,
