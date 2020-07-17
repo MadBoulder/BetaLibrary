@@ -68,7 +68,7 @@ def get_dashboard(local_data=False):
     )
 
     # initial data source fill
-    barchart_data = { video['title']: video['stats'] for video in video_data }
+    barchart_data = { video['title']: {**video['stats'], 'climber': video['climber'], 'zone': video['zone'], 'grade': video['grade']} for video in video_data }
     data_to_plot = barchart_data
 
     od = collections.OrderedDict(
@@ -252,6 +252,45 @@ def get_dashboard(local_data=False):
     )
 
     sort_order.js_on_change('active', sort_order_callback)
+
+    # filter fields
+    ac_climber_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis = y_axis,
+            sort_order=sort_order,
+            fig=p,
+            title=p.title
+        ),
+        code= SORT_FUNCTION + """
+            // Filter by set value
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
+            var new_y = [];
+            var new_x = [];
+            for (var i = 0; i < sorted_data.length; i++) {
+                if (sorted_data[i][1]['climber'].localeCompare(cb_obj.value) == 0) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
+                }
+            }
+            x_source.data['x_count'] = [new_x.length];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = new_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, new_y);
+            }
+        """
+    )
+    ac_climber.js_on_change('value', ac_climber_callback)
 
     # Define layout
     inputs = column(*controls, width=320, height=1000)
