@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, RadioButtonGroup, DataTable, TableColumn, CheckboxGroup
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider
+from bokeh.models import  RadioButtonGroup, DataTable, TableColumn, CheckboxGroup
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS

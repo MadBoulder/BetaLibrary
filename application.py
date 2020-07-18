@@ -9,6 +9,7 @@ import datetime
 import helpers
 import js_helpers
 import dashboard
+import dashboard_videos
 from werkzeug.utils import secure_filename
 
 from bokeh.embed import components
@@ -295,6 +296,27 @@ def statistics():
     script, div = components(layout)
     return render_template(
         'dashboard.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=js_resources,
+        css_resources=css_resources,
+        last_update=dashboard.get_last_dashboard_update()
+    )
+
+@app.route('/video_statistics')
+@cache.cached(
+    timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
+    key_prefix="mad_custom_statistics"
+)
+def custom_statistics():
+    layout = dashboard_videos.get_dashboard()
+    # grab the static resources
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    # render template
+    script, div = components(layout)
+    return render_template(
+        'dashboard_videos.html',
         plot_script=script,
         plot_div=div,
         js_resources=js_resources,
