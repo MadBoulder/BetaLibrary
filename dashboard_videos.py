@@ -352,7 +352,6 @@ def get_dashboard(local_data=False):
         ),
         code= SORT_FUNCTION + """
             // Filter by set value
-            console.log(cb_obj);
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
@@ -386,16 +385,14 @@ def get_dashboard(local_data=False):
     )
     ac_zones.js_on_change('value', ac_zone_callback)
 
-    test_callback = CustomJS(
-        args=dict(
-            axis=p.xaxis[0]
-        ),
-        code="""
-        console.log(cb_obj);
-        console.log('aaa');
-        """
-    )
-    ac_zones.js_on_event('onblur', test_callback)
+    # test_callback = CustomJS(
+    #     args=dict(),
+    #     code="""
+    #     console.log(cb_obj);
+    #     console.log('aaa');
+    #     """
+    # )
+    # ac_zones.js_on_event('focus', test_callback)
     
     ac_grade_callback = CustomJS(
         args=dict(
