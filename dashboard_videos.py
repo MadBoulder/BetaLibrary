@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, Button
 from bokeh.models import  RadioButtonGroup, DataTable, TableColumn, CheckboxGroup, AutocompleteInput
 from bokeh.plotting import figure
 
@@ -110,19 +110,24 @@ def get_dashboard(local_data=False):
         title="Select Climber",
         value="",
         completions=climbers)
-    
 
+    climber_clear_button = Button(label='Clear Climber')
+    
     zones = sorted(list({video['zone'] for video in video_data}))
     ac_zones = AutocompleteInput(
         title="Select Zone",
         value="",
         completions=zones)
 
+    zone_clear_button = Button(label='Clear Zone')
+
     grades = sorted(list({video['grade'] for video in video_data}))
     ac_grades = AutocompleteInput(
         title="Select Grade",
         value="",
         completions=grades)
+
+    grade_clear_button = Button(label='Clear Grade')
 
     # show number of categories
     x_count_source = ColumnDataSource(
@@ -155,8 +160,11 @@ def get_dashboard(local_data=False):
         label_slider,
         label_checkbox,
         ac_climber,
+        climber_clear_button,
         ac_zones,
+        zone_clear_button,
         ac_grades,
+        grade_clear_button,
         x_count_data_table,
     ]
 
@@ -384,15 +392,6 @@ def get_dashboard(local_data=False):
         """
     )
     ac_zones.js_on_change('value', ac_zone_callback)
-
-    # test_callback = CustomJS(
-    #     args=dict(),
-    #     code="""
-    #     console.log(cb_obj);
-    #     console.log('aaa');
-    #     """
-    # )
-    # ac_zones.js_on_event('focus', test_callback)
     
     ac_grade_callback = CustomJS(
         args=dict(
