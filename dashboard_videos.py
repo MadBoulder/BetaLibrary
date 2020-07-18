@@ -343,6 +343,16 @@ def get_dashboard(local_data=False):
     )
     ac_climber.js_on_change('value', ac_climber_callback)
 
+    clear_climber_callback = CustomJS(
+        args=dict(
+            ac_climber=ac_climber
+        ),
+        code="""
+        ac_climber.value = "";
+        """
+    )
+    climber_clear_button.js_on_click(clear_climber_callback)
+
     ac_zone_callback = CustomJS(
         args=dict(
             source=source,
@@ -392,6 +402,16 @@ def get_dashboard(local_data=False):
         """
     )
     ac_zones.js_on_change('value', ac_zone_callback)
+
+    clear_zone_callback = CustomJS(
+        args=dict(
+            ac_zones=ac_zones
+        ),
+        code="""
+        ac_zones.value = "";
+        """
+    )
+    zone_clear_button.js_on_click(clear_zone_callback)
     
     ac_grade_callback = CustomJS(
         args=dict(
@@ -442,6 +462,16 @@ def get_dashboard(local_data=False):
         """
     )
     ac_grades.js_on_change('value', ac_grade_callback)
+
+    clear_grade_callback = CustomJS(
+        args=dict(
+            ac_grades=ac_grades
+        ),
+        code="""
+        ac_grades.value = "";
+        """
+    )
+    grade_clear_button.js_on_click(clear_grade_callback)
 
     # Define layout
     inputs = column(*controls, width=320, height=1000)
