@@ -86,8 +86,9 @@ def get_dashboard(local_data=False):
     label_checkbox = CheckboxGroup(
         labels=["Show labels"], active=[])
 
-    min_year = Slider(title="From", start=2015, end=2020, value=2015, step=1)
-    max_year = Slider(title="To", start=2015, end=2020, value=2020, step=1)
+    # min_year = Slider(title="From", start=2015, end=2020, value=2015, step=1)
+    # max_year = Slider(title="To", start=2015, end=2020, value=2020, step=1)
+
     sort_order = RadioButtonGroup(
         labels=[
             "Alphabetically",
