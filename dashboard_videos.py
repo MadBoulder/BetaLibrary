@@ -111,7 +111,7 @@ def get_dashboard(local_data=False):
         value="",
         completions=climbers)
 
-    climber_clear_button = Button(label='Clear Climber')
+    climber_clear_button = Button(label='Clear Climber', button_type='primary')
     
     zones = sorted(list({video['zone'] for video in video_data}))
     ac_zones = AutocompleteInput(
@@ -119,7 +119,7 @@ def get_dashboard(local_data=False):
         value="",
         completions=zones)
 
-    zone_clear_button = Button(label='Clear Zone')
+    zone_clear_button = Button(label='Clear Zone', button_type='primary')
 
     grades = sorted(list({video['grade'] for video in video_data}))
     ac_grades = AutocompleteInput(
@@ -127,7 +127,7 @@ def get_dashboard(local_data=False):
         value="",
         completions=grades)
 
-    grade_clear_button = Button(label='Clear Grade')
+    grade_clear_button = Button(label='Clear Grade', button_type='primary')
 
     # show number of categories
     x_count_source = ColumnDataSource(
