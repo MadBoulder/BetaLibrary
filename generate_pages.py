@@ -2,7 +2,6 @@ import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 
-
 def main():
     """
     Generate html map templates for all the areas located inside the data folder
@@ -35,7 +34,9 @@ def main():
         output = template.render(
             name=area_data['name'], guide_list=guides,
             map_url='maps/'+area, full_playlist=base_url + area_data['playlist'],
-            playlists=sectors_playlists)
+            playlists=sectors_playlists, lat=area_data['latitude'], 
+            lng=area_data['longitude'], zone=area_data['name'])
+
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 

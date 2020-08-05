@@ -28,19 +28,19 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-}
+# mail_settings = {
+#     "MAIL_SERVER": 'smtp.gmail.com',
+#     "MAIL_PORT": 465,
+#     "MAIL_USE_TLS": False,
+#     "MAIL_USE_SSL": True,
+#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
+#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+#     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
+# }
 
-app.config.update(mail_settings)
-mail = Mail(app)
+# app.config.update(mail_settings)
+# mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
@@ -235,7 +235,7 @@ def upload_file():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("MAIL_RECIPIENTS"),
             body=video_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
@@ -277,7 +277,7 @@ def render_about_us():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
             body=feedback_data)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
@@ -350,7 +350,7 @@ def render_page(page):
             'text': _("Videos"),
             'data': video_count
         }]
-        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
+        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data, lang=get_locale())
     except:
         abort(404)
 
