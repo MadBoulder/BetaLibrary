@@ -282,8 +282,9 @@ Licensed under the MIT license
 						var weather_icon = document.createElement("div");
 						weather_icon.id = 'day_' + day.toString();
 						var img = document. createElement("img");
+						img.setAttribute('height', '75');
 						var weekday_span = document.createElement('span');
-						weekday_span.setAttribute('style', 'font-size: medium; align-self: center; text-transform: capitalize;');
+						weekday_span.setAttribute('style', 'font-size: small; align-self: center; text-transform: capitalize;');
 						var textNode = document.createTextNode(weekday);
 						weekday_span.appendChild(textNode);
 						if (s.customIcons != null) {
