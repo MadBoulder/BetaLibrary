@@ -33,7 +33,7 @@ def main():
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
-            name=area_data['name'], guide_list=guides,
+            name=area_data['name'], tag_name=area_data['name'].replace("'", r"\'"), guide_list=guides,
             map_url='maps/'+area, full_playlist=base_url + area_data['playlist'],
             playlists=sectors_playlists)
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
