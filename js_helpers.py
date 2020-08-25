@@ -8,7 +8,9 @@ GM_PLACEHOLDER = 'GM_PH'
 
 def replace_tag_ids(map_html, tags_to_replace, generate_ids):
     """
-    Control tags ids
+    Control tags ids. This is a way to control id generation
+    and ensure the same IDs are used each time the tags are
+    generated. This is to make the changes more git friendly.
     """
     for tag_to_replace in tags_to_replace:
         html_tags = re.findall(tag_to_replace+'_\w*', map_html)
@@ -38,12 +40,14 @@ def generate_parking_html(coordinates):
 
 def replace_maps_placeholder(map_html):
     """
+    Replace the maps placeholder by the current text we want to show
     """
     return map_html.replace(GM_PLACEHOLDER, '{{ _("Open in") }}')
 
 
 def enable_links_from_iframe(map_html):
     """
+    Insert links in iframes
     """
     code_to_inject = """<head>    
     <base target="_blank">"""

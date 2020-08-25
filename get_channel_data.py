@@ -108,7 +108,16 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
     return videos
 
 
-def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None, data=None):
+def update_videos_from_channel(
+    channel_id="UCX9ok0rHnvnENLSK7jdnXxA", 
+    num_videos=MAX_ITEMS_API_QUERY, 
+    page_token=None, 
+    data=None
+    ):
+    """
+    Update the list of videos uploaded to the channel. If there are new videos,
+    add them to the database
+    """
     # compare number of videos
     video_data = data['items']
     video_ids = [v['id'] for v in video_data]
@@ -172,10 +181,16 @@ def update_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos
 
 
 def get_video_url_from_id(video_id):
+    """
+    Given the ID of a video, return its URL
+    """
     return 'https://www.youtube.com/watch?v={}'.format(video_id)
 
 
 def load_data(infile=None, data=None):
+    """
+    Load current video data stored in the project folder
+    """
     video_data = []
     if infile:
         # load from file
@@ -190,6 +205,11 @@ def load_data(infile=None, data=None):
 
 
 def match_regex_and_add_field(pattern, infield, outfield, video_data):
+    """
+    Given a regex pattern and a field, find the sequence that matches
+    the regex in the specified video field. Add the matched sequence as
+    the specified new video field
+    """
     reg_pattern = re.compile(pattern)
     for video in video_data:
         matches = reg_pattern.findall(video[infield])
@@ -201,6 +221,9 @@ def match_regex_and_add_field(pattern, infield, outfield, video_data):
 
 
 def process_grade_data(infile=None, data=None):
+    """
+    Extract grade information from video data
+    """
     video_data = load_data(infile, data)
     # This regex only matches french grades.
     grade_regex = ', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
@@ -208,6 +231,9 @@ def process_grade_data(infile=None, data=None):
 
 
 def process_climber_data(infile=None, data=None):
+    """
+    Extract climber name from video data
+    """
     video_data = load_data(infile, data)
     # regex to match climbers.
     climber_regex = '(?:Climber: ?)(@?\w+ ?(?:\w+)?)'
@@ -215,6 +241,9 @@ def process_climber_data(infile=None, data=None):
 
 
 def process_zone_data(infile=None, data=None):
+    """
+    Extract zone name from video data
+    """
     video_data = load_data(infile, data)
     # regex to match zones.
     zone_regex = '(?:\.+.+)?(?:\. )(.+)$'
@@ -241,6 +270,9 @@ def get_and_update_data_local(
     infile='data/channel/raw_video_data.json',
     is_update=True
 ):
+    """
+    Load current data from local file, update it and store it back.
+    """
     video_data = []
     with open(infile, 'r', encoding='utf-8') as f:
         try:
@@ -271,6 +303,9 @@ def get_and_update_data_local(
 
 
 def get_and_update_data_firebase(is_update=True):
+    """
+    Load current data from firebase database, update it and store it back.
+    """
     print("Updating data")
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
@@ -303,6 +338,9 @@ def get_and_update_data_firebase(is_update=True):
 
 
 def get_data_firebase():
+    """
+    Get data from firebase
+    """
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
@@ -314,6 +352,9 @@ def get_data_firebase():
 
 
 def get_last_update_date():
+    """
+    Retrieve the date when the data was last updated
+    """
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
@@ -325,6 +366,9 @@ def get_last_update_date():
 
 
 def get_data_local():
+    """
+    Get data from local files
+    """
     video_data = {}
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
         video_data = json.load(f)
