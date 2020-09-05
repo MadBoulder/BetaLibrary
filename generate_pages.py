@@ -8,7 +8,6 @@ def main():
     as well as a general map that contains all the areas
     """
     areas = next(os.walk('data/zones/'))[1]
-    all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
 
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
