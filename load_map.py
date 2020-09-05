@@ -236,7 +236,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
-    layers = []
+    # layers = []
     sectors_markers = []
     placeholders = []
 
