@@ -369,7 +369,7 @@ def download_file(path = None, filename = None):
         return send_from_directory(
             directory=download_path,
             filename=filename,
-            as_attachment=True
+            as_attachment=False
         )
     except:
         abort(404)
