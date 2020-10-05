@@ -366,3 +366,7 @@ def get_number_of_videos_for_zone(zone_name):
     inp = urllib.request.urlopen(query_url)
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
+
+
+def generate_download_url(area, filename):
+    return '/download/' + area + '/' + filename
