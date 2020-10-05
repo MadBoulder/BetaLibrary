@@ -66,8 +66,7 @@ def generate_file_download_html(area, filename, text_to_show):
     """
     Generate the html code that adds the link to the downloadable file
     """
-    download_url = '/download/' + area + '/' + filename
-    return '<a href="{}">{}</a><br>'.format(download_url, text_to_show)
+    return '<a href="{}">{}</a><br>'.format(helpers.generate_download_url(area, filename), text_to_show)
 
 def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible=True, reverse=False):
     """

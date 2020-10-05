@@ -1,6 +1,7 @@
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
+import helpers
 
 def main():
     """
@@ -21,9 +22,16 @@ def main():
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
 
+        # get external guide links
         guides = [(guide['name'], guide['link'])
-                  for guide in area_data['guides']]
+                  for guide in area_data['guides'] if guide.get('link')]
+        # get affiliate guides links 
         affiliate_guides = [affiliate_guide['link'] for affiliate_guide in area_data.get('affiliate_guides', [])]
+        # get hosted guides
+        hosted_guides = [(guide['name'], helpers.generate_download_url(area, guide['file']))
+                  for guide in area_data['guides'] if guide.get('file')]
+        # join guides
+        guides += hosted_guides
 
         base_url = "https://www.youtube.com/embed/?listType=playlist&list="
         playlists[area] = area_data['playlist']
