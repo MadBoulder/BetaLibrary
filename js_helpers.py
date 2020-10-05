@@ -62,14 +62,12 @@ def generate_sector_html(name, link):
     return '<p><b><u>{}</u></b><br><br><a href="{}" target="_blank">Beta videos</a><br></p>'.format(name, link)
 
 
-def generate_track_html(area, track_name):
+def generate_file_download_html(area, filename, text_to_show):
     """
-    Generate the html code that adds the link to the downloadable approximation
-    track
+    Generate the html code that adds the link to the downloadable file
     """
-    track_url = '/download/' + area + '/' + track_name
-    return '<a href="{}">Track</a><br>'.format(track_url)
-
+    download_url = '/download/' + area + '/' + filename
+    return '<a href="{}">{}</a><br>'.format(download_url, text_to_show)
 
 def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible=True, reverse=False):
     """

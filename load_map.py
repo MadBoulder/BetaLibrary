@@ -145,8 +145,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
         )
         zone_approximation._id = generate_ids.next_id()  # reassign id
 
-        zone_approx_html = js_helpers.generate_track_html(
-            area, area_data.get('approximation'))
+        zone_approx_html = js_helpers.generate_file_download_html(
+            area, area_data.get('approximation'), 'Track')
 
         track_popup = folium.Popup(
             zone_approx_html,
