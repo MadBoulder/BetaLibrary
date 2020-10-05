@@ -363,11 +363,11 @@ def render_area(area):
         abort(404)
 
 @app.route("/download/<string:path>/<string:filename>")
-def download_track (path = None, filename = None):
+def download_file(path = None, filename = None):
     try:
-        track_path = os.path.join(app.root_path, 'data/zones/' + path)
+        download_path = os.path.join(app.root_path, 'data/zones/' + path)
         return send_from_directory(
-            directory=track_path,
+            directory=download_path,
             filename=filename,
             as_attachment=True
         )
