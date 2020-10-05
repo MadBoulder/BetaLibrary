@@ -281,6 +281,10 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
+@app.route('/disclosure')
+def affiliate_disclosure():
+    return render_template('affiliate_disclosure.html')
+
 # Cache until 
 @app.route('/statistics')
 @cache.cached(
