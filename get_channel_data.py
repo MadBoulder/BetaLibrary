@@ -266,10 +266,10 @@ def process_zone_data(infile=None, data=None):
 
 
 def get_and_update_data_local(
-    outfile='data/channel/raw_video_data.json',
-    infile='data/channel/raw_video_data.json',
-    is_update=True
-):
+        outfile='data/channel/raw_video_data.json',
+        infile='data/channel/raw_video_data.json',
+        is_update=True
+    ):
     """
     Load current data from local file, update it and store it back.
     """
