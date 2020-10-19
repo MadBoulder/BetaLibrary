@@ -347,7 +347,7 @@ def get_number_of_videos_from_playlists_file(file):
         count[zone] = i['contentDetails']['itemCount']
     return count
 
-
+# TODO: Optimize queries
 def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
@@ -365,6 +365,26 @@ def get_number_of_videos_for_zone(zone_name):
     )
     inp = urllib.request.urlopen(query_url)
     resp = json.load(inp)
+    return resp['items'][0]['contentDetails']['itemCount']
+
+def get_number_of_videos_and_views_for_zone(zone_name):
+    """
+    Given a zone name, return the number of betas of the zone
+    """
+    api_key = None
+    with open("credentials.txt", "r", encoding='utf-8') as f:
+        api_key = f.read()
+
+    data = {}
+    with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+        data[zone_name],
+        api_key
+    )
+    inp = urllib.request.urlopen(query_url)
+    resp = json.load(inp)
+    print(resp)
     return resp['items'][0]['contentDetails']['itemCount']
 
 
