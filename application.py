@@ -228,12 +228,16 @@ def upload_file():
         video_data = ("\n").join(["{}: {}".format(key, value)
                                   for key, value in request.form.items()])
         video_data = video_data.replace('wt_embed_output', 'download link')
+        # filter mail recipients by zone
+        mail_recipients = app.config.get("MAIL_RECIPIENTS")
+        if request.form['zone'].lower() not in app.config['ZONE_FILTERS']:
+            mail_recipients = mail_recipients[1:]
         # build email
         msg = Message(
             subject=(", ").join([request.form[field]
                                  for field in EMAIL_SUBJECT_FIELDS]),
             sender=app.config.get("MAIL_USERNAME"),
-            recipients=app.config.get("MAIL_RECIPIENTS"),
+            recipients=mail_recipients,
             body=video_data)
         mail.send(msg)
         # If no errors are raised, assume the action was successful
