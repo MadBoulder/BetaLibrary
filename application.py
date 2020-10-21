@@ -20,6 +20,7 @@ from bokeh.resources import INLINE
 EXTENSION = '.html'
 NUM_RESULTS = 4
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
+REMOVE_FIRST = slice(1, None, 1)
 
 # create the application object
 app = Flask(__name__)
@@ -230,8 +231,8 @@ def upload_file():
         video_data = video_data.replace('wt_embed_output', 'download link')
         # filter mail recipients by zone
         mail_recipients = app.config.get("MAIL_RECIPIENTS")
-        if request.form['zone'].lower() not in app.config['ZONE_FILTERS']:
-            mail_recipients = mail_recipients[1:]
+        if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
+            mail_recipients = mail_recipients[REMOVE_FIRST]
         # build email
         msg = Message(
             subject=(", ").join([request.form[field]
