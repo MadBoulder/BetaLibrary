@@ -276,12 +276,14 @@ def render_about_us():
     if request.method == 'POST':
         # build email text/body
         feedback_data = request.form['feedback']
+        sender_email = request.form['email']
+        msg_body = "Sender: {}\nMessage: {}".format(sender_email, feedback_data)
         # build email
         msg = Message(
             subject='madboulder.org feedback',
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
-            body=feedback_data)
+            body=msg_body)
         mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
