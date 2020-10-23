@@ -6,14 +6,15 @@ import os
 import os.path
 
 MAX_ITEMS_API_QUERY = 50
-
+DATA_ZONES_PATH = 'data/zones/'
+NAME = 'name'
+ENCODING = 'utf-8'
 
 class bidict(dict):
     """
     Bidirectional dictionary. Given a normal Python dict it enables to retrieve values by
     key and keys by value
     """
-
     def __init__(self, *args, **kwargs):
         super(bidict, self).__init__(*args, **kwargs)
         self.inverse = {}
@@ -38,29 +39,29 @@ def load_zones():
     Load the files and names of all the bouldering zones defined
     in ./data/zones.
     """
-    areas = next(os.walk('data/zones/'))[1]
+    areas = next(os.walk(DATA_ZONES_PATH))[1]
     zones = []
     for area in areas:
-        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
         area_data = {}
-        with open(datafile, encoding='utf-8') as data:
+        with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
-        zones += [{'name': area_data['name'], 'file': area}]
+        zones += [{NAME: area_data[NAME], 'file': area}]
     return zones
 
 def load_sectors():
     """
     Load all sectors defined in the bouldering zones at ./data/zones.
     """
-    areas = next(os.walk('data/zones/'))[1]
+    areas = next(os.walk(DATA_ZONES_PATH))[1]
     sectors = []
     for area in areas:
-        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
         area_data = {}
-        with open(datafile, encoding='utf-8') as data:
+        with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
         for sector in area_data.get('sectors', []):
-            sectors += [{'name': sector['name'], 'link': sector['link']}]
+            sectors += [{NAME: sector[NAME], 'link': sector['link']}]
     return sectors
 
 def count_sectors_in_zone(zone):
@@ -68,8 +69,8 @@ def count_sectors_in_zone(zone):
     Given a zone name, return the number of sectors based on the
     zone's datafile specified sectors.
     """
-    datafile = 'data/zones/' + zone + '/' + zone + '.txt'
-    with open(datafile, encoding='utf-8') as data:
+    datafile = DATA_ZONES_PATH + zone + '/' + zone + '.txt'
+    with open(datafile, encoding=ENCODING) as data:
         area_data = json.load(data)
         return len(area_data['sectors'])
 
@@ -180,7 +181,7 @@ def search_zone(query, num_results=4, exact_match=False):
         return []
     zones = load_zones()
     for zone in zones:
-        lev, long_sub = measure_similarity(query, zone['name'])
+        lev, long_sub = measure_similarity(query, zone[NAME])
         score = lev / (long_sub ** 4 + 1)
         zone['score'] = score
         # If the inputed text is entirely matched in a zone,
@@ -221,7 +222,7 @@ def search_sector(query, num_results=4, exact_match=False):
         return []
     sectors = load_sectors()
     for sector in sectors:
-        lev, long_sub = measure_similarity(query, sector['name'])
+        lev, long_sub = measure_similarity(query, sector[NAME])
         score = lev / (long_sub ** 4 + 1)
         sector['score'] = score
         # If the inputed text is entirely matched in a zone,
@@ -250,7 +251,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     Obtain the num_videos latest videos from MadBoulder's youtube channel
     """
     api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
         api_key = f.read()
 
     base_video_url = '//www.youtube.com/embed/'
@@ -275,7 +276,7 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     Get the info of a youtube channel from the channel's id
     """
     api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
         api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
         channel_id, api_key)
@@ -289,7 +290,7 @@ def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA", re
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
     """
     api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
         api_key = f.read()
     base_video_url = '//www.youtube.com/embed/'  # to embed video
     query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
@@ -321,11 +322,11 @@ def get_number_of_videos_from_playlists_file(file):
     } 
     """
     api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
         api_key = f.read()
 
     data = {}
-    with open(file, 'r', encoding='utf-8') as f:
+    with open(file, 'r', encoding=ENCODING) as f:
         data = json.load(f)
     playlists = list(data.values())
     # We want to be able to get the playlist from the zone name
@@ -347,17 +348,36 @@ def get_number_of_videos_from_playlists_file(file):
         count[zone] = i['contentDetails']['itemCount']
     return count
 
-
+# TODO: Optimize queries
 def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
     api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
         api_key = f.read()
 
     data = {}
-    with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
+    with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
+        data = json.load(f)
+    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+        data[zone_name],
+        api_key
+    )
+    inp = urllib.request.urlopen(query_url)
+    resp = json.load(inp)
+    return resp['items'][0]['contentDetails']['itemCount']
+
+def get_number_of_videos_and_views_for_zone(zone_name):
+    """
+    Given a zone name, return the number of betas of the zone
+    """
+    api_key = None
+    with open("credentials.txt", "r", encoding=ENCODING) as f:
+        api_key = f.read()
+
+    data = {}
+    with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
         data = json.load(f)
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data[zone_name],
@@ -369,4 +389,9 @@ def get_number_of_videos_for_zone(zone_name):
 
 
 def generate_download_url(area, filename):
+    """
+    Given a specific are and the downloadable filename,
+    generate a link that navigates to the file and enables
+    its download.
+    """
     return '/download/' + area + '/' + filename
