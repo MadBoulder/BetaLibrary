@@ -246,12 +246,12 @@ def search_sector(query, num_results=4, exact_match=False):
 
     return to_show
 
-def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6):
+def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6):
     """
     Obtain the num_videos latest videos from MadBoulder's youtube channel
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
     base_video_url = '//www.youtube.com/embed/'
@@ -266,17 +266,17 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=6)
     resp = json.load(inp)
     for i in resp['items']:
         i['snippet']['title'] = html.unescape(i['snippet']['title'])
-        if i['id']['kind'] == "youtube#video":
+        if i['id']['kind'] == 'youtube#video':
             video_links.append(base_video_url + i['id']['videoId'])
     return video_links
 
 
-def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a youtube channel from the channel's id
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
         channel_id, api_key)
@@ -284,13 +284,13 @@ def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
     return json.load(inp)
 
 
-def get_video_from_channel(video_name, channel_id="UCX9ok0rHnvnENLSK7jdnXxA", results=5):
+def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', results=5):
     """
     API query format:
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
     base_video_url = '//www.youtube.com/embed/'  # to embed video
     query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
@@ -322,7 +322,7 @@ def get_number_of_videos_from_playlists_file(file):
     } 
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
     data = {}
@@ -354,7 +354,7 @@ def get_number_of_videos_for_zone(zone_name):
     Given a zone name, return the number of betas of the zone
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
     data = {}
@@ -373,7 +373,7 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     Given a zone name, return the number of betas of the zone
     """
     api_key = None
-    with open("credentials.txt", "r", encoding=ENCODING) as f:
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
     data = {}
