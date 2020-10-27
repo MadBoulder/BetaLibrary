@@ -4,6 +4,7 @@ from folium.plugins import MarkerCluster, BeautifyIcon, Fullscreen
 from folium.features import CustomIcon
 import json
 import os
+import math
 import js_helpers
 
 POPUP_WIDTH = 100
@@ -14,6 +15,7 @@ MARKER_SIZE = 32
 ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
 APPROX_PLACEHOLDER = 'approx_placeholder'
+BETA_VIDEOS_TEXT = "Beta Videos: "
 
 #####################
 ### GENERATE MAPS ###
@@ -298,7 +300,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
             area_data['name'], area_name, html_redirect, placeholder), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
-            popup_html, max_width=len(area_data['name'])*10)
+            popup_html, max_width=max(len(area_data['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
         placeholders.append(placeholder)
 
