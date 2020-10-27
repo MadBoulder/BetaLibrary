@@ -13,7 +13,7 @@ def replace_tag_ids(map_html, tags_to_replace, generate_ids):
     generated. This is to make the changes more git friendly.
     """
     for tag_to_replace in tags_to_replace:
-        html_tags = re.findall(tag_to_replace+'_\w*', map_html)
+        html_tags = re.findall(tag_to_replace + r'_\w*', map_html)
         # find tag indexes
         positions = []
         tags = set(html_tags)  # remove duplicates
@@ -21,10 +21,11 @@ def replace_tag_ids(map_html, tags_to_replace, generate_ids):
             position = map_html.index(tag)
             positions.append((tag, position))
         # sort by position
+        # sorted_tags -> list([to_replace, index])
         sorted_tags = sorted(positions, key=lambda x: x[1])
         replacements = {i: tag_to_replace+'_'+generate_ids.next_id()
                         for i, v in sorted_tags}
-        for to_replace, index in sorted_tags:
+        for to_replace, _ in sorted_tags:
             map_html = map_html.replace(to_replace, replacements[to_replace])
     return map_html
 
