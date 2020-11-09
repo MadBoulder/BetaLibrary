@@ -12,6 +12,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = "AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g"
 
