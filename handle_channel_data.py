@@ -375,7 +375,7 @@ def get_data_local():
     return video_data
 
 
-def push_zone_data(zone_data):
+def set_zone_data(zone_data):
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {

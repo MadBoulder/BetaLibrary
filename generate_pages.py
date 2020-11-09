@@ -24,7 +24,7 @@ def push_zones_to_firebase(zone_data):
         "playlist"
     }
     """
-    handle_channel_data.push_zone_data(zone_data)
+    handle_channel_data.set_zone_data(zone_data)
 
 
 def main():
