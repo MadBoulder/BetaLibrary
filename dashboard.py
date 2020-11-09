@@ -14,7 +14,7 @@ from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
 
-import get_channel_data
+import handle_channel_data
 
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method, category, isRatio){
@@ -44,7 +44,7 @@ SORT_FUNCTION = """
 
 
 def get_last_dashboard_update():
-    return get_channel_data.get_last_update_date()
+    return handle_channel_data.get_last_update_date()
 
 
 def prepare_barchart_data(data, axis):
@@ -83,7 +83,7 @@ def get_dashboard(local_data=False):
             video_data = data['items']
             last_update = data['date']
     else:
-        video_data = get_channel_data.get_data_firebase()['items']
+        video_data = handle_channel_data.get_data_firebase()['items']
 
     # X axis categories
     x_axis_map = {
