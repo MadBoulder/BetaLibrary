@@ -416,6 +416,8 @@ def generate_download_url(area, filename):
     """
     return '/download/' + area + '/' + filename
 
+# TODO: move this process to periodic database update script and here query DDBB
+# Also, cache the results
 def get_list_of_zones():
     areas = next(os.walk('data/zones/'))[1]
     zones = list()
