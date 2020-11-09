@@ -23,7 +23,6 @@ def main():
     template_env = Environment(loader=template_loader)
 
     playlists = {}
-    zones = {}
     for area in areas:
         # Create zone map
         print(area)
@@ -31,8 +30,6 @@ def main():
         area_data = {}
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
-        # Add zone to zones list
-        zones[area] = area_data[NAME_FIELD]
         # get external guide links
         guides = [(guide[NAME_FIELD], guide[LINK_FIELD])
                   for guide in area_data[GUIDES_FIELD] if guide.get(LINK_FIELD)]
@@ -53,13 +50,6 @@ def main():
 
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
-
-    # generate zones list
-    zones_list_template = template_env.get_template('templates/zones_list_layout.html')
-    videos = {zone: helpers.get_number_of_videos_and_views_for_zone(zone) for zone in zones.keys()}
-    output = zones_list_template.render(zones=zones, videos=videos)
-    with open('templates/new_ui_zones_list'+'.html', 'w', encoding='utf-8') as template:
-        template.write(output)
 
     # Update playlists file
     with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:

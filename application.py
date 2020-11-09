@@ -146,9 +146,21 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
-@app.route('/zones')
+@app.route('/zones', methods=['GET', 'POST'])
+@cache.cached(
+    timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
+    key_prefix="mad_zones"
+)
 def zones():
-    return render_template('zones.html')
+    if request.method == 'GET':
+        # each zone has: link, name, num.videos
+        zones = helpers.get_list_of_zones()
+        return render_template('zones.html', zones=zones)
+    if request.method == 'POST':
+        # get filtered filter zones
+        zones = helpers.get_list_of_zones()
+        # sort zones
+        return render_template('zones.html', zones=zones)
 
 @app.route('/search_zone', methods=['GET', 'POST'])
 def search_zone():

@@ -387,25 +387,25 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
 
-def get_number_of_videos_and_views_for_zone(zone_name):
-    """
-    Given a zone name, return the number of betas of the zone
-    """
-    api_key = None
-    with open("credentials.txt", "r", encoding='utf-8') as f:
-        api_key = f.read()
+# def get_number_of_videos_and_views_for_zone(zone_name):
+#     """
+#     Given a zone name, return the number of betas of the zone
+#     """
+#     api_key = None
+#     with open("credentials.txt", "r", encoding='utf-8') as f:
+#         api_key = f.read()
 
-    data = {}
-    with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-        data[zone_name],
-        api_key
-    )
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-    print(resp)
-    return resp['items'][0]['contentDetails']['itemCount']
+#     data = {}
+#     with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
+#         data = json.load(f)
+#     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+#         data[zone_name],
+#         api_key
+#     )
+#     inp = urllib.request.urlopen(query_url)
+#     resp = json.load(inp)
+#     print(resp)
+#     return resp['items'][0]['contentDetails']['itemCount']
 
 
 def generate_download_url(area, filename):
@@ -415,3 +415,17 @@ def generate_download_url(area, filename):
     its download.
     """
     return '/download/' + area + '/' + filename
+
+def get_list_of_zones():
+    areas = next(os.walk('data/zones/'))[1]
+    zones = list()
+    for area in areas:
+        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        with open(datafile, encoding='utf-8') as data:
+            area_data = json.load(data)
+        zone = dict()
+        zone['normalized_name'] = area
+        zone['name'] = area_data['name']
+        zone['videos'] = get_number_of_videos_and_views_for_zone(area)
+        zones.append(zone)
+    return zones
