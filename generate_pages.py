@@ -12,10 +12,11 @@ GUIDES_FIELD = 'guides'
 PLAYLIST_FIELD = 'playlist'
 SECTORS_FIELD = 'sectors'
 AFFILIATE_GUIDES = 'affiliate_guides'
+COUNTRY_FIELD = 'country'
 
 # When generating pages because a new zone has been added,
 # also update the list of zones in the database
-def push_zones_to_firebase(zone_data):
+def set_zones_to_firebase(zone_data):
     """
     zone: {
         "normalized_name",
@@ -71,7 +72,8 @@ def main():
             "normalized_name": area,
             "name": area_data[NAME_FIELD],
             "videos": helpers.get_number_of_videos_and_views_for_zone(area),
-            "playlist": area_data[PLAYLIST_FIELD]
+            "playlist": area_data[PLAYLIST_FIELD],
+            "country": area_data[COUNTRY_FIELD]
         }
         zones.append(zone)
 
@@ -79,7 +81,7 @@ def main():
     with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
     
-    push_zones_to_firebase(zones)
+    set_zones_to_firebase(zones)
 
 if __name__ == '__main__':
     main()
