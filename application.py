@@ -73,6 +73,8 @@ def get_map_all():
     # and finally render the page template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
+    # if it is cheaper or faster to query this data from the
+    # DDBB we can optimize it in the future
     data = helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
     # store num videos in session to avoid repeating calls

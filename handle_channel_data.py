@@ -383,16 +383,7 @@ def push_zone_data(zone_data):
         })
 
     root = db.reference()
-    # check if there is data already
-    data_path_id = None
-    try:
-        data_path_id = list(root.child('zone_data').get().keys())[0]
-    except:
-        pass
-    if data_path_id:
-        root.child('zone_data').push({data_path_id: zone_data})
-    else:
-        root.child('zone_data').push(zone_data)
+    root.child('zone_data').set(zone_data)
 
 
 def get_zone_data():
