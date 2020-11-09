@@ -403,7 +403,7 @@ def get_zone_data():
         })
 
     root = db.reference()
-    return list(root.child('zone_data').get().values())[0]
+    return root.child('zone_data').get()
 
 def get_number_of_videos_from_playlist(playlist):
     """
