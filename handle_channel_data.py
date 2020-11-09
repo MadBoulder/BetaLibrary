@@ -385,6 +385,13 @@ def set_zone_data(zone_data):
     root = db.reference()
     root.child('zone_data').set(zone_data)
 
+def update_zone_data():
+    zone_data = get_zone_data()
+    # Update the number of videos of each zone
+    for zone in zone_data:
+        zone['videos'] = get_number_of_videos_from_playlist(zone['playlist'])
+    set_zone_data(zone_data)
+    
 
 def get_zone_data():
     if not firebase_admin._apps:
@@ -396,6 +403,17 @@ def get_zone_data():
     root = db.reference()
     return list(root.child('zone_data').get().values())[0]
 
+def get_number_of_videos_from_playlist(playlist):
+    """
+    Given a playlist, return the number of videos it has
+    """
+    with open('credentials.txt', 'r', encoding=ENCODING) as f:
+        api_key = f.read()
+
+    query_url = f'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={playlist}&key={api_key}'
+    inp = urllib.request.urlopen(query_url)
+    resp = json.load(inp)
+    return resp['items'][0]['contentDetails']['itemCount']
 
 if __name__ == "__main__":
     # for local update
