@@ -5,6 +5,7 @@ import helpers
 import js_helpers
 from id_generator import IDGenerator
 
+ZONES_PATH = 'data/zones/'
 
 def main():
     """
@@ -12,15 +13,15 @@ def main():
     as well as a general map that contains all the areas
     """
     generate_ids = IDGenerator()
-    areas = next(os.walk('data/zones/'))[1]
-    all_data = ['data/zones/' + area + '/' + area + '.txt' for area in areas]
+    areas = next(os.walk(ZONES_PATH))[1]
+    all_data = [ZONES_PATH + area + '/' + area + '.txt' for area in areas]
     for area in areas:
         print(area)
         with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
                     area,
-                    'data/zones/' + area + '/' + area + '.txt',
+                    ZONES_PATH + area + '/' + area + '.txt',
                     generate_ids,
                     True
                 )
