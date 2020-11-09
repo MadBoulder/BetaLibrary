@@ -2,6 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 import helpers
+import handle_channel_data
 
 LINK_FIELD = 'link'
 NAME_FIELD = 'name'
@@ -11,6 +12,20 @@ GUIDES_FIELD = 'guides'
 PLAYLIST_FIELD = 'playlist'
 SECTORS_FIELD = 'sectors'
 AFFILIATE_GUIDES = 'affiliate_guides'
+
+# When generating pages because a new zone has been added,
+# also update the list of zones in the database
+def push_zones_to_firebase(zone_data):
+    """
+    zone: {
+        "normalized_name",
+        "name"
+        "videos"
+        "playlist"
+    }
+    """
+    handle_channel_data.push_zone_data(zone_data)
+
 
 def main():
     """
@@ -23,6 +38,7 @@ def main():
     template_env = Environment(loader=template_loader)
 
     playlists = {}
+    zones = list()
     for area in areas:
         # Create zone map
         print(area)
@@ -51,10 +67,19 @@ def main():
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
+        zone = {
+            "normalized_name": area,
+            "name": area_data[NAME_FIELD],
+            "videos": helpers.get_number_of_videos_and_views_for_zone(area),
+            "playlist": area_data[PLAYLIST_FIELD]
+        }
+        zones.append(zone)
+
     # Update playlists file
     with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
-
+    
+    push_zones_to_firebase(zones)
 
 if __name__ == '__main__':
     main()

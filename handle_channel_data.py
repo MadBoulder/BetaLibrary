@@ -375,6 +375,17 @@ def get_data_local():
     return video_data
 
 
+def push_zone_data(zone_data):
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://madboulder.firebaseio.com'
+        })
+
+    root = db.reference()
+    root.child('zone_data').push(zone_data)
+
+
 if __name__ == "__main__":
     # for local update
     # get_and_update_data_local()
