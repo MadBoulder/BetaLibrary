@@ -10,6 +10,7 @@ import helpers
 import js_helpers
 import dashboard
 import dashboard_videos
+import handle_channel_data
 from werkzeug.utils import secure_filename
 
 from bokeh.embed import components
@@ -154,11 +155,11 @@ def home():
 def zones():
     if request.method == 'GET':
         # each zone has: link, name, num.videos
-        zones = helpers.get_list_of_zones()
+        zones = handle_channel_data.get_zone_data()
         return render_template('zones.html', zones=zones)
     if request.method == 'POST':
         # get filtered filter zones
-        zones = helpers.get_list_of_zones()
+        zones = handle_channel_data.get_zone_data()
         # sort zones
         return render_template('zones.html', zones=zones)
 

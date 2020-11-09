@@ -383,15 +383,36 @@ def push_zone_data(zone_data):
         })
 
     root = db.reference()
-    root.child('zone_data').push(zone_data)
+    # check if there is data already
+    data_path_id = None
+    try:
+        data_path_id = list(root.child('zone_data').get().keys())[0]
+    except:
+        pass
+    if data_path_id:
+        root.child('zone_data').push({data_path_id: zone_data})
+    else:
+        root.child('zone_data').push(zone_data)
+
+
+def get_zone_data():
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://madboulder.firebaseio.com'
+        })
+
+    root = db.reference()
+    return list(root.child('zone_data').get().values())[0]
 
 
 if __name__ == "__main__":
     # for local update
     # get_and_update_data_local()
     # for firebase
-    updated_data = get_and_update_data_firebase(is_update=True)
+   updated_data = get_and_update_data_firebase(is_update=True)
 
     # local update
-    with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
-        json.dump(updated_data, f, indent=4)
+   with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
+       json.dump(updated_data, f, indent=4)
+    # get_zone_data()
