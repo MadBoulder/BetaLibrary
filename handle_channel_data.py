@@ -385,6 +385,7 @@ def set_zone_data(zone_data):
     root = db.reference()
     root.child('zone_data').set(zone_data)
 
+
 def update_zone_data():
     zone_data = get_zone_data()
     # Update the number of videos of each zone
