@@ -430,4 +430,5 @@ def get_list_of_zones():
         zone['name'] = area_data['name']
         zone['videos'] = get_number_of_videos_and_views_for_zone(area)
         zones.append(zone)
+    zones = sorted(zones, lambda x: x['normalized_name'])
     return zones
