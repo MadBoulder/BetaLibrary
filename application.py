@@ -131,10 +131,15 @@ def home():
             'text': _("Zones"),
             'data': len(zones)
         },
+        # {
+        #     'logo': "fa fa-map-marked",
+        #     'text': _("Sectors"),
+        #     'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
+        # },
         {
-            'logo': "fa fa-map-marked",
-            'text': _("Sectors"),
-            'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
+            'logo': "fa fa-users",
+            'text': _("Contributors"),
+            'data': handle_channel_data.get_contributors_count()
         },
         {
             'logo': "fab fa-youtube",

@@ -365,6 +365,16 @@ def get_last_update_date():
     root = db.reference()
     return root.child('video_data/date').get()
 
+def get_contributors_count():
+    """
+    Get the number of contributors
+    """
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://madboulder.firebaseio.com'
+        })
+    return db.reference().child('contributor_count').get()
 
 def get_data_local():
     """
