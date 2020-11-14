@@ -68,6 +68,7 @@ def main():
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
+        # this currently assumes country codes have been added
         zone = {
             "normalized_name": area,
             "name": area_data[NAME_FIELD],
