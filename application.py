@@ -163,12 +163,14 @@ def zones():
     if request.method == 'GET':
         # each zone has: link, name, num.videos
         zones = handle_channel_data.get_zone_data()
-        return render_template('zones.html', zones=zones)
+        countries = set([zone['country'] for zone in zones])
+        return render_template('zones.html', zones=zones, countries=countries)
     if request.method == 'POST':
         # get filtered filter zones
         zones = handle_channel_data.get_zone_data()
+        countries = set([zone['country'] for zone in zones])
         # sort zones
-        return render_template('zones.html', zones=zones)
+        return render_template('zones.html', zones=zones, countries=countries)
 
 @app.route('/search_zone', methods=['GET', 'POST'])
 def search_zone():
