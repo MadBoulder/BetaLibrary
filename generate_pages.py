@@ -3,6 +3,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 import helpers
 import handle_channel_data
+from tempfile import mkstemp
+from shutil import move, copymode
+from os import fdopen, remove
 
 LINK_FIELD = 'link'
 NAME_FIELD = 'name'
@@ -13,6 +16,7 @@ PLAYLIST_FIELD = 'playlist'
 SECTORS_FIELD = 'sectors'
 AFFILIATE_GUIDES = 'affiliate_guides'
 COUNTRY_FIELD = 'country'
+CONFIG_FILE = 'config.py'
 
 # When generating pages because a new zone has been added,
 # also update the list of zones in the database
@@ -27,6 +31,43 @@ def set_zones_to_firebase(zone_data):
     """
     handle_channel_data.set_zone_data(zone_data)
 
+def update_countries_list(zones, input_file=CONFIG_FILE):
+    """
+    Update the current list of countries where 
+    we have bouldering zones
+    """
+    # Update contries list
+    countries_list = ["_('" + c + "')" for c in set([z[COUNTRY_FIELD] for z in zones])]
+    countries_updated = "COUNTRIES = ["
+    for z in countries_list:
+        if z != countries_list[-1]:
+            countries_updated += z + ", "
+        else:
+            countries_updated += z
+    countries_updated += "]"
+    replace_in_file(input_file, "COUNTRIES", countries_updated)    
+
+
+def replace_in_file(file_path, pattern, new_line):
+    """
+    Replace a line in a file if the line contains
+    the pattern
+    """
+    # create temp file
+    fh, abs_path = mkstemp()
+    with fdopen(fh,'w') as new_file:
+        with open(file_path) as old_file:
+            for line in old_file:
+                if pattern in line:
+                    new_file.write(new_line)
+                else:
+                    new_file.write(line)
+    # copy the file permissions from the old file to the new file
+    copymode(file_path, abs_path)
+    # remove original file
+    remove(file_path)
+    # move new file
+    move(abs_path, file_path)
 
 def main():
     """
@@ -81,7 +122,11 @@ def main():
     # Update playlists file
     with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
-    
+
+    # Update countries list
+    update_countries_list(zones)
+
+    # Update zones in DDBB
     set_zones_to_firebase(zones)
 
 if __name__ == '__main__':
