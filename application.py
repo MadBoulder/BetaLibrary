@@ -30,19 +30,19 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# mail_settings = {
-#     "MAIL_SERVER": 'smtp.gmail.com',
-#     "MAIL_PORT": 465,
-#     "MAIL_USE_TLS": False,
-#     "MAIL_USE_SSL": True,
-#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
-#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-#     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-# }
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['EMAIL_USER'],
+    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
+}
 
-# app.config.update(mail_settings)
-# mail = Mail(app)
+app.config.update(mail_settings)
+mail = Mail(app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
@@ -163,14 +163,12 @@ def zones():
     if request.method == 'GET':
         # each zone has: link, name, num.videos
         zones = handle_channel_data.get_zone_data()
-        countries = set([zone['country'] for zone in zones])
-        return render_template('zones.html', zones=zones, countries=countries)
+        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'])
     if request.method == 'POST':
         # get filtered filter zones
         zones = handle_channel_data.get_zone_data()
-        countries = set([zone['country'] for zone in zones])
         # sort zones
-        return render_template('zones.html', zones=zones, countries=countries)
+        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'])
 
 @app.route('/search_zone', methods=['GET', 'POST'])
 def search_zone():
@@ -262,7 +260,7 @@ def upload_file():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=mail_recipients,
             body=video_data)
-        # mail.send(msg)
+        mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
@@ -306,7 +304,7 @@ def render_about_us():
             sender=app.config.get("MAIL_USERNAME"),
             recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
             body=msg_body)
-        # mail.send(msg)
+        mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
