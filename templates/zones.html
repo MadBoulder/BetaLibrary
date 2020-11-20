@@ -159,6 +159,9 @@
               <i class="fas fa-sliders-h fa-2x" style="margin-top: -0.25rem;"></i>
             </button>
           </div>
+          <div class="container row" id="selected-countries" style="margin:inherit; padding: inherit;">
+          </div>
+          </div>
           <div class="container" id="pageContent">
             <div class="row">
               {% for zone in zones %}
@@ -268,10 +271,29 @@
     // renderChoiceLimit:5
   });
 
+  // Initialize main page selection list. Make it mimic the current selection status
+  multipleCancelButton._currentState.items.filter(z => z.active).forEach(element => {
+      $( "#selected-countries" ).append(
+         '<div class="active-filter-selection"><span class="active-filter-text">'+ element.label +'</span><i class="fas fa-times item-icon"></i></div>' 
+      );
+    });
+
+  // Update list when there is a selection change
+  $('#choices-multiple-remove-button').change(e => {
+    console.log(multipleCancelButton._currentState.items.filter(z => z.active))
+    $('#selected-countries').empty();
+    multipleCancelButton._currentState.items.filter(z => z.active).forEach(element => {
+      $( "#selected-countries" ).append(
+         '<div class="active-filter-selection"><span class="active-filter-text">'+ element.label +'</span><i class="fas fa-times item-icon"></i></div>' 
+      );
+    });
+  })
+
    var $cards = $(".custom-card");
 
    $("#search-zone").keyup(function() {
        var val = $.trim(this.value).toLowerCase();
+       console.log(multipleCancelButton.items);
        if (val === "")
            $cards.show();
        else {
@@ -299,6 +321,20 @@
   a.zone-card-link:hover {
     color: inherit;
     text-decoration: none;
+  }
+
+  .active-filter-selection {
+    background-color: black;
+    border-radius: 0.2rem;
+    margin: 0.2rem;
+  }
+  .active-filter-text {
+    color: white;
+    padding: 0.3rem;
+  }
+  .item-icon {
+    color: white;
+    padding: 0.3rem;
   }
 
   @media only screen and (max-width: 600px) 
