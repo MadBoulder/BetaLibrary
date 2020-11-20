@@ -33,6 +33,10 @@
         crossorigin="anonymous"></script>
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/madboulder.css') }}" />
     <!-- Development -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
@@ -78,11 +82,20 @@
           </div>
           <div class="modal-body">
             <div class="form-group">
-              <select multiple class="form-control">
+              <div class="row d-flex justify-content-center mt-100">
+                <div class="col-md-6"> 
+                  <select id="choices-multiple-remove-button" placeholder="{{ _('Filter by country') }}" multiple>
+                    {% for country in countries %}
+                      <option value="{{ country }}">{{ _(country) }}</option>
+                    {% endfor %}
+                  </select> 
+                </div>
+              </div>
+              <!-- <select multiple class="form-control">
                 {% for country in countries %}
                   <option value="{{ country }}">{{ _(country) }}</option>
                 {% endfor %}
-              </select>
+              </select> -->
             </div>
           </div>
           <div class="modal-footer">
@@ -247,6 +260,14 @@
 
 <script>
   $(document).ready(function() {
+
+  var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+    removeItemButton: true,
+    // maxItemCount:5,
+    // searchResultLimit:5,
+    // renderChoiceLimit:5
+  });
+
    var $cards = $(".custom-card");
 
    $("#search-zone").keyup(function() {
