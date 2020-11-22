@@ -33,6 +33,7 @@
         crossorigin="anonymous"></script>
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.translate.js') }}"></script>
     
     <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
     <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
@@ -71,6 +72,7 @@
     <meta name="msapplication-square310x310logo" content="https://madboulder.org/static/images/logo/mstile-310x310.png" />
   </head>
   <body>
+    <div id="current-language" hidden>{{ current_lang }}</div>
     <!-- Modal -->
     <div class="modal fade" id="country-modal" role="dialog">
       <div class="modal-dialog">
@@ -83,12 +85,24 @@
           <div class="modal-body">
             <div class="form-group">
               <div class="row d-flex justify-content-center mt-100">
-                <div class="col-md-6"> 
-                  <select id="choices-multiple-remove-button" placeholder="{{ _('Filter by country') }}" multiple>
+                <div class="col-md-6" id="inactive-countries-list"> 
+                  <!-- <select id="choices-multiple-remove-button" placeholder="{{ _('Filter by country') }}" multiple>
                     {% for country in countries %}
                       <option value="{{ country }}">{{ _(country) }}</option>
                     {% endfor %}
-                  </select> 
+                  </select>  -->
+                  {% for country in countries %}
+                  <div class="active-filter-selection row" id="{{ country }}">
+                    <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
+                      {{ _(country) }}
+                    </span>
+                    <div class="col-6" style="display: flex; justify-content: right;">
+                      <button class="btn" onclick="addElement(this)">
+                        <i class="fas fa-plus item-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {% endfor %}
                 </div>
               </div>
               <!-- <select multiple class="form-control">
@@ -99,7 +113,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
           </div>
         </div>
       </div>
@@ -165,7 +179,7 @@
           <div class="container" id="pageContent">
             <div class="row">
               {% for zone in zones %}
-              <div class="custom-card">
+              <div class="custom-card" id="{{ zone['normalized_name'] }}-{{zone['country']}}">
                 <div class="card text-white zone-card" style="width: 12rem; background-color:black;">
                   <a class="zone-card-link" href="/{{ zone['normalized_name'] }}" >
                     <!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
@@ -262,42 +276,97 @@
 </html>
 
 <script>
-  $(document).ready(function() {
+var translator;
+var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+var dict = {
+  "es": {
+    es: "España",
+    ca: "Espanya",
+    en: "Spain"
+  },
+  "it": {
+    es: "Italia",
+    ca: "Itàlia",
+    en: "Italy"
+  },
+  "ca": {
+    es: "Canadá",
+    ca: "Canadà",
+    en: "Canada"    
+  },
+  "at": {
+    es: "Austria",
+    ca: "Austria",
+    en: "Austria"    
+  },
+  "fr": {
+    es: "Francia",
+    ca: "França",
+    en: "France"    
+  },
+  "de": {
+    es: "Alemania",
+    ca: "Alemanya",
+    en: "Germany"    
+  },
+  "za": {
+    es: "Sudáfrica",
+    ca: "Sudàfrica",
+    en: "South Africa"    
+  },
+  "us": {
+    es: "Estados Unidos",
+    ca: "Estats Units",
+    en: "United States"    
+  },
+  "ch": {
+    es: "Suiza",
+    ca: "Suïssa",
+    en: "Switzerland"    
+  }
+}
 
-  var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
-    removeItemButton: true,
-    // maxItemCount:5,
-    // searchResultLimit:5,
-    // renderChoiceLimit:5
-  });
+function removeElement(element) {
+    var text_to_place = $(element).parent()[0].id;
+    $("#inactive-countries-list").append(
+      '<div class="active-filter-selection row" id="' + text_to_place + '">' +
+        '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
+          '{{ _("' + text_to_place + '") }}' +
+        '</span>' +
+        '<div class="col-6" style="display: flex; justify-content: right;">' +
+          '<button class="btn" onclick="addElement(this)">' +
+            '<i class="fas fa-plus item-icon"></i>' +
+          '</button>' +
+        '</div>' +
+      '</div>' 
+    );
+    translator.lang(curr_lng);
+    $(element).parent().remove();
+};
 
-  // Initialize main page selection list. Make it mimic the current selection status
-  multipleCancelButton._currentState.items.filter(z => z.active).forEach(element => {
-      $( "#selected-countries" ).append(
-        '<div class="active-filter-selection"><span class="active-filter-text">'+ 
-        element.label +
-        '</span><i class="fas fa-times item-icon"></i></div>' 
-      );
-    });
+function addElement(element) {
+    // Add to active selection list:
+    var text_to_place = $(element).parent().parent()[0].id;
+    $("#selected-countries").append(
+      '<div class="active-filter-selection" id="'+ text_to_place +'"><span class="active-filter-text trn">'+
+      '{{ _("' + text_to_place + '") }}' +
+      '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon"></i></button></div>'
+    );
+    // Remove from list
+    translator.lang(curr_lng);
+    $(element).parent().parent().remove();
+};
 
-  // Update list when there is a selection change
-  $('#choices-multiple-remove-button').change(e => {
-    console.log(multipleCancelButton._currentState.items.filter(z => z.active))
-    $('#selected-countries').empty();
-    multipleCancelButton._currentState.items.filter(z => z.active).forEach(element => {
-      $( "#selected-countries" ).append(
-        '<div class="active-filter-selection"><span class="active-filter-text">'+
-        element.label +
-        '</span><i class="fas fa-times item-icon"></i></div>' 
-      );
-    });
-  })
+$(document).ready(function() {
+   curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+   console.log(curr_lng);
+   translator = $('body').translate({lang: curr_lng, t: dict}); //use English
+   translator.lang(curr_lng);
 
    var $cards = $(".custom-card");
 
    $("#search-zone").keyup(function() {
        var val = $.trim(this.value).toLowerCase();
-       console.log(multipleCancelButton.items);
        if (val === "")
            $cards.show();
        else {
@@ -329,16 +398,20 @@
 
   .active-filter-selection {
     background-color: black;
-    border-radius: 0.2rem;
+    border-radius: 0.3rem;
     margin: 0.2rem;
   }
+  .active-filter-text-list-item {
+    color: white;
+    padding-left: 0.75rem;
+  }  
   .active-filter-text {
     color: white;
-    padding: 0.3rem;
+    padding-left: 0.75rem;
+    margin-right: 0.1rem;
   }
   .item-icon {
     color: white;
-    padding: 0.3rem;
   }
 
   @media only screen and (max-width: 600px) 

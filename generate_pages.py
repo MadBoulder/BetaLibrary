@@ -27,6 +27,7 @@ def set_zones_to_firebase(zone_data):
         "name"
         "videos"
         "playlist"
+        "country"
     }
     """
     handle_channel_data.set_zone_data(zone_data)
@@ -37,7 +38,7 @@ def update_countries_list(zones, input_file=CONFIG_FILE):
     we have bouldering zones
     """
     # Update contries list
-    countries_list = ["_('" + c + "')" for c in set([z[COUNTRY_FIELD] for z in zones])]
+    countries_list = [c for c in set([z[COUNTRY_FIELD] for z in zones])]
     countries_updated = "COUNTRIES = ["
     for z in countries_list:
         if z != countries_list[-1]:

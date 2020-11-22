@@ -404,7 +404,7 @@ def update_zone_data():
     for zone in zone_data:
         zone['videos'] = get_number_of_videos_from_playlist(zone['playlist'])
     set_zone_data(zone_data)
-    
+
 
 def get_zone_data():
     if not firebase_admin._apps:
