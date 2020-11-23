@@ -326,6 +326,18 @@ var dict = {
   }
 }
 
+function sortCountryNodesAlphabetically() {
+  var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
+  items.sort(function(a, b) {
+     return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
+  });
+  for(var i = 0, len = items.length; i < len; i++) {
+    var parent = items[i].parentNode;
+    var detatchedItem = parent.removeChild(items[i]);
+    parent.appendChild(detatchedItem);
+  }  
+}
+
 function updateListOfZones() {
   var $cards = $(".custom-card");
   var $countries = $("#selected-countries")[0].childNodes;
@@ -367,6 +379,7 @@ function removeElement(element) {
     );
     translator.lang(curr_lng);
     $(element).parent().remove();
+    sortCountryNodesAlphabetically();
     updateListOfZones();
 };
 
@@ -381,6 +394,7 @@ function addElement(element) {
     // Remove from list
     translator.lang(curr_lng);
     $(element).parent().parent().remove();
+    sortCountryNodesAlphabetically();
     updateListOfZones();
 };
 
@@ -388,6 +402,7 @@ $(document).ready(function() {
    curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
    translator = $('body').translate({lang: curr_lng, t: dict}); //use English
    translator.lang(curr_lng);
+   sortCountryNodesAlphabetically();
 
    var $cards = $(".custom-card");
 
