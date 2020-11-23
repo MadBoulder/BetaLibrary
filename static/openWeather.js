@@ -278,7 +278,6 @@ Licensed under the MIT license
 					var elements = document.getElementsByClassName(s.forecastTarget);
 					for (let elIndex = 0; elIndex < elements.length; elIndex++) {
 						var element = elements[elIndex];
-						console.log(element);
 						var daysLength = data.daily.length-1;
 						if (element.id === "small") {
 							daysLength = 4;
