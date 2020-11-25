@@ -278,6 +278,8 @@
 <script>
 var translator;
 var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+var active = [];
+var inactive = [];
 var dict = {
   "es": {
     es: "España",
@@ -381,6 +383,7 @@ function removeElement(element) {
     $(element).parent().remove();
     sortCountryNodesAlphabetically();
     updateListOfZones();
+    sessionStorage.setItem(text_to_place, "inactive");
 };
 
 function addElement(element) {
@@ -396,13 +399,31 @@ function addElement(element) {
     $(element).parent().parent().remove();
     sortCountryNodesAlphabetically();
     updateListOfZones();
+    sessionStorage.setItem(text_to_place, "active");
 };
+
+function loadSessionStatus() {
+  if (!sessionStorage.getItem("initialized")) {
+    $("#inactive-countries-list")[0].childNodes.forEach(c => {
+        if (c.id) sessionStorage.setItem(c.id, "inactive");
+      }
+    );
+    sessionStorage.setItem("initialized", "done");
+  } else {
+    $("#inactive-countries-list")[0].childNodes.forEach(c => {
+        // if (sessionStorage.getItem(c.id, "inactive")) removeElement($(c).find(".btn")[0]);
+        if (sessionStorage.getItem(c.id) === "active" ) addElement($(c).find(".btn")[0]);
+      }
+    );
+  }
+}
 
 $(document).ready(function() {
    curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
    translator = $('body').translate({lang: curr_lng, t: dict}); //use English
    translator.lang(curr_lng);
    sortCountryNodesAlphabetically();
+   loadSessionStatus();
 
    var $cards = $(".custom-card");
 
