@@ -38,7 +38,7 @@ def update_countries_list(zones, input_file=CONFIG_FILE):
     we have bouldering zones
     """
     # Update contries list
-    countries_list = [c for c in set([z[COUNTRY_FIELD] for z in zones])]
+    countries_list = [f"'{c}'" for c in set([z[COUNTRY_FIELD] for z in zones])]
     countries_updated = "COUNTRIES = ["
     for z in countries_list:
         if z != countries_list[-1]:
