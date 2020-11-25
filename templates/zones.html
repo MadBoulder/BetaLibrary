@@ -94,7 +94,7 @@
                   {% for country in countries %}
                   <div class="active-filter-selection row" id="{{ country }}">
                     <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
-                      {{ _(country) }}
+                      {{ country }}
                     </span>
                     <div class="col-6" style="display: flex; justify-content: flex-end;">
                       <button class="btn" onclick="addElement(this)">
@@ -278,8 +278,6 @@
 <script>
 var translator;
 var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-var active = [];
-var inactive = [];
 var dict = {
   "es": {
     es: "España",
@@ -337,7 +335,7 @@ function sortCountryNodesAlphabetically() {
     var parent = items[i].parentNode;
     var detatchedItem = parent.removeChild(items[i]);
     parent.appendChild(detatchedItem);
-  }  
+  }
 }
 
 function updateListOfZones() {
@@ -408,18 +406,25 @@ function addElement(element) {
 function loadSessionStatus() {
   if (!sessionStorage.getItem("initialized")) {
     $("#inactive-countries-list")[0].childNodes.forEach(c => {
-        if (c.id) sessionStorage.setItem(c.id, "inactive");
+        if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
       }
     );
     sessionStorage.setItem("initialized", "done");
   } else {
+    var to_be_modified = [];
     $("#inactive-countries-list")[0].childNodes.forEach(c => {
-        // if (sessionStorage.getItem(c.id, "inactive")) removeElement($(c).find(".btn")[0]);
-        if (sessionStorage.getItem(c.id) === "active" ) addElement($(c).find(".btn")[0]);
+        if (c.tagName === 'DIV') {
+          // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
+          if (sessionStorage.getItem(c.id) === "active" )
+          {
+            to_be_modified.push(c);
+          }
+        }
       }
     );
+    to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
   }
-}
+};
 
 $(document).ready(function() {
    curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
