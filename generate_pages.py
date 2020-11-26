@@ -1,7 +1,7 @@
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
-import helpers
+import utils.helpers
 import handle_channel_data
 from tempfile import mkstemp
 from shutil import move, copymode
@@ -112,7 +112,7 @@ def main():
         zone = {
             'normalized_name': area,
             'name': area_data[NAME_FIELD],
-            'videos': helpers.get_number_of_videos_and_views_for_zone(area),
+            'videos': utils.helpers.get_number_of_videos_and_views_for_zone(area),
             'playlist': area_data[PLAYLIST_FIELD],
             'country': area_data[COUNTRY_FIELD]
         }

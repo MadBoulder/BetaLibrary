@@ -5,7 +5,7 @@ from folium.features import CustomIcon
 import json
 import os
 import math
-import js_helpers
+import utils.js_helpers
 
 POPUP_WIDTH = 100
 WIDTH_MULTIPLIER = 15
@@ -71,7 +71,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             }
         )
         sector_map._id = generate_ids.next_id()  # reassign id
-        sector_html = js_helpers.generate_sector_html(
+        sector_html = utils.js_helpers.generate_sector_html(
             sector['name'], sector['link'])
         sector_popup = folium.Popup(
             sector_html,
@@ -96,7 +96,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
         parking_marker = folium.Marker(
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
-            popup=js_helpers.generate_parking_html([parking['parking_latitude'],
+            popup=utils.js_helpers.generate_parking_html([parking['parking_latitude'],
                                                     parking['parking_longitude']]),
             tooltip='Parking',
             icon=parking_icon
@@ -147,7 +147,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
         )
         zone_approximation._id = generate_ids.next_id()  # reassign id
 
-        zone_approx_html = js_helpers.generate_file_download_html(
+        zone_approx_html = utils.js_helpers.generate_file_download_html(
             area, area_data.get('approximation'), 'Track')
 
         track_popup = folium.Popup(
@@ -188,22 +188,22 @@ def load_map(area, datafile, generate_ids, return_html=True):
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting JavaScript code in the map html
     map_html = area_map.get_root().render()
-    map_html = js_helpers.make_layer_that_hides(
+    map_html = utils.js_helpers.make_layer_that_hides(
         map_html, area_map.get_name(), sector_lyr.get_name(), DEFAULT_AREA_ZOOM)
-    map_html = js_helpers.make_layer_that_hides(
+    map_html = utils.js_helpers.make_layer_that_hides(
         map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, False, True)
     # Zoom into area when clicking
-    map_html = js_helpers.zoom_on_click(
+    map_html = utils.js_helpers.zoom_on_click(
         map_html, area_map.get_name(), sectors_marker.get_name(), DEFAULT_AREA_ZOOM+1)
 
-    map_html = js_helpers.enable_links_from_iframe(map_html)
-    map_html = js_helpers.replace_maps_placeholder(map_html)
-    map_html = js_helpers.replace_approx_placeholders_for_translations(
+    map_html = utils.js_helpers.enable_links_from_iframe(map_html)
+    map_html = utils.js_helpers.replace_maps_placeholder(map_html)
+    map_html = utils.js_helpers.replace_approx_placeholders_for_translations(
         map_html, APPROX_PLACEHOLDER)
     # Avoid zooming in when clicking on a sector area
-    map_html = js_helpers.remove_geojson_zoom_on_click(map_html)
+    map_html = utils.js_helpers.remove_geojson_zoom_on_click(map_html)
     # replace the ids of all the html tags
-    map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
+    map_html = utils.js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
 
 
@@ -296,7 +296,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
             os.path.basename(os.path.normpath(areadatafile)))
         area_name = os.path.splitext(os.path.basename(areadatafile))[0]
         placeholder = area_name + PLACEHOLDER
-        popup_html = folium.Html(js_helpers.generate_area_popup_html(
+        popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
             area_data['name'], area_name, html_redirect, placeholder), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
@@ -337,6 +337,6 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     #     for marker in sectors_markers:
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    map_html = js_helpers.replace_custom_placeholders(map_html, placeholders)
-    map_html = js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
+    map_html = utils.js_helpers.replace_custom_placeholders(map_html, placeholders)
+    map_html = utils.js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
