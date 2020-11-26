@@ -23,11 +23,11 @@ CONFIG_FILE = 'config.py'
 def set_zones_to_firebase(zone_data):
     """
     zone: {
-        "normalized_name",
-        "name"
-        "videos"
-        "playlist"
-        "country"
+        normalized_name,
+        name,
+        videos,
+        playlist,
+        country,
     }
     """
     handle_channel_data.set_zone_data(zone_data)
@@ -38,15 +38,15 @@ def update_countries_list(zones, input_file=CONFIG_FILE):
     we have bouldering zones
     """
     # Update contries list
-    countries_list = [f"'{c}'" for c in set([z[COUNTRY_FIELD] for z in zones])]
-    countries_updated = "COUNTRIES = ["
+    countries_list = [f'\'{c}\'' for c in set([z[COUNTRY_FIELD] for z in zones])]
+    countries_updated = 'COUNTRIES = ['
     for z in countries_list:
         if z != countries_list[-1]:
             countries_updated += z + ", "
         else:
             countries_updated += z
-    countries_updated += "]"
-    replace_in_file(input_file, "COUNTRIES", countries_updated)    
+    countries_updated += ']'
+    replace_in_file(input_file, 'COUNTRIES', countries_updated)    
 
 
 def replace_in_file(file_path, pattern, new_line):
@@ -56,7 +56,7 @@ def replace_in_file(file_path, pattern, new_line):
     """
     # create temp file
     fh, abs_path = mkstemp()
-    with fdopen(fh,'w') as new_file:
+    with fdopen(fh, 'w') as new_file:
         with open(file_path) as old_file:
             for line in old_file:
                 if pattern in line:
@@ -65,9 +65,7 @@ def replace_in_file(file_path, pattern, new_line):
                     new_file.write(line)
     # copy the file permissions from the old file to the new file
     copymode(file_path, abs_path)
-    # remove original file
     remove(file_path)
-    # move new file
     move(abs_path, file_path)
 
 def main():
@@ -77,7 +75,7 @@ def main():
     """
     areas = next(os.walk('data/zones/'))[1]
 
-    template_loader = FileSystemLoader(searchpath=".")
+    template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
     playlists = {}
@@ -95,9 +93,9 @@ def main():
         # get affiliate guides links 
         affiliate_guides = [affiliate_guide[LINK_FIELD] for affiliate_guide in area_data.get(AFFILIATE_GUIDES, [])]
 
-        base_url = "https://www.youtube.com/embed/?listType=playlist&list="
+        base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
         playlists[area] = area_data[PLAYLIST_FIELD]
-        sectors_playlists = [(sector[NAME_FIELD], base_url + sector[LINK_FIELD].split("list=")[1])
+        sectors_playlists = [(sector[NAME_FIELD], base_url + sector[LINK_FIELD].split('list=')[1])
                              for sector in area_data[SECTORS_FIELD] if sector[LINK_FIELD]]
 
         template = template_env.get_template('templates/zone_layout.html')
@@ -112,11 +110,11 @@ def main():
 
         # this currently assumes country codes have been added
         zone = {
-            "normalized_name": area,
-            "name": area_data[NAME_FIELD],
-            "videos": helpers.get_number_of_videos_and_views_for_zone(area),
-            "playlist": area_data[PLAYLIST_FIELD],
-            "country": area_data[COUNTRY_FIELD]
+            'normalized_name': area,
+            'name': area_data[NAME_FIELD],
+            'videos': helpers.get_number_of_videos_and_views_for_zone(area),
+            'playlist': area_data[PLAYLIST_FIELD],
+            'country': area_data[COUNTRY_FIELD]
         }
         zones.append(zone)
 
