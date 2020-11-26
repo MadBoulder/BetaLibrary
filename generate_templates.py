@@ -1,7 +1,7 @@
 import load_map
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-import helpers
+import utils.helpers
 import utils.js_helpers
 from utils.id_generator import IDGenerator
 
@@ -39,7 +39,7 @@ def main():
     # When generating templates update also the all template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
-    data = helpers.get_number_of_videos_from_playlists_file(
+    data = utils.helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
     template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
