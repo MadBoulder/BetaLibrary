@@ -135,9 +135,10 @@
                       <label style="margin-bottom: 0%;">By number of videos</label>
                     </div>
                     <div class="col-6">
-                      <select class="form-control">
-                        <option selected>Decreasing</option>
-                        <option>Increasing</option>
+                      <select class="form-control" id="num-videos-sorter" onchange="reorderZones()">
+                        <option value="dec">Decreasing</option>
+                        <option value="inc">Increasing</option>
+                        <option value="none" selected>None</option>
                       </select>
                     </div>
                   </div>
@@ -211,7 +212,7 @@
           </div>
           </div>
           <div class="container" id="pageContent">
-            <div class="row">
+            <div class="row" id="zones-list">
               {% for zone in zones %}
               <div class="custom-card" id="{{ zone['normalized_name'] }}-{{zone['country']}}">
                 <div class="card text-white zone-card" style="width: 12rem; background-color:black;">
@@ -219,7 +220,7 @@
                     <!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
                     <div class="card-body">
                       <h5 class="card-title" style="justify-content: center; display: flex; font-size:1.1rem;">{{ zone['name'] }}</h5>
-                      <p class="card-text" style="justify-content: center; display: flex; font-size:10pt;">
+                      <p class="card-text" data-videos="{{ zone['videos'] }}" style="justify-content: center; display: flex; font-size:10pt;">
                         {{ zone['videos'] }} {{'video' if zone['videos'] == 1 else 'videos' }} 
                       </p>
                     </div>
@@ -437,6 +438,25 @@ function addElement(element) {
       $('#country-modal').modal('toggle');
 };
 
+function reorderZones() {
+  var order = $("#num-videos-sorter")[0].value;
+
+  $(".custom-card").sort(function(a, b) {
+    if (order==="inc")
+      return parseInt($(a).find("p")[0].dataset.videos) > parseInt($(b).find("p")[0].dataset.videos);
+    else if (order==="dec")
+      return parseInt($(a).find("p")[0].dataset.videos) < parseInt($(b).find("p")[0].dataset.videos);
+    else {
+      return $(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent);
+    }
+  }).appendTo('#zones-list');
+  sessionStorage.setItem("sortOrder", order);
+
+  // close modal if open
+  if (($("#sort-modal").data('bs.modal') || {})._isShown)
+    $('#sort-modal').modal('toggle');
+};
+
 function loadSessionStatus() {
   if (!sessionStorage.getItem("initialized")) {
     $("#inactive-countries-list")[0].childNodes.forEach(c => {
@@ -444,6 +464,7 @@ function loadSessionStatus() {
       }
     );
     sessionStorage.setItem("initialized", "done");
+    sessionStorage.setItem("sortOrder", "none");
   } else {
     var to_be_modified = [];
     $("#inactive-countries-list")[0].childNodes.forEach(c => {
@@ -457,6 +478,8 @@ function loadSessionStatus() {
       }
     );
     to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
+    $("#num-videos-sorter")[0].value = sessionStorage.getItem("sortOrder");
+    reorderZones();
   }
 };
 
