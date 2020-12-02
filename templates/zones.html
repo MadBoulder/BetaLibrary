@@ -119,38 +119,6 @@
       </div>
     </div>
     <!-- End Modal -->
-        <!-- Country Modal -->
-        <div class="modal fade" id="sort-modal" role="dialog">
-          <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">Sort zones</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group">
-                  <div class="row d-flex justify-content-center mt-100">
-                    <div class="col-6" style="display: inline-grid; align-content: center;">
-                      <label style="margin-bottom: 0%;">By number of videos</label>
-                    </div>
-                    <div class="col-6">
-                      <select class="form-control" id="num-videos-sorter" onchange="reorderZones()">
-                        <option value="dec">Decreasing</option>
-                        <option value="inc">Increasing</option>
-                        <option value="none" selected>None</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- End Modal -->
     <div id="holder">
       <div id="body">
         <div class="homeTopnav sticky" id="myTopnav">
@@ -200,12 +168,21 @@
           <br />
           <br />
           <div class="md-form active-pink active-pink-2 mb-3 mt-0" style="display:flex; justify-content:center;">
-            <input id="search-zone" class="form-control text-white" type="text" placeholder="Search" aria-label="Search" style="background-color: black; width: 75%;">
+            <input id="search-zone" class="form-control text-white" type="text" placeholder="Search" aria-label="Search" style="background-color: black; width: 65%;">
             <button class="btn" data-toggle="modal" data-target="#country-modal">
-              <i class="fas fa-sliders-h fa-2x" style="margin-top: -0.25rem;"></i>
+              <i class="fas fa-sliders-h fa-2x" style="margin-top: -1rem;"></i>
             </button>
-            <button class="btn" data-toggle="modal" data-target="#sort-modal">
-              <i class="fas fa-sort fa-2x" style="margin-top: -0.25rem;"></i>
+            <div class="form-group">
+              <select class="form-control" style="appearance: none; background-color: black; color: white;"  id="sort-criteria" onchange="ReorderZones()">
+                <option value="alph" selected>Alphabetically</option>
+                <option value="nvid">Number of videos</option>
+              </select>
+            </div>
+            <button id="btn-asc" class="btn" onclick="SortAsc()">
+              <i class="fas fa-angle-up fa-2x" style="margin-top: -0.65rem;"></i>
+            </button>
+            <button id="btn-desc" class="btn" onclick="SortDesc()">
+              <i class="fas fa-angle-down fa-2x" style="margin-top: -0.65rem;"></i>
             </button>
           </div>
           <div class="container row" id="selected-countries" style="margin:inherit; padding: inherit;">
@@ -438,23 +415,41 @@ function addElement(element) {
       $('#country-modal').modal('toggle');
 };
 
-function reorderZones() {
-  var order = $("#num-videos-sorter")[0].value;
+function SortAsc() {
+  var criteria = $("#sort-criteria")[0].value;
 
   $(".custom-card").sort(function(a, b) {
-    if (order==="inc")
-      return parseInt($(a).find("p")[0].dataset.videos) > parseInt($(b).find("p")[0].dataset.videos);
-    else if (order==="dec")
+    if (criteria==="nvid")
       return parseInt($(a).find("p")[0].dataset.videos) < parseInt($(b).find("p")[0].dataset.videos);
-    else {
+    else if (criteria==="alph")
       return $(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent);
-    }
   }).appendTo('#zones-list');
-  sessionStorage.setItem("sortOrder", order);
+  sessionStorage.setItem("sortCriteria", criteria);
+  sessionStorage.setItem("sortOrder", "asc");
+  $("#btn-asc").hide();
+  $("#btn-desc").show();
+};
 
-  // close modal if open
-  if (($("#sort-modal").data('bs.modal') || {})._isShown)
-    $('#sort-modal').modal('toggle');
+function SortDesc() {
+  var criteria = $("#sort-criteria")[0].value;
+
+  $(".custom-card").sort(function(a, b) {
+    if (criteria==="nvid")
+      return parseInt($(a).find("p")[0].dataset.videos) > parseInt($(b).find("p")[0].dataset.videos);
+    else if (criteria==="alph")
+      return ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent))*-1;
+  }).appendTo('#zones-list');
+  sessionStorage.setItem("sortCriteria", criteria);
+  sessionStorage.setItem("sortOrder", "des");
+  $("#btn-desc").hide();
+  $("#btn-asc").show();
+};
+
+function ReorderZones() {
+  if (sessionStorage.getItem("sortOrder") === "asc")
+      SortAsc();
+    else if (sessionStorage.getItem("sortOrder") === "des")
+      SortDesc();
 };
 
 function loadSessionStatus() {
@@ -463,8 +458,12 @@ function loadSessionStatus() {
         if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
       }
     );
+    $("#btn-desc").hide();
+    $("#btn-asc").show();
     sessionStorage.setItem("initialized", "done");
-    sessionStorage.setItem("sortOrder", "none");
+    sessionStorage.setItem("sortOrder", "asc");
+    sessionStorage.setItem("sortCriteria", "alph");
+    SortAsc();
   } else {
     var to_be_modified = [];
     $("#inactive-countries-list")[0].childNodes.forEach(c => {
@@ -478,8 +477,8 @@ function loadSessionStatus() {
       }
     );
     to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
-    $("#num-videos-sorter")[0].value = sessionStorage.getItem("sortOrder");
-    reorderZones();
+    $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
+    ReorderZones();
   }
 };
 
