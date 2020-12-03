@@ -178,7 +178,7 @@
                 Small split button
               </button> -->
               <div style="max-height: 70%; max-width: 100%; background-color: black; display: flex; border-radius: 0.25rem;">
-              <select style="align-self:center; appearance: none; border: none; background-color: black; color: white; max-height: 70%;"  id="sort-criteria" onchange="ReorderZones()">
+              <select style="align-self:center; text-align: center; appearance: none; border: none; background-color: black; color: white; max-height: 70%;"  id="sort-criteria" onchange="ReorderZones()">
                 <option value="alph" selected>Alphabetically</option>
                 <option value="nvid">Number of videos</option>
               </select>
@@ -438,12 +438,14 @@ function addElement(element) {
 
 function SortAsc() {
   var criteria = $("#sort-criteria")[0].value;
-
   $(".custom-card").sort(function(a, b) {
-    if (criteria==="nvid")
-      return parseInt($(a).find("p")[0].dataset.videos) < parseInt($(b).find("p")[0].dataset.videos);
+    if (criteria==="nvid") {
+      return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos))*-1;
+    }
     else if (criteria==="alph")
+    {
       return $(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent);
+    }
   }).appendTo('#zones-list');
   sessionStorage.setItem("sortCriteria", criteria);
   sessionStorage.setItem("sortOrder", "asc");
@@ -453,12 +455,13 @@ function SortAsc() {
 
 function SortDesc() {
   var criteria = $("#sort-criteria")[0].value;
-
   $(".custom-card").sort(function(a, b) {
-    if (criteria==="nvid")
-      return parseInt($(a).find("p")[0].dataset.videos) > parseInt($(b).find("p")[0].dataset.videos);
-    else if (criteria==="alph")
+    if (criteria==="nvid") {
+      return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos));
+    }
+    else if (criteria==="alph") {
       return ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent))*-1;
+    }
   }).appendTo('#zones-list');
   sessionStorage.setItem("sortCriteria", criteria);
   sessionStorage.setItem("sortOrder", "des");
@@ -469,7 +472,7 @@ function SortDesc() {
 function ReorderZones() {
   if (sessionStorage.getItem("sortOrder") === "asc")
       SortAsc();
-    else if (sessionStorage.getItem("sortOrder") === "des")
+  else if (sessionStorage.getItem("sortOrder") === "des")
       SortDesc();
 };
 
