@@ -492,29 +492,52 @@ function loadSessionStatus() {
 
 window.addEventListener('load', function(){
 // $(document).ready(function() {
-   curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-   translator = $('body').translate({lang: curr_lng, t: dict}); //use English
-   translator.lang(curr_lng);
-   sortCountryNodesAlphabetically();
-   loadSessionStatus();
+  curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+  translator = $('body').translate({lang: curr_lng, t: dict}); //use English
+  translator.lang(curr_lng);
+  sortCountryNodesAlphabetically();
+  loadSessionStatus();
 
-   var $cards = $(".custom-card");
+  var $cards = $(".custom-card");
 
-   $("#search-zone").keyup(function() {
-       var val = $.trim(this.value).toLowerCase();
-       if (val === "")
-           $cards.show();
-       else {
-          $cards.hide();
-          $cards.each(function()
+  $("#search-zone").keyup(function() {
+      var val = $.trim(this.value).toLowerCase();
+      if (val === "")
+          $cards.show();
+      else {
+        $cards.hide();
+        $cards.each(function()
+        {
+          if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
           {
-            if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
-            {
-              $(this).show();
-            }
-          });
-       }
-   });
+            $(this).show();
+          }
+        });
+      }
+      // At this point we are only showing zones that matched the search pattern,
+      // Now filter by country if required
+      var $countries = $("#selected-countries")[0].childNodes;
+      var ids = [];
+      $countries.forEach(c => {
+        if (c.id) ids.push(c.id);
+      });
+      if (ids.length === 0)
+      {
+        // No Ids, everything is already ok
+        return;
+      }
+      // IDs ?
+      $cards.each(
+        function()
+        {
+          var country = $(this)[0].id.split("-")[1];
+          if(!ids.includes(country))
+          {
+            $(this).hide();
+          }
+        }
+      );
+  });
 });
 </script>
 
