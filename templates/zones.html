@@ -23,14 +23,24 @@
       content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
     />
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen" />
-    <link rel="stylesheet" href="static/css/madboulder.css" />
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
+    <script
+			  src="https://code.jquery.com/jquery-3.5.1.min.js"
+			  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.translate.js') }}"></script>
+    
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/madboulder.css') }}" />
     <!-- Development -->
-    <link rel="stylesheet" href="../static/css/all.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
     <link rel="apple-touch-icon-precomposed" sizes="57x57"
       href="https://madboulder.org/static/images/logo/apple-touch-icon-57x57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
@@ -62,6 +72,42 @@
     <meta name="msapplication-square310x310logo" content="https://madboulder.org/static/images/logo/mstile-310x310.png" />
   </head>
   <body>
+    <div id="current-language" hidden>{{ current_lang }}</div>
+    <!-- Country Modal -->
+    <div class="modal fade" id="country-modal" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{ _("Filter zones") }}</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="row d-flex justify-content-center mt-100">
+                <div class="col-md-6" id="inactive-countries-list"> 
+                  {% for country in countries %}
+                  <div class="active-filter-selection row" id="{{ country }}">
+                    <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
+                      {{ country }}
+                    </span>
+                    <div class="col-6" style="display: flex; justify-content: flex-end;">
+                      <button class="btn" onclick="addElement(this)">
+                        <i class="fas fa-plus item-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="modal-footer">
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <!-- End Modal -->
     <div id="holder">
       <div id="body">
         <div class="homeTopnav sticky" id="myTopnav">
@@ -108,8 +154,50 @@
           <br />
           <br />
           <br />
+          <br />
+          <br />
+          <div class="md-form active-pink active-pink-2 mt-0 row mr-0" style="display:flex; justify-content:center;">
+            <input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+            <button class="btn mr-2 ml-2 mb-2" data-toggle="modal" data-target="#country-modal" style="border-color: black;">
+              <span>{{ _("Add Filter") }}</span>
+            </button>
+            <!-- Sort order -->
+              <div class="btn-group mb-2 joint-btns">
+                <div style="max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+                  <select id="sort-criteria" onchange="ReorderZones()">
+                    <option value="alph" selected>{{ _("Alphabetically") }}</option>
+                    <option value="nvid">{{ _("Number of videos") }}</option>
+                  </select>
+                  <button id="btn-asc" class="btn form-group-addon sort-btn" onclick="SortAsc()">
+                    <i class="fas fa-angle-up"></i>
+                  </button>
+                  <button id="btn-desc" class="btn form-group-addon sort-btn" onclick="SortDesc()">
+                    <i class="fas fa-angle-down"></i>
+                  </button>
+                </div>
+              </div>
+          </div>
+          <div class="container row" id="selected-countries" style="margin:inherit; padding: inherit;">
+          </div>
+          </div>
           <div class="container" id="pageContent">
-            {% include 'zones_list.html' %}
+            <div class="row" id="zones-list">
+              {% for zone in zones %}
+              <div class="custom-card" id="{{ zone['normalized_name'] }}-{{zone['country']}}">
+                <div class="card zone-card" style="width: 12rem;">
+                  <a class="zone-card-link" href="/{{ zone['normalized_name'] }}" >
+                    <!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
+                    <div class="card-body">
+                      <h5 class="card-title">{{ zone['name'] }}</h5>
+                      <p class="card-text" data-videos="{{ zone['videos'] }}" style="justify-content: center; display: flex; font-size:10pt;">
+                        {{ zone['videos'] }} {{ _("video") if zone['videos'] == 1 else _("videos") }} 
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
         <br />
@@ -191,8 +279,345 @@
   </body>
 </html>
 
+<script>
+var translator;
+var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+var dict = {
+  "es": {
+    es: "España",
+    ca: "Espanya",
+    en: "Spain"
+  },
+  "it": {
+    es: "Italia",
+    ca: "Itàlia",
+    en: "Italy"
+  },
+  "ca": {
+    es: "Canadá",
+    ca: "Canadà",
+    en: "Canada"    
+  },
+  "at": {
+    es: "Austria",
+    ca: "Àustria",
+    en: "Austria"    
+  },
+  "fr": {
+    es: "Francia",
+    ca: "França",
+    en: "France"    
+  },
+  "de": {
+    es: "Alemania",
+    ca: "Alemània",
+    en: "Germany"    
+  },
+  "za": {
+    es: "Sudáfrica",
+    ca: "Sud-àfrica",
+    en: "South Africa"    
+  },
+  "us": {
+    es: "Estados Unidos",
+    ca: "Estats Units",
+    en: "United States of America"    
+  },
+  "ch": {
+    es: "Suiza",
+    ca: "Suïssa",
+    en: "Switzerland"    
+  }
+}
+
+function sortCountryNodesAlphabetically() {
+  var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
+  items.sort(function(a, b) {
+     return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
+  });
+  for(var i = 0, len = items.length; i < len; i++) {
+    var parent = items[i].parentNode;
+    var detatchedItem = parent.removeChild(items[i]);
+    parent.appendChild(detatchedItem);
+  }
+}
+
+function updateListOfZones() {
+  var $cards = $(".custom-card");
+  var $countries = $("#selected-countries")[0].childNodes;
+  var ids = [];
+  $countries.forEach(c => {
+    if (c.id) ids.push(c.id);
+  });
+  if (ids.length === 0)
+  {
+    $cards.show();
+    return;
+  }
+  $cards.hide();
+  $cards.each(
+    function()
+    {
+      var country = $(this)[0].id.split("-")[1];
+      if(ids.includes(country))
+      {
+        $(this).show();
+      }
+    }
+  );
+};
+
+function removeElement(element) {
+    var text_to_place = $(element).parent()[0].id;
+    $("#inactive-countries-list").append(
+      '<div class="active-filter-selection row" id="' + text_to_place + '">' +
+        '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
+          text_to_place +
+        '</span>' +
+        '<div class="col-6" style="display: flex; justify-content: flex-end;">' +
+          '<button class="btn" onclick="addElement(this)">' +
+            '<i class="fas fa-plus item-icon"></i>' +
+          '</button>' +
+        '</div>' +
+      '</div>' 
+    );
+    translator.lang(curr_lng);
+    $(element).parent().remove();
+    sortCountryNodesAlphabetically();
+    updateListOfZones();
+    sessionStorage.setItem(text_to_place, "inactive");
+    // Reset searchbox
+    $("#search-zone")[0].value = "";
+};
+
+function addElement(element) {
+    // Add to active selection list:
+    var text_to_place = $(element).parent().parent()[0].id;
+    $("#selected-countries").append(
+      '<div class="active-filter-selection" id="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
+      text_to_place +
+      '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
+    );
+    // Remove from list
+    translator.lang(curr_lng);
+    $(element).parent().parent().remove();
+    sortCountryNodesAlphabetically();
+    updateListOfZones();
+    sessionStorage.setItem(text_to_place, "active");
+    // close modal if open
+    if (($("#country-modal").data('bs.modal') || {})._isShown)
+      $('#country-modal').modal('toggle');
+    // Reset searchbox
+    $("#search-zone")[0].value = "";
+};
+
+function SortAsc() {
+  var criteria = $("#sort-criteria")[0].value;
+  $(".custom-card").sort(function(a, b) {
+    if (criteria==="nvid") {
+      return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos))*-1;
+    }
+    else if (criteria==="alph")
+    {
+      return $(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent);
+    }
+  }).appendTo('#zones-list');
+  sessionStorage.setItem("sortCriteria", criteria);
+  sessionStorage.setItem("sortOrder", "asc");
+  $("#btn-asc").hide();
+  $("#btn-desc").show();
+};
+
+function SortDesc() {
+  var criteria = $("#sort-criteria")[0].value;
+  $(".custom-card").sort(function(a, b) {
+    if (criteria==="nvid") {
+      return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos));
+    }
+    else if (criteria==="alph") {
+      return ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent))*-1;
+    }
+  }).appendTo('#zones-list');
+  sessionStorage.setItem("sortCriteria", criteria);
+  sessionStorage.setItem("sortOrder", "des");
+  $("#btn-desc").hide();
+  $("#btn-asc").show();
+};
+
+function ReorderZones() {
+  if (sessionStorage.getItem("sortOrder") === "asc")
+      SortAsc();
+  else if (sessionStorage.getItem("sortOrder") === "des")
+      SortDesc();
+};
+
+function loadSessionStatus() {
+  if (!sessionStorage.getItem("initialized")) {
+    $("#inactive-countries-list")[0].childNodes.forEach(c => {
+        if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
+      }
+    );
+    $("#btn-desc").hide();
+    $("#btn-asc").show();
+    sessionStorage.setItem("initialized", "done");
+    sessionStorage.setItem("sortOrder", "asc");
+    sessionStorage.setItem("sortCriteria", "alph");
+    SortAsc();
+  } else {
+    var to_be_modified = [];
+    $("#inactive-countries-list")[0].childNodes.forEach(c => {
+        if (c.tagName === 'DIV') {
+          // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
+          if (sessionStorage.getItem(c.id) === "active" )
+          {
+            to_be_modified.push(c);
+          }
+        }
+      }
+    );
+    to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
+    $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
+    ReorderZones();
+  }
+};
+
+window.addEventListener('load', function(){
+  curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+  translator = $('body').translate({lang: curr_lng, t: dict}); //use English
+  translator.lang(curr_lng);
+  sortCountryNodesAlphabetically();
+  loadSessionStatus();
+
+  var $cards = $(".custom-card");
+
+  $("#search-zone").keyup(function() {
+      var val = $.trim(this.value).toLowerCase();
+      if (val === "")
+          $cards.show();
+      else {
+        $cards.hide();
+        $cards.each(function()
+        {
+          if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
+          {
+            $(this).show();
+          }
+        });
+      }
+      // At this point we are only showing zones that matched the search pattern,
+      // Now filter by country if required
+      var $countries = $("#selected-countries")[0].childNodes;
+      var ids = [];
+      $countries.forEach(c => {
+        if (c.id) ids.push(c.id);
+      });
+      if (ids.length === 0)
+      {
+        // No Ids, everything is already ok
+        return;
+      }
+      // IDs ?
+      $cards.each(
+        function()
+        {
+          var country = $(this)[0].id.split("-")[1];
+          if(!ids.includes(country))
+          {
+            $(this).hide();
+          }
+        }
+      );
+  });
+});
+</script>
+
 <style>
+  body {
+    overflow-y: scroll;
+  }
   ul#lang-selector li {
     display: inline;
+  }
+  a.zone-card-link,
+  a.zone-card-link:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .active-filter-selection {
+    border-radius: 0.3rem;
+    margin: 0.2rem;
+    border-radius: 0.25rem;
+    border-style: solid;
+    border-width: thin;
+    border-color: #ccc;
+  }
+  .active-filter-text-list-item {
+    padding-left: 0.75rem;
+  }  
+  .active-filter-text {
+    padding-left: 0.75rem;
+    margin-right: 0.1rem;
+  }
+  /* .item-icon {
+    color: white;
+  } */
+  select {
+    -webkit-appearance:none;
+  }
+  /* input:focus, */
+  /* textarea:focus, */
+  /* button:focus, */
+  select:focus {
+    outline: none;
+  }
+  #sort-criteria {
+    height: 100%;
+    border-radius: inherit; 
+    padding-left: 0.6rem; 
+    align-self:center; 
+    text-align: left; 
+    text-align-last: left; 
+    appearance: none; 
+    border: none; 
+  }
+  .card-title {
+    justify-content: center; 
+    text-align: center; 
+    display: flex; 
+    font-size:1.1rem;
+  }
+  #search-zone {
+    width: 45%; 
+  }
+  /* .sort-btn{
+    border-radius: 0.25rem;
+  } */
+  .joint-btns {
+    border-radius: 0.25rem;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+  }
+
+  .zone-card {
+    border-color: black;
+    border-width: medium;
+  }
+
+  @media only screen and (max-width: 600px) 
+  {
+    div.custom-card {
+      max-width: 50%;
+    }
+    .zone-card {
+      max-width: 70%;
+      margin: 15%;
+    }
+  }
+  @media only screen and (min-width: 600px) {
+    .zone-card {
+      margin: 2.5rem;
+    }
   }
 </style>

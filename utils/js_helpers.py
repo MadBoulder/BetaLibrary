@@ -1,4 +1,4 @@
-import helpers
+import utils.helpers
 import re
 
 END_OF_SCRIPT = "\n\n</script>"
@@ -67,7 +67,7 @@ def generate_file_download_html(area, filename, text_to_show):
     """
     Generate the html code that adds the link to the downloadable file
     """
-    return '<a href="{}">{}</a><br>'.format(helpers.generate_download_url(area, filename), text_to_show)
+    return '<a href="{}">{}</a><br>'.format(utils.helpers.generate_download_url(area, filename), text_to_show)
 
 def make_layer_that_hides(map_html, map_name, layer_name, zoom_level=15, visible=True, reverse=False):
     """
@@ -154,7 +154,7 @@ def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     placeholder indicator. This value will be replaced by the number
     of beta videos when rendering the pop up
     """
-    sector_count = helpers.count_sectors_in_zone(area_filename)
+    sector_count = utils.helpers.count_sectors_in_zone(area_filename)
     return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>sector_placeholder: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
 
 

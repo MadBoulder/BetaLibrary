@@ -43,7 +43,6 @@ def load_zones():
     zones = []
     for area in areas:
         datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
-        area_data = {}
         with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
         zones += [{NAME: area_data[NAME], 'file': area}]
@@ -57,7 +56,6 @@ def load_sectors():
     sectors = []
     for area in areas:
         datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
-        area_data = {}
         with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
         for sector in area_data.get('sectors', []):
@@ -250,7 +248,6 @@ def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6)
     """
     Obtain the num_videos latest videos from MadBoulder's youtube channel
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
@@ -275,7 +272,6 @@ def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a youtube channel from the channel's id
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
@@ -289,7 +285,6 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
     API query format:
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
     base_video_url = '//www.youtube.com/embed/'  # to embed video
@@ -321,11 +316,9 @@ def get_number_of_videos_from_playlists_file(file):
         'area_name':video_count
     } 
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
-    data = {}
     with open(file, 'r', encoding=ENCODING) as f:
         data = json.load(f)
     playlists = list(data.values())
@@ -353,11 +346,9 @@ def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
-    data = {}
     with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
         data = json.load(f)
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
@@ -372,11 +363,9 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    api_key = None
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
-    data = {}
     with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
         data = json.load(f)
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
@@ -387,6 +376,26 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
 
+# def get_number_of_videos_and_views_for_zone(zone_name):
+#     """
+#     Given a zone name, return the number of betas of the zone
+#     """
+#     api_key = None
+#     with open("credentials.txt", "r", encoding='utf-8') as f:
+#         api_key = f.read()
+
+#     data = {}
+#     with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
+#         data = json.load(f)
+#     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
+#         data[zone_name],
+#         api_key
+#     )
+#     inp = urllib.request.urlopen(query_url)
+#     resp = json.load(inp)
+#     print(resp)
+#     return resp['items'][0]['contentDetails']['itemCount']
+
 
 def generate_download_url(area, filename):
     """
@@ -395,3 +404,20 @@ def generate_download_url(area, filename):
     its download.
     """
     return '/download/' + area + '/' + filename
+
+# TODO: move this process to periodic database update script and here query DDBB
+# Also, cache the results
+def get_list_of_zones():
+    areas = next(os.walk(DATA_ZONES_PATH))[1]
+    zones = list()
+    for area in areas:
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
+        with open(datafile, encoding='utf-8') as data:
+            area_data = json.load(data)
+        zone = dict()
+        zone['normalized_name'] = area
+        zone['name'] = area_data['name']
+        zone['videos'] = get_number_of_videos_and_views_for_zone(area)
+        zones.append(zone)
+    zones = sorted(zones, key=lambda x: x['normalized_name'])
+    return zones

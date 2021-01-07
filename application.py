@@ -6,11 +6,11 @@ from flask_babel import Babel, _
 from flask_mail import Mail,  Message
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import datetime
-import helpers
-import js_helpers
+import utils.helpers
+import utils.js_helpers
 import dashboard
 import dashboard_videos
-import get_channel_data
+import handle_channel_data
 from werkzeug.utils import secure_filename
 
 from bokeh.embed import components
@@ -56,11 +56,11 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
 # Cached functions
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
 def get_videos_from_channel():
-    return helpers.get_videos_from_channel()
+    return utils.helpers.get_videos_from_channel()
 
 @cache.memoize(timeout=3600)
 def get_zone_video_count(page):
-    return helpers.get_number_of_videos_for_zone(page)
+    return utils.helpers.get_number_of_videos_for_zone(page)
 
 @cache.cached(timeout=60*60*24, key_prefix="map_all")
 def get_map_all():
@@ -73,18 +73,26 @@ def get_map_all():
     # and finally render the page template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
-    data = helpers.get_number_of_videos_from_playlists_file(
+    # if it is cheaper or faster to query this data from the
+    # DDBB we can optimize it in the future
+    data = utils.helpers.get_number_of_videos_from_playlists_file(
         'data/playlist.txt')
     # store num videos in session to avoid repeating calls
     session['video_count'] = data
     template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)
-    output = js_helpers.replace_sectors_placeholders_for_translations(
+    output = utils.js_helpers.replace_sectors_placeholders_for_translations(
         output)
     with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
         template.write(output)
 
+@cache.cached(
+    timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
+    key_prefix="mad_zones"
+)
+def get_zone_data():
+    return handle_channel_data.get_zone_data()
 
 # Set language
 @app.route('/language/<language>')
@@ -121,8 +129,8 @@ def zone_cache_key():
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    channel_info = helpers.get_channel_info()
-    zones = helpers.load_zones()
+    channel_info = utils.helpers.get_channel_info()
+    zones = utils.helpers.load_zones()
     stats_list = [
         {
             'logo': "fa fa-globe-americas",
@@ -137,7 +145,7 @@ def home():
         {
             'logo': "fa fa-users",
             'text': _("Contributors"),
-            'data': get_channel_data.get_contributors_count()
+            'data': handle_channel_data.get_contributors_count()
         },
         {
             'logo': "fab fa-youtube",
@@ -152,9 +160,17 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
-@app.route('/zones')
+@app.route('/zones', methods=['GET', 'POST'])
 def zones():
-    return render_template('zones.html')
+    if request.method == 'GET':
+        # each zone has: link, name, num.videos
+        zones = get_zone_data()
+        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'], current_lang=get_locale())
+    if request.method == 'POST':
+        # get filtered filter zones
+        zones = get_zone_data()
+        # sort zones
+        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'], current_lang=get_locale())
 
 @app.route('/search_zone', methods=['GET', 'POST'])
 def search_zone():
@@ -162,7 +178,7 @@ def search_zone():
         query = request.form.get('searchterm', '')
         # Search zones
         # Zones
-        search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+        search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
         return render_template(
             'search_zone_results.html',
             zones=search_zone_results,
@@ -172,7 +188,7 @@ def search_zone():
         query = request.args.get('search_query', '')
         # Do search
         if query:
-            search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+            search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
             return render_template(
                 'search_zone_results.html',
                 zones=search_zone_results,
@@ -191,11 +207,11 @@ def search():
             query = request.form.get('searchterm-small', '')
         # Search betas, sectors, zones
         # Zones
-        search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+        search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
         # Sectors
-        # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
+        # search_sector_results = utils.helpers.search_sector(query, NUM_RESULTS, exact_match=True)
         # Betas
-        search_beta_results = helpers.get_video_from_channel(query, results=5)
+        search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
         return render_template(
             'search_results.html',
             zones=search_zone_results,
@@ -207,11 +223,11 @@ def search():
         query = request.args.get('search_query', '')
         # Do search
         if query:
-            search_zone_results = helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+            search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
             # Sectors
-            # search_sector_results = helpers.search_sector(query, NUM_RESULTS, exact_match=True)
+            # search_sector_results = utils.helpers.search_sector(query, NUM_RESULTS, exact_match=True)
             # Betas
-            search_beta_results = helpers.get_video_from_channel(query, results=5)
+            search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
             return render_template(
                 'search_results.html',
                 zones=search_zone_results,
@@ -360,7 +376,7 @@ def render_page(page):
         {
             'logo': "fa fa-map-marked",
             'text': _("Sectors"),
-            'data': helpers.count_sectors_in_zone(page)
+            'data': utils.helpers.count_sectors_in_zone(page)
         },
         {
             'logo': "fab fa-youtube",
