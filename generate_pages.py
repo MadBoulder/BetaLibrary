@@ -108,6 +108,15 @@ def main():
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
+    # Update playlists file
+    with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
+        playlists_file.write(json.dumps(playlists))
+    
+    for area in areas:
+        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        area_data = {}
+        with open(datafile, encoding='utf-8') as data:
+            area_data = json.load(data)
         # this currently assumes country codes have been added
         zone = {
             'normalized_name': area,
@@ -117,10 +126,6 @@ def main():
             'country': area_data[COUNTRY_FIELD]
         }
         zones.append(zone)
-
-    # Update playlists file
-    with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
-        playlists_file.write(json.dumps(playlists))
 
     # Update countries list
     update_countries_list(zones)
