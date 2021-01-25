@@ -432,9 +432,9 @@ if __name__ == "__main__":
     # for local update
     # get_and_update_data_local()
     # for firebase
-   updated_data = get_and_update_data_firebase(is_update=True)
+    updated_data = get_and_update_data_firebase(is_update=True)
 
     # local update
-   with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
-       json.dump(updated_data, f, indent=4)
+    with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
+        json.dump(updated_data, f, indent=4)
     # get_zone_data()
