@@ -62,11 +62,11 @@ def prepare_barchart_data(data, axis):
             data_subset['y'].append(x_data.count(datum))
             data_subset['raw'][datum] = {
                 'count': x_data.count(datum),
-                'viewCount': sum([int(vid['stats']['viewCount']) for vid in data if vid[v] == datum]),
-                'favoriteCount': sum([int(vid['stats']['favoriteCount']) for vid in data if vid[v] == datum]),
-                'likeCount': sum([int(vid['stats']['likeCount']) for vid in data if vid[v] == datum]),
-                'dislikeCount': sum([int(vid['stats']['dislikeCount']) for vid in data if vid[v] == datum]),
-                'commentCount': sum([int(vid['stats']['commentCount']) for vid in data if vid[v] == datum])
+                'viewCount': sum([int(vid['stats'].get('viewCount', '0')) for vid in data if vid[v] == datum]),
+                'favoriteCount': sum([int(vid['stats'].get('favoriteCount', '0')) for vid in data if vid[v] == datum]),
+                'likeCount': sum([int(vid['stats'].get('likeCount', '0')) for vid in data if vid[v] == datum]),
+                'dislikeCount': sum([int(vid['stats'].get('dislikeCount', '0')) for vid in data if vid[v] == datum]),
+                'commentCount': sum([int(vid['stats'].get('commentCount', '0')) for vid in data if vid[v] == datum])
             }
         processed_data[v] = data_subset
     return processed_data
