@@ -1,5 +1,6 @@
 import os
 import random
+import requests
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, current_app
 from flask_caching import Cache
 from flask_babel import Babel, _
@@ -250,7 +251,11 @@ def upload_file():
         # build email text/body
         video_data = ("\n").join(["{}: {}".format(key, value)
                                   for key, value in request.form.items()])
-        video_data = video_data.replace('wt_embed_output', 'download link')
+        # new download link:
+        resp = requests.get(app.config['UPLOADED_FILES'])
+        latest_file_id = resp.json()[0].get('id', '')
+        url = f'https://drive.google.com/uc?export=download&id={latest_file_id}'
+        video_data += f'\ndownload link: {url}'
         # filter mail recipients by zone
         mail_recipients = app.config.get("MAIL_RECIPIENTS")
         if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
@@ -268,8 +273,7 @@ def upload_file():
     return render_template(
         'upload.html',
         locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
-        success=upload_complete,
-        wt_key=os.environ["WT_KEY"]
+        success=upload_complete
     )
 
 
