@@ -1,4 +1,4 @@
 LANGUAGES = ['en', 'es', 'ca']
 WE_TRANSFER_LOCALE_MAPPING = {'en': 'en', 'es': 'es', 'ca': 'en'}
 ZONE_FILTERS = ['albarracin', 'albarracín', 'bezas']
-COUNTRIES = ['us', 'fr', 'de', 'in', 'es', 'it', 'at', 'za', 'ch', 'ca']
+COUNTRIES = ['fr', 'at', 'de', 'ch', 'ca', 'us', 'in', 'es', 'za', 'it']
