@@ -1,5 +1,6 @@
 import os
 import random
+import requests
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, current_app
 from flask_caching import Cache
 from flask_babel import Babel, _
@@ -245,6 +246,9 @@ def search():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    """
+    Default update method
+    """
     upload_complete = False
     if request.method == 'POST':
         # build email text/body
@@ -270,6 +274,41 @@ def upload_file():
         locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
         success=upload_complete,
         wt_key=os.environ["WT_KEY"]
+    )
+
+@app.route('/upload_alt', methods=['GET', 'POST'])
+def upload_file_alt():
+    """
+    Alternative upload method
+    """
+    upload_complete = False
+    if request.method == 'POST':
+        # build email text/body
+        video_data = ("\n").join(["{}: {}".format(key, value)
+                                  for key, value in request.form.items()])
+        # new download link:
+        resp = requests.get(app.config['UPLOADED_FILES'])
+        latest_file_id = resp.json()[0].get('id', '')
+        url = f'https://drive.google.com/uc?export=download&id={latest_file_id}'
+        video_data += f'\ndownload link: {url}'
+        # filter mail recipients by zone
+        mail_recipients = app.config.get("MAIL_RECIPIENTS")
+        if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
+            mail_recipients = mail_recipients[REMOVE_FIRST]
+        # build email
+        msg = Message(
+            subject=(", ").join([request.form[field]
+                                 for field in EMAIL_SUBJECT_FIELDS]),
+            sender=app.config.get("MAIL_USERNAME"),
+            recipients=mail_recipients,
+            body=video_data)
+        mail.send(msg)
+        # If no errors are raised, assume the action was successful
+        upload_complete = True
+    return render_template(
+        'upload_alt.html',
+        locale=app.config["WE_TRANSFER_LOCALE_MAPPING"][get_locale()],
+        success=upload_complete
     )
 
 
