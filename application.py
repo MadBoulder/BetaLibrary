@@ -290,7 +290,7 @@ def upload_file_alt():
         resp = requests.get(app.config['UPLOADED_FILES'])
         latest_file_id = resp.json()[0].get('id', '')
         url = f'https://drive.google.com/uc?export=download&id={latest_file_id}'
-        video_data += f'\ndownload link: {url}'
+        video_data += f'\ndownload link: {url}\nENVIAT VIA DRIVE'
         # filter mail recipients by zone
         mail_recipients = app.config.get("MAIL_RECIPIENTS")
         if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
