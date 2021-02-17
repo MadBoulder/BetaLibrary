@@ -5,7 +5,6 @@ from flask import Flask, render_template, send_from_directory, request, abort, s
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
-from flask_sitemap import Sitemap
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import datetime
 import utils.helpers
@@ -45,7 +44,6 @@ mail_settings = {
 
 app.config.update(mail_settings)
 mail = Mail(app)
-ext = Sitemap(app=app)
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
