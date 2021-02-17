@@ -125,15 +125,10 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/images/logo'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-# Sitemap and robots
+# robots
 @app.route('/robots.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
-
-@ext.register_generator
-def index():
-    # Not needed if you set SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS=True
-    yield 'index', {}
 
 # cache keys for zones
 def zone_cache_key():
