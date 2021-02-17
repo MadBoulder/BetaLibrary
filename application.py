@@ -25,7 +25,7 @@ EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
 
 # create the application object
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
@@ -122,6 +122,11 @@ def get_locale():
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/images/logo'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+# Sitemap and robots
+@app.route('/robots.txt')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 # cache keys for zones
 def zone_cache_key():
