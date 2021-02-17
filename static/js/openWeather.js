@@ -325,7 +325,7 @@ Licensed under the MIT license
 							var wind_icon = document.createElement("i");
 							wind_icon.setAttribute('class', 'material-icons mt-1 mr-1');
 							wind_icon.setAttribute('style', 'font-size: 18px;');
-							var textNodeWind = document.createTextNode('toys');
+							var textNodeWind = document.createTextNode('air');
 							wind_icon.appendChild(textNodeWind);
 							var textNode = document.createTextNode(parseInt(mapWind(data.daily[day].wind_speed, s.windSpeedUnit)) + ' ' + s.windSpeedUnit);
 							wind_data.appendChild(textNode);
