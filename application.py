@@ -254,6 +254,9 @@ def upload_file():
     """
     Default update method
     """
+    # Temporarily disable uploads until form is fixed
+    return render_template('upload_not_working.html')
+    ### ORIGINAL METHOD
     upload_complete = False
     if request.method == 'POST':
         # build email text/body
