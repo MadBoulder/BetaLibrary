@@ -53,7 +53,7 @@ def prepare_barchart_data(data, axis):
     to be plotted
     """
     processed_data = {}
-    for k, v in axis.items():
+    for _, v in axis.items():
         x_data = [datum[v] for datum in data]
         unique_x_data = set(x_data)
         data_subset = {'x': [], 'y': [], 'raw': {}}
@@ -81,7 +81,6 @@ def get_dashboard(local_data=False):
         with open('data/channel/processed_data.json', 'r') as f:
             data = json.load(f)
             video_data = data['items']
-            last_update = data['date']
     else:
         video_data = handle_channel_data.get_data_firebase()['items']
 
