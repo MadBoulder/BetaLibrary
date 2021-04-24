@@ -14,10 +14,10 @@ from firebase_admin import db
 
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
-Y_CRED = "AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g"
+Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
 
 
-def get_channel_info(channel_id="UCX9ok0rHnvnENLSK7jdnXxA"):
+def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a YouTube channel from the channel's id
     """
@@ -57,7 +57,7 @@ def update_video_stats(video_data):
     return video_data
 
 
-def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MAX_ITEMS_API_QUERY, page_token=None):
+def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=MAX_ITEMS_API_QUERY, page_token=None):
     """
     Get the title, description and id of all the videos uploaded to a channel
     """
@@ -65,7 +65,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
     with open('credentials.txt', 'r', encoding='utf-8') as f:
         api_key = f.read()
 
-    url = "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}".format(
+    url = 'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}'.format(
         channel_id, api_key
     )
     inp = urllib.request.urlopen(url)
@@ -80,7 +80,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
     while progress < total_video_count:
         print(str(round((progress/total_video_count)*100, 2))+'%')
 
-        get_videos_url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}".format(
+        get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
             MAX_ITEMS_API_QUERY, upload_playlist, api_key
         )
         if page_token:
@@ -110,7 +110,7 @@ def get_videos_from_channel(channel_id="UCX9ok0rHnvnENLSK7jdnXxA", num_videos=MA
 
 
 def update_videos_from_channel(
-    channel_id="UCX9ok0rHnvnENLSK7jdnXxA", 
+    channel_id='UCX9ok0rHnvnENLSK7jdnXxA', 
     num_videos=MAX_ITEMS_API_QUERY, 
     page_token=None, 
     data=None
@@ -135,7 +135,7 @@ def update_videos_from_channel(
     with open('credentials.txt', 'r', encoding='utf-8') as f:
         api_key = f.read()
 
-    url = "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}".format(
+    url = 'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}'.format(
         channel_id, api_key
     )
     inp = urllib.request.urlopen(url)
@@ -150,7 +150,7 @@ def update_videos_from_channel(
     while progress < missing_videos and current_iter < max_iters:
         print(str(round((progress/missing_videos)*100, 2)) + '%')
 
-        get_videos_url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}".format(
+        get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
             MAX_ITEMS_API_QUERY, upload_playlist, api_key
         )
         if page_token:
@@ -227,7 +227,7 @@ def process_grade_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # This regex only matches french grades.
-    grade_regex = ', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
+    grade_regex = r', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
     return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data)
 
 
@@ -237,7 +237,7 @@ def process_climber_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match climbers.
-    climber_regex = '(?:Climber: ?)(@?\w+ ?(?:\w+)?)'
+    climber_regex = r'(?:Climber: ?)(@?\w+ ?(?:\w+)?)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
 
@@ -247,7 +247,7 @@ def process_zone_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match zones.
-    zone_regex = '(?:\.+.+)?(?:\. )(.+)$'
+    zone_regex = r'(?:\.+.+)?(?:\. )(.+)$'
     video_data = match_regex_and_add_field(
         zone_regex, 'title', 'zone', video_data)
     for video in video_data:
@@ -307,7 +307,7 @@ def get_and_update_data_firebase(is_update=True):
     """
     Load current data from firebase database, update it and store it back.
     """
-    print("Updating data")
+    print('Updating data')
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
@@ -428,7 +428,7 @@ def get_number_of_videos_from_playlist(playlist):
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # for local update
     # get_and_update_data_local()
     # for firebase
