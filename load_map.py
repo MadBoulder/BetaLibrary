@@ -15,7 +15,7 @@ MARKER_SIZE = 32
 ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
 APPROX_PLACEHOLDER = 'approx_placeholder'
-BETA_VIDEOS_TEXT = "Beta Videos: "
+BETA_VIDEOS_TEXT = 'Beta Videos: '
 
 #####################
 ### GENERATE MAPS ###
@@ -40,7 +40,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
         child._id = generate_ids.next_id()
     tile_layer = folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        name="Satellite",
+        name='Satellite',
         attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     )
     tile_layer._id = generate_ids.next_id()  # reassign id
@@ -113,15 +113,15 @@ def load_map(area, datafile, generate_ids, return_html=True):
         import gpxpy.gpx
 
         approximation_geojson = {
-            "type": "Feature",
-            "properties": {
-                "stroke": "#1f1a95",
-                "stroke-opacity": 1,
-                "stroke-width": 2
+            'type': 'Feature',
+            'properties': {
+                'stroke': '#1f1a95',
+                'stroke-opacity': 1,
+                'stroke-width': 2
             },
-            "geometry": {
-                "type": "LineString",
-                "coordinates": []
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': []
             }
         }
 
@@ -136,7 +136,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
 
         zone_approximation = folium.GeoJson(
             approximation_geojson,
-            name="Approximation",
+            name='Approximation',
             tooltip=APPROX_PLACEHOLDER,
             style_function=lambda x: {
                 'color': x['properties']['stroke'],
@@ -211,7 +211,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     """
     Create a map that contains all the zones provided by the list of datafiles
     i.e. all areas combined in one map. This map only shows the markers that 
-    indicate the 
+    indicate an existing area.
     """
     generate_ids.reset_seed()
     area_map = folium.Map(
@@ -227,7 +227,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
 
     tile_layer = folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        name="Satellite",
+        name='Satellite',
         attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     )
     tile_layer._id = generate_ids.next_id()  # reassign id
