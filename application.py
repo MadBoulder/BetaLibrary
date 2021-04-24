@@ -24,7 +24,7 @@ NUM_RESULTS = 4
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
 
-# create the application object
+# create and configure the application object
 app = Flask(__name__, static_folder='static')
 app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
@@ -63,7 +63,7 @@ def get_videos_from_channel():
 def get_zone_video_count(page):
     return utils.helpers.get_number_of_videos_for_zone(page)
 
-@cache.cached(timeout=60*60*24, key_prefix="map_all")
+@cache.cached(timeout=60*60*24, key_prefix='map_all')
 def get_map_all():
     # Since the map is rendered in an iframe inside
     # the main html of the page, jinja template variables
@@ -85,12 +85,12 @@ def get_map_all():
     output = template.render(**data)
     output = utils.js_helpers.replace_sectors_placeholders_for_translations(
         output)
-    with open('templates/maps/all.html', 'w', encoding="utf-8") as template:
+    with open('templates/maps/all.html', 'w', encoding='utf-8') as template:
         template.write(output)
 
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
-    key_prefix="mad_zones"
+    key_prefix='mad_zones'
 )
 def get_zone_data():
     return handle_channel_data.get_zone_data()
@@ -139,28 +139,23 @@ def home():
     zones = utils.helpers.load_zones()
     stats_list = [
         {
-            'logo': "fa fa-globe-americas",
-            'text': _("Zones"),
+            'logo': 'fa fa-globe-americas',
+            'text': _('Zones'),
             'data': len(zones)
         },
-        # {
-        #     'logo': "fa fa-map-marked",
-        #     'text': _("Sectors"),
-        #     'data': sum([helpers.count_sectors_in_zone(zone['file']) for zone in zones])
-        # },
         {
-            'logo': "fa fa-users",
-            'text': _("Contributors"),
+            'logo': 'fa fa-users',
+            'text': _('Contributors'),
             'data': handle_channel_data.get_contributors_count()
         },
         {
-            'logo': "fab fa-youtube",
-            'text': _("Videos"),
+            'logo': 'fab fa-youtube',
+            'text': _('Videos'),
             'data': channel_info['items'][0]['statistics']['videoCount']
         },
         {
-            'logo': "fa fa-eye",
-            'text': _("Views"),
+            'logo': 'fa fa-eye',
+            'text': _('Views'),
             'data': channel_info['items'][0]['statistics']['viewCount']
         }
     ]
@@ -182,8 +177,6 @@ def zones():
 def search_zone():
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
-        # Search zones
-        # Zones
         search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
         return render_template(
             'search_zone_results.html',
@@ -192,7 +185,6 @@ def search_zone():
         )
     if request.method == 'GET':
         query = request.args.get('search_query', '')
-        # Do search
         if query:
             search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
             return render_template(
@@ -211,40 +203,29 @@ def search():
         query = request.form.get('searchterm', '')
         if not query:
             query = request.form.get('searchterm-small', '')
-        # Search betas, sectors, zones
-        # Zones
+        # Search zones and betas
         search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
-        # Sectors
-        # search_sector_results = utils.helpers.search_sector(query, NUM_RESULTS, exact_match=True)
-        # Betas
         search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
         return render_template(
             'search_results.html',
             zones=search_zone_results,
-            # sectors=search_sector_results,
             videos=search_beta_results,
             search_term=query
         )
     if request.method == 'GET':
         query = request.args.get('search_query', '')
-        # Do search
         if query:
             search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
-            # Sectors
-            # search_sector_results = utils.helpers.search_sector(query, NUM_RESULTS, exact_match=True)
-            # Betas
             search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
             return render_template(
                 'search_results.html',
                 zones=search_zone_results,
-                # sectors=search_sector_results,
                 videos=search_beta_results,
                 search_term=query
             )
         return render_template(
             'search_results.html',
             zones=[],
-            sectors=[],
             videos=[],
             search_term='')
 
@@ -280,12 +261,12 @@ def render_about_us():
         # build email text/body
         feedback_data = request.form['feedback']
         sender_email = request.form['email']
-        msg_body = "Sender: {}\nMessage: {}".format(sender_email, feedback_data)
+        msg_body = 'Sender: {}\nMessage: {}'.format(sender_email, feedback_data)
         # build email
         msg = Message(
             subject='madboulder.org feedback',
-            sender=app.config.get("MAIL_USERNAME"),
-            recipients=app.config.get("FEEDBACK_MAIL_RECIPIENTS"),
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
             body=msg_body)
         mail.send(msg)
         # If no errors are raised, assume the action was successful
@@ -299,7 +280,7 @@ def affiliate_disclosure():
 @app.route('/statistics')
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
-    key_prefix="mad_statistics"
+    key_prefix='mad_statistics'
 )
 def statistics():
     layout = dashboard.get_dashboard()
@@ -320,7 +301,7 @@ def statistics():
 @app.route('/video_statistics')
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
-    key_prefix="mad_custom_statistics"
+    key_prefix='mad_custom_statistics'
 )
 def custom_statistics():
     layout = dashboard_videos.get_dashboard()
@@ -355,13 +336,13 @@ def render_page(page):
                 session['video_count'] = {page: video_count}
         data = [
         {
-            'logo': "fa fa-map-marked",
-            'text': _("Sectors"),
+            'logo': 'fa fa-map-marked',
+            'text': _('Sectors'),
             'data': utils.helpers.count_sectors_in_zone(page)
         },
         {
-            'logo': "fab fa-youtube",
-            'text': _("Videos"),
+            'logo': 'fab fa-youtube',
+            'text': _('Videos'),
             'data': video_count
         }]
         return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data, lang=get_locale())
@@ -376,7 +357,7 @@ def render_area(area):
     except:
         abort(404)
 
-@app.route("/download/<string:path>/<string:filename>")
+@app.route('/download/<string:path>/<string:filename>')
 def download_file(path = None, filename = None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path)
