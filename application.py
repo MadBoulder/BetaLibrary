@@ -19,6 +19,8 @@ from bokeh.plotting import figure
 from bokeh.resources import INLINE
 
 from wetransfer import TransferApi
+import threading
+
 
 EXTENSION = '.html'
 NUM_RESULTS = 4
@@ -230,31 +232,54 @@ def search():
             videos=[],
             search_term='')
 
+def beta_upload(file_content, filename, form):
+    # build email text/body
+    video_data = ("\n").join(["{}: {}".format(key, value)
+                                for key, value in form.items()])
+    x = TransferApi("CPKOaaJzTU7kRwAuRWI3toEqwQjEc2o7IXmhikBh")
+    link = x.upload_file("Beta", file_content, filename)
+    video_data = video_data + f'\n Link: {link}'
+    # video_data = video_data.replace('wt_embed_output', 'download link')
+    # filter mail recipients by zone
+    mail_recipients = app.config.get("MAIL_RECIPIENTS")
+    if form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
+        mail_recipients = mail_recipients[REMOVE_FIRST]
+    # build email
+    msg = Message(
+        subject=(", ").join([request.form[field]
+                                for field in EMAIL_SUBJECT_FIELDS]),
+        sender=app.config.get("MAIL_USERNAME"),
+        recipients=mail_recipients,
+        body=video_data)
+    mail.send(msg)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     # return render_template('upload_not_working.html')
     upload_complete = False
     if request.method == 'POST':
-        # build email text/body
-        video_data = ("\n").join(["{}: {}".format(key, value)
-                                  for key, value in request.form.items()])
-        x = TransferApi("CPKOaaJzTU7kRwAuRWI3toEqwQjEc2o7IXmhikBh")
-        link = x.upload_file("Beta", request.files['file'].read(), request.files['file'].filename)
-        video_data + f'\n Link: {link}'
-        # video_data = video_data.replace('wt_embed_output', 'download link')
-        # filter mail recipients by zone
-        mail_recipients = app.config.get("MAIL_RECIPIENTS")
-        if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
-            mail_recipients = mail_recipients[REMOVE_FIRST]
-        # build email
-        msg = Message(
-            subject=(", ").join([request.form[field]
-                                 for field in EMAIL_SUBJECT_FIELDS]),
-            sender=app.config.get("MAIL_USERNAME"),
-            recipients=mail_recipients,
-            body=video_data)
-        mail.send(msg)
+        thread = threading.Thread(target=beta_upload, args=(request.files['file'].read(), request.files['file'].filename, request.form))
+        thread.daemon = True
+        thread.start()
+        # # build email text/body
+        # video_data = ("\n").join(["{}: {}".format(key, value)
+        #                           for key, value in request.form.items()])
+        # x = TransferApi("CPKOaaJzTU7kRwAuRWI3toEqwQjEc2o7IXmhikBh")
+        # link = x.upload_file("Beta", request.files['file'].read(), request.files['file'].filename)
+        # video_data + f'\n Link: {link}'
+        # # video_data = video_data.replace('wt_embed_output', 'download link')
+        # # filter mail recipients by zone
+        # mail_recipients = app.config.get("MAIL_RECIPIENTS")
+        # if request.form['zone'].strip().lower() not in app.config['ZONE_FILTERS']:
+        #     mail_recipients = mail_recipients[REMOVE_FIRST]
+        # # build email
+        # msg = Message(
+        #     subject=(", ").join([request.form[field]
+        #                          for field in EMAIL_SUBJECT_FIELDS]),
+        #     sender=app.config.get("MAIL_USERNAME"),
+        #     recipients=mail_recipients,
+        #     body=video_data)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
         upload_complete = True
     return render_template(
@@ -405,4 +430,4 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, threaded=True)
