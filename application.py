@@ -1,7 +1,7 @@
 import os
 import random
 import requests
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, current_app
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, current_app, copy_current_request_context
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -232,6 +232,7 @@ def search():
             videos=[],
             search_term='')
 
+@copy_current_request_context
 def beta_upload(file_content, filename, form):
     # build email text/body
     video_data = ("\n").join(["{}: {}".format(key, value)
