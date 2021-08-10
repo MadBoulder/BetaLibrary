@@ -14,14 +14,14 @@ def main():
     """
     generate_ids = IDGenerator()
     areas = next(os.walk(ZONES_PATH))[1]
-    all_data = [ZONES_PATH + area + '/' + area + '.txt' for area in areas]
+    all_data = [ZONES_PATH + area + '/' + area + '.json' for area in areas]
     for area in areas:
         print(area)
         with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
                     area,
-                    ZONES_PATH + area + '/' + area + '.txt',
+                    ZONES_PATH + area + '/' + area + '.json',
                     generate_ids,
                     True
                 )
@@ -40,7 +40,7 @@ def main():
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
     data = utils.helpers.get_number_of_videos_from_playlists_file(
-        'data/playlist.txt')
+        'data/playlist.json')
     template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)

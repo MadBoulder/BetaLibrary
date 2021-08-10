@@ -77,7 +77,7 @@ def get_map_all():
     # if it is cheaper or faster to query this data from the
     # DDBB we can optimize it in the future
     data = utils.helpers.get_number_of_videos_from_playlists_file(
-        'data/playlist.txt')
+        'data/playlist.json')
     # store num videos in session to avoid repeating calls
     session['video_count'] = data
     template = template_env.get_template('templates/maps/all_to_render.html')

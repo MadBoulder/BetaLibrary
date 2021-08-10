@@ -83,7 +83,7 @@ def main():
     for area in areas:
         # Create zone map
         print(area)
-        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        datafile = 'data/zones/' + area + '/' + area + '.json'
         area_data = {}
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
@@ -109,11 +109,11 @@ def main():
             template.write(output)
 
     # Update playlists file
-    with open('data/playlist.txt', 'w', encoding='utf-8') as playlists_file:
+    with open('data/playlist.json', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
     
     for area in areas:
-        datafile = 'data/zones/' + area + '/' + area + '.txt'
+        datafile = 'data/zones/' + area + '/' + area + '.json'
         area_data = {}
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)

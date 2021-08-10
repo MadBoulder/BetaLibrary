@@ -42,7 +42,7 @@ def load_zones():
     areas = next(os.walk(DATA_ZONES_PATH))[1]
     zones = []
     for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
         with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
         zones += [{NAME: area_data[NAME], 'file': area}]
@@ -55,7 +55,7 @@ def load_sectors():
     areas = next(os.walk(DATA_ZONES_PATH))[1]
     sectors = []
     for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
         with open(datafile, encoding=ENCODING) as data:
             area_data = json.load(data)
         for sector in area_data.get('sectors', []):
@@ -67,7 +67,7 @@ def count_sectors_in_zone(zone):
     Given a zone name, return the number of sectors based on the
     zone's datafile specified sectors.
     """
-    datafile = DATA_ZONES_PATH + zone + '/' + zone + '.txt'
+    datafile = DATA_ZONES_PATH + zone + '/' + zone + '.json'
     with open(datafile, encoding=ENCODING) as data:
         area_data = json.load(data)
         return len(area_data['sectors'])
@@ -349,7 +349,7 @@ def get_number_of_videos_for_zone(zone_name):
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
-    with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
+    with open('./data/playlist.json', 'r', encoding=ENCODING) as f:
         data = json.load(f)
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data[zone_name],
@@ -366,7 +366,7 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     with open('credentials.txt', 'r', encoding=ENCODING) as f:
         api_key = f.read()
 
-    with open('./data/playlist.txt', 'r', encoding=ENCODING) as f:
+    with open('./data/playlist.json', 'r', encoding=ENCODING) as f:
         data = json.load(f)
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data[zone_name],
@@ -385,7 +385,7 @@ def get_number_of_videos_and_views_for_zone(zone_name):
 #         api_key = f.read()
 
 #     data = {}
-#     with open('./data/playlist.txt', 'r', encoding='utf-8') as f:
+#     with open('./data/playlist.json', 'r', encoding='utf-8') as f:
 #         data = json.load(f)
 #     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
 #         data[zone_name],
@@ -411,7 +411,7 @@ def get_list_of_zones():
     areas = next(os.walk(DATA_ZONES_PATH))[1]
     zones = list()
     for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.txt'
+        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
         zone = dict()
