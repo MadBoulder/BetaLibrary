@@ -42,6 +42,7 @@ mail_settings = {
 app.config.update(mail_settings)
 mail = Mail(app)
 
+
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
     if now.hour >= hour and now.minute > minute:
@@ -56,9 +57,11 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
 def get_videos_from_channel():
     return utils.helpers.get_videos_from_channel()
 
+
 @cache.memoize(timeout=3600)
 def get_zone_video_count(page):
     return utils.helpers.get_number_of_videos_for_zone(page)
+
 
 @cache.cached(timeout=60*60*24, key_prefix='map_all')
 def get_map_all():
@@ -84,6 +87,7 @@ def get_map_all():
         output)
     with open('templates/maps/all.html', 'w', encoding='utf-8') as template:
         template.write(output)
+
 
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
@@ -126,6 +130,8 @@ def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
 
 # cache keys for zones
+
+
 def zone_cache_key():
     return request.url
 
@@ -158,6 +164,7 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
+
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
     if request.method == 'GET':
@@ -170,11 +177,13 @@ def zones():
         # sort zones
         return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'], current_lang=get_locale())
 
+
 @app.route('/search_zone', methods=['GET', 'POST'])
 def search_zone():
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
-        search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+        search_zone_results = utils.helpers.search_zone(
+            query, NUM_RESULTS, exact_match=True)
         return render_template(
             'search_zone_results.html',
             zones=search_zone_results,
@@ -183,7 +192,8 @@ def search_zone():
     if request.method == 'GET':
         query = request.args.get('search_query', '')
         if query:
-            search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
+            search_zone_results = utils.helpers.search_zone(
+                query, NUM_RESULTS, exact_match=True)
             return render_template(
                 'search_zone_results.html',
                 zones=search_zone_results,
@@ -194,6 +204,7 @@ def search_zone():
             zones=[],
             search_term='')
 
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
@@ -201,8 +212,10 @@ def search():
         if not query:
             query = request.form.get('searchterm-small', '')
         # Search zones and betas
-        search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
-        search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
+        search_zone_results = utils.helpers.search_zone(
+            query, NUM_RESULTS, exact_match=True)
+        search_beta_results = utils.helpers.get_video_from_channel(
+            query, results=5)
         return render_template(
             'search_results.html',
             zones=search_zone_results,
@@ -212,8 +225,10 @@ def search():
     if request.method == 'GET':
         query = request.args.get('search_query', '')
         if query:
-            search_zone_results = utils.helpers.search_zone(query, NUM_RESULTS, exact_match=True)
-            search_beta_results = utils.helpers.get_video_from_channel(query, results=5)
+            search_zone_results = utils.helpers.search_zone(
+                query, NUM_RESULTS, exact_match=True)
+            search_beta_results = utils.helpers.get_video_from_channel(
+                query, results=5)
             return render_template(
                 'search_results.html',
                 zones=search_zone_results,
@@ -259,7 +274,8 @@ def render_about_us():
         # build email text/body
         feedback_data = request.form['feedback']
         sender_email = request.form['email']
-        msg_body = 'Sender: {}\nMessage: {}'.format(sender_email, feedback_data)
+        msg_body = 'Sender: {}\nMessage: {}'.format(
+            sender_email, feedback_data)
         # build email
         msg = Message(
             subject='madboulder.org feedback',
@@ -270,11 +286,12 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
+
 @app.route('/disclosure')
 def affiliate_disclosure():
     return render_template('affiliate_disclosure.html')
 
-# Cache until 
+# Cache until
 @app.route('/statistics')
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
@@ -295,6 +312,7 @@ def statistics():
         css_resources=css_resources,
         last_update=dashboard.get_last_dashboard_update()
     )
+
 
 @app.route('/video_statistics')
 @cache.cached(
@@ -333,16 +351,16 @@ def render_page(page):
             else:
                 session['video_count'] = {page: video_count}
         data = [
-        {
-            'logo': 'fa fa-map-marked',
-            'text': _('Sectors'),
-            'data': utils.helpers.count_sectors_in_zone(page)
-        },
-        {
-            'logo': 'fab fa-youtube',
-            'text': _('Videos'),
-            'data': video_count
-        }]
+            {
+                'logo': 'fa fa-map-marked',
+                'text': _('Sectors'),
+                'data': utils.helpers.count_sectors_in_zone(page)
+            },
+            {
+                'logo': 'fab fa-youtube',
+                'text': _('Videos'),
+                'data': video_count
+            }]
         return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data, lang=get_locale())
     except:
         abort(404)
@@ -355,8 +373,9 @@ def render_area(area):
     except:
         abort(404)
 
+
 @app.route('/download/<string:path>/<string:filename>')
-def download_file(path = None, filename = None):
+def download_file(path=None, filename=None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path)
         return send_from_directory(
@@ -366,6 +385,7 @@ def download_file(path = None, filename = None):
         )
     except:
         abort(404)
+
 
 @app.errorhandler(404)
 def page_not_found(error):
