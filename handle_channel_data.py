@@ -1,9 +1,6 @@
 import urllib.request
 import urllib.parse
 import json
-import os
-import os.path
-import time
 from datetime import date
 import re
 import math
@@ -110,11 +107,11 @@ def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=MA
 
 
 def update_videos_from_channel(
-    channel_id='UCX9ok0rHnvnENLSK7jdnXxA', 
-    num_videos=MAX_ITEMS_API_QUERY, 
-    page_token=None, 
+    channel_id='UCX9ok0rHnvnENLSK7jdnXxA',
+    num_videos=MAX_ITEMS_API_QUERY,
+    page_token=None,
     data=None
-    ):
+):
     """
     Update the list of videos uploaded to the channel. If there are new videos,
     add them to the database
@@ -267,10 +264,10 @@ def process_zone_data(infile=None, data=None):
 
 
 def get_and_update_data_local(
-        outfile='data/channel/raw_video_data.json',
-        infile='data/channel/raw_video_data.json',
-        is_update=True
-    ):
+    outfile='data/channel/raw_video_data.json',
+    infile='data/channel/raw_video_data.json',
+    is_update=True
+):
     """
     Load current data from local file, update it and store it back.
     """
@@ -365,6 +362,7 @@ def get_last_update_date():
     root = db.reference()
     return root.child('video_data/date').get()
 
+
 def get_contributors_count():
     """
     Get the number of contributors
@@ -375,6 +373,7 @@ def get_contributors_count():
             'databaseURL': 'https://madboulder.firebaseio.com'
         })
     return db.reference().child('contributor_count').get()
+
 
 def get_data_local():
     """
@@ -416,6 +415,7 @@ def get_zone_data():
     root = db.reference()
     return root.child('zone_data').get()
 
+
 def get_number_of_videos_from_playlist(playlist):
     """
     Given a playlist, return the number of videos it has
@@ -427,6 +427,7 @@ def get_number_of_videos_from_playlist(playlist):
     inp = urllib.request.urlopen(query_url)
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
+
 
 if __name__ == '__main__':
     # for local update
