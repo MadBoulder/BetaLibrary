@@ -1,10 +1,8 @@
-import numpy as np
 import folium
-from folium.plugins import MarkerCluster, BeautifyIcon, Fullscreen
+from folium.plugins import MarkerCluster, Fullscreen
 from folium.features import CustomIcon
 import json
 import os
-import math
 import utils.js_helpers
 
 POPUP_WIDTH = 100
@@ -97,7 +95,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             location=[parking['parking_latitude'],
                       parking['parking_longitude']],
             popup=utils.js_helpers.generate_parking_html([parking['parking_latitude'],
-                                                    parking['parking_longitude']]),
+                                                          parking['parking_longitude']]),
             tooltip='Parking',
             icon=parking_icon
         )
@@ -203,7 +201,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
     # Avoid zooming in when clicking on a sector area
     map_html = utils.js_helpers.remove_geojson_zoom_on_click(map_html)
     # replace the ids of all the html tags
-    map_html = utils.js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
+    map_html = utils.js_helpers.replace_tag_ids(
+        map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
 
 
@@ -337,6 +336,8 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     #     for marker in sectors_markers:
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    map_html = utils.js_helpers.replace_custom_placeholders(map_html, placeholders)
-    map_html = utils.js_helpers.replace_tag_ids(map_html, ['html'], generate_ids)
+    map_html = utils.js_helpers.replace_custom_placeholders(
+        map_html, placeholders)
+    map_html = utils.js_helpers.replace_tag_ids(
+        map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
