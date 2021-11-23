@@ -1,5 +1,5 @@
 import os
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 import json
 import utils.helpers
 import handle_channel_data
@@ -20,6 +20,8 @@ CONFIG_FILE = 'config.py'
 
 # When generating pages because a new zone has been added,
 # also update the list of zones in the database
+
+
 def set_zones_to_firebase(zone_data):
     """
     zone: {
@@ -32,13 +34,15 @@ def set_zones_to_firebase(zone_data):
     """
     handle_channel_data.set_zone_data(zone_data)
 
+
 def update_countries_list(zones, input_file=CONFIG_FILE):
     """
     Update the current list of countries where 
     we have bouldering zones
     """
     # Update contries list
-    countries_list = [f'\'{c}\'' for c in set([z[COUNTRY_FIELD] for z in zones])]
+    countries_list = [f'\'{c}\'' for c in set(
+        [z[COUNTRY_FIELD] for z in zones])]
     countries_updated = 'COUNTRIES = ['
     for z in countries_list:
         if z != countries_list[-1]:
@@ -46,7 +50,7 @@ def update_countries_list(zones, input_file=CONFIG_FILE):
         else:
             countries_updated += z
     countries_updated += ']'
-    replace_in_file(input_file, 'COUNTRIES', countries_updated)    
+    replace_in_file(input_file, 'COUNTRIES', countries_updated)
 
 
 def replace_in_file(file_path, pattern, new_line):
@@ -67,6 +71,7 @@ def replace_in_file(file_path, pattern, new_line):
     copymode(file_path, abs_path)
     remove(file_path)
     move(abs_path, file_path)
+
 
 def main():
     """
@@ -90,8 +95,9 @@ def main():
         # get external guide links
         guides = [(guide[NAME_FIELD], guide[LINK_FIELD])
                   for guide in area_data[GUIDES_FIELD] if guide.get(LINK_FIELD)]
-        # get affiliate guides links 
-        affiliate_guides = [affiliate_guide[LINK_FIELD] for affiliate_guide in area_data.get(AFFILIATE_GUIDES, [])]
+        # get affiliate guides links
+        affiliate_guides = [affiliate_guide[LINK_FIELD]
+                            for affiliate_guide in area_data.get(AFFILIATE_GUIDES, [])]
 
         base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
         playlists[area] = area_data[PLAYLIST_FIELD]
@@ -102,7 +108,7 @@ def main():
         output = template.render(
             name=area_data[NAME_FIELD], tag_name=area_data[NAME_FIELD].replace("'", r"\'"), guide_list=guides,
             affiliate_guide_list=affiliate_guides, map_url='maps/'+area, full_playlist=base_url + area_data[PLAYLIST_FIELD],
-            playlists=sectors_playlists, lat=area_data[LATITUDE_FIELD], 
+            playlists=sectors_playlists, lat=area_data[LATITUDE_FIELD],
             lng=area_data[LONGITUDE_FIELD], zone=area_data[NAME_FIELD])
 
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
@@ -111,7 +117,7 @@ def main():
     # Update playlists file
     with open('data/playlist.json', 'w', encoding='utf-8') as playlists_file:
         playlists_file.write(json.dumps(playlists))
-    
+
     for area in areas:
         datafile = 'data/zones/' + area + '/' + area + '.json'
         area_data = {}
@@ -132,6 +138,7 @@ def main():
 
     # Update zones in DDBB
     set_zones_to_firebase(zones)
+
 
 if __name__ == '__main__':
     main()
