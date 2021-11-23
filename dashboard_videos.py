@@ -2,14 +2,13 @@ from os.path import dirname, join
 import json
 import collections
 import math
-from datetime import date, datetime
 
 import numpy as np
 import pandas as pd
 
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, RangeSlider, Button
-from bokeh.models import  RadioButtonGroup, DataTable, TableColumn, CheckboxGroup, AutocompleteInput
+from bokeh.models import ColumnDataSource, Div, Select, Slider, HoverTool, Button
+from bokeh.models import RadioButtonGroup, DataTable, TableColumn, CheckboxGroup, AutocompleteInput
 from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
@@ -68,7 +67,8 @@ def get_dashboard(local_data=False):
     )
 
     # initial data source fill
-    barchart_data = { video['title']: {**video['stats'], 'climber': video['climber'], 'zone': video['zone'], 'grade': video['grade']} for video in video_data }
+    barchart_data = {video['title']: {**video['stats'], 'climber': video['climber'],
+                                      'zone': video['zone'], 'grade': video['grade']} for video in video_data}
     data_to_plot = barchart_data
 
     od = collections.OrderedDict(
@@ -82,7 +82,7 @@ def get_dashboard(local_data=False):
     # Create Input controls
     label_slider = Slider(start=0, end=90, value=90,
                           step=1, title="Label Angle")
-    
+
     label_checkbox = CheckboxGroup(
         labels=["Show labels"], active=[])
 
@@ -109,7 +109,7 @@ def get_dashboard(local_data=False):
         completions=climbers)
 
     climber_clear_button = Button(label='Clear Climber', button_type='primary')
-    
+
     zones = sorted(list({video['zone'] for video in video_data}))
     ac_zones = AutocompleteInput(
         title="Select Zone",
@@ -139,7 +139,7 @@ def get_dashboard(local_data=False):
     # Generate the actual plot
     p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title=y_axis.value,
                toolbar_location="above")
-    
+
     # hide x axis
     p.xaxis.visible = False
 
@@ -298,14 +298,14 @@ def get_dashboard(local_data=False):
             x_axis_map=x_axis_map,
             x_axis=x_axis,
             y_axis_map=y_axis_map,
-            y_axis = y_axis,
+            y_axis=y_axis,
             sort_order=sort_order,
             fig=p,
             title=p.title,
             grade_filter=ac_grades,
             zone_filter=ac_zones
         ),
-        code= SORT_FUNCTION + """
+        code=SORT_FUNCTION + """
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
@@ -358,14 +358,14 @@ def get_dashboard(local_data=False):
             x_axis_map=x_axis_map,
             x_axis=x_axis,
             y_axis_map=y_axis_map,
-            y_axis = y_axis,
+            y_axis=y_axis,
             sort_order=sort_order,
             fig=p,
             title=p.title,
             grade_filter=ac_grades,
             climber_filter=ac_climber
         ),
-        code= SORT_FUNCTION + """
+        code=SORT_FUNCTION + """
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
@@ -409,7 +409,7 @@ def get_dashboard(local_data=False):
         """
     )
     zone_clear_button.js_on_click(clear_zone_callback)
-    
+
     ac_grade_callback = CustomJS(
         args=dict(
             source=source,
@@ -418,14 +418,14 @@ def get_dashboard(local_data=False):
             x_axis_map=x_axis_map,
             x_axis=x_axis,
             y_axis_map=y_axis_map,
-            y_axis = y_axis,
+            y_axis=y_axis,
             sort_order=sort_order,
             fig=p,
             title=p.title,
             zone_filter=ac_zones,
             climber_filter=ac_climber
         ),
-        code= SORT_FUNCTION + """
+        code=SORT_FUNCTION + """
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
