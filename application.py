@@ -1,21 +1,18 @@
 import os
 import random
-import requests
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, current_app
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 import datetime
 import utils.helpers
 import utils.js_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
-from werkzeug.utils import secure_filename
 
 from bokeh.embed import components
-from bokeh.plotting import figure
 from bokeh.resources import INLINE
 
 
