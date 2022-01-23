@@ -40,6 +40,8 @@ def update_countries_list(zones, input_file=CONFIG_FILE):
     Update the current list of countries where 
     we have bouldering zones
     """
+    # TODO: If a location has no country set, 
+    # this function should fallback and compute it
     # Update contries list
     countries_list = [f'\'{c}\'' for c in set(
         [z[COUNTRY_FIELD] for z in zones])]
@@ -124,10 +126,15 @@ def main():
         with open(datafile, encoding='utf-8') as data:
             area_data = json.load(data)
         # this currently assumes country codes have been added
+        num_videos = 0
+        try:
+            num_videos = utils.helpers.get_number_of_videos_and_views_for_zone(area)
+        except Exception as e:
+            pass
         zone = {
             'normalized_name': area,
             'name': area_data[NAME_FIELD],
-            'videos': utils.helpers.get_number_of_videos_and_views_for_zone(area),
+            'videos': num_videos,
             'playlist': area_data[PLAYLIST_FIELD],
             'country': area_data[COUNTRY_FIELD]
         }
