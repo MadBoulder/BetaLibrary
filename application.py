@@ -1,3 +1,4 @@
+import json
 import os
 import random
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect
@@ -167,15 +168,28 @@ def home():
 
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
+    with open('data/countries.json', 'r') as c_data:
+        country_data = json.load(c_data)
+    # TODO: POST and GET methods are handled equally
     if request.method == 'GET':
         # each zone has: link, name, num.videos
         zones = get_zone_data()
-        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'], current_lang=get_locale())
+        return render_template(
+            'zones.html',
+            zones=zones,
+            countries=app.config['COUNTRIES'],
+            country_data=country_data,
+            current_lang=get_locale())
     if request.method == 'POST':
         # get filtered filter zones
         zones = get_zone_data()
         # sort zones
-        return render_template('zones.html', zones=zones, countries=app.config['COUNTRIES'], current_lang=get_locale())
+        return render_template(
+            'zones.html',
+            zones=zones,
+            countries=app.config['COUNTRIES'],
+            country_data=country_data,
+            current_lang=get_locale())
 
 
 @app.route('/search_zone', methods=['GET', 'POST'])
