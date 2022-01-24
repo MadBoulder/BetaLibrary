@@ -171,25 +171,16 @@ def zones():
     with open('data/countries.json', 'r') as c_data:
         country_data = json.load(c_data)
     # TODO: POST and GET methods are handled equally
-    if request.method == 'GET':
-        # each zone has: link, name, num.videos
-        zones = get_zone_data()
-        return render_template(
-            'zones.html',
-            zones=zones,
-            countries=app.config['COUNTRIES'],
-            country_data=country_data,
-            current_lang=get_locale())
-    if request.method == 'POST':
-        # get filtered filter zones
-        zones = get_zone_data()
-        # sort zones
-        return render_template(
-            'zones.html',
-            zones=zones,
-            countries=app.config['COUNTRIES'],
-            country_data=country_data,
-            current_lang=get_locale())
+    # if request.method == 'GET':
+    # if request.method == 'POST':
+    # each zone has: link, name, num.videos
+    zones = get_zone_data()
+    return render_template(
+        'zones.html',
+        zones=zones,
+        countries=app.config['COUNTRIES'],
+        country_data=country_data,
+        current_lang=get_locale())
 
 
 @app.route('/search_zone', methods=['GET', 'POST'])
