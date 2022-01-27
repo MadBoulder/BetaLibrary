@@ -15,6 +15,7 @@ from bokeh.models.callbacks import CustomJS
 
 import handle_channel_data
 
+NUM_RESULTS = 50
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method, category, isRatio){
                 var sortedArray = [];
@@ -115,8 +116,10 @@ def get_dashboard(local_data=False):
 
     x_to_plot = np.array([key for key, _ in od.items()])
     y_to_plot = np.array([val['count'] for _, val in od.items()])
-
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
+    # initial data
+    x_init = x_to_plot[0:NUM_RESULTS]
+    y_init = y_to_plot[0:NUM_RESULTS]
 
     # Create Input controls
     checkbox_limit_results = CheckboxGroup(
@@ -151,7 +154,7 @@ def get_dashboard(local_data=False):
 
     # show number of categories
     x_count_source = ColumnDataSource(
-        data=dict(x_count=[len(x_to_plot)], category=[x_axis.value]))
+        data=dict(x_count=[len(x_init)], category=[x_axis.value]))
     
     columns = [
         TableColumn(field="category", title="Category"),
@@ -162,7 +165,9 @@ def get_dashboard(local_data=False):
         source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
+    # p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
+    #            toolbar_location="above")
+    p = figure(x_range=x_init, y_range=(0, max(y_init)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
                toolbar_location="above")
 
     # Fill it with data and format it
@@ -195,6 +200,82 @@ def get_dashboard(local_data=False):
     )
     label_slider.js_on_change('value', label_callback)
 
+    # limit checkbox
+    checkbox_limit_results_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            sort_order=sort_order,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis_map=y_axis_map,
+            y_axis=y_axis,
+            range_slider=range_slider,
+            checkbox=checkbox,
+            fig=p,
+            title=p.title
+        ),
+        code = SORT_FUNCTION + """
+            const num_results = 50;
+            var data = o_data[x_axis_map[x_axis.value]];
+            var x = data['x'];
+            var y = data['y'];
+            var apply_limit = cb_obj.active.length > 0;
+            var is_ratio = checkbox.active.length > 0;
+            title.text = x_axis.value.concat(" ", y_axis.value);
+            // Sort data
+            var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
+            var new_y = [];
+            var new_x = [];
+            var final_x = [];
+            var final_y = [];
+            for (var i = 0; i < x.length; i++) {
+                if (apply_limit)
+                {
+                    if(sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) 
+                    {
+                        new_x.push(sorted_data[i][0]);
+                        new_y.push(sorted_data[i][1]);
+                    } 
+                } else {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1]);                    
+                }
+            }
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+                window.should_update_range = false;
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+                window.should_update_range = true;
+            }
+            x_source.data['x_count'] = [final_x.length];
+            x_source.data['category'] = [x_axis.value];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = final_x;
+            if (Array.isArray(new_y) && new_y.length) {
+                // range init and end cannot have same value
+                var range_end = Math.max.apply(Math, new_y);
+                if (range_end == 0 || range_end == -Infinity) {
+                    range_end = 1;
+                }
+                range_slider.value = [0, Math.max.apply(Math, final_y)]; 
+                range_slider.end = range_end;
+                fig.y_range.end = Math.max.apply(Math, final_y);
+                fig.change.emit();
+            }        
+        """
+    )
+    checkbox_limit_results.js_on_change('active', checkbox_limit_results_callback)
+
+
     # ratio checkbox
     checkbox_callback = CustomJS(
         args=dict(
@@ -226,6 +307,8 @@ def get_dashboard(local_data=False):
             var sorted_data = sortData(data['raw'], sort_order.active, y_axis_map[y_axis.value], is_ratio);
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < x.length; i++) {
                 if (checkbox_limit_results.active.length <= 0)
                 {
@@ -257,8 +340,13 @@ def get_dashboard(local_data=False):
             fig.x_range.factors = [];
             fig.x_range.factors = final_x;
             if (Array.isArray(new_y) && new_y.length) {
+                // range init and end cannot have same value
+                var range_end = Math.max.apply(Math, new_y);
+                if (range_end == 0 || range_end == -Infinity) {
+                    range_end = 1;
+                }
                 range_slider.value = [0, Math.max.apply(Math, final_y)]; 
-                range_slider.end = Math.max.apply(Math, new_y);
+                range_slider.end = range_end;
                 fig.y_range.end = Math.max.apply(Math, final_y);
                 fig.change.emit();
             }
@@ -376,8 +464,13 @@ def get_dashboard(local_data=False):
             fig.x_range.factors = [];
             fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
+                // range init and end cannot have same value
+                var range_end = Math.max.apply(Math, new_y);
+                if (range_end == 0 || range_end == -Infinity) {
+                    range_end = 1;
+                }
                 range_slider.value = [0, Math.max.apply(Math, final_y)]; 
-                range_slider.end = Math.max.apply(Math, new_y);
+                range_slider.end = range_end;
                 fig.y_range.end = Math.max.apply(Math, final_y);
                 fig.change.emit();
             }
@@ -440,8 +533,13 @@ def get_dashboard(local_data=False):
             fig.x_range.factors = [];
             fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
+                // range init and end cannot have same value
+                var range_end = Math.max.apply(Math, new_y);
+                if (range_end == 0 || range_end == -Infinity) {
+                    range_end = 1;
+                }
                 range_slider.value = [0, Math.max.apply(Math, final_y)]; 
-                range_slider.end = Math.max.apply(Math, new_y);
+                range_slider.end = range_end;
                 fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
@@ -478,10 +576,17 @@ def get_dashboard(local_data=False):
             var final_y = [];
             // push data if it lies inside range
             for (var i = 0; i < x.length; i++) {
-//                if (sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) {
-                    new_x.push(sorted_data[i][0]);
-                    new_y.push(sorted_data[i][1]);
-//                }
+                    if (checkbox_limit_results.active.length <= 0)
+                    {
+                        if (sorted_data[i][1] >= cb_obj.value[0] && sorted_data[i][1] <= cb_obj.value[1]) 
+                        {
+                            new_x.push(sorted_data[i][0]);
+                            new_y.push(sorted_data[i][1]);
+                        }
+                    } else {
+                        new_x.push(sorted_data[i][0]);
+                        new_y.push(sorted_data[i][1]);                        
+                    }
             }
             if (checkbox_limit_results.active.length > 0)
             { 
@@ -502,8 +607,13 @@ def get_dashboard(local_data=False):
             fig.x_range.factors = [];
             fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
+                // range init and end cannot have same value
+                var range_end = Math.max.apply(Math, new_y);
+                if (range_end == 0 || range_end == -Infinity) {
+                    range_end = 1;
+                }
                 range_slider.value = [0, Math.max.apply(Math, final_y)]; 
-                range_slider.end = Math.max.apply(Math, new_y);
+                range_slider.end = range_end;
                 fig.y_range.end = Math.max.apply(Math, final_y);
                 fig.change.emit();
             }
