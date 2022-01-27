@@ -16,6 +16,7 @@ from bokeh.models.callbacks import CustomJS
 import handle_channel_data
 
 NUM_RESULTS = 50
+JS_NUM_RESULTS = f'const num_results = {NUM_RESULTS};'
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method, category, isRatio){
                 var sortedArray = [];
@@ -216,8 +217,7 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title
         ),
-        code = SORT_FUNCTION + """
-            const num_results = 50;
+        code = SORT_FUNCTION + JS_NUM_RESULTS + """
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
@@ -292,8 +292,7 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title
         ),
-        code=SORT_FUNCTION + """
-            const num_results = 50;
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
@@ -426,8 +425,7 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title
         ),
-        code=SORT_FUNCTION + """
-            const num_results = 50;
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
             title.text = cb_obj.value.concat(" ", y_axis.value);
             var data = o_data[x_axis_map[cb_obj.value]];
             var x = data['x'];
@@ -495,8 +493,7 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title
         ),
-        code=SORT_FUNCTION + """
-            const num_results = 50;
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
             title.text = x_axis.value.concat(" ", cb_obj.value);
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
@@ -562,8 +559,7 @@ def get_dashboard(local_data=False):
             checkbox_limit_results=checkbox_limit_results,
             fig=p
         ),
-        code=SORT_FUNCTION + """
-            const num_results = 50;
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
             var data = o_data[x_axis_map[x_axis.value]];
             var x = data['x'];
             var y = data['y'];
