@@ -244,7 +244,7 @@ def process_zone_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match zones.
-    zone_regex = r'(?:\.+.+)?(?:\. )(.+)$'
+    zone_regex = r'(?:\.+.+)?(?:\.\s* )(.+)$'
     video_data = match_regex_and_add_field(
         zone_regex, 'title', 'zone', video_data)
     for video in video_data:
