@@ -73,6 +73,10 @@ def prepare_barchart_data(data, axis):
 
 
 def get_dashboard(local_data=False):
+    """
+    Assemble the dashboard. Define the layout, controls and 
+    its callbacks, as well as data sources.
+    """
     # Load data
     video_data = {}
     if local_data:
