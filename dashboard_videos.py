@@ -195,6 +195,68 @@ def get_dashboard(local_data=False):
     )
     label_checkbox.js_on_change('active', label_checkbox_callback)
 
+    # limit checkbox
+    checkbox_limit_results_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            y_axis_map=y_axis_map,
+            sort_order=sort_order,
+            fig=p,
+            title=p.title,
+            grade_filter=ac_grades,
+            climber_filter=ac_climber,
+            zone_filter=ac_zones
+        ),
+        code = SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = cb_obj.active.length > 0;
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
+            var new_y = [];
+            var new_x = [];
+            var final_x = [];
+            var final_y = [];
+            for (var i = 0; i < sorted_data.length; i++) {
+                var include = true;
+                if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
+                    include = false;
+                }
+                if (zone_filter.value !== '' && sorted_data[i][1]['zone'].localeCompare(zone_filter.value) !== 0) {
+                    include = false;
+                }
+                if (grade_filter.value !== '' && sorted_data[i][1]['grade'].localeCompare(grade_filter.value) !== 0) {
+                    include = false;
+                }
+                if (include) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
+                }
+            }
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = final_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, final_y);
+            }        
+        """
+    )
+    checkbox_limit_results.js_on_change('active', checkbox_limit_results_callback)
+
     # variable to group data
     y_axis_callback = CustomJS(
         args=dict(
@@ -209,7 +271,8 @@ def get_dashboard(local_data=False):
             title=p.title,
             grade_filter=ac_grades,
             climber_filter=ac_climber,
-            zone_filter=ac_zones
+            zone_filter=ac_zones,
+            # checkbox_limit_results=checkbox_limit_results
         ),
         code=SORT_FUNCTION + """
             title.text = cb_obj.value;
