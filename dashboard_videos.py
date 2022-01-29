@@ -15,6 +15,8 @@ from bokeh.models.callbacks import CustomJS
 
 import handle_channel_data
 
+NUM_RESULTS = 50
+JS_NUM_RESULTS = f'const num_results = {NUM_RESULTS};'
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method, category){
                 // Run native sort function and returns sorted array.
@@ -78,8 +80,14 @@ def get_dashboard(local_data=False):
     y_to_plot = np.array([int(val['viewCount']) for key, val in od.items()])
 
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
+    # initial data
+    x_init = x_to_plot[0:NUM_RESULTS]
+    y_init = y_to_plot[0:NUM_RESULTS]
 
     # Create Input controls
+    checkbox_limit_results = CheckboxGroup(
+        labels=["Show only first 50 results"], active=[0])
+
     label_slider = Slider(start=0, end=90, value=90,
                           step=1, title="Label Angle")
 
@@ -128,7 +136,7 @@ def get_dashboard(local_data=False):
 
     # show number of categories
     x_count_source = ColumnDataSource(
-        data=dict(x_count=[len(x_to_plot)], category=["Videos"]))
+        data=dict(x_count=[len(x_init)], category=["Videos"]))
     columns = [
         TableColumn(field="category", title="Category"),
         TableColumn(field="x_count", title="Count"),
@@ -137,7 +145,7 @@ def get_dashboard(local_data=False):
         source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title=y_axis.value,
+    p = figure(x_range=x_init, y_range=(0, max(y_init)), plot_height=250, title=y_axis.value,
                toolbar_location="above")
 
     # hide x axis
@@ -152,6 +160,7 @@ def get_dashboard(local_data=False):
     controls = [
         # min_year,
         # max_year,
+        checkbox_limit_results,
         sort_order,
         y_axis,
         label_slider,
