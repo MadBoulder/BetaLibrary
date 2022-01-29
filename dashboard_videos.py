@@ -15,6 +15,8 @@ from bokeh.models.callbacks import CustomJS
 
 import handle_channel_data
 
+NUM_RESULTS = 50
+JS_NUM_RESULTS = f'const num_results = {NUM_RESULTS};'
 SORT_FUNCTION = """
             function sortData(jsObj, sort_method, category){
                 // Run native sort function and returns sorted array.
@@ -78,8 +80,14 @@ def get_dashboard(local_data=False):
     y_to_plot = np.array([int(val['viewCount']) for key, val in od.items()])
 
     source = ColumnDataSource(data=dict(x=x_to_plot, y=y_to_plot))
+    # initial data
+    x_init = x_to_plot[0:NUM_RESULTS]
+    y_init = y_to_plot[0:NUM_RESULTS]
 
     # Create Input controls
+    checkbox_limit_results = CheckboxGroup(
+        labels=["Show only first 50 results"], active=[0])
+
     label_slider = Slider(start=0, end=90, value=90,
                           step=1, title="Label Angle")
 
@@ -128,7 +136,7 @@ def get_dashboard(local_data=False):
 
     # show number of categories
     x_count_source = ColumnDataSource(
-        data=dict(x_count=[len(x_to_plot)], category=["Videos"]))
+        data=dict(x_count=[len(x_init)], category=["Videos"]))
     columns = [
         TableColumn(field="category", title="Category"),
         TableColumn(field="x_count", title="Count"),
@@ -137,7 +145,7 @@ def get_dashboard(local_data=False):
         source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title=y_axis.value,
+    p = figure(x_range=x_init, y_range=(0, max(y_init)), plot_height=250, title=y_axis.value,
                toolbar_location="above")
 
     # hide x axis
@@ -152,6 +160,7 @@ def get_dashboard(local_data=False):
     controls = [
         # min_year,
         # max_year,
+        checkbox_limit_results,
         sort_order,
         y_axis,
         label_slider,
@@ -186,6 +195,68 @@ def get_dashboard(local_data=False):
     )
     label_checkbox.js_on_change('active', label_checkbox_callback)
 
+    # limit num. results checkbox
+    checkbox_limit_results_callback = CustomJS(
+        args=dict(
+            source=source,
+            x_source=x_count_source,
+            o_data=barchart_data,
+            x_axis_map=x_axis_map,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            y_axis_map=y_axis_map,
+            sort_order=sort_order,
+            fig=p,
+            title=p.title,
+            grade_filter=ac_grades,
+            climber_filter=ac_climber,
+            zone_filter=ac_zones
+        ),
+        code = SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = cb_obj.active.length > 0;
+            var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
+            var new_y = [];
+            var new_x = [];
+            var final_x = [];
+            var final_y = [];
+            for (var i = 0; i < sorted_data.length; i++) {
+                var include = true;
+                if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
+                    include = false;
+                }
+                if (zone_filter.value !== '' && sorted_data[i][1]['zone'].localeCompare(zone_filter.value) !== 0) {
+                    include = false;
+                }
+                if (grade_filter.value !== '' && sorted_data[i][1]['grade'].localeCompare(grade_filter.value) !== 0) {
+                    include = false;
+                }
+                if (include) {
+                    new_x.push(sorted_data[i][0]);
+                    new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
+                }
+            }
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
+            x_source.change.emit();
+            source.data['x'] = new_x;
+            source.data['y'] = new_y;
+            source.change.emit();
+            fig.x_range.factors = [];
+            fig.x_range.factors = final_x;
+            if (new_y && Array.isArray(new_y) && new_y.length) {
+                fig.y_range.end = Math.max.apply(Math, final_y);
+            }        
+        """
+    )
+    checkbox_limit_results.js_on_change('active', checkbox_limit_results_callback)
+
     # variable to group data
     y_axis_callback = CustomJS(
         args=dict(
@@ -200,13 +271,17 @@ def get_dashboard(local_data=False):
             title=p.title,
             grade_filter=ac_grades,
             climber_filter=ac_climber,
-            zone_filter=ac_zones
+            zone_filter=ac_zones,
+            checkbox_limit_results=checkbox_limit_results
         ),
-        code=SORT_FUNCTION + """
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
             title.text = cb_obj.value;
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[cb_obj.value]);
+            var apply_limit = checkbox_limit_results.active.length > 0;
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < sorted_data.length; i++) {
                 var include = true;
                 if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
@@ -223,15 +298,23 @@ def get_dashboard(local_data=False):
                     new_y.push(sorted_data[i][1][y_axis_map[cb_obj.value]]);
                 }
             }
-            x_source.data['x_count'] = [new_x.length];
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
             fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
+            fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
     )
@@ -251,13 +334,17 @@ def get_dashboard(local_data=False):
             fig=p,
             grade_filter=ac_grades,
             climber_filter=ac_climber,
-            zone_filter=ac_zones
+            zone_filter=ac_zones,
+            checkbox_limit_results=checkbox_limit_results
         ),
-        code=SORT_FUNCTION + """
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = checkbox_limit_results.active.length > 0;
             // Sort data
             var sorted_data = sortData(Object.entries(o_data), cb_obj.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < sorted_data.length; i++) {
                 var include = true;
                 if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
@@ -274,15 +361,23 @@ def get_dashboard(local_data=False):
                     new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
                 }
             }
-            x_source.data['x_count'] = [new_x.length];
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
             fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
+            fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
     )
@@ -303,13 +398,17 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title,
             grade_filter=ac_grades,
-            zone_filter=ac_zones
+            zone_filter=ac_zones,
+            checkbox_limit_results=checkbox_limit_results
         ),
-        code=SORT_FUNCTION + """
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = checkbox_limit_results.active.length > 0;
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < sorted_data.length; i++) {
                 var include = true;
                 if (cb_obj.value !== '' && sorted_data[i][1]['climber'].localeCompare(cb_obj.value) !== 0) {
@@ -326,15 +425,23 @@ def get_dashboard(local_data=False):
                     new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
                 }
             }
-            x_source.data['x_count'] = [new_x.length];
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
             fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
+            fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
     )
@@ -363,13 +470,17 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title,
             grade_filter=ac_grades,
-            climber_filter=ac_climber
+            climber_filter=ac_climber,
+            checkbox_limit_results=checkbox_limit_results
         ),
-        code=SORT_FUNCTION + """
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = checkbox_limit_results.active.length > 0;
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < sorted_data.length; i++) {
                 var include = true;
                 if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
@@ -386,15 +497,23 @@ def get_dashboard(local_data=False):
                     new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
                 }
             }
-            x_source.data['x_count'] = [new_x.length];
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }
+            x_source.data['x_count'] = [final_x.length];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
             fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
+            fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
     )
@@ -423,13 +542,17 @@ def get_dashboard(local_data=False):
             fig=p,
             title=p.title,
             zone_filter=ac_zones,
-            climber_filter=ac_climber
+            climber_filter=ac_climber,
+            checkbox_limit_results=checkbox_limit_results
         ),
-        code=SORT_FUNCTION + """
+        code=SORT_FUNCTION + JS_NUM_RESULTS + """
+            var apply_limit = checkbox_limit_results.active.length > 0;
             // Filter by set value
             var sorted_data = sortData(Object.entries(o_data), sort_order.active, y_axis_map[y_axis.value]);
             var new_y = [];
             var new_x = [];
+            var final_x = [];
+            var final_y = [];
             for (var i = 0; i < sorted_data.length; i++) {
                 var include = true;
                 if (climber_filter.value !== '' && sorted_data[i][1]['climber'].localeCompare(climber_filter.value) !== 0) {
@@ -446,15 +569,23 @@ def get_dashboard(local_data=False):
                     new_y.push(sorted_data[i][1][y_axis_map[y_axis.value]]);
                 }
             }
-            x_source.data['x_count'] = [new_x.length];
+            // limit num results if required
+            if (apply_limit) { 
+                final_x = new_x.slice(0, num_results);
+                final_y = new_y.slice(0, num_results);
+            } else {
+                final_x = new_x;
+                final_y = new_y;
+            }            
+            x_source.data['x_count'] = [final_x.length];
             x_source.change.emit();
             source.data['x'] = new_x;
             source.data['y'] = new_y;
             source.change.emit();
             fig.x_range.factors = [];
-            fig.x_range.factors = new_x;
+            fig.x_range.factors = final_x;
             if (new_y && Array.isArray(new_y) && new_y.length) {
-                fig.y_range.end = Math.max.apply(Math, new_y);
+                fig.y_range.end = Math.max.apply(Math, final_y);
             }
         """
     )
