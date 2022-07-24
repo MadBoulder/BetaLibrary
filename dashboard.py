@@ -569,6 +569,7 @@ def get_dashboard(local_data=False):
             var y = data['y'];
             // Sort data
             var is_ratio = checkbox.active.length > 0;
+            console.log(cb_obj);
             var sorted_data = sortData(data['raw'], cb_obj.active, y_axis_map[y_axis.value], is_ratio);
             var new_y = [];
             var new_x = [];
@@ -578,7 +579,7 @@ def get_dashboard(local_data=False):
             for (var i = 0; i < x.length; i++) {
                     if (checkbox_limit_results.active.length <= 0)
                     {
-                        if (sorted_data[i][1] >= cb_obj.value[0] && sorted_data[i][1] <= cb_obj.value[1]) 
+                        if(sorted_data[i][1] >= range_slider.value[0] && sorted_data[i][1] <= range_slider.value[1]) 
                         {
                             new_x.push(sorted_data[i][0]);
                             new_y.push(sorted_data[i][1]);
