@@ -1,3 +1,4 @@
+from enum import Enum
 import urllib.request
 import urllib.parse
 import json
@@ -12,6 +13,11 @@ from firebase_admin import db
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
+
+class Case(Enum):
+    lower = 1
+    upper = 2
+    none = 3
 
 
 def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
@@ -202,7 +208,7 @@ def load_data(infile=None, data=None):
     return video_data
 
 
-def match_regex_and_add_field(pattern, infield, outfield, video_data):
+def match_regex_and_add_field(pattern, infield, outfield, video_data, case=Case.none):
     """
     Given a regex pattern and a field, find the sequence that matches
     the regex in the specified video field. Add the matched sequence as
@@ -211,10 +217,14 @@ def match_regex_and_add_field(pattern, infield, outfield, video_data):
     reg_pattern = re.compile(pattern)
     for video in video_data:
         matches = reg_pattern.findall(video[infield])
-        if matches:
-            video[outfield] = matches[0]
-        else:
+        if not matches:
             video[outfield] = 'Unknown'
+        elif case == Case.upper:
+            video[outfield] = matches[0].upper()
+        elif case == Case.lower:
+            video[outfield] = matches[0].lower()
+        else:
+            video[outfield] = matches[0]
     return video_data
 
 
@@ -225,7 +235,7 @@ def process_grade_data(infile=None, data=None):
     video_data = load_data(infile, data)
     # This regex only matches french grades.
     grade_regex = r', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
-    return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data)
+    return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data, Case.upper)
 
 
 def process_climber_data(infile=None, data=None):
