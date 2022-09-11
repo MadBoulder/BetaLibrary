@@ -244,7 +244,7 @@ def process_climber_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match climbers.
-    climber_regex = r'(?:Climber: ?)(@?\w+ ?(?:\w+)?)'
+    climber_regex = r'(?:Climber:\s+?)(@?\w+ ?(?:\w+)?)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
 
