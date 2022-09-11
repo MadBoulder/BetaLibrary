@@ -244,7 +244,7 @@ def process_climber_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match climbers.
-    climber_regex = r'(?:Climber:\s+?)(@?\w+ ?(?:\w+)?)'
+    climber_regex = r'(?:Climber:\s*?)(@?\w+ ?(?:\w+)?)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
 
@@ -309,6 +309,37 @@ def get_and_update_data_local(
 
     return {'date': str(date.today()), 'items': processed_data}
 
+def get_and_update_data_from_local_firebase(dry_run=True):
+    """
+    Load current data from firebase database, update it and store it back.
+    """
+    print('Updating data from local file')
+
+    processed_data = process_grade_data(infile='data/channel/raw_video_data.json')
+
+    print(f'Updating {len(processed_data)} videos')
+
+    processed_data = process_climber_data(data=processed_data)
+    processed_data = process_zone_data(data=processed_data)
+
+    video_data = {
+        'date': str(date.today()),
+        'items': processed_data
+    }
+
+    if not dry_run:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
+
+        root = db.reference()
+
+        # Update videos
+        root.child('video_data').set(video_data)
+
+    return video_data
 
 def get_and_update_data_firebase(is_update=True):
     """
@@ -442,8 +473,14 @@ def get_number_of_videos_from_playlist(playlist):
 if __name__ == '__main__':
     # for local update
     # get_and_update_data_local()
-    # for firebase
-    updated_data = get_and_update_data_firebase(is_update=False)
+    update_from_local_file = False
+    updated_data = {}
+
+    if update_from_local_file:
+        updated_data = get_and_update_data_from_local_firebase(dry_run=True)
+    else:
+        # for firebase
+        updated_data = get_and_update_data_firebase(is_update=False)
 
     # local update
     with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
