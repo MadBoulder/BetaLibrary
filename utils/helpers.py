@@ -272,12 +272,26 @@ def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a youtube channel from the channel's id
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
-    query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
-        channel_id, api_key)
-    inp = urllib.request.urlopen(query_url)
-    return json.load(inp)
+    try:
+        with open('credentials.txt', 'r', encoding=ENCODING) as f:
+            api_key = f.read()
+        query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
+            channel_id, api_key)
+        inp = urllib.request.urlopen(query_url)
+        return json.load(inp)
+    except:
+        with open('data/channel/last_channel_info.json', 'r') as f:
+            data = json.load(f)
+            return {
+                'items': [
+                    {
+                        'statistics': {
+                            'videoCount': data['video_count'],
+                            'viewCount': data['view_count']
+                        }
+                    }
+                 ]
+            }
 
 
 def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', results=5):
