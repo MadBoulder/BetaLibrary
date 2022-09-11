@@ -286,8 +286,8 @@ def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
                 'items': [
                     {
                         'statistics': {
-                            'videoCount': data['video_count'],
-                            'viewCount': data['view_count']
+                            'videoCount': data.get('video_count', '-'),
+                            'viewCount': data.get('view_count', '-')
                         }
                     }
                  ]
