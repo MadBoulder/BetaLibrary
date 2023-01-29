@@ -131,8 +131,6 @@ def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
 
 # cache keys for zones
-
-
 def zone_cache_key():
     return request.url
 
@@ -291,6 +289,11 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
+@app.route('/problems/<string:zone>')
+def render_problem_list(zone):
+    # get problems from zone
+    
+    pass
 
 @app.route('/disclosure')
 def affiliate_disclosure():
