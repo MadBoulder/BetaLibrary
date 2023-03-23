@@ -113,6 +113,9 @@ def main():
         for p in problems:
             p['secure'] = secure_filename(p['name'])
 
+        # sort alphabetically
+        problems.sort(key= lambda x: x['name'])
+
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
             problems=problems, area_code=area,
