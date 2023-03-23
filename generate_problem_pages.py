@@ -8,6 +8,8 @@ LINK_FIELD = 'url'
 NAME_FIELD = 'name'
 GRADE_FIELD = 'grade'
 
+def get_embed_url(full_url):
+    return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
 
 def main():
     """
@@ -29,8 +31,8 @@ def main():
             output = template.render(
                 name=problem[NAME_FIELD],
                 grade=problem[GRADE_FIELD],
-                video_url=problem[LINK_FIELD],
-                layout_css='static/css/layout.css'
+                video_url=get_embed_url(problem[LINK_FIELD]),
+                layout_css='../../../static/css/layout.css'
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')

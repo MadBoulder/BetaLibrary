@@ -163,6 +163,9 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
+@app.route('/<string:page>/problem/<string:problem_name>')
+def load_problem(page, problem_name):
+    return render_template(f'problems/{page}/{problem_name}.html')
 
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
@@ -289,11 +292,6 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
-@app.route('/problems/<string:zone>')
-def render_problem_list(zone):
-    # get problems from zone
-    
-    pass
 
 @app.route('/disclosure')
 def affiliate_disclosure():

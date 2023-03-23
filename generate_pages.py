@@ -4,6 +4,7 @@ import json
 import utils.helpers
 import utils.zone_helpers
 import handle_channel_data
+from werkzeug.utils import secure_filename
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
@@ -109,10 +110,12 @@ def main():
 
         # problems
         problems = utils.zone_helpers.get_problems_from_zone(area)
+        for p in problems:
+            p['secure'] = secure_filename(p['name'])
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
-            problems=problems,
+            problems=problems, area_code=area,
             name=area_data[NAME_FIELD], tag_name=area_data[NAME_FIELD].replace("'", r"\'"), guide_list=guides,
             affiliate_guide_list=affiliate_guides, map_url='maps/'+area, full_playlist=base_url + area_data[PLAYLIST_FIELD],
             playlists=sectors_playlists, lat=area_data[LATITUDE_FIELD],
