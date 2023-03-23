@@ -2,6 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import json
 import utils.helpers
+import utils.zone_helpers
 import handle_channel_data
 from tempfile import mkstemp
 from shutil import move, copymode
@@ -106,8 +107,12 @@ def main():
         sectors_playlists = [(sector[NAME_FIELD], base_url + sector[LINK_FIELD].split('list=')[1])
                              for sector in area_data[SECTORS_FIELD] if sector[LINK_FIELD]]
 
+        # problems
+        problems = utils.zone_helpers.get_problems_from_zone(area)
+
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
+            problems=problems,
             name=area_data[NAME_FIELD], tag_name=area_data[NAME_FIELD].replace("'", r"\'"), guide_list=guides,
             affiliate_guide_list=affiliate_guides, map_url='maps/'+area, full_playlist=base_url + area_data[PLAYLIST_FIELD],
             playlists=sectors_playlists, lat=area_data[LATITUDE_FIELD],
