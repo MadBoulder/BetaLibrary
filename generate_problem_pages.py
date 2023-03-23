@@ -12,6 +12,7 @@ GRADE_FIELD = 'grade'
 def main():
     """
     Generate html templates for all the problems listed in the processed_data file
+    IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
     zones = next(os.walk('data/zones/'))[1]
 
