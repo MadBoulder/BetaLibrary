@@ -172,14 +172,14 @@ def get_dashboard(local_data=False):
     # Generate the actual plot
     # p = figure(x_range=x_to_plot, y_range=(0, max(y_to_plot)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
     #            toolbar_location="above")
-    p = figure(x_range=x_init, y_range=(0, max(y_init)), plot_height=250, title="{} {}".format(x_axis.value, y_axis.value),
-               toolbar_location="above")
+    p = figure(x_range=x_init, y_range=(0, max(y_init)), width=1080, height=580, title="{} {}".format(x_axis.value, y_axis.value),
+               toolbar_location="above", sizing_mode="fixed")
 
     # Fill it with data and format it
     p.vbar(x='x', top='y', width=0.9, source=source)
     p.xaxis.major_label_orientation = math.pi/2
     p.add_tools(HoverTool(tooltips=[("name", "@x"), ("count", "@y")]))
-
+    
     # Controls
     controls = [
         checkbox_limit_results,

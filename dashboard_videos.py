@@ -145,8 +145,8 @@ def get_dashboard(local_data=False):
         source=x_count_source, columns=columns, width=320, height=280)
 
     # Generate the actual plot
-    p = figure(x_range=x_init, y_range=(0, max(y_init)), plot_height=250, title=y_axis.value,
-               toolbar_location="above")
+    p = figure(x_range=x_init, y_range=(0, max(y_init)), width=1080, height=580, title=y_axis.value,
+               toolbar_location="above", sizing_mode="fixed")
 
     # hide x axis
     p.xaxis.visible = False
