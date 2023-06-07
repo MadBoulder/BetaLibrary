@@ -108,10 +108,18 @@ def main():
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
-            name=area_data[NAME_FIELD], tag_name=area_data[NAME_FIELD].replace("'", r"\'"), guide_list=guides,
-            affiliate_guide_list=affiliate_guides, map_url='maps/'+area, full_playlist=base_url + area_data[PLAYLIST_FIELD],
-            playlists=sectors_playlists, lat=area_data[LATITUDE_FIELD],
-            lng=area_data[LONGITUDE_FIELD], zone=area_data[NAME_FIELD], layout_css='static/css/layout.css')
+            name=area_data[NAME_FIELD],
+            file_name=area,
+            tag_name=area_data[NAME_FIELD].replace("'", r"\'"),
+            guide_list=guides,
+            affiliate_guide_list=affiliate_guides,
+            map_url='maps/'+area,
+            full_playlist=base_url + area_data[PLAYLIST_FIELD],
+            playlists=sectors_playlists,
+            lat=area_data[LATITUDE_FIELD],
+            lng=area_data[LONGITUDE_FIELD],
+            zone=area_data[NAME_FIELD],
+            layout_css='static/css/layout.css')
 
         with open('templates/zones/'+area+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
