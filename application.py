@@ -293,9 +293,17 @@ def render_about_us():
     return render_template('about_us.html')
 
 
-@app.route('/disclosure')
-def affiliate_disclosure():
-    return render_template('affiliate_disclosure.html')
+@app.route('/terms_conditions')
+def terms_conditions():
+    return render_template('policy/terms_conditions.html')
+    
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template('policy/privacy_policy.html')
+    
+@app.route('/cookies')
+def cookies():
+    return render_template('policy/cookies.html')
 
 # Cache until
 @app.route('/statistics')
