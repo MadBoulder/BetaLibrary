@@ -5,6 +5,7 @@ from flask import Flask, render_template, send_from_directory, request, abort, s
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
+from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import utils.helpers
@@ -101,10 +102,16 @@ def get_zone_data():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    args = '&'.join(['{}={}'.format(str(key), str(value))
-                     for key, value in request.args.items() if key != 'origin'])
-    return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
-
+    referrer_url = request.referrer
+    if referrer_url:
+        parsed_url = urlparse(referrer_url)
+        page_name = parsed_url.path.split('/')[-1]
+        
+        args = '&'.join(['{}={}'.format(str(key), str(value))
+            for key, value in request.args.items()])
+        return redirect('/{}?{}'.format(page_name, args))
+    else:
+        return redirect('')
 
 @babel.localeselector
 def get_locale():
@@ -291,10 +298,22 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
 
-
 @app.route('/disclosure')
 def affiliate_disclosure():
-    return render_template('affiliate_disclosure.html')
+    return render_template('policy/affiliate_disclosure_deprecated.html')
+
+
+@app.route('/terms_conditions')
+def terms_conditions():
+    return render_template('policy/terms_conditions.html')
+    
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template('policy/privacy_policy.html')
+    
+@app.route('/cookies')
+def cookies():
+    return render_template('policy/cookies.html')
 
 # Cache until
 @app.route('/statistics')
