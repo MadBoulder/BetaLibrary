@@ -5,6 +5,7 @@ from flask import Flask, render_template, send_from_directory, request, abort, s
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
+from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import utils.helpers
@@ -101,10 +102,16 @@ def get_zone_data():
 @app.route('/language/<language>')
 def set_language(language=None):
     session['language'] = language
-    args = '&'.join(['{}={}'.format(str(key), str(value))
-                     for key, value in request.args.items() if key != 'origin'])
-    return redirect('/{}?{}'.format(request.args.get('origin', ''), args))
-
+    referrer_url = request.referrer
+    if referrer_url:
+        parsed_url = urlparse(referrer_url)
+        page_name = parsed_url.path.split('/')[-1]
+        
+        args = '&'.join(['{}={}'.format(str(key), str(value))
+            for key, value in request.args.items()])
+        return redirect('/{}?{}'.format(page_name, args))
+    else:
+        return redirect('')
 
 @babel.localeselector
 def get_locale():
