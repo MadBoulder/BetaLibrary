@@ -191,33 +191,6 @@ def zones():
         current_lang=get_locale())
 
 
-@app.route('/search_zone', methods=['GET', 'POST'])
-def search_zone():
-    if request.method == 'POST':
-        query = request.form.get('searchterm', '')
-        search_zone_results = utils.helpers.search_zone(
-            query, NUM_RESULTS, exact_match=True)
-        return render_template(
-            'search_zone_results.html',
-            zones=search_zone_results,
-            search_term=query
-        )
-    if request.method == 'GET':
-        query = request.args.get('search_query', '')
-        if query:
-            search_zone_results = utils.helpers.search_zone(
-                query, NUM_RESULTS, exact_match=True)
-            return render_template(
-                'search_zone_results.html',
-                zones=search_zone_results,
-                search_term=query
-            )
-        return render_template(
-            'search_zone_results.html',
-            zones=[],
-            search_term='')
-
-
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
