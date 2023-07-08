@@ -271,6 +271,27 @@ def render_about_us():
         # mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
+    
+@app.route('/join_us')
+def join_us():
+    if request.method == 'POST':
+        # build email text/body
+        sender_name = request.form['name']
+        sender_message = request.form['message']
+        sender_email = request.form['email']
+        resume = request.files['resume']
+        msg_body = 'Sender: {} - {}\nMessage: {}'.format(
+            sender_name, sender_email, sender_message)
+        # build email
+        msg = Message(
+            subject='madboulder.org join us',
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
+            body=msg_body)
+        msg.attach(resume.filename, 'application/octet-stream', resume.read())
+        mail.send(msg)
+    # If no errors are raised, assume the action was successful
+    return render_template('join_us.html')
 
 @app.route('/disclosure')
 def affiliate_disclosure():
