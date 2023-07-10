@@ -272,7 +272,7 @@ def render_about_us():
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
     
-@app.route('/join_us')
+@app.route('/join_us', methods=['GET', 'POST'])
 def join_us():
     if request.method == 'POST':
         # build email text/body
