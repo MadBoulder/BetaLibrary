@@ -118,6 +118,8 @@ def main():
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
+            problems=problems,
+            area_code=area,
             name=area_data[NAME_FIELD],
             file_name=area,
             tag_name=area_data[NAME_FIELD].replace("'", r"\'"),
