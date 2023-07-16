@@ -41,8 +41,8 @@ mail_settings = {
     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
 }
 
-app.config.update(mail_settings)
-mail = Mail(app)
+# app.config.update(mail_settings)
+# mail = Mail(app)
 
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
@@ -138,8 +138,6 @@ def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
 
 # cache keys for zones
-
-
 def zone_cache_key():
     return request.url
 
@@ -172,6 +170,9 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
+@app.route('/<string:page>/problem/<string:problem_name>')
+def load_problem(page, problem_name):
+    return render_template(f'problems/{page}/{problem_name}.html')
 
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
@@ -267,7 +268,7 @@ def render_about_us():
             sender=app.config.get('MAIL_USERNAME'),
             recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
             body=msg_body)
-        mail.send(msg)
+        # mail.send(msg)
         # If no errors are raised, assume the action was successful
     return render_template('about_us.html')
     

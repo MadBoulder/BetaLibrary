@@ -2,7 +2,9 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import json
 import utils.helpers
+import utils.zone_helpers
 import handle_channel_data
+from werkzeug.utils import secure_filename
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
@@ -105,6 +107,14 @@ def main():
         playlists[area] = area_data[PLAYLIST_FIELD]
         sectors_playlists = [(sector[NAME_FIELD], base_url + sector[LINK_FIELD].split('list=')[1])
                              for sector in area_data[SECTORS_FIELD] if sector[LINK_FIELD]]
+
+        # problems
+        problems = utils.zone_helpers.get_problems_from_zone(area)
+        for p in problems:
+            p['secure'] = secure_filename(p['name'])
+
+        # sort alphabetically
+        problems.sort(key= lambda x: x['name'])
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(

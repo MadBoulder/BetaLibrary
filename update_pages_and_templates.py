@@ -6,3 +6,4 @@ if __name__ == "__main__":
     generate_templates_main()
     print("\nUpdating and adding pages\n")
     generate_pages_main()
+    # TODO: Update problem lists and pages

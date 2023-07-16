@@ -234,7 +234,7 @@ def process_grade_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # This regex only matches french grades.
-    grade_regex = r', (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
+    grade_regex = r',? (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
     return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data, Case.upper)
 
 
