@@ -50,6 +50,7 @@ def update_video_stats(video_data):
     """
     Update the stats of the channel videos
     """
+    print("update_video_stats")
     total = len(video_data)
     current = 0
     for video in video_data:
@@ -60,10 +61,31 @@ def update_video_stats(video_data):
     return video_data
 
 
-def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=MAX_ITEMS_API_QUERY, page_token=None):
+def retrieve_all_videos():
+    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
+    return retrieve_videos_from_channel(video_num=total_video_count)
+
+
+def retrieve_missing_videos(
+    data=None
+):
+    video_data = data['items']
+    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
+    missing_videos = total_video_count - len(video_data)
+    video_ids = [v['id'] for v in video_data]
+    return retrieve_videos_from_channel(video_num=missing_videos, video_ids=video_ids)
+
+
+def retrieve_videos_from_channel(
+    channel_id='UCX9ok0rHnvnENLSK7jdnXxA',
+    page_token=None,
+    video_ids=[],
+    video_num=-1
+):
     """
     Get the title, description and id of all the videos uploaded to a channel
     """
+    print("retrieve_videos_from_channel")
     api_key = None
     with open('credentials.txt', 'r', encoding='utf-8') as f:
         api_key = f.read()
@@ -75,83 +97,12 @@ def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=MA
     resp = json.load(inp)
     upload_playlist = resp['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 
-    progress = 0
-    videos = []
-    total_video_count = int(
-        get_channel_info()['items'][0]['statistics']['videoCount'])
-
-    while progress < total_video_count:
-        print(str(round((progress/total_video_count)*100, 2))+'%')
-
-        get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
-            MAX_ITEMS_API_QUERY, upload_playlist, api_key
-        )
-        if page_token:
-            get_videos_url += '&pageToken=' + resp['nextPageToken']
-
-        inp = urllib.request.urlopen(get_videos_url)
-        resp = json.load(inp)
-        for video in resp['items']:
-            v_data = {}
-            v_data['title'] = video['snippet']['title']
-            v_data['date'] = video['snippet']['publishedAt']
-            v_data['description'] = video['snippet']['description']
-            v_data['id'] = video['snippet']['resourceId']['videoId']
-            v_data['url'] = get_video_url_from_id(v_data['id'])
-            v_stats = get_video_info(v_data['id'], api_key)
-            v_data['stats'] = v_stats['items'][0]['statistics']
-            videos.append(v_data)
-
-        progress += 50
-
-        if resp.get('nextPageToken', False):
-            page_token = resp.get('nextPageToken')
-        else:
-            page_token = None
-
-    return videos
-
-
-def update_videos_from_channel(
-    channel_id='UCX9ok0rHnvnENLSK7jdnXxA',
-    num_videos=MAX_ITEMS_API_QUERY,
-    page_token=None,
-    data=None
-):
-    """
-    Update the list of videos uploaded to the channel. If there are new videos,
-    add them to the database
-    """
-    # compare number of videos
-    video_data = data['items']
-    video_ids = [v['id'] for v in video_data]
-
-    total_video_count = int(
-        get_channel_info()['items'][0]['statistics']['videoCount'])
-    if len(video_data) >= total_video_count:
-        print('Already up to date, updating stats')
-        video_data = update_video_stats(video_data)
-        return video_data
-
-    # there are new videos, get them
-    api_key = None
-    with open('credentials.txt', 'r', encoding='utf-8') as f:
-        api_key = f.read()
-
-    url = 'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}'.format(
-        channel_id, api_key
-    )
-    inp = urllib.request.urlopen(url)
-    resp = json.load(inp)
-    upload_playlist = resp['items'][0]['contentDetails']['relatedPlaylists']['uploads']
-
-    missing_videos = total_video_count - len(video_data)
-    progress = 0
+    max_iters = math.ceil(video_num/MAX_ITEMS_API_QUERY)
     current_iter = 0
-    max_iters = math.ceil(total_video_count/MAX_ITEMS_API_QUERY)
-    new_videos = []
-    while progress < missing_videos and current_iter < max_iters:
-        print(str(round((progress/missing_videos)*100, 2)) + '%')
+    videos = []
+
+    while len(videos) < video_num and current_iter < max_iters:
+        print(str(round((len(videos)/video_num)*100, 2))+'%')
 
         get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
             MAX_ITEMS_API_QUERY, upload_playlist, api_key
@@ -171,15 +122,33 @@ def update_videos_from_channel(
                 v_data['url'] = get_video_url_from_id(v_data['id'])
                 v_stats = get_video_info(v_data['id'], api_key)
                 v_data['stats'] = v_stats['items'][0]['statistics']
-                new_videos.append(v_data)
-
-        progress = len(new_videos)
+                videos.append(v_data)
+            
         current_iter += 1
 
         if resp.get('nextPageToken', False):
             page_token = resp.get('nextPageToken')
         else:
             page_token = None
+
+    return videos
+
+
+def update_videos_from_channel(
+    data=None
+):
+    """
+    If there are new videos, add them to the database
+    Update the list of videos uploaded to the channel. 
+    """
+    new_videos = []
+    
+    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
+    video_data = data['items']
+    missing_videos = total_video_count - len(video_data)
+    if missing_videos > 0:
+        new_videos = retrieve_missing_videos(data=data)
+        
     updated_data = update_video_stats(new_videos + video_data)
     return updated_data
 
@@ -244,7 +213,7 @@ def process_climber_data(infile=None, data=None):
     """
     video_data = load_data(infile, data)
     # regex to match climbers.
-    climber_regex = r'(?:Climber:\s*?)(@?\w+ ?(?:\w+)?)'
+    climber_regex = r'Climber: \s*?(.*?)(?:\n|$)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
 
@@ -273,79 +242,69 @@ def process_zone_data(infile=None, data=None):
     return video_data
 
 
-def get_and_update_data_local(
+def process_sector_data(infile=None, data=None):
+    """
+    Extract Sector name from video data
+    """
+    video_data = load_data(infile, data)
+    # regex to match climbers.
+    sector_regex = r'Sector: \s*?(.*?)(?:\n|$)'
+    return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
+
+
+def update_local_database(
+    retrieve_data_from_channel=True
+):
+    if retrieve_data_from_channel:
+        retrieve_and_update_data_raw_local(is_update=False)
+    process_data_local()
+
+
+def retrieve_and_update_data_raw_local(
     outfile='data/channel/raw_video_data.json',
     infile='data/channel/raw_video_data.json',
     is_update=True
 ):
-    """
-    Load current data from local file, update it and store it back.
-    """
     video_data = []
-    with open(infile, 'r', encoding='utf-8') as f:
-        try:
-            video_data = json.load(f)
-        except:
-            pass
-
     if is_update:
-        video_data = update_videos_from_channel(
-            page_token=None, data=video_data)
+        print("Updating raw_video_data.json file")
+        raw_video_data_local = []
+        with open(infile, 'r', encoding='utf-8') as f:
+            try:
+                raw_video_data_local = json.load(f)
+            except:
+                pass
+        video_data = update_videos_from_channel(data=raw_video_data_local)
     else:
-        video_data = get_videos_from_channel(page_token=None)
+        print("Regenerating raw_video_data.json file")
+        video_data = retrieve_all_videos()
 
     with open(outfile, 'w', encoding='utf-8') as f:
         print('Videos retrieved: ' + str(len(video_data)))
         json.dump({'date': str(date.today()),
                    'items': video_data}, f, indent=4)
 
-    processed_data = process_grade_data(data=video_data)
+
+def process_data_local(
+    infile='data/channel/raw_video_data.json',
+    outfile='data/channel/processed_data.json'
+):
+    print("Processing local data: Regenerating processed_data.json file");
+    processed_data = process_grade_data(infile=infile)
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
+    processed_data = process_sector_data(data=processed_data)
 
-    with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
+    with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                    'items': processed_data}, f, indent=4)
 
-    return {'date': str(date.today()), 'items': processed_data}
 
-def get_and_update_data_from_local_firebase(dry_run=True):
+def regenerate_firebase_data(is_update=True):
     """
-    Load current data from firebase database, update it and store it back.
+    Load current data from local database and copy it to firebase database
     """
-    print('Updating data from local file')
-
-    processed_data = process_grade_data(infile='data/channel/raw_video_data.json')
-
-    print(f'Updating {len(processed_data)} videos')
-
-    processed_data = process_climber_data(data=processed_data)
-    processed_data = process_zone_data(data=processed_data)
-
-    video_data = {
-        'date': str(date.today()),
-        'items': processed_data
-    }
-
-    if not dry_run:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-
-        root = db.reference()
-
-        # Update videos
-        root.child('video_data').set(video_data)
-
-    return video_data
-
-def get_and_update_data_firebase(is_update=True):
-    """
-    Load current data from firebase database, update it and store it back.
-    """
-    print('Updating data')
+    print('Regenerating Firebase Data')
     if not firebase_admin._apps:
         cred = credentials.Certificate('madboulder.json')
         firebase_admin.initialize_app(cred, {
@@ -355,25 +314,23 @@ def get_and_update_data_firebase(is_update=True):
     root = db.reference()
 
     # retrieve current videos
-    if is_update:
-        videos = root.child('video_data').get()
-        video_data = update_videos_from_channel(page_token=None, data=videos)
-    else:
-        video_data = get_videos_from_channel(page_token=None)
-
-    processed_data = process_grade_data(data=video_data)
-    processed_data = process_climber_data(data=processed_data)
-    processed_data = process_zone_data(data=processed_data)
-
-    video_data = {
-        'date': str(date.today()),
-        'items': processed_data
-    }
-
-    # Update videos
+   #if is_update:
+   #    videos = root.child('video_data').get()
+   #    video_data = update_videos_from_channel(data=videos)
+   #else:
+   #    video_data = get_videos_from_channel(page_token=None)
+   #
+   #processed_data = process_grade_data(data=video_data)
+   #processed_data = process_climber_data(data=processed_data)
+   #processed_data = process_zone_data(data=processed_data)
+   #
+   #video_data = {
+   #    'date': str(date.today()),
+   #    'items': processed_data
+   #}
+    
+    video_data = get_data_local()
     root.child('video_data').set(video_data)
-
-    return video_data
 
 
 def get_data_firebase():
@@ -471,18 +428,8 @@ def get_number_of_videos_from_playlist(playlist):
 
 
 if __name__ == '__main__':
-    # for local update
-    # get_and_update_data_local()
-    update_from_local_file = False
-    updated_data = {}
-
-    if update_from_local_file:
-        updated_data = get_and_update_data_from_local_firebase(dry_run=True)
-    else:
-        # for firebase
-        updated_data = get_and_update_data_firebase(is_update=False)
-
-    # local update
-    with open('data/channel/processed_data.json', 'w', encoding='utf-8') as f:
-        json.dump(updated_data, f, indent=4)
-    # get_zone_data()
+    dry_run=False
+    update_local_database()
+        
+    if not dry_run:
+        regenerate_firebase_data()
