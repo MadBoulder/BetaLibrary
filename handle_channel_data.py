@@ -197,6 +197,12 @@ def match_regex_and_add_field(pattern, infield, outfield, video_data, case=Case.
     return video_data
 
 
+def process_name_data(infile=None, data=None):
+    video_data = load_data(infile, data)
+    name_regex = r'Name: \s*?(.*?)(?:\n|$)'
+    return match_regex_and_add_field(name_regex, 'description', 'name', video_data)
+
+
 def process_grade_data(infile=None, data=None):
     video_data = load_data(infile, data)
     grade_with_info_regex = r'Grade: \s*?(.*?)(?:\n|$)'
@@ -261,7 +267,8 @@ def process_data_local(
     outfile='data/channel/processed_data.json'
 ):
     print("Processing local data: Regenerating processed_data.json file");
-    processed_data = process_grade_data(infile=infile)
+    processed_data = process_name_data(infile=infile)
+    processed_data = process_grade_data(data=processed_data)
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)

@@ -5,8 +5,12 @@ import utils.zone_helpers
 from werkzeug.utils import secure_filename
 
 LINK_FIELD = 'url'
+CLIMBER_FIELD = 'climber'
 NAME_FIELD = 'name'
 GRADE_FIELD = 'grade'
+GRADE_WITH_INFO_FIELD = 'grade_with_info'
+ZONE_FIELD = 'zone'
+SSECTOR_FIELD = 'sector'
 
 def get_embed_url(full_url):
     return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
@@ -27,10 +31,12 @@ def main():
         for problem in problems:
             template = template_env.get_template(
                 'templates/problem_layout.html')
-            # eventually get sector also?
             output = template.render(
+                climber=problem[CLIMBER_FIELD],
                 name=problem[NAME_FIELD],
-                grade=problem[GRADE_FIELD],
+                grade=problem[GRADE_WITH_INFO_FIELD],
+                zone=problem[ZONE_FIELD],
+                sector=problem[SSECTOR_FIELD],
                 video_url=get_embed_url(problem[LINK_FIELD]),
                 layout_css='../../../static/css/layout.css'
             )
