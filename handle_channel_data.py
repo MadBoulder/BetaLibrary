@@ -198,56 +198,27 @@ def match_regex_and_add_field(pattern, infield, outfield, video_data, case=Case.
 
 
 def process_grade_data(infile=None, data=None):
-    """
-    Extract grade information from video data
-    """
     video_data = load_data(infile, data)
-    # This regex only matches french grades.
-    grade_regex = r',? (\d{1}[A-Za-z]?\+?\-?\??(?:\/\d?\w?\+?)?)(?: \(sit\))?(?: \(trav\))?(?: \(stand\))?\.? '
-    return match_regex_and_add_field(grade_regex, 'title', 'grade', video_data, Case.upper)
+    grade_with_info_regex = r'Grade: \s*?(.*?)(?:\n|$)'
+    video_data = match_regex_and_add_field(grade_with_info_regex, 'description', 'grade_with_info', video_data)
+    grade_regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
+    return match_regex_and_add_field(grade_regex, 'description', 'grade', video_data, Case.upper)
 
 
 def process_climber_data(infile=None, data=None):
-    """
-    Extract climber name from video data
-    """
     video_data = load_data(infile, data)
-    # regex to match climbers.
     climber_regex = r'Climber: \s*?(.*?)(?:\n|$)'
     return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
 
 
 def process_zone_data(infile=None, data=None):
-    """
-    Extract zone name from video data
-    """
     video_data = load_data(infile, data)
-    # regex to match zones.
-    zone_regex = r'(?:\.+.+)?(?:\.\s* )(.+)$'
-    video_data = match_regex_and_add_field(
-        zone_regex, 'title', 'zone', video_data)
-    for video in video_data:
-        if video['zone'][-1] == '.':
-            video['zone'] = video['zone'][:-1]
-
-    # make a second pass to see if there is any unknown zone
-    # that we can fix
-    unique_zones = set([v['zone'] for v in video_data])
-    for video in video_data:
-        if video['zone'] == 'Unknown':
-            for zone in unique_zones:
-                if zone in video['title']:
-                    video['zone'] = zone
-
-    return video_data
+    zone_regex = r'Zone: \s*?(.*?)(?:\n|$)'
+    return match_regex_and_add_field(zone_regex, 'description', 'zone', video_data)
 
 
 def process_sector_data(infile=None, data=None):
-    """
-    Extract Sector name from video data
-    """
     video_data = load_data(infile, data)
-    # regex to match climbers.
     sector_regex = r'Sector: \s*?(.*?)(?:\n|$)'
     return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
 
