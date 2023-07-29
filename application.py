@@ -173,6 +173,10 @@ def home():
 @app.route('/<string:page>/problem/<string:problem_name>')
 def load_problem(page, problem_name):
     return render_template(f'problems/{page}/{problem_name}.html')
+    
+@app.route('/<string:page>/sector/<string:sector_name>')
+def load_sector(page, sector_name):
+    return render_template(f'sectors/{page}/{sector_name}.html')
 
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():

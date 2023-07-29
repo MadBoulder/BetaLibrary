@@ -1,4 +1,5 @@
 import json
+from werkzeug.utils import secure_filename
 
 
 def get_problems_from_zone(zone_code):
@@ -59,6 +60,51 @@ def get_problem_name(problem_data):
             name = name[:-1].strip()
     print(name)
     return name
+    
+    
+def get_problems_from_sector(problems_zone, sector_code):
+    problems = []
+    for p in problems_zone:
+        if secure_filename(p['sector']) == sector_code:
+            problems.append(p)
+
+    return problems
+    
+    
+def get_sectors_from_zone(zone_code):
+    problems = get_problems_from_zone(zone_code)
+    sectors = []
+    for p in problems:
+        alreadyAdded=False
+        for s in sectors:
+            if s[0] == p['sector']:
+                alreadyAdded=True
+                break
+        if not alreadyAdded:
+            sectors.append([p['sector'], secure_filename(p['sector'])])
+            
+    if len(sectors) == 1:
+        if sectors[0] == "Unknown":
+            return None
+    return sectors
+    
+   
+def get_playlist_url_from_sector(zone_code, sector):
+    playlist_url = ""
+    datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'
+    area_data = {}
+    with open(datafile, encoding='utf-8') as data:
+        area_data = json.load(data)
+    
+    base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
+    
+    for s in area_data["sectors"]:
+        if s['name'].split(' ', 1)[1] == sector[0]:
+            if s['link']:
+                playlist_url = base_url + s['link'].split("list=")[1]
+                break
+           
+    return playlist_url
 
 
 if __name__ == "__main__":

@@ -102,7 +102,7 @@ def main():
         # get affiliate guides links
         affiliate_guides = [affiliate_guide[LINK_FIELD]
                             for affiliate_guide in area_data.get(AFFILIATE_GUIDES, [])]
-
+        #get playlists
         base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
         playlists[area] = area_data[PLAYLIST_FIELD]
         sectors_playlists = [(sector[NAME_FIELD], base_url + sector[LINK_FIELD].split('list=')[1])
@@ -110,15 +110,19 @@ def main():
 
         # problems
         problems = utils.zone_helpers.get_problems_from_zone(area)
+        problems.sort(key= lambda x: x['name'])
         for p in problems:
             p['secure'] = secure_filename(p['name'])
+            
+        # sectors
+        sectors = utils.zone_helpers.get_sectors_from_zone(area)
+        sectors.sort(key= lambda x: x)
 
-        # sort alphabetically
-        problems.sort(key= lambda x: x['name'])
 
         template = template_env.get_template('templates/zone_layout.html')
         output = template.render(
             problems=problems,
+            sectors=sectors,
             area_code=area,
             name=area_data[NAME_FIELD],
             file_name=area,
