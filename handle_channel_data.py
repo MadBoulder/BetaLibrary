@@ -10,6 +10,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+from googleapiclient.discovery import build
+
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
@@ -134,6 +136,32 @@ def retrieve_videos_from_channel(
     return videos
 
 
+def retrieve_playlists_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
+    api_key = None
+    with open('credentials.txt', 'r', encoding='utf-8') as f:
+        api_key = f.read()
+    youtube = build("youtube", "v3", developerKey=api_key)
+
+    playlists = []
+    next_page_token = None
+
+    while True:
+        response = youtube.playlists().list(
+            part="snippet",
+            channelId=channel_id,
+            maxResults=50,  # You can change this number as per your requirement
+            pageToken=next_page_token
+        ).execute()
+
+        playlists.extend(response["items"])
+
+        next_page_token = response.get("nextPageToken")
+        if not next_page_token:
+            break
+      
+    return playlists
+
+
 def update_videos_from_channel(
     data=None
 ):
@@ -233,11 +261,13 @@ def update_local_database(
     retrieve_data_from_channel=True
 ):
     if retrieve_data_from_channel:
-        retrieve_and_update_data_raw_local(is_update=False)
-    process_data_local()
+        retrieve_and_update_video_data_raw_local(is_update=False)
+        retrieve_and_update_playlist_data_raw_local()
+    process_video_data_local()
+    process_playlist_data_local()
 
 
-def retrieve_and_update_data_raw_local(
+def retrieve_and_update_video_data_raw_local(
     outfile='data/channel/raw_video_data.json',
     infile='data/channel/raw_video_data.json',
     is_update=True
@@ -260,9 +290,21 @@ def retrieve_and_update_data_raw_local(
         print('Videos retrieved: ' + str(len(video_data)))
         json.dump({'date': str(date.today()),
                    'items': video_data}, f, indent=4)
+                   
+                   
+def retrieve_and_update_data_raw_local(
+    outfile='data/channel/raw_playlist_data.json'
+):
+    print("Regenerating raw_playlist_data.json file")
+    playlists = retrieve_playlists_from_channel()
+                   
+    with open(outfile, 'w', encoding='utf-8') as f:
+        print('Playlists retrieved: ' + str(len(playlists)))
+        json.dump({'date': str(date.today()),
+                   'items': playlists}, f, indent=4)
 
 
-def process_data_local(
+def process_video_data_local(
     infile='data/channel/raw_video_data.json',
     outfile='data/channel/processed_data.json'
 ):
@@ -272,6 +314,46 @@ def process_data_local(
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)
+
+    with open(outfile, 'w', encoding='utf-8') as f:
+        json.dump({'date': str(date.today()),
+                   'items': processed_data}, f, indent=4)
+                   
+         
+def process_playlist_data_local(
+    infile='data/channel/raw_playlist_data.json',
+    outfile='data/channel/processed_playlist_data.json'
+):
+    print("Processing local data: Regenerating processed_playlist_data.json file");
+    
+    raw_playlist_data = []
+    with open(infile, 'r', encoding='utf-8') as f:
+        try:
+            raw_playlist_data = json.load(f)
+        except:
+            pass
+    
+    processed_data = []
+    
+    for i in raw_playlist_data['items']:
+        title = i['snippet']['title']
+        is_sector = 'Sector' in title
+        zone_name, sector_name = title.split(': Sector ') if is_sector else (title, None)
+            
+        playlist_json_object = []
+        for p in processed_data:
+            if p['title'] == zone_name:
+                playlist_json_object = p
+                break
+        
+        if not playlist_json_object:
+            playlist_json_object = {"title": zone_name, "sectors": []}
+            processed_data.append(playlist_json_object)
+            
+        if not is_sector:
+            playlist_json_object['id'] = i['id']
+        else:
+            playlist_json_object['sectors'].append({"name": sector_name, "id": i['id']})
 
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
