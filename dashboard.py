@@ -86,7 +86,7 @@ def get_dashboard(local_data=False):
             data = json.load(f)
             video_data = data['items']
     else:
-        video_data = handle_channel_data.get_data_firebase()['items']
+        video_data = handle_channel_data.get_video_data()['items']
 
     # X axis categories
     x_axis_map = {

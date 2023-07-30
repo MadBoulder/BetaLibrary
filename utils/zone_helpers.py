@@ -1,4 +1,6 @@
 import json
+from werkzeug.utils import secure_filename
+import handle_channel_data
 
 
 def get_problems_from_zone(zone_code):
@@ -59,9 +61,71 @@ def get_problem_name(problem_data):
             name = name[:-1].strip()
     print(name)
     return name
+    
+    
+def get_problems_from_sector(problems_zone, sector_code):
+    problems = []
+    for p in problems_zone:
+        if secure_filename(p['sector']) == sector_code:
+            problems.append(p)
+
+    return problems
+    
+    
+def get_sectors_from_zone(zone_code):
+    problems = get_problems_from_zone(zone_code)
+    sectors = []
+    for p in problems:
+        alreadyAdded=False
+        for s in sectors:
+            if s[0] == p['sector']:
+                alreadyAdded=True
+                break
+        if not alreadyAdded:
+            sectors.append([p['sector'], secure_filename(p['sector'])])
+            
+    if len(sectors) == 1:
+        if sectors[0] == "Unknown":
+            return None
+    return sectors
+    
+   
+def get_playlist_url_from_sector(zone_code, sector):
+    print("get_playlist_url_from_sector zone_code:" + zone_code + " sector: " + sector)
+    playlists = get_playlists_url_from_zone(zone_code)
+    if 'sectors' in playlists:
+        for playlist in playlists['sectors']:
+            if secure_filename(playlist['name']) == sector:
+                return playlist['url']
+    return None
+    
+    
+def get_playlists_url_from_zone(zone_code):
+    print("get playlists of " + zone_code)
+    zone_data = handle_channel_data.get_zone_data()
+
+    playlists = []
+    for item in zone_data['items']:
+        if item['zone_code'] == zone_code:
+            playlists = item
+            break
+            
+    return playlists
+    
+
+def load_data(infile):
+    """
+    Load current data stored in the project folder
+    """
+    video_data = []
+    if infile:
+        with open(infile, 'r', encoding='utf-8') as f:
+            try:
+                video_data = json.load(f)['items']
+            except:
+                pass
+    return video_data
 
 
 if __name__ == "__main__":
-    for p in get_problems_from_zone('albarracin'):
-        print(p['name'])
-    print(len(get_problems_from_zone('albarracin')))
+    get_playlists_url_from_zone("Albarracín")

@@ -239,12 +239,12 @@ crossorigin="anonymous"></script>
 <!--Problem List-->
 <div class="container">
   {% raw %}
-  <h4 id="listTitle">
-	{{ _("Problem list") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" id="toggleIcon">
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
   </h4>
   {% endraw %}
-  <ul id="list" class="closed">
+  <ul id="listProblems" class="list closed">
     {% for problem in problems %}
     <li>
       <a href="{{area_code}}/problem/{{problem['secure']}}">{{ problem["name"] }}, {{ problem["grade_with_info"] }}</a>
@@ -252,13 +252,39 @@ crossorigin="anonymous"></script>
     {% endfor %}
   </ul>
   <script >
-	const listTitle = document.getElementById('listTitle');
-	const list = document.getElementById('list');
-	const toggleIcon = document.getElementById('toggleIcon');
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listTitle.addEventListener('click', function() {
-	  list.classList.toggle('opened');
-	  toggleIcon.style.transform = list.classList.contains('opened') ? 'rotate(90deg)' : 'rotate(0deg)';
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  toggleIconProblems.style.transform = listProblems.classList.contains('opened') ? 'rotate(90deg)' : 'rotate(0deg)';
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  {% raw %}
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  {% endraw %}
+  <ul id="listSectors" class="list closed">
+    {% for sector in sectors %}
+    <li>
+      <a href="{{area_code}}/sector/{{sector[1]}}">{{ sector[0] }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+	  listSectors.classList.toggle('opened');
+	  toggleIconSectors.style.transform = listSectors.classList.contains('opened') ? 'rotate(90deg)' : 'rotate(0deg)';
 	});
   </script>
 </div>
@@ -280,7 +306,7 @@ crossorigin="anonymous"></script>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
         <iframe
-          src="{{ full_playlist }}"
+          src="{{ area_data['url'] }}"
           frameborder="0"
           allowfullscreen
           style="
@@ -296,17 +322,17 @@ crossorigin="anonymous"></script>
     </div>
     <div class="col-sm-3 col-md-3"></div>
   </div>
-  {% for playlist in playlists %}
+  {% for sector in area_data['sectors'] %}
   <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
       <p>
-        <b>{{ playlist[0] }}</b>
+        <b>{{ sector['name'] }}</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
         <iframe
-          src="{{ playlist[1] }}"
+          src="{{ sector['url'] }}"
           frameborder="0"
           allowfullscreen
           style="

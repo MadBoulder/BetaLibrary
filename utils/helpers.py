@@ -4,6 +4,10 @@ import json
 import html
 import os
 import os.path
+import utils.zone_helpers
+from googleapiclient.discovery import build
+from werkzeug.utils import secure_filename
+
 
 MAX_ITEMS_API_QUERY = 50
 DATA_ZONES_PATH = 'data/zones/'
@@ -67,10 +71,11 @@ def count_sectors_in_zone(zone):
     Given a zone name, return the number of sectors based on the
     zone's datafile specified sectors.
     """
-    datafile = DATA_ZONES_PATH + zone + '/' + zone + '.json'
-    with open(datafile, encoding=ENCODING) as data:
-        area_data = json.load(data)
-        return len(area_data['sectors'])
+    playlists = utils.zone_helpers.get_playlists_url_from_zone(zone)
+    if playlists:
+        return len(playlists.get('sectors', []))
+    else:
+        return 0
 
 
 def iterative_levenshtein(s, t, costs=(1, 1, 3)):
@@ -298,48 +303,39 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
             i['video_url'] = base_video_url + i['id']['videoId']
             i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
     return resp['items'][0:results]
-
-
-def get_number_of_videos_from_playlists_file(file):
+    
+    
+def get_number_of_videos_from_playlists_file():
     """
-    Given a file with the playlist from which we want to obtain the
-    number of videos, return a dict that maps a bouldering zone to
-    the current number of videos via a query to Youtube's v3 data API
-
-    The file should be structured like a Python dict in the following way:
-    {
-        'area_name':'playlist_link'
-    }
-
     This function returns a dict that is structured like:
     {
         'area_name':video_count
     } 
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
+    processed_playlist_data = load_data('data/channel/processed_zone_data.json')
 
-    with open(file, 'r', encoding=ENCODING) as f:
-        data = json.load(f)
-    playlists = list(data.values())
-    # We want to be able to get the playlist from the zone name
-    # but also the zone name from the playlist
-    data = bidict(data)
-    total_resp = []
-    for i in range(len(playlists)//MAX_ITEMS_API_QUERY + 1):
-        query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-            ','.join(playlists[i*MAX_ITEMS_API_QUERY:(i+1)*MAX_ITEMS_API_QUERY]), api_key)
-        inp = urllib.request.urlopen(query_url)
-        resp = json.load(inp)
-        total_resp += resp['items']
     count = {}
-    # Associate in a dict zone name with number of videos via
-    # the playlist id. This dict will be the return value of the
-    # function
-    for i in total_resp:
-        zone = data.inverse[i['id']][0]
-        count[zone] = i['contentDetails']['itemCount']
+    for playlist_item in processed_playlist_data:
+        print(playlist_item['title'])
+        if playlist_item['zone_code']:
+            count[playlist_item['zone_code']] = playlist_item['video_count']
+        
     return count
+    
+
+def load_data(infile):
+    """
+    Load current data stored in the project folder
+    """
+    video_data = []
+    if infile:
+        with open(infile, 'r', encoding='utf-8') as f:
+            try:
+                video_data = json.load(f)['items']
+            except:
+                pass
+    return video_data
+
 
 # TODO: Optimize queries
 def get_number_of_videos_for_zone(zone_name):
@@ -376,26 +372,6 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     resp = json.load(inp)
     return resp['items'][0]['contentDetails']['itemCount']
 
-# def get_number_of_videos_and_views_for_zone(zone_name):
-#     """
-#     Given a zone name, return the number of betas of the zone
-#     """
-#     api_key = None
-#     with open("credentials.txt", "r", encoding='utf-8') as f:
-#         api_key = f.read()
-
-#     data = {}
-#     with open('./data/playlist.json', 'r', encoding='utf-8') as f:
-#         data = json.load(f)
-#     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-#         data[zone_name],
-#         api_key
-#     )
-#     inp = urllib.request.urlopen(query_url)
-#     resp = json.load(inp)
-#     print(resp)
-#     return resp['items'][0]['contentDetails']['itemCount']
-
 
 def generate_download_url(area, filename):
     """
@@ -405,19 +381,6 @@ def generate_download_url(area, filename):
     """
     return '/download/' + area + '/' + filename
 
-# TODO: move this process to periodic database update script and here query DDBB
-# Also, cache the results
-def get_list_of_zones():
-    areas = next(os.walk(DATA_ZONES_PATH))[1]
-    zones = list()
-    for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
-        with open(datafile, encoding='utf-8') as data:
-            area_data = json.load(data)
-        zone = dict()
-        zone['normalized_name'] = area
-        zone['name'] = area_data['name']
-        zone['videos'] = get_number_of_videos_and_views_for_zone(area)
-        zones.append(zone)
-    zones = sorted(zones, key=lambda x: x['normalized_name'])
-    return zones
+
+if __name__ == '__main__':
+    get_number_of_videos_from_playlists_file()
