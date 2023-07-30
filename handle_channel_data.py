@@ -5,6 +5,10 @@ import json
 from datetime import date
 import re
 import math
+import os
+from tempfile import mkstemp
+from os import fdopen, remove
+from shutil import move, copymode
 
 import firebase_admin
 from firebase_admin import credentials
@@ -15,6 +19,7 @@ from googleapiclient.discovery import build
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
+CONFIG_FILE = 'config.py'
 
 class Case(Enum):
     lower = 1
@@ -147,7 +152,7 @@ def retrieve_playlists_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
 
     while True:
         response = youtube.playlists().list(
-            part="snippet",
+            part="snippet, contentDetails",
             channelId=channel_id,
             maxResults=50,  # You can change this number as per your requirement
             pageToken=next_page_token
@@ -258,13 +263,14 @@ def process_sector_data(infile=None, data=None):
 
 
 def update_local_database(
-    retrieve_data_from_channel=True
+    retrieve_data_from_channel=False
 ):
     if retrieve_data_from_channel:
         retrieve_and_update_video_data_raw_local(is_update=False)
         retrieve_and_update_playlist_data_raw_local()
     process_video_data_local()
-    process_playlist_data_local()
+    process_zone_data_local()
+    update_countries_list()
 
 
 def retrieve_and_update_video_data_raw_local(
@@ -320,11 +326,12 @@ def process_video_data_local(
                    'items': processed_data}, f, indent=4)
                    
          
-def process_playlist_data_local(
+def process_zone_data_local(
     infile='data/channel/raw_playlist_data.json',
-    outfile='data/channel/processed_playlist_data.json'
+    outfile='data/channel/processed_zone_data.json',
+    base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
 ):
-    print("Processing local data: Regenerating processed_playlist_data.json file");
+    print("Processing local data: Regenerating processed_zone_data.json file");
     
     raw_playlist_data = []
     with open(infile, 'r', encoding='utf-8') as f:
@@ -333,31 +340,71 @@ def process_playlist_data_local(
         except:
             pass
     
-    processed_data = []
-    
+    processed_playlist_data = []
+    print("Processing local data: processing raw playlist data");
     for i in raw_playlist_data['items']:
         title = i['snippet']['title']
         is_sector = 'Sector' in title
         zone_name, sector_name = title.split(': Sector ') if is_sector else (title, None)
             
         playlist_json_object = []
-        for p in processed_data:
+        for p in processed_playlist_data:
             if p['title'] == zone_name:
                 playlist_json_object = p
                 break
         
         if not playlist_json_object:
             playlist_json_object = {"title": zone_name, "sectors": []}
-            processed_data.append(playlist_json_object)
+            processed_playlist_data.append(playlist_json_object)
             
         if not is_sector:
+            playlist_json_object['zone_code'] = get_zone_code_from_name(zone_name)
             playlist_json_object['id'] = i['id']
+            playlist_json_object['url'] = base_url + i['id']
+            playlist_json_object['video_count'] = i['contentDetails']['itemCount']
         else:
-            playlist_json_object['sectors'].append({"name": sector_name, "id": i['id']})
-
+            playlist_json_object['sectors'].append({"name": sector_name, 
+                                                    "id": i['id'], 
+                                                    "url": base_url + i['id'],
+                                                    "video_count": i['contentDetails']['itemCount']})
+    
+    print("Processing local data: processing zone data");
+    zones = next(os.walk('data/zones/'))[1]
+    zones_processed_data = []
+    for zone_code in zones:
+        datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'  
+        zone_data = {}  
+        with open(datafile, encoding='utf-8') as data:
+            zone_data = json.load(data)
+          
+        for playlist_data in processed_playlist_data:
+            if playlist_data['zone_code'] == zone_code:
+                zone_data.update(playlist_data)
+                break
+        zones_processed_data.append(zone_data)
+    
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
-                   'items': processed_data}, f, indent=4)
+                   'items': zones_processed_data}, f, indent=4)
+                   
+
+def get_zone_code_from_name(zone_name, path = 'data/zones'):
+    file_list = os.listdir(path)
+    for filename in file_list:
+        full_path = os.path.join(path, filename)
+
+        if os.path.isfile(full_path) and filename.endswith('.json'):
+            with open(full_path, 'r', encoding='utf-8') as file:
+                json_data = json.load(file)
+            if 'name' in json_data and zone_name == json_data['name']:
+                return os.path.splitext(filename)[0]
+
+        elif os.path.isdir(full_path) and not filename == 'sectors':
+            result = get_zone_code_from_name(zone_name, full_path)
+            if result:
+                return result
+
+    return None
 
 
 def regenerate_firebase_data(is_update=True):
@@ -372,28 +419,17 @@ def regenerate_firebase_data(is_update=True):
         })
 
     root = db.reference()
-
-    # retrieve current videos
-   #if is_update:
-   #    videos = root.child('video_data').get()
-   #    video_data = update_videos_from_channel(data=videos)
-   #else:
-   #    video_data = get_videos_from_channel(page_token=None)
-   #
-   #processed_data = process_grade_data(data=video_data)
-   #processed_data = process_climber_data(data=processed_data)
-   #processed_data = process_zone_data(data=processed_data)
-   #
-   #video_data = {
-   #    'date': str(date.today()),
-   #    'items': processed_data
-   #}
     
     video_data = get_data_local()
     root.child('video_data').set(video_data)
+    
+    zone_data = get_zone_data_local()
+    root.child('zone_data').set(zone_data)
+    
+    num_climbers = len(list({video['climber'] for video in video_data['items']}))
+    root.child('contributor_count').set(num_climbers)
 
-
-def get_data_firebase():
+def get_video_data():
     """
     Get data from firebase
     """
@@ -434,33 +470,17 @@ def get_contributors_count():
 
 
 def get_data_local():
-    """
-    Get data from local files
-    """
     video_data = {}
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
         video_data = json.load(f)
     return video_data
 
 
-def set_zone_data(zone_data):
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
-
-    root = db.reference()
-    root.child('zone_data').set(zone_data)
-
-
-def update_zone_data():
-    zone_data = get_zone_data()
-    # Update the number of videos of each zone,
-    #  rest should remain equal
-    for zone in zone_data:
-        zone['videos'] = get_number_of_videos_from_playlist(zone['playlist'])
-    set_zone_data(zone_data)
+def get_zone_data_local():
+    zone_data = {}
+    with open('data/channel/processed_zone_data.json', 'r', encoding='utf-8') as f:
+        zone_data = json.load(f)
+    return zone_data
 
 
 def get_zone_data():
@@ -474,18 +494,46 @@ def get_zone_data():
     return root.child('zone_data').get()
 
 
-def get_number_of_videos_from_playlist(playlist):
+def update_countries_list(input_file=CONFIG_FILE):
     """
-    Given a playlist, return the number of videos it has
+    Update the current list of countries where 
+    we have bouldering zones
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
+    # TODO: If a location has no country set, 
+    # this function should fallback and compute it
+    # Update contries list
+    zone_data = get_zone_data_local()
+    countries_list = [f'\'{c}\'' for c in set(
+        [z['country'] for z in zone_data['items']])]
+    countries_updated = 'COUNTRIES = ['
+    for z in countries_list:
+        if z != countries_list[-1]:
+            countries_updated += z + ", "
+        else:
+            countries_updated += z
+    countries_updated += ']'
+    replace_in_file(input_file, 'COUNTRIES', countries_updated)
 
-    query_url = f'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={playlist}&key={api_key}'
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-    return resp['items'][0]['contentDetails']['itemCount']
 
+def replace_in_file(file_path, pattern, new_line):
+    """
+    Replace a line in a file if the line contains
+    the pattern
+    """
+    # create temp file
+    fh, abs_path = mkstemp()
+    with fdopen(fh, 'w') as new_file:
+        with open(file_path) as old_file:
+            for line in old_file:
+                if pattern in line:
+                    new_file.write(new_line)
+                else:
+                    new_file.write(line)
+    # copy the file permissions from the old file to the new file
+    copymode(file_path, abs_path)
+    remove(file_path)
+    move(abs_path, file_path)
+    
 
 if __name__ == '__main__':
     dry_run=False

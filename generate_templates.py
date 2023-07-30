@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.js_helpers
 from utils.id_generator import IDGenerator
+import handle_channel_data
 
 ZONES_PATH = 'data/zones/'
 
@@ -14,15 +15,14 @@ def main():
     as well as a general map that contains all the areas
     """
     generate_ids = IDGenerator()
-    areas = next(os.walk(ZONES_PATH))[1]
-    all_data = [ZONES_PATH + area + '/' + area + '.json' for area in areas]
-    for area in areas:
-        print(area)
-        with open('templates/maps/'+area+'.html', 'w', encoding='utf-8') as template:
+    zone_data = handle_channel_data.get_zone_data()
+    for zone in zone_data['items']:
+        print(zone['zone_code'])
+        with open('templates/maps/'+zone['zone_code']+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
-                    area,
-                    ZONES_PATH + area + '/' + area + '.json',
+                    zone['zone_code'],
+                    ZONES_PATH + zone['zone_code'] + '/' + zone['zone_code'] + '.json',
                     generate_ids,
                     True
                 )
@@ -31,7 +31,7 @@ def main():
     with open('templates/maps/all_to_render.html', 'w', encoding='utf-8') as template:
         template.write(
             load_map.load_general_map(
-                all_data,
+                zone_data,
                 generate_ids,
                 True
             )
@@ -40,8 +40,7 @@ def main():
     # When generating templates update also the all template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
-    data = utils.helpers.get_number_of_videos_from_playlists_file(
-        'data/playlist.json')
+    data = utils.helpers.get_number_of_videos_from_playlists_file()
     template = template_env.get_template('templates/maps/all_to_render.html')
     # Here we replace zone_name in maps/all by the number of beta videos
     output = template.render(**data)

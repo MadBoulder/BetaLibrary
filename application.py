@@ -76,10 +76,7 @@ def get_map_all():
     # and finally render the page template
     template_loader = FileSystemLoader(searchpath=".")
     template_env = Environment(loader=template_loader)
-    # if it is cheaper or faster to query this data from the
-    # DDBB we can optimize it in the future
-    data = utils.helpers.get_number_of_videos_from_playlists_file(
-        'data/playlist.json')
+    data = utils.helpers.get_number_of_videos_from_playlists_file()
     # store num videos in session to avoid repeating calls
     session['video_count'] = data
     template = template_env.get_template('templates/maps/all_to_render.html')
@@ -189,7 +186,7 @@ def zones():
     zones = get_zone_data()
     return render_template(
         'zones.html',
-        zones=zones,
+        zones=zones['items'],
         countries=app.config['COUNTRIES'],
         country_data=country_data,
         current_lang=get_locale())
@@ -374,11 +371,11 @@ def render_page(page):
             else:
                 session['video_count'] = {page: video_count}
         data = [
-            {
-                'logo': 'fa fa-map-marked',
-                'text': _('Sectors'),
-                'data': utils.helpers.count_sectors_in_zone(page)
-            },
+            #{
+            #    'logo': 'fa fa-map-marked',
+            #    'text': _('Sectors'),
+            #    'data': utils.helpers.count_sectors_in_zone(page)
+            #},
             {
                 'logo': 'fab fa-youtube',
                 'text': _('Videos'),

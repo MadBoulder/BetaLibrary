@@ -49,41 +49,41 @@ def load_map(area, datafile, generate_ids, return_html=True):
     fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
-    sectors = area_data['sectors']
+    sectors = area_data.get('sectors', [])
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='Zone Markers')
     sector_lyr._id = generate_ids.next_id()  # reassign id
 
-    for sector in sectors:
-        if not sector['sector_data'] or not sector['link']:
-            continue
-        sector_map = folium.GeoJson(
-            os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
-            name=sector['name'],
-            tooltip=sector['name'],
-            style_function=lambda x: {
-                'color': x['properties']['stroke'],
-                'weight': x['properties']['stroke-width'],
-                'opacity': SECTOR_OPACITY,
-                'fillColor': x['properties']['stroke'],
-            }
-        )
-        sector_map._id = generate_ids.next_id()  # reassign id
-        sector_html = utils.js_helpers.generate_sector_html(
-            sector['name'], sector['link'])
-        sector_popup = folium.Popup(
-            sector_html,
-            max_width=POPUP_WIDTH,
-            min_width=POPUP_WIDTH
-        )
-        sector_popup._id = generate_ids.next_id()  # reassign id
-        for child in sector_popup._children.values():
-            child._id = generate_ids.next_id()
-
-        sector_map.add_child(sector_popup)
-
-        sector_lyr.add_child(sector_map)
-
+    #for sector in sectors:
+    #    if not sector['sector_data'] or not sector['link']:
+    #        continue
+    #    sector_map = folium.GeoJson(
+    #        os.path.dirname(os.path.abspath(datafile))+sector['sector_data'],
+    #        name=sector['name'],
+    #        tooltip=sector['name'],
+    #        style_function=lambda x: {
+    #            'color': x['properties']['stroke'],
+    #            'weight': x['properties']['stroke-width'],
+    #            'opacity': SECTOR_OPACITY,
+    #            'fillColor': x['properties']['stroke'],
+    #        }
+    #    )
+    #    sector_map._id = generate_ids.next_id()  # reassign id
+    #    sector_html = utils.js_helpers.generate_sector_html(
+    #        sector['name'], sector['link'])
+    #    sector_popup = folium.Popup(
+    #        sector_html,
+    #        max_width=POPUP_WIDTH,
+    #        min_width=POPUP_WIDTHº
+    #    )
+    #    sector_popup._id = generate_ids.next_id()  # reassign id
+    #    for child in sector_popup._children.values():
+    #        child._id = generate_ids.next_id()
+    #
+    #    sector_map.add_child(sector_popup)
+    #
+    #    sector_lyr.add_child(sector_map)
+    #
     # Parking areas
     for parking in area_data['parkings']:
         parking_icon = CustomIcon(
@@ -206,9 +206,9 @@ def load_map(area, datafile, generate_ids, return_html=True):
     return map_html if return_html else area_map
 
 
-def load_general_map(datafiles, generate_ids, return_html=True):
+def load_general_map(zone_data, generate_ids, return_html=True):
     """
-    Create a map that contains all the zones provided by the list of datafiles
+    Create a map that contains all the zones provided by the list of zone_data
     i.e. all areas combined in one map. This map only shows the markers that 
     indicate an existing area.
     """
@@ -247,10 +247,7 @@ def load_general_map(datafiles, generate_ids, return_html=True):
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
-    for areadatafile in datafiles:
-        area_data = {}
-        with open(areadatafile, encoding='utf-8') as data:
-            area_data = json.load(data)
+    for zone in zone_data['items']:
 
         # sectors = area_data['sectors']
         # # Create a Folium feature group for this layer, since we will be displaying multiple layers
@@ -292,20 +289,20 @@ def load_general_map(datafiles, generate_ids, return_html=True):
             'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
         html_redirect, _ = os.path.splitext(
-            os.path.basename(os.path.normpath(areadatafile)))
-        area_name = os.path.splitext(os.path.basename(areadatafile))[0]
+            os.path.basename(os.path.normpath(zone['zone_code'])))
+        area_name = os.path.splitext(os.path.basename(zone['zone_code']))[0]
         placeholder = area_name + PLACEHOLDER
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
-            area_data['name'], area_name, html_redirect, placeholder), script=True)
+            zone['name'], area_name, html_redirect, placeholder), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
-            popup_html, max_width=max(len(area_data['name']), len(BETA_VIDEOS_TEXT))*10)
+            popup_html, max_width=max(len(zone['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
         placeholders.append(placeholder)
 
         sectors_marker = folium.Marker(
-            location=[area_data['latitude'], area_data['longitude']],
-            tooltip=area_data['name'],
+            location=[zone['latitude'], zone['longitude']],
+            tooltip=zone['name'],
             icon=zoomed_out_icon,
             popup=zone_popup,
         )

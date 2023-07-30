@@ -154,8 +154,8 @@ def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     placeholder indicator. This value will be replaced by the number
     of beta videos when rendering the pop up
     """
-    sector_count = utils.helpers.count_sectors_in_zone(area_filename)
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>sector_placeholder: '+str(sector_count)+'<br/> Beta Videos: '+placeholder+'</p>'
+    sector_count = utils.helpers.count_sectors_in_zone(area_name)
+    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>Beta Videos: '+placeholder+'</p>'
 
 
 def remove_geojson_zoom_on_click(map_html):
