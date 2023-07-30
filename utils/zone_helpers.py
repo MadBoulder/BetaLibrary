@@ -33,27 +33,31 @@ def get_problem_name(problem_data):
     title until we are left with the problem name
     """
     # remove grade from title?
-    name = problem_data['title'].replace(
-        problem_data.get('zone', ''), ''
-    ).replace(
-        problem_data.get('grade', '').lower(), ''
-    ).replace(
-        problem_data.get('grade', '').upper(), ''
-    ).replace(
-        '(sit)',
-        ''
-    ).replace(
-        '(stand)',
-        ''
-    ).replace(
-        '(crouching start)',
-        ''
-    ).strip()
+    name = problem_data['name']
+    if name == 'Unknown':
+        print(problem_data['title'])
+        name = problem_data['title'].replace(
+            problem_data.get('zone', ''), ''
+        ).replace(
+            problem_data.get('grade', '').lower(), ''
+        ).replace(
+            problem_data.get('grade', '').upper(), ''
+        ).replace(
+            '(sit)',
+            ''
+        ).replace(
+            '(stand)',
+            ''
+        ).replace(
+            '(crouching start)',
+            ''
+        ).strip()
 
-    if name[-1] == '.':
-        name = name[:-1].strip()
-    if name[-1] == ',':
-        name = name[:-1].strip()
+        if name[-1] == '.':
+            name = name[:-1].strip()
+        if name[-1] == ',':
+            name = name[:-1].strip()
+    print(name)
     return name
 
 
