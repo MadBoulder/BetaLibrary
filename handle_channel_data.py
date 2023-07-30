@@ -360,6 +360,18 @@ def get_data_local():
         video_data = json.load(f)
     return video_data
 
+def update_contributors_count():
+    """
+    Update the number of contributors from processed video data
+    """
+    video_data = get_data_local()
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('madboulder.json')
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://madboulder.firebaseio.com'
+        })
+    num_climbers = len(list({video['climber'] for video in video_data['items']}))
+    return db.reference().child('contributor_count').set(num_climbers)
 
 def set_zone_data(zone_data):
     if not firebase_admin._apps:
@@ -408,6 +420,8 @@ def get_number_of_videos_from_playlist(playlist):
 if __name__ == '__main__':
     dry_run=False
     update_local_database()
-        
+
     if not dry_run:
         regenerate_firebase_data()
+        update_zone_data()
+        update_contributors_count()
