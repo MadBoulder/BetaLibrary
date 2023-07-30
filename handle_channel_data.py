@@ -474,7 +474,7 @@ def get_data_local():
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
         video_data = json.load(f)
     return video_data
-
+    
 
 def get_zone_data_local():
     zone_data = {}
@@ -538,6 +538,6 @@ def replace_in_file(file_path, pattern, new_line):
 if __name__ == '__main__':
     dry_run=False
     update_local_database()
-        
+
     if not dry_run:
         regenerate_firebase_data()
