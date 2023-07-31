@@ -263,7 +263,7 @@ def process_sector_data(infile=None, data=None):
 
 
 def update_local_database(
-    retrieve_data_from_channel=False
+    retrieve_data_from_channel=True
 ):
     if retrieve_data_from_channel:
         retrieve_and_update_video_data_raw_local(is_update=False)
