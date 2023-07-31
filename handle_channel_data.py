@@ -298,7 +298,7 @@ def retrieve_and_update_video_data_raw_local(
                    'items': video_data}, f, indent=4)
                    
                    
-def retrieve_and_update_data_raw_local(
+def retrieve_and_update_playlist_data_raw_local(
     outfile='data/channel/raw_playlist_data.json'
 ):
     print("Regenerating raw_playlist_data.json file")
