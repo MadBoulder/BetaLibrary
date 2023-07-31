@@ -10,6 +10,10 @@ def main():
     Generate html templates for all the sectors listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
+
+    if not os.path.exists(f'templates/sectors'):
+        os.mkdir(f'templates/sectors')
+
     zone_data = handle_channel_data.get_zone_data()
 
     template_loader = FileSystemLoader(searchpath='.')
