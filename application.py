@@ -283,7 +283,6 @@ def join_us():
                 body=msg_body)
             msg.attach(resume.filename, 'application/octet-stream', resume.read())
             mail.send(msg)
-
             return render_template('thanks_for_joining.html')
         except:
             abort(404)
