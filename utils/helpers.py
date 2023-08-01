@@ -8,8 +8,6 @@ import utils.zone_helpers
 from googleapiclient.discovery import build
 from werkzeug.utils import secure_filename
 
-import zone_helpers
-
 
 MAX_ITEMS_API_QUERY = 50
 DATA_ZONES_PATH = 'data/zones/'
@@ -350,7 +348,7 @@ def get_number_of_videos_for_zone(zone_name):
     # with open('./data/playlist.json', 'r', encoding=ENCODING) as f: # TODO - fix
     #     data = json.load(f)
 
-    data = zone_helpers.get_playlists_url_from_zone(zone_name)
+    data = utils.zone_helpers.get_playlists_url_from_zone(zone_name)
 
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data['playlist'],
@@ -370,7 +368,7 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     # with open('./data/playlist.json', 'r', encoding=ENCODING) as f:
     #     data = json.load(f)
 
-    data = zone_helpers.get_playlists_url_from_zone(zone_name)
+    data = utils.zone_helpers.get_playlists_url_from_zone(zone_name)
 
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data['playlist'],
