@@ -30,16 +30,16 @@ app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-}
+# mail_settings = {
+#     "MAIL_SERVER": 'smtp.gmail.com',
+#     "MAIL_PORT": 465,
+#     "MAIL_USE_TLS": False,
+#     "MAIL_USE_SSL": True,
+#     "MAIL_USERNAME": os.environ['EMAIL_USER'],
+#     "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
+#     "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
+#     "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
+# }
 
 # app.config.update(mail_settings)
 # mail = Mail(app)
@@ -167,14 +167,6 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
-@app.route('/<string:page>/problem/<string:problem_name>')
-def load_problem(page, problem_name):
-    return render_template(f'problems/{page}/{problem_name}.html')
-    
-@app.route('/<string:page>/sector/<string:sector_name>')
-def load_sector(page, sector_name):
-    return render_template(f'sectors/{page}/{sector_name}.html')
-
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
     with open('data/countries.json', 'r') as c_data:
@@ -290,7 +282,7 @@ def join_us():
                 recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
                 body=msg_body)
             msg.attach(resume.filename, 'application/octet-stream', resume.read())
-            mail.send(msg)
+            # mail.send(msg)
 
             return render_template('thanks_for_joining.html')
         except:
@@ -387,6 +379,14 @@ def render_page(page):
         return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data, lang=get_locale())
     except:
         abort(404)
+
+@app.route('/<string:page>/problem/<string:problem_name>')
+def load_problem(page, problem_name):
+    return render_template(f'problems/{page}/{problem_name}.html')
+    
+@app.route('/<string:page>/sector/<string:sector_name>')
+def load_sector(page, sector_name):
+    return render_template(f'sectors/{page}/{sector_name}.html')
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
