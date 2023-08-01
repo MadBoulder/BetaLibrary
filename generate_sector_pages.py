@@ -3,6 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
 import handle_channel_data
+from werkzeug.utils import secure_filename
 
 
 def main():
@@ -28,6 +29,8 @@ def main():
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
+            for p in problems:
+                p['secure'] = secure_filename(p['name'])
             video_url = ""
             if 'sectors' in zone:
                 for s in zone['sectors']:
@@ -36,6 +39,7 @@ def main():
             template = template_env.get_template(
                 'templates/sector_layout.html')
             output = template.render(
+                zone_code=zone_code,
                 sector=sector,
                 problems=problems,
                 video_url=video_url,
