@@ -314,7 +314,7 @@ def process_video_data_local(
     infile='data/channel/raw_video_data.json',
     outfile='data/channel/processed_data.json'
 ):
-    print("Processing local data: Regenerating processed_data.json file");
+    print("Processing local data: Regenerating processed_data.json file")
     processed_data = process_name_data(infile=infile)
     processed_data = process_grade_data(data=processed_data)
     processed_data = process_climber_data(data=processed_data)
@@ -331,7 +331,7 @@ def process_zone_data_local(
     outfile='data/channel/processed_zone_data.json',
     base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
 ):
-    print("Processing local data: Regenerating processed_zone_data.json file");
+    print("Processing local data: Regenerating processed_zone_data.json file")
     
     raw_playlist_data = []
     with open(infile, 'r', encoding='utf-8') as f:
@@ -341,7 +341,7 @@ def process_zone_data_local(
             pass
     
     processed_playlist_data = []
-    print("Processing local data: processing raw playlist data");
+    print("Processing local data: processing raw playlist data")
     for i in raw_playlist_data['items']:
         title = i['snippet']['title']
         is_sector = 'Sector' in title
@@ -368,7 +368,7 @@ def process_zone_data_local(
                                                     "url": base_url + i['id'],
                                                     "video_count": i['contentDetails']['itemCount']})
     
-    print("Processing local data: processing zone data");
+    print("Processing local data: processing zone data")
     zones = next(os.walk('data/zones/'))[1]
     zones_processed_data = []
     for zone_code in zones:
