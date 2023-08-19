@@ -223,8 +223,8 @@ def search():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    return render_template('upload_not_working.html')
-    # return render_template('upload.html')
+    # return render_template('upload_not_working.html')
+    return render_template('upload.html')
 
 
 @app.route('/random', methods=['GET', 'POST'])
