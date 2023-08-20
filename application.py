@@ -167,6 +167,10 @@ def home():
     ]
     return render_template('home.html', stats_list=stats_list)
 
+@app.route('/home2')
+def home2():
+    return render_template('home2.html')
+
 @app.route('/zones', methods=['GET', 'POST'])
 def zones():
     with open('data/countries.json', 'r') as c_data:
@@ -250,19 +254,22 @@ def render_all():
 @app.route('/about_us', methods=['GET', 'POST'])
 def render_about_us():
     if request.method == 'POST':
-        # build email text/body
-        feedback_data = request.form['feedback']
-        sender_email = request.form['email']
-        msg_body = 'Sender: {}\nMessage: {}'.format(
-            sender_email, feedback_data)
-        # build email
-        msg = Message(
-            subject='madboulder.org feedback',
-            sender=app.config.get('MAIL_USERNAME'),
-            recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-            body=msg_body)
-        mail.send(msg)
-        # If no errors are raised, assume the action was successful
+        try:
+            # build email text/body
+            feedback_data = request.form['feedback']
+            sender_email = request.form['email']
+            msg_body = 'Sender: {}\nMessage: {}'.format(
+                sender_email, feedback_data)
+            # build email
+            msg = Message(
+                subject='madboulder.org feedback',
+                sender=app.config.get('MAIL_USERNAME'),
+                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
+                body=msg_body)
+            mail.send(msg)
+            return render_template('thanks_for_joining.html')
+        except:
+            abort(404)
     return render_template('about_us.html')
     
 @app.route('/join_us', methods=['GET', 'POST'])
