@@ -215,8 +215,8 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     generate_ids.reset_seed()
     area_map = folium.Map(
         location=[
-            -23.0390625,
-            -18.299051014581817
+            0.417195,
+            -20.184135
         ],
         zoom_start=2
     )
