@@ -360,17 +360,7 @@ def custom_statistics():
 @app.route('/<string:page>')
 def render_page(page):
     try:
-        try:
-            video_count = session['video_count'][page]
-        except:
-            # if cache has expired and the session does not contain the data,
-            # compute it again and store it. Worst case scenario,
-            # number of videos will be updated once a day
-            video_count = get_zone_video_count(page)
-            if session.get('video_count', None) is not None:
-                session['video_count'][page] = video_count
-            else:
-                session['video_count'] = {page: video_count}
+        video_count = get_zone_video_count(page)
         data = [
             #{
             #    'logo': 'fa fa-map-marked',
