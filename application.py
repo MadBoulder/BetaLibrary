@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import io
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect
 from flask_caching import Cache
 from flask_babel import Babel, _
@@ -16,6 +17,12 @@ import handle_channel_data
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
+
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
+from google.oauth2.credentials import Credentials
+from google.oauth2 import service_account
 
 
 EXTENSION = '.html'
@@ -233,6 +240,31 @@ def upload_file():
 @app.route('/upload-test', methods=['GET', 'POST'])
 def upload_file_test():
     return render_template('upload.html')
+    
+@app.route('/uploadTest', methods=['POST'])
+def upload():
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'credentials.json'
+
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    uploaded_file = request.files['file']
+    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+    if uploaded_file:
+        file_metadata = {'name': uploaded_file.filename,
+                         'parents': [CUSTOM_FOLDER_ID]
+                        }
+        
+        video_content = uploaded_file.read()
+        media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4')
+        file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        return 'Video uploaded to Google Drive! File ID: ' + file.get('id')
+    else:
+        return 'No file uploaded.'
+
+
 
 
 @app.route('/random', methods=['GET', 'POST'])
