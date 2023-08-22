@@ -7,6 +7,7 @@ import os.path
 import utils.zone_helpers
 from googleapiclient.discovery import build
 from werkzeug.utils import secure_filename
+import handle_channel_data
 
 
 MAX_ITEMS_API_QUERY = 50
@@ -337,27 +338,20 @@ def load_data(infile):
     return video_data
 
 
-# TODO: Optimize queries
 def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
+    zone_data = handle_channel_data.get_zone_data()
 
-    # with open('./data/playlist.json', 'r', encoding=ENCODING) as f: # TODO - fix
-    #     data = json.load(f)
+    for item in zone_data['items']:
+        if item['zone_code'] == zone_name:
+            return item['video_count']
+            
+    return 0
 
-    data = utils.zone_helpers.get_playlists_url_from_zone(zone_name)
 
-    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-        data['playlist'],
-        api_key
-    )
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-    return resp['items'][0]['contentDetails']['itemCount']
-
+# TODO: Optimize queries
 def get_number_of_videos_and_views_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
