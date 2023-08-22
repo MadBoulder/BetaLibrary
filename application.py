@@ -227,7 +227,11 @@ def search():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    # return render_template('upload_not_working.html')
+    return render_template('upload_not_working.html')
+    #return render_template('upload.html')
+    
+@app.route('/upload-test', methods=['GET', 'POST'])
+def upload_file_test():
     return render_template('upload.html')
 
 
