@@ -238,23 +238,17 @@ def search():
 
 
 @app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    return render_template('upload_not_working.html')
-    #return render_template('upload.html')
-    
-@app.route('/upload-test', methods=['GET', 'POST'])
-def upload_file_test():
+def upload():
     return render_template('upload.html')
     
-@app.route('/uploadTest', methods=['POST'])
-def upload():
+@app.route('/upload-file', methods=['GET', 'POST'])
+def upload_file():
     uploaded_file = request.files['file']
 
     if uploaded_file:
         response = upload_to_google_drive(uploaded_file)
-        return 'Upload complete'
     else:
-        return 'No file uploaded.'
+        abort(404)
 
 def upload_to_google_drive(file):
     SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -292,6 +286,11 @@ def upload_to_google_drive(file):
 @app.route('/progress', methods=['GET'])
 def get_progress():
     return jsonify({'progress': current_progress})
+
+    
+@app.route('/upload-completed', methods=['GET'])
+def upload_completed():
+    return render_template('thanks_for_uploading.html')
     
 
 @app.route('/random', methods=['GET', 'POST'])
