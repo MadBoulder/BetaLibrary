@@ -247,6 +247,23 @@ def upload_file():
 
     if uploaded_file:
         response = upload_to_google_drive(uploaded_file)
+        
+        msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
+            request.form['climber'],
+            request.form['name'],
+            request.form['grade'],
+            request.form['zone'],
+            request.form['sector'],
+            request.form['notes'],
+            uploaded_file.filename,
+            response)
+            
+        msg = Message(
+            subject='MadBoulder New Video Beta Received',
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('EMAIL_RECIPIENTS'),
+            body=msg_body)
+        mail.send(msg)
     else:
         abort(404)
 
