@@ -67,18 +67,81 @@
 	{% include 'mainMenu.html' %}
 	<main>
 		<div class="container">
-			 <h1>Upload a File to Google Drive</h1>
-			 <p class="loading">Uploading...</p>
+			<h1>Upload a File to Google Drive</h1>
 			<form id="upload-form" action="/uploadTest" method="post" enctype="multipart/form-data">
 				<input type="file" name="file" accept="video/*" required>
 				<input type="submit" value="Upload">
 			</form>
+			<progress id="upload-progress" max="100" value="0"></progress>
+			<span id="progress-label">0%</span>
+			<div id="status"></div>
 			<script>
 				const form = document.getElementById('upload-form');
-				const loadingIndicator = document.querySelector('.loading');
-				form.addEventListener('submit', function () {
-					loadingIndicator.style.display = 'block';
+				const progressBar = document.getElementById('upload-progress');
+				const progressLabel = document.getElementById('progress-label');
+				const statusDiv = document.getElementById('status');
+				let timeout;
+
+				form.addEventListener('submit', function (event) {
+					event.preventDefault();
+					progressBar.style.display = 'block';
+					progressBar.value = 0;
+					progressLabel.style.display = 'block';
+					uploadFile(event);
+					pollProgress(); 
 				});
+
+				function updateProgress(progress) {
+					progressBar.value = progress;
+					progressLabel.textContent = `${Math.floor(progress)}%`;
+				}
+
+				function updateStatus(message) {
+					statusDiv.innerHTML = message;
+				}
+
+				function pollProgress() {
+					fetch('/progress', { method: 'GET' })
+						.then(response => response.json())
+						.then(data => {
+							if (data.progress !== undefined) {
+								updateProgress(data.progress);
+								
+								if (data.progress < 100) {
+									updateStatus("Uploading");
+									timeout = setTimeout(pollProgress, 1000);
+								} else {
+									uploadCompleted();
+								}
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching progress:', error);
+						});
+				}
+
+				function uploadFile(event) {
+					const formData = new FormData(form);
+
+					const xhr = new XMLHttpRequest();
+					xhr.open('POST', '/uploadTest', true);
+
+					xhr.onreadystatechange = function () {
+						if (xhr.readyState === XMLHttpRequest.DONE) {
+							uploadCompleted();
+						}
+					};
+
+					xhr.send(formData);
+				}
+				
+				function uploadCompleted() {
+					progressBar.style.display = 'none';
+					progressLabel.style.display = 'none';
+					updateStatus('Upload complete');
+					clearTimeout(timeout);
+				}
+				
 			</script>
 		</div>
 	</main>

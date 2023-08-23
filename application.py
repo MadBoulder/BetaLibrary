@@ -2,7 +2,7 @@ import json
 import os
 import random
 import io
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -14,6 +14,7 @@ import utils.js_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
+import threading
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -36,6 +37,10 @@ app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+current_progress = 0
+
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -243,29 +248,51 @@ def upload_file_test():
     
 @app.route('/uploadTest', methods=['POST'])
 def upload():
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = 'credentials.json'
-
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    drive_service = build('drive', 'v3', credentials=credentials)
-    
     uploaded_file = request.files['file']
-    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+
     if uploaded_file:
-        file_metadata = {'name': uploaded_file.filename,
-                         'parents': [CUSTOM_FOLDER_ID]
-                        }
-        
-        video_content = uploaded_file.read()
-        media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4')
-        file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-        return 'Video uploaded to Google Drive! File ID: ' + file.get('id')
+        response = upload_to_google_drive(uploaded_file)
+        return 'Upload complete'
     else:
         return 'No file uploaded.'
 
+def upload_to_google_drive(file):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'credentials.json'
+
+    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+    file_metadata = {'name': file.filename,
+                     'parents': [CUSTOM_FOLDER_ID]}
+                     
+    video_content = file.read()
+    media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
+    
+    request = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    )
+                
+    response = None
+    global current_progress
+    current_progress = 0
+    while response is None:
+        status, response = request.next_chunk()
+        if status:
+            print("Uploaded %d%%." % int(status.progress() * 100))
+            current_progress = status.progress() * 100
+    current_progress = 100
+
+    print("Upload of {} is complete.".format(file.filename))
 
 
+@app.route('/progress', methods=['GET'])
+def get_progress():
+    return jsonify({'progress': current_progress})
+    
 
 @app.route('/random', methods=['GET', 'POST'])
 def random_zone():
