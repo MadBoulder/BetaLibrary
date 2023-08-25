@@ -113,10 +113,10 @@
 					<option value="alph" selected>{{ _("Alphabetically") }}</option>
 					<option value="nvid">{{ _("Number of videos") }}</option>
 				  </select>
-				  <button id="btn-asc" class="btn form-group-addon sort-btn" onclick="SortAsc()">
+				  <button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
 					<i class="fas fa-angle-up"></i>
 				  </button>
-				  <button id="btn-desc" class="btn form-group-addon sort-btn" onclick="SortDesc()">
+				  <button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
 					<i class="fas fa-angle-down"></i>
 				  </button>
 				</div>
@@ -134,7 +134,7 @@
 					<!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
 					<div class="card-body">
 					  <h5 class="card-title">{{ zone['name'] }}</h5>
-					  <p class="card-text" data-videos="{{ zone['videos'] }}" style="justify-content: center; display: flex; font-size:10pt;">
+					  <p class="card-text" data-videos="{{ zone['video_count'] }}" style="justify-content: center; display: flex; font-size:10pt;">
 						{{ zone['video_count'] }} {{ _("video") if zone['video_count'] == 1 else _("videos") }} 
 					  </p>
 					</div>
@@ -237,44 +237,36 @@
       $("#search-zone")[0].value = "";
   };
   
-  function SortAsc() {
+  function Sort(asc) {
     var criteria = $("#sort-criteria")[0].value;
     $(".custom-card").sort(function(a, b) {
       if (criteria==="nvid") {
-        return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos))*-1;
-      }
-      else if (criteria==="alph")
-      {
-        return $(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent);
-      }
-    }).appendTo('#zones-list');
-    sessionStorage.setItem("sortCriteria", criteria);
-    sessionStorage.setItem("sortOrder", "asc");
-    $("#btn-asc").hide();
-    $("#btn-desc").show();
-  };
-  
-  function SortDesc() {
-    var criteria = $("#sort-criteria")[0].value;
-    $(".custom-card").sort(function(a, b) {
-      if (criteria==="nvid") {
-        return (parseInt($(a).find("p")[0].dataset.videos) - parseInt($(b).find("p")[0].dataset.videos));
+		var aValue = parseInt($(a).find("p")[0].dataset.videos);
+		var bValue = parseInt($(b).find("p")[0].dataset.videos);
+        return (asc ? 1 : -1) * (aValue - bValue);
       }
       else if (criteria==="alph") {
-        return ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent))*-1;
+        return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
       }
     }).appendTo('#zones-list');
     sessionStorage.setItem("sortCriteria", criteria);
-    sessionStorage.setItem("sortOrder", "des");
-    $("#btn-desc").hide();
-    $("#btn-asc").show();
+	if(asc){
+		sessionStorage.setItem("sortOrder", "asc");
+		$("#btn-asc").hide();
+		$("#btn-desc").show();
+	} 
+	else{
+		sessionStorage.setItem("sortOrder", "des");
+		$("#btn-asc").show();
+		$("#btn-desc").hide();
+	}
   };
   
   function ReorderZones() {
     if (sessionStorage.getItem("sortOrder") === "asc")
-        SortAsc();
+        Sort(asc=true);
     else if (sessionStorage.getItem("sortOrder") === "des")
-        SortDesc();
+        Sort(asc=true);
   };
   
   function loadSessionStatus() {
@@ -283,12 +275,8 @@
           if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
         }
       );
-      $("#btn-desc").hide();
-      $("#btn-asc").show();
       sessionStorage.setItem("initialized", "done");
-      sessionStorage.setItem("sortOrder", "asc");
-      sessionStorage.setItem("sortCriteria", "alph");
-      SortAsc();
+      Sort(asc=true);
     } else {
       var to_be_modified = [];
       $("#inactive-countries-list")[0].childNodes.forEach(c => {
