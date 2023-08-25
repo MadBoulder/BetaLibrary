@@ -42,8 +42,7 @@ def main():
                 zone_code=zone_code,
                 sector=sector,
                 problems=problems,
-                video_url=video_url,
-                layout_css='../../../static/css/layout.css'
+                video_url=video_url
             )
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')

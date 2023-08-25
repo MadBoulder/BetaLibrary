@@ -60,8 +60,7 @@ def main():
             area_data=area,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
-            zone=area[NAME_FIELD],
-            layout_css='static/css/layout.css')
+            zone=area[NAME_FIELD])
 
         with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
             template.write(output)

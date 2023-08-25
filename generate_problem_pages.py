@@ -37,8 +37,7 @@ def main():
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
                 sector=problem[SSECTOR_FIELD],
-                video_url=get_embed_url(problem[LINK_FIELD]),
-                layout_css='../../../static/css/layout.css'
+                video_url=get_embed_url(problem[LINK_FIELD])
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')

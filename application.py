@@ -184,8 +184,7 @@ def zones():
         'zones.html',
         zones=zones['items'],
         countries=app.config['COUNTRIES'],
-        country_data=country_data,
-        current_lang=get_locale())
+        country_data=country_data)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -376,7 +375,7 @@ def render_page(page):
                 'text': _('Videos'),
                 'data': video_count
             }]
-        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data, lang=get_locale())
+        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
 
