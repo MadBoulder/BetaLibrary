@@ -121,6 +121,13 @@ def get_locale():
     if language is not None:
         return language
     return 'en'
+babel.init_app(app, locale_selector=get_locale)
+
+
+@app.context_processor
+def inject_language():
+    language = get_locale()
+    return dict(current_lang=language)
 
 
 # Load favicon
