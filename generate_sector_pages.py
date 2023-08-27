@@ -40,6 +40,7 @@ def main():
                 'templates/sector_layout.html')
             output = template.render(
                 zone_code=zone_code,
+                zone_name=zone['name'],
                 sector=sector,
                 problems=problems,
                 video_url=video_url
