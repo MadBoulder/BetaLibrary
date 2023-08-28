@@ -322,6 +322,12 @@ def privacy_policy():
 def cookies():
     return render_template('policy/cookies.html')
 
+
+@app.route('/bouldering')
+def bouldering():
+    return render_template('bouldering.html')
+    
+
 # Cache until
 @app.route('/statistics')
 @cache.cached(
