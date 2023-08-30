@@ -305,24 +305,6 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
             i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
     return resp['items'][0:results]
     
-    
-def get_number_of_videos_from_playlists_file():
-    """
-    This function returns a dict that is structured like:
-    {
-        'area_name':video_count
-    } 
-    """
-    processed_playlist_data = load_data('data/channel/processed_zone_data.json')
-
-    count = {}
-    for playlist_item in processed_playlist_data:
-        print(playlist_item['title'])
-        if playlist_item['zone_code']:
-            count[playlist_item['zone_code']] = playlist_item['video_count']
-        
-    return count
-    
 
 def load_data(infile):
     """
@@ -380,7 +362,3 @@ def generate_download_url(area, filename):
     its download.
     """
     return '/download/' + area + '/' + filename
-
-
-if __name__ == '__main__':
-    get_number_of_videos_from_playlists_file()

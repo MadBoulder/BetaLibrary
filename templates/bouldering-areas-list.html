@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>{{ _("Explore bouldering zones") }} | MadBoulder</title>
+	<meta name="description" content="Discover the best bouldering places in the world | MadBoulder">
+    
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+
+	{% include 'elements/head-resources.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/zones.css') }}" />
+	{% include 'scripts/cookie-scripts.html' %}
+  </head>
+  <body>
+    <div id="current-language" hidden>{{ current_lang }}</div>
+    <!-- Country Selector Modal -->
+    <div class="modal fade" id="country-modal" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{ _("Filter zones") }}</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="row d-flex justify-content-center mt-100">
+                <div class="col-md-6" id="inactive-countries-list"> 
+                  {% for country in countries %}
+                  <div class="active-filter-selection row" id="{{ country }}">
+                    <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
+                      {{ country }}
+                    </span>
+                    <div class="col-6" style="display: flex; justify-content: flex-end;">
+                      <button class="btn" onclick="addElement(this)">
+                        <i class="fas fa-plus item-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Modal -->
+	
+	{% include 'elements/main-menu.html' %}
+	<main>
+		<div class="container" id="mainContainer">
+		  <br />
+		  <div class="md-form active-pink active-pink-2 mt-0 row mr-0" style="display:flex; justify-content:center;">
+			<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+			<button class="btn mr-2 ml-2 mb-2" data-toggle="modal" data-target="#country-modal" style="border-color: black;">
+			  <span>{{ _("Add Filter") }}</span>
+			</button>
+			<!-- Sort order -->
+			  <div class="btn-group mb-2 joint-btns">
+				<div style="max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+				  <select id="sort-criteria" onchange="ReorderZones()">
+					<option value="alph" selected>{{ _("Alphabetically") }}</option>
+					<option value="nvid">{{ _("Number of videos") }}</option>
+				  </select>
+				  <button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+					<i class="fas fa-angle-up"></i>
+				  </button>
+				  <button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+					<i class="fas fa-angle-down"></i>
+				  </button>
+				</div>
+			  </div>
+		  </div>
+		  <div class="container row" id="selected-countries" style="margin:inherit; padding: inherit;">
+		  </div>
+		  </div>
+		  <div class="container" id="pageContent">
+			<div class="row" id="zones-list">
+			  {% for zone in zones %}
+			  <div class="custom-card" id="{{ zone['zone_code'] }}-{{zone['country']}}">
+				<div class="card zone-card" style="width: 12rem;">
+				  <a class="zone-card-link" href="/{{ zone['zone_code'] }}" >
+					<!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
+					<div class="card-body">
+					  <h5 class="card-title">{{ zone['name'] }}</h5>
+					  <p class="card-text" data-videos="{{ zone['video_count'] }}" style="justify-content: center; display: flex; font-size:10pt;">
+						{{ zone['video_count'] }} {{ _("video") if zone['video_count'] == 1 else _("videos") }} 
+					  </p>
+					</div>
+				  </a>
+				</div>
+			  </div>
+			  {% endfor %}
+			</div>
+		  </div>
+		</div>
+	</main>
+	{% include 'elements/footer.html' %}
+  </body>
+</html>
+
+<script>
+  var translator;
+  var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+  var c_data = '{{ country_data | tojson | safe}}';
+  var dict = JSON.parse(c_data);
+  
+  function sortCountryNodesAlphabetically() {
+    var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
+    items.sort(function(a, b) {
+       return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
+    });
+    for(var i = 0, len = items.length; i < len; i++) {
+      var parent = items[i].parentNode;
+      var detatchedItem = parent.removeChild(items[i]);
+      parent.appendChild(detatchedItem);
+    }
+  }
+  
+  function updateListOfZones() {
+    var $cards = $(".custom-card");
+    var $countries = $("#selected-countries")[0].childNodes;
+    var ids = [];
+    $countries.forEach(c => {
+      if (c.id) ids.push(c.id);
+    });
+    if (ids.length === 0)
+    {
+      $cards.show();
+      return;
+    }
+    $cards.hide();
+    $cards.each(
+      function()
+      {
+        var country = $(this)[0].id.split("-")[1];
+        if(ids.includes(country))
+        {
+          $(this).show();
+        }
+      }
+    );
+  };
+  
+  function removeElement(element) {
+      var text_to_place = $(element).parent()[0].id;
+      $("#inactive-countries-list").append(
+        '<div class="active-filter-selection row" id="' + text_to_place + '">' +
+          '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
+            text_to_place +
+          '</span>' +
+          '<div class="col-6" style="display: flex; justify-content: flex-end;">' +
+            '<button class="btn" onclick="addElement(this)">' +
+              '<i class="fas fa-plus item-icon"></i>' +
+            '</button>' +
+          '</div>' +
+        '</div>' 
+      );
+      translator.lang(curr_lng);
+      $(element).parent().remove();
+      sortCountryNodesAlphabetically();
+      updateListOfZones();
+      sessionStorage.setItem(text_to_place, "inactive");
+      // Reset searchbox
+      $("#search-zone")[0].value = "";
+  };
+  
+  function addElement(element) {
+      // Add to active selection list:
+      var text_to_place = $(element).parent().parent()[0].id;
+      $("#selected-countries").append(
+        '<div class="active-filter-selection" id="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
+        text_to_place +
+        '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
+      );
+      // Remove from list
+      translator.lang(curr_lng);
+      $(element).parent().parent().remove();
+      sortCountryNodesAlphabetically();
+      updateListOfZones();
+      sessionStorage.setItem(text_to_place, "active");
+      // close modal if open
+      if (($("#country-modal").data('bs.modal') || {})._isShown)
+        $('#country-modal').modal('toggle');
+      // Reset searchbox
+      $("#search-zone")[0].value = "";
+  };
+  
+  function Sort(asc) {
+    var criteria = $("#sort-criteria")[0].value;
+    $(".custom-card").sort(function(a, b) {
+      if (criteria==="nvid") {
+		var aValue = parseInt($(a).find("p")[0].dataset.videos);
+		var bValue = parseInt($(b).find("p")[0].dataset.videos);
+        return (asc ? 1 : -1) * (aValue - bValue);
+      }
+      else if (criteria==="alph") {
+        return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+      }
+    }).appendTo('#zones-list');
+    sessionStorage.setItem("sortCriteria", criteria);
+	if(asc){
+		sessionStorage.setItem("sortOrder", "asc");
+		$("#btn-asc").hide();
+		$("#btn-desc").show();
+	} 
+	else{
+		sessionStorage.setItem("sortOrder", "des");
+		$("#btn-asc").show();
+		$("#btn-desc").hide();
+	}
+  };
+  
+  function ReorderZones() {
+    if (sessionStorage.getItem("sortOrder") === "asc")
+        Sort(asc=true);
+    else if (sessionStorage.getItem("sortOrder") === "des")
+        Sort(asc=true);
+  };
+  
+  function loadSessionStatus() {
+    if (!sessionStorage.getItem("initialized")) {
+      $("#inactive-countries-list")[0].childNodes.forEach(c => {
+          if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
+        }
+      );
+      sessionStorage.setItem("initialized", "done");
+      Sort(asc=true);
+    } else {
+      var to_be_modified = [];
+      $("#inactive-countries-list")[0].childNodes.forEach(c => {
+          if (c.tagName === 'DIV') {
+            // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
+            if (sessionStorage.getItem(c.id) === "active" )
+            {
+              to_be_modified.push(c);
+            }
+          }
+        }
+      );
+      to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
+      $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
+      ReorderZones();
+    }
+  };
+  
+  window.addEventListener('load', function(){
+    curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+    translator = $('body').translate({lang: curr_lng, t: dict}); //use English
+    translator.lang(curr_lng);
+    sortCountryNodesAlphabetically();
+    loadSessionStatus();
+  
+    var $cards = $(".custom-card");
+  
+    $("#search-zone").keyup(function() {
+        var val = $.trim(this.value).toLowerCase();
+        if (val === "")
+            $cards.show();
+        else {
+          $cards.hide();
+          $cards.each(function()
+          {
+            if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
+            {
+              $(this).show();
+            }
+          });
+        }
+        // At this point we are only showing zones that matched the search pattern,
+        // Now filter by country if required
+        var $countries = $("#selected-countries")[0].childNodes;
+        var ids = [];
+        $countries.forEach(c => {
+          if (c.id) ids.push(c.id);
+        });
+        if (ids.length === 0)
+        {
+          // No Ids, everything is already ok
+          return;
+        }
+        // IDs ?
+        $cards.each(
+          function()
+          {
+            var country = $(this)[0].id.split("-")[1];
+            if(!ids.includes(country))
+            {
+              $(this).hide();
+            }
+          }
+        );
+    });
+  });
+</script>

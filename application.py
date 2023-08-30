@@ -66,29 +66,6 @@ def get_zone_video_count(page):
     return utils.helpers.get_number_of_videos_for_zone(page)
 
 
-@cache.cached(timeout=60*60*24, key_prefix='map_all')
-def get_map_all():
-    # Since the map is rendered in an iframe inside
-    # the main html of the page, jinja template variables
-    # that are inside the map are not replaced by default
-    # if we pass data to render_template. This is why we
-    # first load the maps/all template, replace the variables
-    # iniside the html by the data obtained at runtime,
-    # and finally render the page template
-    template_loader = FileSystemLoader(searchpath=".")
-    template_env = Environment(loader=template_loader)
-    data = utils.helpers.get_number_of_videos_from_playlists_file()
-    # store num videos in session to avoid repeating calls
-    session['video_count'] = data
-    template = template_env.get_template('templates/maps/all_to_render.html')
-    # Here we replace zone_name in maps/all by the number of beta videos
-    output = template.render(**data)
-    output = utils.js_helpers.replace_sectors_placeholders_for_translations(
-        output)
-    with open('templates/maps/all.html', 'w', encoding='utf-8') as template:
-        template.write(output)
-
-
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
     key_prefix='mad_zones'
@@ -177,7 +154,7 @@ def home():
 def home2():
     return render_template('home2.html')
 
-@app.route('/zones', methods=['GET', 'POST'])
+@app.route('/bouldering-areas-list', methods=['GET', 'POST'])
 def zones():
     with open('data/countries.json', 'r') as c_data:
         country_data = json.load(c_data)
@@ -187,13 +164,13 @@ def zones():
     # each zone has: link, name, num.videos
     zones = get_zone_data()
     return render_template(
-        'zones.html',
+        'bouldering-areas-list.html',
         zones=zones['items'],
         countries=app.config['COUNTRIES'],
         country_data=country_data)
 
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/area-problem-finder', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
@@ -205,7 +182,7 @@ def search():
         search_beta_results = utils.helpers.get_video_from_channel(
             query, results=5)
         return render_template(
-            'search_results.html',
+            'area-problem-finder.html',
             zones=search_zone_results,
             videos=search_beta_results,
             search_term=query
@@ -218,26 +195,26 @@ def search():
             search_beta_results = utils.helpers.get_video_from_channel(
                 query, results=5)
             return render_template(
-                'search_results.html',
+                'area-problem-finder.html',
                 zones=search_zone_results,
                 videos=search_beta_results,
                 search_term=query
             )
         return render_template(
-            'search_results.html',
+            'area-problem-finder.html',
             zones=[],
             videos=[],
             search_term='')
 
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/video-uploader', methods=['GET', 'POST'])
 def upload_file():
-    return render_template('upload_not_working.html')
-    #return render_template('upload.html')
+    return render_template('video-uploader-not-working.html')
+    #return render_template('video-uploader.html')
     
-@app.route('/upload-test', methods=['GET', 'POST'])
+@app.route('/video-uploader-test', methods=['GET', 'POST'])
 def upload_file_test():
-    return render_template('upload.html')
+    return render_template('video-uploader.html')
 
 
 @app.route('/<string:sitemap_name>.xml')
@@ -258,19 +235,17 @@ def random_zone():
         return render_template(random.choice(all_zones) + EXTENSION)
 
 
-@app.route('/latest_videos')
+@app.route('/latest-news-and-videos')
 def render_latest():
-    return render_template('latest_videos.html', video_urls=get_videos_from_channel())
+    return render_template('latest-news-and-videos.html', video_urls=get_videos_from_channel())
 
 
-@app.route('/all')
-def render_all():
-    get_map_all()
-    # After the data has been replaced, render the template
-    return render_template('all.html')
+@app.route('/bouldering-areas-map')
+def render_map():
+    return render_template('bouldering-areas-map.html')
 
 
-@app.route('/about_us', methods=['GET', 'POST'])
+@app.route('/about-us', methods=['GET', 'POST'])
 def render_about_us():
     if request.method == 'POST':
         try:
@@ -286,12 +261,12 @@ def render_about_us():
                 recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
                 body=msg_body)
             mail.send(msg)
-            return render_template('thanks_for_joining.html')
+            return render_template('thanks-for-joining.html')
         except:
             abort(404)
-    return render_template('about_us.html')
+    return render_template('about-us.html')
     
-@app.route('/join_us', methods=['GET', 'POST'])
+@app.route('/join-us', methods=['GET', 'POST'])
 def join_us():
     if request.method == 'POST':
         try:
@@ -309,27 +284,23 @@ def join_us():
                 body=msg_body)
             msg.attach(resume.filename, 'application/octet-stream', resume.read())
             mail.send(msg)
-            return render_template('thanks_for_joining.html')
+            return render_template('thanks-for-joining.html')
         except:
             abort(404)
-    return render_template('join_us.html')
-
-@app.route('/disclosure')
-def affiliate_disclosure():
-    return render_template('policy/affiliate_disclosure_deprecated.html')
+    return render_template('join-us.html')
 
 
-@app.route('/terms_conditions')
+@app.route('/madboulder-terms-of-use-and-conditions')
 def terms_conditions():
-    return render_template('policy/terms_conditions.html')
+    return render_template('policy/madboulder-terms-of-use-and-conditions.html')
     
-@app.route('/privacy_policy')
+@app.route('/madboulder-privacy-policy')
 def privacy_policy():
-    return render_template('policy/privacy_policy.html')
+    return render_template('policy/madboulder-privacy-policy.html')
     
-@app.route('/cookies')
+@app.route('/madboulder-cookie-policy')
 def cookies():
-    return render_template('policy/cookies.html')
+    return render_template('policy/madboulder-cookie-policy.html')
 
 
 @app.route('/bouldering')
@@ -434,7 +405,7 @@ def download_file(path=None, filename=None):
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.error('Page not found: %s', (request.path))
-    return render_template('errors/404.html'), 404
+    return render_template('errors/404-page-not-found.html'), 404
 
 
 # start the server
