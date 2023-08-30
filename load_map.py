@@ -239,7 +239,6 @@ def load_general_map(zone_data, generate_ids, return_html=True):
 
     # layers = []
     sectors_markers = []
-    placeholders = []
 
     # Sectors layer
     zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
@@ -288,17 +287,12 @@ def load_general_map(zone_data, generate_ids, return_html=True):
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
-        html_redirect, _ = os.path.splitext(
-            os.path.basename(os.path.normpath(zone['zone_code'])))
-        area_name = os.path.splitext(os.path.basename(zone['zone_code']))[0]
-        placeholder = area_name + PLACEHOLDER
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
-            zone['name'], area_name, html_redirect, placeholder), script=True)
+            zone['name'], zone['zone_code'], zone['video_count']), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
             popup_html, max_width=max(len(zone['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
-        placeholders.append(placeholder)
 
         sectors_marker = folium.Marker(
             location=[zone['latitude'], zone['longitude']],
@@ -333,8 +327,6 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     #     for marker in sectors_markers:
     #         map_html = helpers.zoom_on_click(
     #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
-    map_html = utils.js_helpers.replace_custom_placeholders(
-        map_html, placeholders)
     map_html = utils.js_helpers.replace_tag_ids(
         map_html, ['html'], generate_ids)
     return map_html if return_html else area_map

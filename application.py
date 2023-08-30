@@ -66,29 +66,6 @@ def get_zone_video_count(page):
     return utils.helpers.get_number_of_videos_for_zone(page)
 
 
-@cache.cached(timeout=60*60*24, key_prefix='map_all')
-def get_map_all():
-    # Since the map is rendered in an iframe inside
-    # the main html of the page, jinja template variables
-    # that are inside the map are not replaced by default
-    # if we pass data to render_template. This is why we
-    # first load the maps/all template, replace the variables
-    # iniside the html by the data obtained at runtime,
-    # and finally render the page template
-    template_loader = FileSystemLoader(searchpath=".")
-    template_env = Environment(loader=template_loader)
-    data = utils.helpers.get_number_of_videos_from_playlists_file()
-    # store num videos in session to avoid repeating calls
-    session['video_count'] = data
-    template = template_env.get_template('templates/maps/all_to_render.html')
-    # Here we replace zone_name in maps/all by the number of beta videos
-    output = template.render(**data)
-    output = utils.js_helpers.replace_sectors_placeholders_for_translations(
-        output)
-    with open('templates/maps/all.html', 'w', encoding='utf-8') as template:
-        template.write(output)
-
-
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
     key_prefix='mad_zones'
@@ -265,7 +242,6 @@ def render_latest():
 
 @app.route('/bouldering-areas-map')
 def render_map():
-    get_map_all()
     return render_template('bouldering-areas-map.html')
 
 
