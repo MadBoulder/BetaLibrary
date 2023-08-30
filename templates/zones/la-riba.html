@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  La Riba  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in La Riba | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             La Riba 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.316374" />
+  <input type="hidden" id="lng" name="lng_val" value="1.164743" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      La Riba
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      La Riba
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="http://laribabloc.blogspot.com/2012/04/nova-guia-descalada-en-bloc.html"
+        target="_blank"
+        >Guide</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/la-riba"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="la-riba/problem/a-lot-of-waste">A lot of waste, 4</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/adherencia-zero">Adherencia Zero, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/amadeu">Amadeu, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/balet">Balet, 4</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/bernat-pudent">Bernat pudent, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/bookworm">Bookworm, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/bravo">Bravo , 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/brusc">Brusc, 5+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/clot-way">Clot Way, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/covid">Covid, 7c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/deixalles">Deixalles, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/easy-life">Easy life, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-balco">El Balcó, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-conill-de-bcn">El conill de Bcn, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-cremat-right">El cremat Right, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-foradot">El foradot, 3+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-facil">El fàcil, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-marge">El marge, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-senyor-del-clot">El senyor del Clot, 4</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/el-trapezista">El trapezista, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/english-summer">English summer, 4</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/espai-terra">Espai terra, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/esquirol">Esquirol, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/estequimetrica">Estequimètrica, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/fakir">Fakir, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/farigola">Farigola, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/feet-up">Feet up, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/fem-ho-be">Fem-ho bé, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/hipersensibilitat">Hipersensibilitat, 7b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/hot-line">Hot line, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/inversio-termica">Inversió tèrmica, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/jardiland">Jardiland, 5+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/joanvi">Joanvi, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/kin-mal">Kin mal, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/koala">Koala, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/l-equilibrista">L'Equilibrista, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/l-onada">L'Onada, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/l-alternativa">L'alternativa, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/l-arrampat">L'arrampat, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/l-escudelleta">L'escudelleta, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-canaleta">La Canaleta, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-canellera">La canellera, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-cansaladeta">La cansaladeta, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-casa-de-colonies">La casa de colònies, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-chica-de-azul">La chica de azul, 4</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-clariana">La clariana, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-cleka">La cleka, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-font">La font, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-petitona">La petitona, 3+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-pota-del-kungfu">La pota del kungfu, 7c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-proa">La proa, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/la-vira">La vira, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/lancer-evo">Lancer Evo, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/las-vascas">Las vascas, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/le-crunch">Le crunch, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/llibertat">Llibertat, 6a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/mai-diguis-mai">Mai diguis Mai, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/maleida-pedra">Maleïda pedra, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/margallo">Margalló, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/me-la-pude">Me la pude...., 5+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/monopie">Monopié, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/nice-life">Nice life, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/nuria">Nuria, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/nyec">Nyec, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/omnicron">Omnicron, 8a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/palmito">Palmito, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/panxeta">Panxeta, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/paola">Paola, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/pardao">Pardao, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/patxi">Patxi, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/pim-pam">Pim pam, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/pluja-de-pedres">Pluja de pedres, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/poniol">Poniol, 4+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/power-test">Power test, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/problem-5-totxo-gas">Problem 5 (Totxo Gas), 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/questio-de-confianca">Qüestió de confiança, 5</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/romofobia">Romofobia, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/tant-amics">Tant amics, 3+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/tirant-lo-blanc">Tirant lo blanc, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/tormenta-de-arena">Tormenta de arena, 7b</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/twister">Twister, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/vallabrigues">Vallabrigues, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/vol-ras">Vol ras, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-riba/problem/vol-sense-motor">Vol sense motor, 6a+</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "la-riba_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="la-riba/sector/clot-d-en-goda">Clot d'en Goda</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "la-riba_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPSUg76digqW2_OIN1_9kEf"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  El Cogul  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in El Cogul | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             El Cogul 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.462258261892" />
+  <input type="hidden" id="lng" name="lng_val" value="0.7426576769272515" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      El Cogul
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      El Cogul
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <div class="row pl-5 mb-3">
+    
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+      </iframe>
+    </div>
+   
+  </div>
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/crags/el-cogul"
+        target="_blank"
+        >27 Crags (Guide)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://madboulder.org/download/el-cogul/el-cogul-bouldering-guidebook.pdf"
+        target="_blank"
+        >Guide (pdf)</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/el-cogul"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="el-cogul/problem/1890">1890, 6a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/a-llorar-a-la-lloreria">A llorar a la Lloreria, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/a-plorar-al-riu">A plorar al riu, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/alfons-a-l-esquerre">Alfons a l'esquerre, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/alfons-a-la-dreta">Alfons a la dreta, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/alfons-a-la-dreta">Alfons a la dreta, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/altra-mes-el-forat-bong-extension">Altra més el forat (Bong Extension), 6c+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/bad-dream">Bad dream, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/bandulet">Bandulet, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/benvingut-a-l-infern">Benvingut a l'infern, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/bong">Bong, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/charlize-theron">Charlize Theron, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/cluc">Cluc, 5</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/con-bombas">Con bombas, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/cor-petit">Cor Petit, 6c+/7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/cua-de-drac">Cua de drac, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/cuantas-veces-habre-oido-eso">Cuantas veces habre oido eso, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/dominio-del-miedo">Dominio del miedo, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/el-filo-del-comalla">El filo del comallà, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/el-gran-sostre-de-l-albages">El gran sostre de l'Albagés, 7b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/el-mundo-al-reves">El mundo al revés, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/el-perolillo">El perolillo, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/elvis-co">Elvis co, 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/elvis-conde">Elvis conde, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/filosofia-barata">Filosofia barata, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/graham-boulder">Graham Boulder, 8a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/hidrofobica">Hidrofóbica, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/hidrofobica-extension">Hidrofóbica Extensión, 7c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/jamon-jamon">Jamón, jamón, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/l-iglu">L'Iglú, 7b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/l-entranyable-vidua">L'entranyable vídua, 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-comella">La Comella, 7a (version b)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-comella">La Comella, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-ballena">La ballena, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-lluna">La lluna, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-raja">La raja, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/la-trave-dels-desmanegats">La trave dels desmanegats, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/lasingradov">Lasingradov, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/lloraras">Llorarás, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/lo-cogul">Lo Cogul, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/mrk01">Mrk01, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/metodo-osmin">Método Osmin, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/nos-pegan">Nos pegan, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/pal-pan">Pal Pan, 8a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/pancake">Pancake, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/pas-de-lloba">Pas de Lloba, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/per-la-boca-mor-el-peix">Per la boca mor el peix, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/poder-monguer">Poder monguer, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/por-el-dia-7b-por-la-noche-jb">Por el dia 7B, por la noche JB, 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-mestre-mutent">Problem  (Mestre Mutent), 5</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-1-albages-els-camps">Problem 1 (Albagés - Els Camps), 3</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-1-boulder-5-universitat">Problem 1 (Boulder 5, Universitat), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-1-boulder-6-mestre-muten">Problem 1 (Boulder 6, Mestre Muten), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-10-el-comalla">Problem 10 (El Comallà), 7c+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-12-universitat">Problem 12 (Universitat), 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-13-universitat">Problem 13 (Universitat), 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-14-el-turonet">Problem 14 (El Turonet), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-15-universitat">Problem 15 (Universitat), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-15-left-universitat">Problem 15 Left (Universitat), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-16-albages-els-camps">Problem 16 (Albagés - Els Camps), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-18-albages-els-camps">Problem 18 (Albagés - Els Camps), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-18-doctorat">Problem 18 (Doctorat), 7a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-18-universitat">Problem 18 (Universitat), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-19-el-turonet">Problem 19 (El Turonet), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-19-universitat">Problem 19 (Universitat), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-19-left-el-turonet">Problem 19 Left (El Turonet), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-2-albages-el-turonet">Problem 2 (Albagés - El Turonet), 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-2-albages-els-camps">Problem 2 (Albagés - Els Camps), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-2-boulder-1-3-universitat">Problem 2 (Boulder 1.3, Universitat), 6a+/b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-2-boulder-2-universitat">Problem 2 (Boulder 2, Universitat), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-20-beer-action">Problem 20 (Beer Action), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-20-el-turonet">Problem 20 (El Turonet), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-21a-el-turonet">Problem 21a (El Turonet), 7a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-22-beer-action">Problem 22 (Beer Action), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-23-beer-action">Problem 23 (Beer Action), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-23-l-albages-el-turonet">Problem 23 (L'Albagés - El Turonet), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-24-beer-action">Problem 24 (Beer Action), 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-24-l-albages-el-turonet">Problem 24 (L'Albagés - El turonet), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-26-beer-action">Problem 26 (Beer Action), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-27-beer-action">Problem 27 (Beer Action), 3+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-28-el-turonet">Problem 28 (El Turonet), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-29-mestre-mutent">Problem 29 (Mestre Mutent), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-albages-els-camps">Problem 3 (Albagés - Els Camps), 5</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-boulder-1-3-universitat">Problem 3 (Boulder 1.3, Universitat), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-boulder-3-universitat">Problem 3 (Boulder 3, Universitat), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-boulder-3-1-mestre-mutent">Problem 3 (Boulder 3.1, Mestre Mutent), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-boulder-3-3-2-mestre-mutent">Problem 3 (Boulder 3.3.2, Mestre Mutent), 5</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-3-boulder-6-universitat">Problem 3 (Boulder 6, Universitat), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-32-albages-els-camps">Problem 32 (Albagés - Els Camps), 4+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-33-albages-els-camps">Problem 33 (Albagés - Els Camps), 4+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-34-albages-els-camps">Problem 34 (Albagés - Els Camps), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-39-beer-action">Problem 39 (Beer Action), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-4-boulder-3-3-1-mestre-mutent">Problem 4 (Boulder 3.3.1, Mestre Mutent), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-4-mestre-mutent">Problem 4 (Mestre Mutent), 4+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-41-l-albages-el-turonet">Problem 41 (L'Albagés - El Turonet), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-42-l-albages-el-turonet">Problem 42 (L'Albagés - El Turonet), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-5-abellot-negre">Problem 5 (Abellot Negre), 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-5-abellot-negre">Problem 5 (Abellot Negre), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-5-abocador">Problem 5 (Abocador), 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-5-el-turonet">Problem 5 (El Turonet), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-58-el-turonet">Problem 58 (El Turonet), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-6-albages-els-camps">Problem 6 (Albagés - Els Camps), 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-6-l-albages-el-turonet">Problem 6 (L'Albagés - El Turonet), 6b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-6-l-albages-el-turonet">Problem 6 (L'Albagés - El Turonet), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-60-l-albages-el-turonet">Problem 60 (L'Albagés - El Turonet), 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-7-albages-els-sostres">Problem 7 (Albagés - Els Sostres), 7b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-7-boulder-3-2-mestre-mutent">Problem 7 (Boulder 3.2, Mestre Mutent), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-7-totxo-mali">Problem 7 (Totxo Mali), 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-8-toxto-de-la-vinya">Problem 8 (Toxto de la Vinya), 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-9-albages-1890">Problem 9 (Albagés - 1890), 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-9-lo-pallars">Problem 9 (Lo Pallars), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/problem-unknown-beer-action">Problem unknown (Beer Action), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/realidad-depresiva">Realidad depresiva, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/roca-mare">Roca mare, 7c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/romocop">Romocop, 6c</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/salvatge-oest">Salvatge oest, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/slab-final">Slab final, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/som-de-l-oest">Som de l'oest, 6a</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/spargus">Spargus, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/tambe-n-hi-ha-d-haver-de-facils">També n'hi ha d'haver de fàcils, 5+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/test-d-estres">Test d'estrès, 6b</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/tots-els-homes-tenen-ous">Tots els homes tenen ous, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/totxo-de-la-vinya">Totxo de la Vinya, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/problem/two-brothers">Two brothers, 6a+</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "el-cogul_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="el-cogul/sector/1890">1890</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/abellot-negre">Abellot Negre</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/abocador">Abocador</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/albages-abellot-negre">Albagés - Abellot Negre</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/albages-el-turonet">Albagés - El Turonet</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/albages-els-camps">Albagés - Els Camps</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/albages-els-sostres">Albagés - Els Sostres</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/albages-els-ulls">Albagés - Els ulls</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/aspa-peixera">Aspa - Peixera</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/beer-action">Beer Action</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/collat">Collat</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/doctorat">Doctorat</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/el-turonet">El Turonet</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/els-camps">Els Camps</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/l-albages-el-turonet">L'Albagés - El Turonet</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/lloreria">Lloreria</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/lo-pallars">Lo Pallars</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/lo-pallars">Lo Pallars </a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/mestre-muten">Mestre Muten</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/mestre-mutent">Mestre Mutent</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/roca-del-diable">Roca del Diable</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/totxo-mali">Totxo Mali</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/totxo-de-la-vinya">Totxo de la Vinya</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/totxo-de-la-vinya">Totxo de la vinya</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/universitat">Universitat</a>
+    </li>
+    
+    <li>
+      <a href="el-cogul/sector/x-tone">X-Tone</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "el-cogul_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNBQMfuXLGMbC8PkHrU0NOH"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Doctorat</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMFoHA588IcgxP0shqAfP25"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Totxo de la Vinya</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnObxNFMupQlC0RjNeMP9dkW"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Lloreria</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN2bIdXJKIHvARSzCIb_jGU"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Aspa - Peixera</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOCZvZz6YME6Iza3Ul0I2qR"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Collat</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN4rBkC8rfqyCildhVYstSz"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Totxo de la Vinya</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN_Hwo-nMjEt9u74R2_C7i7"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>l'Abocador</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOWzxcDAUUbDL9b3a41jsPk"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Els ulls</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPOQMrkSdEcT6RMwsJyxjxH"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>X-Tone</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNoBiiG79QrawrpjuXslaH4"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Totxo Mali</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPGPByFnmhvTe6JHBoCjYzn"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Albagés - 1890</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO8IdIckADLkcsNnWy_mhCA"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Albagés - Els Sostres</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM2PFoaTP8l-JoMSjEbUSb1"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Abellot Negre</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNx5Jpzkw5q-qr_vuCt7UvI"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Mestre Mutent</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNEjAy-6BrYmWQvfzT1GPi3"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Beer Action</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM3icwVRWhGIgmNNwbdJP8S"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Els Camps</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN3yiBCX-YIUxP_Hp2EBmfM"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Turonet</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNddmqNyimagVYbsU1Wwdmy"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Universitat</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPfqifo7OF3GMf6wKLN9SpM"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Lo Pallars</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPm712Zqup_h6I4gi9goNrx"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

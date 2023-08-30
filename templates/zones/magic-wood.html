@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Magic Wood  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Magic Wood | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Magic Wood 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="46.56393560999387" />
+  <input type="hidden" id="lng" name="lng_val" value="9.437642097473145" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Magic Wood
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Magic Wood
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <div class="row pl-5 mb-3">
+    
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?ref=qf_sp_asin_til&t=madboulder00-21&m=amazon&o=30&p=8&l=as1&IS1=1&asins=3938680393&linkId=0bc72ce341ffe203ab1a408988121ffb&bc1=FFFFFF&lt1=_top&fc1=333333&lc1=0066C0&bg1=FFFFFF&f=ifr">
+      </iframe>
+    </div>
+   
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=3956110730&linkId=1795be76adcfae1cde44774c69fa9211">
+      </iframe>
+    </div>
+   
+  </div>
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.gebro-verlag.de/gebro/MWbloc.htm"
+        target="_blank"
+        >Guide</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/magic-wood"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="magic-wood/problem/a-rose-is-a-rose">A Rose is a Rose, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/abraxas">Abraxas, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/aces-and-eights">Aces and Eights, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/achill">Achill, 4b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/aeronaut">Aeronaut, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/aeronaut-plus">Aeronaut plus, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/air-jordan">Air Jordan, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/ajax">Ajax, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/altersheimsitztart">Altersheimsitztart, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/angelina-jolie">Angelina Jolie, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/anigel">Anigel, 1b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/apple-crumble">Apple Crumble, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/astronautenfieber">Astronautenfieber, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/babel-fish">Babel Fish, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/baby-lady">Baby Lady, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/baptiste">Baptiste, 7b/b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/basler-leckerli">Basler Leckerli, 5c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/beach-easy">Beach Easy, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/beach-mantle-killertomate">Beach Mantle / Killertomate, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/beach-arete">Beach arête, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/believe-in-two">Believe in two, 8b+/c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/big-cheese">Big Cheese, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/binarius-furbus">Binarius furbus, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/bless-platte">Bless-Platte, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/blindfisch">Blindfisch, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/blown-away">Blown Away, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/blue-sky-of-mine">Blue Sky of mine, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/body-count">Body Count, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/bosna-genial">Bosna Genial, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/bosnanova">Bosnanova, 4b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/boulder-fieber-aka-papa-jango">Boulder-Fieber aka Papa Jango, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/burning-babylon">Burning Babylon, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/cameltrophy">Cameltrophy, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/charmeur">Charmeur, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/chickenhead">Chickenhead, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/chiquita">Chiquita, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/circus-maximus">Circus Maximus, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/circus-maximus">Circus Maximus, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/conan">Conan, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/crazy-world">Crazy World, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/dark-sakai">Dark Sakai, 8a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/deepthroat">Deepthroat, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/die-auferstanderung">Die Auferständerung, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/die-schone">Die Schöne, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/dinos-don-t-dyno">Dinos don't dyno, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/doppeldyno">Doppeldyno, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/down-under">Down under, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/du-cote-de-seshuan">Du côté de Seshuan, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/eckstein">Eckstein, 5a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/electric-boogie">Electric Boogie, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/enterprise">Enterprise, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/enterprise-in-space">Enterprise in Space, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/farthago">Farthago, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/fehlstart">Fehlstart, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/fettes-schweinchen">Fettes Schweinchen, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/flood-alert">Flood alert, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/foxy-lady">Foxy Lady, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/free-4-all">Free 4 All, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/freiflug">Freiflug, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/freiflug-blindflug">Freiflug / Blindflug, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/freiwild">Freiwild, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/french-bleau">French Bleau, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/from-darkness-to-sunshine">From Darkness to Sunshine, 8a (low start)</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/from-shallow-water-to-riverbed">From shallow water to Riverbed, 8b/b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/ganesha">Ganesha, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/gorilla">Gorilla, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/grit-deluxe">Grit Deluxe, 7a+ SD</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/gruetzi-perkele">Grüetzi perkele, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/gulliver-kante">Gulliver Kante, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/hageltrauma">Hageltrauma, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/haramis">Haramis, 5c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/headhunter">Headhunter, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/heb-da-arsch">Heb da Arsch, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/helena">Helena, 4b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/hellrider">Hellrider, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/high-spirit">High Spirit, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/hijacked">Hijacked, 5a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/hip-hop">Hip Hop, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/holidays-are-over">Holidays are over, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/holy-limit">Holy Limit, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/hohenrausch">Höhenrausch, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/ill-thrill">Ill Thrill, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/intermezzo">Intermezzo, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/intermezzo-left">Intermezzo left, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/iron-butterfly">Iron Butterfly, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/irrlicht">Irrlicht, 4a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/jack">Jack, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/jack-the-chipper">Jack the Chipper, 7b+/c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/jack-s-broken-heart">Jack's Broken Heart, 8a/a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/jedi-jack-links">Jedi Jack Links, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/jenny">Jenny, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kadia">Kadia, 2c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kanonarohr">Kanonärohr, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kanonarohr">Kanonärohr, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kashmir">Kashmir, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/king-kong">King Kong, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/klein-aber-fein">Klein aber fein, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/klippsspringer">Klippsspringer, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kung-fu-panda">Kung Fu Panda, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/kandy">Kändy, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/l-exploration-de-l-ombre">L'exploration de l'ombre, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/la-boume-direkt">La Boume direkt, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/la-force-tranquile">La Force Tranquile, 8c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/la-gran-evasion">La Gran Evasion, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/la-pinzaria-enterprise-sit-start">La Pinzaría / Enterprise sit start, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/land-of-unicorns">Land of Unicorns, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/laputa">Laputa, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/left-flow">Left Flow, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/linserboulder">Linserboulder, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/longbow">Longbow, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/macrosex">Macrosex, 7c/c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/magic-buttress">Magic Buttress, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/magic-dyno">Magic Dyno, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/man-of-the-cow">Man of the Cow, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mantle-king">Mantle King, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mantle-magic">Mantle Magic, 5a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mantle-queen">Mantle Queen, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/marieke">Marieke, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/marihuanacorner">Marihuanacorner, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/massive-attack">Massive Attack, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mastermind">Mastermind, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mauros-line">Mauros Line, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mausefalle">Mausefalle, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/maximal-minimal">Maximal minimal, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mentale-blockade">Mentale Blockade, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mezzomix">Mezzomix, 5c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/microcosmos">Microcosmos, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mikeboulder">Mikeboulder, 7b..c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mimoose">Mimoose, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/minisex-roof">Minisex Roof, 7c (short)</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/minisex-roof">Minisex Roof, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mobi-dick-direct">Mobi Dick Direct, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/moonwalker">Moonwalker, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/moos-gully">Moos Gully, 4b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/moos-kante">Moos Kante, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/moos-kante-links">Moos Kante links, 6b/c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mordssprung">Mordssprung, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/more-mantle-magic">More Mantle Magic, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/morgenlatte">Morgenlatte, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mr-elegant">Mr. Elegant, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/muchacha">Muchacha, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mut-zur-verzweiflung">Mut zur Verzweiflung, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/muttertag">Muttertag, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/mystic-stylez">Mystic Stylez, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/manteli">Mänteli, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/morderballet-light">Mörderballet light, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/nana-bianca">Nana Bianca, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/new-base-line">New Base Line, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/no-exit">No Exit, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/nothing-changes">Nothing Changes, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/number-1">Number 1, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/octopussy">Octopussy, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/oh-birgit">Oh Birgit, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/one-summer-in-paradise">One summer in Paradise, 8a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/panzerknacker">Panzerknacker, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/paris">Paris, 4a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/pilar-talk">Pilar Talk, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/piranha">Piranha, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/platte">Platte, 7c/+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/play-the-game">Play the game, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/power-of-now">Power of Now, 8B+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/practice-of-the-wild">Practice of the Wild, 8b+/c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/punching-tree">Punching tree, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/randomguy">Randomguy, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/red-roses">Red Roses, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/remembrance-of-things-past">Remembrance of things past, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/riders-on-the-storm">Riders on the Storm, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/riverbed">Riverbed, 8a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/rotzkiebel">Rotzkiebel, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/ruwenda">Ruwenda, 5a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/rythmo">Rythmo, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/samadhi">Samadhi, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/samurai-tango">Samurai Tango, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schienbein-brecher">Schienbein-Brecher, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schimmel-kante">Schimmel-Kante, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schimmel-platte">Schimmel-Platte, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schneastrum">Schneastrum, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schneebrett">Schneebrett, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schrotti">Schrotti, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schulte-arete">Schulte Arête, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/schone-welt">Schöne Welt, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/serial-thrilla">Serial Thrilla, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/seven-of-nine">Seven of Nine, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/shazam">Shazam, 8a+/8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/silverfeet">Silverfeet, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/smoking-squirrel">Smoking Squirrel, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/sofasurfer">Sofasurfer, 8a/a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/sofasurfer-direct">Sofasurfer direct, 8a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/spankstick">Spankstick, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/sparerib">Sparerib, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/stairway-to-heaven">Stairway to Heaven, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/starman">Starman, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/steppenwolf">Steppenwolf, 8a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/stinkefinger">Stinkefinger, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/stressman">Stressman, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/sukkubus">Sukkubus, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/super-bosna">Super Bosna, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/super-nova">Super Nova, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/supersupernova">SuperSuperNova, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/swiss-beats">Swiss Beats, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/sundenfall">Sündenfall, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/teddybar">Teddybär, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-arkenstone">The Arkenstone, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-bomb-is-explosion">The Bomb is Explosion, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-electric-company">The Electric Company, 8A+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-gift">The Gift, 7c SD</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-knowing">The Knowing, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-never-ending-story">The Never Ending Story, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-pillar-of-autumn">The Pillar of Autumn, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-shell">The Shell, 6a/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-slice">The Slice, 6a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-table">The Table, 7b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-understanding">The Understanding, 8c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-wizard">The Wizard, 7c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-bizarre-ride">The bizarre ride, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-left-hand-of-darkness">The left hand of Darkness, 8a/a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/the-right-hand-of-darkness">The right hand of Darkness, 7c+/8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/timberman">Timberman, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/tipsy">Tipsy, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/torpedo">Torpedo, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/traversatta">Traversatta, 7a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/troja">Troja, 6b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/trullator">Trullator, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/tuna">Tuna, 7c/+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/u-boot">U-Boot, 6c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/unendliche-geschichte-1">Unendliche Geschichte 1, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/unendliche-geschichte-2">Unendliche Geschichte 2, 8a</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/valentine-s-day">Valentine's Day, 7a+/b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/variante-a-j">Variante A.J., 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/voigas">Voigas, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/wallflower">Wallflower, 4c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/warm-up">Warm up, 5c</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/wing-chun">Wing Chun, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/wonderboy">Wonderboy, 5b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/wovenhand">Wovenhand, 8b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/yoda-der-yogi-meister">Yoda der Yogi-Meister, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/ziggy-stardust">Ziggy Stardust, 6b</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/problem/zilliman">Zilliman, 7a</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "magic-wood_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="magic-wood/sector/bach">Bach</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/beach">Beach</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/haupt-1">Haupt 1</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/haupt-2">Haupt 2</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/haupt-3">Haupt 3</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/kamel">Kamel</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/mitte">Mitte</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/oben">Oben</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/swiss">Swiss</a>
+    </li>
+    
+    <li>
+      <a href="magic-wood/sector/unknown">Unknown</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "magic-wood_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM4RJ6xcR-OsFVNU5XQq-4c"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Oben</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMMEpCIRpboxDcZqM0b96jq"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Haupt 3</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP0NHBTH1K1-LTZvyXOQQne"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Swiss</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN4EKiZ4JFosY9KNLP7qGIj"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Haupt 3</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPWIo3ZfQ3lXd64ljtOLQIx"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Swiss</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMQIfxVVM0hCi_pM6jCH3ni"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Haupt 1</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMdSBiFLAjrETh4d-VBezLZ"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Haupt 2</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOJtHK7um-fDKVjQhnU7sLS"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Bach</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNn8V75ELOx6phHkOW3ip08"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Beach</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPC1Fmal8rlkvFDSQp8003a"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Mitte</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMiuTqKU6mUpI3GMstS7BD8"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Kamel</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOAJwuVDSzRLZXhLdag6z4w"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

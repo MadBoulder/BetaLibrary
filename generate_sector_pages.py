@@ -34,7 +34,7 @@ def main():
             video_url = ""
             if 'sectors' in zone:
                 for s in zone['sectors']:
-                    if sector[1] == s['name']:
+                    if sector[1] == slugify(s['name']):
                         video_url = s['url']
             template = template_env.get_template(
                 'templates/templates/sector-layout.html')
@@ -48,7 +48,7 @@ def main():
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')
 
-            with open(f'templates/sectors/{zone_code}/{sector[1]}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/sectors/{zone_code}/{slugify(sector[1])}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 

@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Can Boquet  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Can Boquet | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Can Boquet 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.5205" />
+  <input type="hidden" id="lng" name="lng_val" value="2.3364" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Can Boquet
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Can Boquet
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/areas/can-boquet-18554"
+        target="_blank"
+        >27 Crags (Guide)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://madboulder.org/download/can-boquet/can-boquet-bouldering-guidebook.pdf"
+        target="_blank"
+        >Boulder Can Boquet (pdf)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="http://blogdgranit.blogspot.com/"
+        target="_blank"
+        >blogdgranit (Blog)</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/can-boquet"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="can-boquet/problem/a-palo-seko">A palo seko, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/abierto-hasta-el-amanecer">Abierto hasta el amanecer, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/abracada-del-teletuby">Abraçada del teletuby, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/acelera-un-poco-mas">Acelera un poco más, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/aerodinamite">Aerodinamite, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/agua-bendita">Agua bendita, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/albatroskot">Albatroskot, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/alebop">Alebop, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/algo-que-se-siente">Algo que se siente, 7b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/angel">Angel, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/apocalipsis">Apocalipsis, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/aprieta-los-dientes">Aprieta los dientes, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ardilla-oscura">Ardilla oscura, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ardilla-veloz">Ardilla veloz, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/astral">Astral, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/atila">Atila, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/bala-perdida">Bala perdida, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/benet-i">Benet I, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/benet-ii">Benet II, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/biceps-power">Biceps power, 8a/a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/bloody-moves">Bloody Moves, 7c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/bomberman">Bomberman, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/brainless">Brainless, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/buda">Buda, 6b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/bulder-in-the-dark">Bulder in the dark, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cabreta">Cabreta, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cabrit">Cabrit, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cabrit-left">Cabrit Left, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cabro">Cabró, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cagao-de-miedo">Cagao de miedo, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/calvo">Calvo, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/calvo-dreta">Calvo Dreta, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/camino-al-altar">Camino al altar, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/caricias-profundas">Caricias profundas, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/casi-pero-no">Casi pero no, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/casi-pero-no-right">Casi pero no Right, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cerebro-atrofia">Cerebro atrofia, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cerrojoman">Cerrojoman, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cerrojowoman">Cerrojowoman, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/closca-de-tortuga">Closca de tortuga, 3</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/competencia">Competencia, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/competencia">Competencia, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cop-de-cul">Cop de cul, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/corruptor-de-menores">Corruptor de menores, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/crack-my-fingers">Crack my fingers, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/creatina">Creatina, 7a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/creatina">Creatina, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/croquetman">Croquetman, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/croquetman-extension">Croquetman Extension, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cuando-revientes-descansaras">Cuando revientes descansarás, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/cuidesemele">Cuidesemele, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dancer-in-the-dark">Dancer in the dark, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dejame-que-te-acaricie">Dejame que te acaricie, 4+ (only arete)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/del-antonio">Del Antonio, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/del-jordi">Del Jordi, 4</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/del-pep">Del Pep, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/del-wey">Del wey, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/demenciales">Demenciales, 7c?</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dermis">Dermis, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/desertors-de-la-corda">Desertors de la corda, 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/devil-route">Devil route, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dinamic">Dinàmic, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dit-del-cofre">Dit del cofre, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dj-saborit">Dj Saborit, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dos-bidits">Dos bidits, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dos-regletas-y-un-destino">Dos regletas y un destino, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/dusminguet">Dusminguet, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-arte-del-equilibro">El arte del equilibro, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-bola">El bola, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-camino-del-vampiro">El camino del vampiro, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-conversador-rosa">El conversador rosa, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-maestro">El maestro, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-mercenario">El mercenario, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-mirall">El mirall, 6c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-morro">El morro, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-nino-con-el-pijama-de-rayas">El niño con el pijama de rayas, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-paseo">El paseo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-poder-de-la-mente">El poder de la mente, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-poder-de-spiderjoan">El poder de spiderjoan, 8a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-que-rompe-paga">El que rompe paga, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-senor-de-las-regletas">El señor de las regletas, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-sonador">El soñador, 3</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-trol">El trol, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-wa">El wa, 4+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/el-wa">El wa, 4</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/en-busca-de-la-bala-perdida">En busca de la bala perdida, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/espolo-manu">Espoló Manu, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/estilo">Estilo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/evident">Evident, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/evident">Evident, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/explode-pig">Explode pig, 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/falacias-mordaces">Falacias mordaces, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/fall-fat">Fall fat, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/familia-pollo">Familia pollo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ferran">Ferran, 6c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/fiction">Fiction, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/filantop">Filàntop, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/fisura-jachis">Fisura jachis, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/fisura-hop">Fisura-hop, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/flanders">Flanders, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/forceps">Forceps, 7a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/franco-ha-muerto-je-je-je">Franco ha muerto, je, je, je, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/frankispain">Frankispain, 7a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/full-equip">Full Equip, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/gandalf">Gandalf, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/generacions-passades">Generacions passades, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/generacion-del-77">Generación del 77, 7c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/gervi">Gervi, 6c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/gollum">Gollum, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/gora-teta">Gora teta, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/hal-lufo">HAL.LUFO, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/harry-potter">Harry Potter, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/hasta-las-flores-me-tienen">Hasta las flores me tienen.., 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/haustwich">Haustwich, ?</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/hiperexpo">Hiperexpo, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/inadaptats">Inadaptats, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/jaume-s-forever">Jaume's forever, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/johnny-dawes">Johnny Dawes, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/jotake-irabatzi-arte">Jotake Irabatzi arte, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/justicia-salvaje">Justícia salvaje, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/justicia-salvaje">Justícia salvaje, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/karman">Karman, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/karmita">Karmita, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/l-empotrapeu">L'empotrapeu, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/l-equilibrista">L'equilibrista, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/l-escut">L'escut, 5 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-masa">La Masa, 6a  (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-masa">La Masa, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-casa-del-terror">La casa del terror, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-escalera-del-genio">La escalera del genio, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-humedad">La humedad, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-paladilla">La paladilla, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-parrillada">La parrillada, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-pasion-turca">La pasion turca, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-plaga">La plaga, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/la-romeria">La romeria, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/las-cuchillas-de-cristo">Las cuchillas de Cristo, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/las-estrellas">Las estrellas, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/libertad">Libertad, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/lin-ton-taun">Lin ton taun, 6a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/lluvia">Lluvia, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/lo-turbo">Lo turbo, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/lolomaster">Lolomaster, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/los-rancios">Los Rancios, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/los-suaves-sit">Los Suaves sit, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/los-mariachis">Los mariachis, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/los-visitantes">Los visitantes, 6a+ </a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/lucha-en-el-fango">Lucha en el fango, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/magneto">Magneto, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/malkarma">Malkarma, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/maniatika">Maniatika, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/marfega">Marfega, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/mastergrip">Mastergrip, 7c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/matriz">Matriz, 6b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/maxiexpo">Maxiexpo, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/megacoprolit">Megacoprolit, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/monster-bou">Monster-bou, 7b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/mr-potato">Mr. Potato, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/nando">Nando, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/neofit">Neofit, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/neofit-right">Neofit Right, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/nietche">Nietche, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/nina-pija">Niña pija, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/no-somos-nada">No somos nada, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/obridor-desconegut">Obridor desconegut, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/obrint-pas">Obrint pas, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ojos-de-brujo">Ojos de brujo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/operacio-ostra">Operació ostra, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/orgasme-salvatge-dreta">Orgasme salvatge Dreta, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/oso-yogui">Oso yogui, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/oso-yonki">Oso yonki, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/pa-disfrutar">Pa disfrutar, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/pako-a-secas">Pako a secas, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/pakorr">Pakorr, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/peleschild-against-the-world">Peleschild against the world, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/percusion">Percusion, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/pole-position">Pole position, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ponte-nivea">Ponte Nivea, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/por-i-son">Por i son, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/problem-3-toxto-de-la-caca">Problem 3 (Toxto de la caca), 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/problem-7-totxo-de-la-caca">Problem 7 (Totxo de la caca), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/projecte-de-la-caca">Projecte de la caca, 5 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/psssss">Psssss, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/que-d-invertido">Que d'invertido, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/questio-de-fe">Qüestió de fe, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/questio-de-fe">Qüestió de fe, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rabia-contenida">Rabia contenida, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/racatacata">Racatacata, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rampage">Rampage, 6a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rampas-invertidas">Rampas invertidas, 6c+ (without hands)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rampas-invertidas">Rampas invertidas, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rapanui">Rapanui, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/rasca-i-pica">Rasca i Pica, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/raspa-mama">Raspa mama, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/red-bull">Red Bull, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/res-mes">Res mes, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ride-my-rocket">Ride my rocket, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/robobita">Robobita, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/romocop">Romocop, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/salvapower">Salvapower, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/serralada-litoral-sit">Serralada litoral sit, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/sex-appeal">Sex appeal, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/sex-appeal-sex-apple-in-the-guide">Sex appeal (Sex apple in the guide), 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/sir-nyapas">Sir nyapas, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/sitofobia">Sitofobia, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ska-p">Ska-p, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/skaparapid">Skaparapid, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/soldador-universal">Soldador universal, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/spiderjoan">Spiderjoan, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/spok">Spok, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/stop-racism">Stop racism, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/stopa">Stopa, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/suc-de-taronja">Suc de taronja, 7a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/suc-de-taronja-direct">Suc de taronja direct, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/sweet-dreams">Sweet dreams, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tanga-deep-eyes">Tanga deep eyes, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tas">Tas, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tazmania">Tazmania, 3</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/te-lo-dije">Te lo dije,  6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tenacita">Tenacita, 8a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/terra-de-boira">Terra de boira, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/terra-de-tenebres">Terra de tenebres, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/thai">Thaï, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/the-machina">The machina, 6c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/the-roof-extended">The roof Extended, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/todos-contra-todos">Todos contra todos, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tom-bombadil">Tom Bombadil, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tranki">Tranki, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/trave-normal">Trave Normal, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/traveltotortu">Traveltotortu, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/trencapica">Trencapica, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tricitos-power">Tricitos power, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/tripi-clima">Tripi clima, 3</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/trompa">Trompa, 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/trotamundos">Trotamundos, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/un-dos-tres-flexion">Un, dos, tres, flexión!!, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/uno-contra-uno">Uno contra uno, 4</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/variant-salvapower">Variant Salvapower, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/variante-escakeante">Variante escakeante, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/venganza-y-triunfo">Venganza y triunfo, 6b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/via-del-tro">Via del tro, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/visitants">Visitants, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/voy-de-lao">Voy de lao, 8a</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/what-s-up">What's up!!!, 3</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/wuan-samer-in-de-boket">Wuan samer in de boket, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/x-men">X Men, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/problem/ya-somos-algo">Ya somos algo, 7a</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "can-boquet_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="can-boquet/sector/carretera">Carretera</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/classic">Classic</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/classic">Clàssic</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/dreamtime">Dreamtime</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/halley">Halley</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/jonny-dawes">Jonny Dawes</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/la-font">La Font</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/la-font-41-5102118-2-3238263">La Font (41.5102118, 2.3238263)</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/la-perla">La Perla</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/masia">Masia</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/miracle">Miracle</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/nou">Nou</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/petit-paradis">Petit Paradís</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/roca-de-la-granota">Roca de la Granota</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/transilvania">Transilvania</a>
+    </li>
+    
+    <li>
+      <a href="can-boquet/sector/x">X</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "can-boquet_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMVWYgJGEHipShBV-MBLd4T"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Transilvania</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO1tIBXwysedZQfmEIAkfmN"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dreamtime</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOIXDYUput6VBX9LxfILe_z"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Carretera</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMtK-M-Ulr2tBEjwuyMSx6A"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>X</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOkAAyNdww2wykWC9V8RE2V"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Petit Paradís</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOXrX0VlwgjV3DJ5U_Zu0bh"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Jonny Dawes</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOQCfNKJ7yMwozQxfedKHMW"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Perla</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOJ1mRVpP-nGBA734tY30GA"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Roca de la Granota</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMXLRbgPY6_wXoBZQrW6QMi"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Miracle</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNqZo4gnJ-wRNAcMI8oBImW"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Font</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNIIzx7KTguakwv1RIwiD4i"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Halley</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNv38fRIiqJp4kQLytJTOUr"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Nou</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOwLiGSbGbhWGIZaoWn_6G5"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Masia</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPI1wnFFZTYhMgtaRkoBsOG"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Clàssic</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNld6Kl3x1uegNOQGVT_0B_"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

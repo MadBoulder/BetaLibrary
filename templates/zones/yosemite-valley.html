@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Yosemite Valley  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Yosemite Valley | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Yosemite Valley 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="37.7415236" />
+  <input type="hidden" id="lng" name="lng_val" value="-119.6040167" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Yosemite Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Yosemite Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="http://www.supertopo.com/packs/yosemiteboulder.html"
+        target="_blank"
+        >Yosemite Valley Bouldering (supertopo)</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/yosemite-valley"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="yosemite-valley/problem/180-degree-arete">180 Degree Arete, V6</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/a-primates-memoir">A Primate’s Memoir, V6</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/across-the-tracks">Across the Tracks, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/all-start-movie-mantel">All start movie mantel, V1</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/ataturk">Ataturk, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/atlantis">Atlantis, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/atlantis">Atlantis, V6 (low)</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/balance-of-opposites">Balance of Opposites, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/battle-of-the-bulge">Battle of the Bulge, V6</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/big-bessey">Big Bessey, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/big-present">Big Present, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/bipolar">Bipolar, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/black-widow">Black Widow, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/bridalveil-pogo">Bridalveil Pogo, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/bridge-to-nowhere">Bridge to nowhere, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/bruce-lee">Bruce Lee, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/budokan">Budokan, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/chapman-overhang">Chapman overhang, V1</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/cocaine-corner">Cocaine Corner, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/cookie-monster">Cookie Monster, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/cranium-crusher">Cranium crusher, V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/crossroads-moe">Crossroads Moe, V6</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/flatline">Flatline, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/good-vibrations">Good Vibrations, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/greener-pastures">Greener Pastures, V10 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/heart-of-darkness">Heart of Darkness, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/hit-man">Hit Man, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/honor-among-thieves">Honor Among Thieves, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/honor-among-thieves">Honor Among Thieves, V9 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/hug-a-rock">Hug a rock, V0</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/karate">Karate, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/kor-problem">Kor Problem, V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/marco-s-traverse">Marco's traverse, V1</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/midnight-lightning">Midnight Lightning, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/montezuma-s-revenge-right">Montezuma's Revenge Right, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/no-holds-bard">No Holds Bard, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/octagon-traverse">Octagon Traverse, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/orange-fever">Orange Fever, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/orange-fever">Orange Fever, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/panic-room">Panic Room, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/pine-box">Pine Box, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/plenty-of-fish">Plenty of Fish, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-11-camp-4">Problem 11 (Camp 4), V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-14-housekeeping-v0">Problem 14 (Housekeeping), V0, V0 </a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-20-housekeeping">Problem 20 (Housekeeping), V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-35-camp-4">Problem 35 (Camp 4), V4</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-40-camp-4">Problem 40 (Camp 4), V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-6-housekeeping">Problem 6 (Housekeeping), V4</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-9-housekeeping">Problem 9 (Housekeeping), V4-</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/problem-unknown-curry-village">Problem Unknown (Curry village), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/purple-barrel">Purple Barrel, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/raven-haired-woman">Raven Haired Woman, V14</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/root-canal">Root Canal, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/rubik-s-revenge">Rubik's Revenge, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/silent-spotter">Silent Spotter, V6</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/slice-of-life">Slice of life, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/so-good">So Good, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/spock-direct">Spock Direct, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/stream-of-being">Stream of Being, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/teenage-mutant-ninja-gerbils">Teenage Mutant Ninja Gerbils, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-diamond">The Diamond, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-diamond-direct">The Diamond Direct, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-force">The Force, V9</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-happening">The Happening, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-james-lucas-memorial-arete-problem">The James Lucas Memorial Arête Problem, V3</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-rift">The Rift, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/the-squirrel">The Squirrel, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/too-big-to-fail">Too Big to Fail, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/torque">Torque, V7</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/torque-spanner">Torque Spanner, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/unknown-arete">Unknown Arete, V5</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/where-the-sidewalk-ends">Where the sidewalk ends, V8</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/zodiac">Zodiac, V10</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/problem/zorro">Zorro, V4</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "yosemite-valley_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="yosemite-valley/sector/ahwahnee-boulders">Ahwahnee Boulders</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/bridalveil">Bridalveil</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/camp-4">Camp 4</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/candyland">Candyland</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/cathedral-boulders">Cathedral Boulders</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/curry-village">Curry Village</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/curry-village">Curry village</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/happy-isles">Happy Isles</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/hapy-isles">Hapy Isles</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/highway-140-generator-boulders">Highway 140 Generator Boulders</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/housekeeping">Housekeeping</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/intersection">Intersection</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/riverside-block">Riverside Block</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/sentinel-boulders">Sentinel Boulders</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/the-crumbs">The Crumbs</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/the-crystals">The Crystals</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/the-garden">The Garden</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/unknown">Unknown</a>
+    </li>
+    
+    <li>
+      <a href="yosemite-valley/sector/woodyard">Woodyard</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "yosemite-valley_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPN8IFjGyNWZlKcgkLgm0j2"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Housekeeping</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOVKtWNCZGq-uXjU1KX0y1F"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Camp 4</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN0UVvFpkZHRUw2K6ZDeuoC"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

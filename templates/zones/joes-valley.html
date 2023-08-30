@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Joe's Valley  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Joe's Valley | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Joe's Valley 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="39.289613" />
+  <input type="hidden" id="lng" name="lng_val" value="-111.17789" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Joe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Joe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <div class="row pl-5 mb-3">
+    
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=0972160914&linkId=0047d8bf763b84e209a83e7e725393ea">
+      </iframe>
+    </div>
+   
+  </div>
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.mountainproject.com/area/105880382/joes-valley"
+        target="_blank"
+        >Mountain Project</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.lulu.com/shop/brian-koralewski/joes-valley-a-bouldering-guide-to-classic-moderates/paperback/product-24221487.html"
+        target="_blank"
+        >Joe’s Valley: A Bouldering Guide to Classic Moderates</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/crags/joe-s-valley-ut"
+        target="_blank"
+        >27 Crags</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/joes-valley"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="joes-valley/problem/all-you-sinners">All You Sinners, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/anatomy-act">Anatomy Act, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/antaeus">Antaeus, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/apple-bottom-jeans">Apple Bottom Jeans, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/arma">Arma, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/baldwin-bash">Baldwin Bash, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/barely-legal">Barely Legal, V11</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/beyond-life">Beyond Life, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/big-boy">Big Boy, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/big-cheesy">Big Cheesy, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/big-joe">Big Joe, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/boysize">Boysize, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/bring-the-heatwole">Bring the Heatwole, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/bubbatronic">Bubbatronic, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/champagne-supernova">Champagne Supernova, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/chips">Chips, V</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/contact">Contact, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/cook-the-patty">Cook the Patty, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/cook-the-patty">Cook the Patty, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/cosmos">Cosmos, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/counter-clockwork">Counter Clockwork, V11</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/crescent-moon">Crescent Moon, V2</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/cue-ball">Cue Ball, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/dark-continent">Dark Continent, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/death-scream">Death Scream, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/dirty-harry">Dirty Harry, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/double-delicious">Double Delicious, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/dungeon-master">Dungeon Master, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/dunkin-donuts-variation">Dunkin’ Donuts Variation, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/dyno-time-low">Dyno Time Low, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/eden">Eden, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/electric-fence">Electric Fence, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/entrance-exam">Entrance Exam, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/eurosize">Eurosize, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/external-tulips">External Tulips, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/fanstasy-factory">Fanstasy Factory, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/feels-like-grit">Feels Like Grit, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/fig-fart">Fig Fart, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/finger-hut">Finger Hut, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/fortune-cookie">Fortune Cookie, V3</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/foxy-whore">Foxy Whore, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/frosted-flakes">Frosted Flakes, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/g207">G207, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/ghost-king">Ghost King, V11</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/great-white">Great White, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/gurkha-knife">Gurkha Knife, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/hand-of-doom">Hand of Doom, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/heartless">Heartless, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/i-d-rather-be-climbing-her">I'd Rather Be Climbing Her, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/jarash">Jarash, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/jarash">Jarash, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/killa-bees">Killa Bees, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/kobra-khan">Kobra Khan, V4</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/kung-fu-theatre">Kung Fu Theatre, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/kung-fury">Kung Fury, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/loc-nar">Loc-Nar, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/low-tide">Low Tide, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/lumberjack">Lumberjack, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/mars-attacks">Mars attacks, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/master-po">Master Po, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/mono-e-mono">Mono E Mono, V4</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/mononoke">Mononoke, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/mr-duck">Mr. Duck, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/near-beers">Near Beers, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/nerve-extension">Nerve Extension, V10-</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/ninja-please">Ninja Please, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/no-substance">No Substance, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/north-arete">North Arete, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/o-face">O Face, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/pandemic">Pandemic, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/phony-baloney-traverse">Phony Baloney Traverse, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/pilot-light">Pilot Light, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/pitbull">Pitbull, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/planet-of-apes">Planet of Apes, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/playmate-of-the-year">Playmate of the Year, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/playtime-is-over">Playtime Is Over, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/pocket-rocket">Pocket Rocket, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/poricini-or-portabello">Poricini or Portabello, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/poseidon">Poseidon, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/projectile-dysfunction">Projectile Dysfunction, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/proppa-dyno">Proppa Dyno, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/rabbit-fur">Rabbit Fur, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/raiden">Raiden, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/rawhide">Rawhide, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/reduced-fat-milk">Reduced Fat Milk, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/renaissance-man">Renaissance Man, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/resident-evil">Resident Evil, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/rug-rat">Rug Rat, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/runt">Runt, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/spam">SPAM, V6-7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/scary-monsters">Scary Monsters, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/scrawny-and-brawny">Scrawny and Brawny, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/self-service">Self Service, V4</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/shaolin-slab">Shaolin Slab, V4</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/shark-bait">Shark Bait, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/smokin-joe">Smokin' Joe, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/speak-of-the-devil">Speak of the Devil, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/stand-up">Stand Up, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/stand-up-comedian">Stand Up Comedian, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/stir-the-pie">Stir The Pie, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/streaked">Streaked, V6+</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/sun-in-my-eye-traverse">Sun in My Eye Traverse, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/sunshine-daydream">Sunshine Daydream, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/superman">Superman, V4</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/team-effort">Team Effort, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-angler">The Angler, V2</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-coaster">The Coaster, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-dead-sea-aka-black-sea">The Dead Sea aka Black Sea, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-flu">The Flu, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-hulk">The Hulk, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/the-wind-below">The Wind Below, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/thor-s-hammer">Thor's Hammer, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/three-amigos">Three Amigos, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/trent-s-mom">Trent's Mom, V10</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/tubesnake-boogie">Tubesnake Boogie, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/vertical-ice">Vertical Ice, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/walrus">Walrus, V5</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/water-paintings">Water Paintings, V7</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/white-buffalo">White Buffalo, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/wills-afire">Wills Afire, V6</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/worst-case-scenario">Worst Case Scenario, V9</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/wrecking-ball">Wrecking Ball, V8</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/problem/zatoichi">Zatoichi, V8</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "joes-valley_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="joes-valley/sector/area-51">Area 51</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/cabin-fever">Cabin Fever</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/dairy-canyon">Dairy Canyon</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/left-fork">Left  Fork</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/left-fork">Left Fork</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/new-joe-s">New Joe's</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/right-fork">Right Fork</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/right-sign-area">Right Sign Area</a>
+    </li>
+    
+    <li>
+      <a href="joes-valley/sector/unknown">Unknown</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "joes-valley_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPmt4bcTlfBkihpHQ3LVw2l"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
