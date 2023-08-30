@@ -4,7 +4,7 @@ import json
 import utils.helpers
 import utils.zone_helpers
 import handle_channel_data
-from werkzeug.utils import secure_filename
+from slugify import slugify
 
 LINK_FIELD = 'link'
 NAME_FIELD = 'name'
@@ -40,13 +40,13 @@ def main():
         problems = utils.zone_helpers.get_problems_from_zone(area[ZONE_CODE_FIELD])
         problems.sort(key= lambda x: x['name'])
         for p in problems:
-            p['secure'] = secure_filename(p['name'])
+            p['secure'] = slugify(p['name'])
             
         # sectors
         sectors = utils.zone_helpers.get_sectors_from_zone(area[ZONE_CODE_FIELD])
         sectors.sort(key= lambda x: x)
 
-        template = template_env.get_template('templates/zone_layout.html')
+        template = template_env.get_template('templates/templates/area-layout.html')
         output = template.render(
             problems=problems,
             sectors=sectors,

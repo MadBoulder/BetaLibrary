@@ -362,6 +362,3 @@ def generate_download_url(area, filename):
     its download.
     """
     return '/download/' + area + '/' + filename
-
-
-if __name__ == '__main__':
