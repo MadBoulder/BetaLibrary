@@ -1,7 +1,7 @@
 import json
 import os
 import random
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, send_file
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -13,6 +13,7 @@ import utils.js_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
+import re
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -238,6 +239,16 @@ def upload_file():
 def upload_file_test():
     return render_template('upload.html')
 
+
+@app.route('/<string:sitemap_name>.xml')
+def sitemap_file(sitemap_name):
+    if re.match(r'sitemap(-\w+)?', sitemap_name):
+        print(sitemap_name)
+        sitemap_filename = f'{sitemap_name}.xml'   
+        return send_file(sitemap_filename, mimetype='application/xml')
+    else:
+        return "Invalid sitemap name"
+    
 
 @app.route('/random', methods=['GET', 'POST'])
 def random_zone():
