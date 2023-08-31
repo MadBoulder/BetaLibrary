@@ -14,6 +14,7 @@ import dashboard
 import dashboard_videos
 import handle_channel_data
 import re
+from slugify import slugify
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -356,7 +357,7 @@ def custom_statistics():
 @app.route('/<string:page>')
 def render_page(page):
     try:
-        video_count = get_zone_video_count(page)
+        video_count = get_zone_video_count(slugify(page))
         data = [
             #{
             #    'logo': 'fa fa-map-marked',
@@ -368,7 +369,7 @@ def render_page(page):
                 'text': _('Videos'),
                 'data': video_count
             }]
-        return render_template('zones/' + page + EXTENSION, current_url=page, stats_list=data)
+        return render_template('zones/' + slugify(page) + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
 
