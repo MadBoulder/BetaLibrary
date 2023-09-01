@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Buttermilk Country  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Buttermilk Country | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Buttermilk Country 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="37.328648" />
+  <input type="hidden" id="lng" name="lng_val" value="-118.575664" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Buttermilk Country
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Buttermilk Country
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.flashpress.net/"
+        target="_blank"
+        >Bishop Bouldering</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.wolverinepublishing.com/store/bishop-bouldering-select/"
+        target="_blank"
+        >Bishop Bouldering Select</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/crags/buttermilks"
+        target="_blank"
+        >27 Crags</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/buttermilk-country"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="buttermilk-country/problem/a-scanner-darkly">A Scanner Darkly, V12</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/ambrosia">Ambrosia, V11</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/birthday-direct">Birthday Direct, V3</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/bowling-pin">Bowling Pin, V4</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/bowling-pin">Bowling Pin, V6 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/buttermilk-stem">Buttermilk Stem, V4 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/change-of-heart">Change of Heart, V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/checkerboard">Checkerboard, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/cheezy-brit">Cheezy Brit, V7 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/cindy-swank">Cindy Swank, V7</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/cocktail-sauce">Cocktail Sauce, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/cocktail-sauce">Cocktail Sauce, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/croft-problem">Croft Problem, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/devoted">Devoted, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/drone-militia">Drone Militia, V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/evilution-to-the-lip">Evilution to the Lip, V10</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/flyboy">Flyboy, V8 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/flyboy-arete">Flyboy Arete, V5</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/get-carter">Get Carter, V7</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/gleaming-the-cube">Gleaming the Cube, V8 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/gleaming-the-cube">Gleaming the Cube, V5</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/gleaming-the-tube">Gleaming the Tube, V2</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/go-granny-go-right-finish">Go Granny Go Right Finish, V5</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/green-wall-center">Green Wall Center, V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/green-wall-essential">Green Wall Essential, V2</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/high-plains-drifter">High Plains Drifter, V7</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/iron-man-traverse">Iron Man Traverse, V4</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/jedi-mind-tricks">Jedi Mind Tricks, V4</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/judge-not">Judge Not, V9</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/junior-s-achievement">Junior's Achievement, V7-8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/lululator">Lululator, V8 (low)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/milk-the-milks">Milk the Milks, V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/mini-me">Mini Me, V9</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/moonraker">Moonraker, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/pain-grain">Pain Grain, V7 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/perfectly-chicken">Perfectly Chicken, V5</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/problem-3-boy-and-girl-rocks">Problem 3 (Boy and Girl Rocks), V0</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/robinson-s-rubber-tester">Robinson's Rubber Tester, V0</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/saigon">Saigon, V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/seven-spanish-angels-aka-the-ruckus">Seven Spanish Angels (aka The Ruckus), V6</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/solitaire">Solitaire, V8</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/soul-slinger">Soul Slinger, V9</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/stained-glass">Stained Glass, V10</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/suspended-in-silence">Suspended in Silence, V7</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/swanky">Swanky, V9 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/the-hunk">The Hunk, V2</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/the-mandala">The Mandala, V12</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/the-prow">The Prow, V2</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/this-side-of-paradise">This Side of Paradise, V9</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/unnamed-homeless-slab">Unnamed Homeless Slab, VB</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/xavier-s-roof">Xavier's Roof, V11</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/problem/zen-flute">Zen Flute, V10</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "buttermilk-country_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="buttermilk-country/sector/bardini-boulders">Bardini Boulders</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/buttermilk-s-main">Buttermilk s Main</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/buttermilks-main">Buttermilks Main</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/dale-s-camp">Dale's Camp</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/get-carter">Get Carter</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/get-carter-boulder">Get Carter Boulder</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/main">Main</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/peabody-boulders">Peabody Boulders</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/pollen-grains">Pollen Grains</a>
+    </li>
+    
+    <li>
+      <a href="buttermilk-country/sector/unknown">Unknown</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "buttermilk-country_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO6w9-UYqAzFuG7rcxk_0cs"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

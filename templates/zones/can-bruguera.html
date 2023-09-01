@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Can Bruguera  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Can Bruguera | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Can Bruguera 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.59212082176253" />
+  <input type="hidden" id="lng" name="lng_val" value="2.475067377090454" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Can Bruguera
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Can Bruguera
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="http://canbru.blogspot.com/"
+        target="_blank"
+        >canbru (Blog)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="http://boulderinbcn.blogspot.com/2013/10/blocs-can-bruguera-sectors-parking.html"
+        target="_blank"
+        >boulderingbcn (Guide)</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/can-bruguera"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="can-bruguera/problem/adsl-aplec-de-sardanistes-llavaneres">ADSL (Aplec De Sardanistes Llavaneres), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/abnegacio">Abnegació, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/absenta">Absenta, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/abstinencia">Abstinència, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/abstraccio">Abstracció, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/almorrana">Almorrana, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/alpha-blondy">Alpha Blondy, 8a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/anibal">Aníbal, 7c/+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/aresta-canalo">Aresta canaló, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/arribaba">Arribaba, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/atrofia-multisistemica">Atrofia multisistèmica, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/auschwitz-animal">Auschwitz animal, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/auschwitz-vegetal">Auschwitz vegetal, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/ayuno-intermitente">Ayuno intermitente, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/ball-de-rojos">Ball de Rojos, 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/bamboleo-la-polea">Bamboleo la polea, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/batalla-de-zama">Batalla de Zama, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/better-call-saulo">Better call sauló, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/big-fat">Big Fat, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/boferton">Bofertón, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/boulderking">Boulderking, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/caballo-maldito">Caballo maldito, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/cafeina">Cafeïna, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/callos-a-la-maresmenya">Callos a la Maresmenya, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/callos-a-la-maresmenya">Callos a la Maresmenya, 7a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/candado-chino">Candado chino, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/capitan-sangre-de-toro">Capitán Sangre de Toro, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/capitan-vladimir">Capitán Vladimir, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/cervicazo-latigal">Cervicazo Latigal, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/colico-anonimo">Colico anonimo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/contigo-caer-siempre-es-un-placer">Contigo caer siempre es un placer, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/costella-de-xai">Costella de xai, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/cotolengo-direct">Cotolengo direct, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/cous-cous-clan">Cous Cous Clan, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/cuentagotas">Cuentagotas, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/dersu-uzala">Dersu Uzala, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/dimitri">Dimitri, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/diposit-de-cadavers">Dipòsit de Cadàvers, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/django">Django, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/dos-de-coprolit">Dos de copròlit, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/double-tap">Double Tap, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/durkuek">Durkuek, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/durkuek">Durkuek, 7a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/durkuek-direct">Durkuek direct, 7c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-canuto">El Canuto, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-catxalot">El Catxalot, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-cervol">El Cérvol, 7a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-cervol">El Cérvol, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-despertar">El Despertar, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-gran-jb">El Gran JB, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-morro">El Morro, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-petit-jb">El Petit JB, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-port-ben-moll">El Port ben Moll, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-resplandor">El Resplandor, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-tribunal-de-la-haya">El Tribunal de la Haya, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-andamio">El andamio, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-borratxo">El borratxo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-buscador-de-xinxetes">El buscador de xinxetes, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-cami">El camí, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-cranc">El cranc, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-espantapajaros">El espantapájaros, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-globus-d-elio">El globus d'Elio, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-gorila-volador">El gorila volador, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-peregrino">El peregrino, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-retrovisor">El retrovisor, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-sardinita">El sardinita, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-timbal-de-llauna">El timbal de llauna, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/el-venedor-de-fum">El venedor de fum, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/empotra-i-puja">Empotra i puja, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/en-dique-seco">En Dique Seco, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/en-dique-recto">En dique recto, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/encegat">Encegat, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/eneatipo-7">Eneatipo 7, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/entre-tots">Entre tots, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/es-baixa-per-aqui">Es baixa per aquí, 4</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/escaleta">Escaleta, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/escaqueo-de-los-necios">Escaqueo de los necios, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/eucaliptus">Eucaliptus, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fa-hunter">FA Hunter, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/falocracia">Falocràcia, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/feeling-ratio">Feeling Ratio, 8b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fideua">Fideuà, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/final-fantasy">Final Fantasy, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fino-y-se-fue">Fino y se fue, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fissura-del-termita">Fissura del Termita, 6b+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fissura-del-termita">Fissura del Termita, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/fisura-y-romo">Fisura y Romo, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/francisco-fontaneda-samanta">Francisco Fontaneda Samanta, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/grano-angular">Grano angular, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/hemoal">Hemoal, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/humor-amarillo">Humor amarillo, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/javalee-spirit">JavaLee Spirit, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/jil-barril">Jil Barril, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/jil-al-halal">Jil al Halal, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/judas">Judas, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/juma-pardo">Juma Pardo, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/julia">Júlia, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/king-of-jambon">King of jambon, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/king-of-jambon-right">King of jambon Right, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/komando-basura">Komando Basura, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-ego">L'Ego, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-esperonaco">L'Esperonaco, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-essencia">L'Essència, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-arpo">L'arpó, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-esbudellador-de-canbru">L'esbudellador de Canbru, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-homo-plat">L'homo-plat, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/l-homo-plat-directe">L'homo-plat directe, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/lsd-la-sardana-direct">LSD (La Sardana Direct), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-benzinera">La Benzinera, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-bestia">La Bestia, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-bestia">La Bestia, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-flexadora">La Flexadora, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-frontissa">La Frontissa, 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-linea-de-la-vida">La Linea de la Vida, 7c+ (sit). Proposed 7c+/8a (sit) by maki.</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-princesa-de-ceilan">La Princesa de Ceilán, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-sibella">La Sibella, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-sika-yeye">La Sika yeye, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-boina">La boina, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-cara">La cara, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-gran-estafa">La gran estafa, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-isla-de-pederjil">La isla de Pederjil, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-llosa">La llosa, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-lluna">La lluna, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-motoserra">La motoserra, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-ola">La ola, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-palanca">La palanca, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-placa">La placa, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-trave-de-ponent">La trave de Ponent, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/la-via-del-covard">La via del covard, 7a+ </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/lago-combambas">Lago Combambas, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/latigazo-cervical">Latigazo Cervical, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/le-boule">Le boule, 6c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/le-boule">Le boule, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/le-porsche-parisien">Le porsche parisien, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/le-temps-des-cerises">Le temps des cerises, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/litofag">Litofag, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/los-mundos-de-yupi">Los mundos de Yupi, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/magique-latrine">Magique latrine, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/malditos-bastardos">Malditos bastardos, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/mantelitzat">Mantelitzat, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/masnou-crew">Masnou Crew, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/minimalista">Minimalista, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/miseria-i-companyia">Misèria i Companyia, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/mito-sonde">Mito sonde, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/moby-dick">Moby Dick, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/monsieur-bisone">Monsieur Bisoñé, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/morralla-china">Morralla China, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/mr-potato">Mr. Potato, ?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/mugrons-de-iaia">Mugrons de iaia, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/muralla-xina">Muralla Xina, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/magia-blanca">Màgia Blanca, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/magia-borras">Màgia Borràs, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/magia-negra">Màgia Negra, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/nach">Nach, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/nachos-con-guacamole">Nachos con Guacamole, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/nicotina">Nicotina, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/okhet-on-thosoi">Okhêt on thosoï, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/padre-he-picado">Padre, he picado, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/paellador">Paellador, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/palomo-cojo">Palomo cojo, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/pare-onofre">Pare Onofre, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/parkinson">Parkinson, 6c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/parkinson">Parkinson, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/perros-de-la-noche">Perros de la noche, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-bloc-del-cami">Problem 1 (Bloc del Camí), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-boulder-1-roc-de-l-avi">Problem 1 (Boulder 1, Roc de l'Avi), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-l-entrada">Problem 1 (L'entrada), 6a+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-la-fissura">Problem 1 (La Fissura), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-secretaria">Problem 1 (Secretaria), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-1-summerhill">Problem 1 (Summerhill), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-11-parking">Problem 11 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-11-summerhill">Problem 11 (SummerHill), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-12-cova-del-8">Problem 12 (Cova del 8), 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-12-parking">Problem 12 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-12-summerhill">Problem 12 (SummerHill), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-12-termita">Problem 12 (Termita), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-13-parking">Problem 13 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-13-summerhill">Problem 13 (SummerHill), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-13-termita">Problem 13 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-14-durkuek">Problem 14 (Durkuek), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-14-parking">Problem 14 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-15-muralla-xina">Problem 15 (Muralla Xina), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-15-parking">Problem 15 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-15-termita">Problem 15 (Termita), 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-16-muralla-xina">Problem 16 (Muralla Xina), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-16-parking">Problem 16 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-17-parking">Problem 17 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-17-termita">Problem 17 (Termita), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-19-durkuek">Problem 19 (Durkuek), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-19-parking">Problem 19 (Parking), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-bloc-del-cami">Problem 2 (Bloc del Camí), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-boulder-1-roc-de-l-avi">Problem 2 (Boulder 1, Roc de l'Avi), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-cous-cous-clan">Problem 2 (Cous Cous Clan), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-l-entrada">Problem 2 (L'entrada), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-la-fissura">Problem 2 (La Fissura), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-miseria">Problem 2 (Misèria), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-muralla-xina">Problem 2 (Muralla Xina), 6a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-rascant-grau">Problem 2 (Rascant Grau), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-summerhill">Problem 2 (Summerhill), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-2-termita">Problem 2 (Termita), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-20-parking">Problem 20 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-cova-del-8">Problem 21 (Cova del 8), 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-durkuek">Problem 21 (Durkuek), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-parking">Problem 21 (Parking), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-secretaria">Problem 21 (Secretaria), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-termita">Problem 21 (Termita), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-21-cova-del-8">Problem 21' (Cova del 8), 4</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-22-durkuek">Problem 22 (Durkuek), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-22-secretaria">Problem 22 (Secretaria), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-22-termita">Problem 22 (Termita), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-22-left-termita">Problem 22 Left (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-24-termita">Problem 24 (Termita), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-25-cova-del-8">Problem 25 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-25-durkuek">Problem 25 (Durkuek), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-25-parking">Problem 25 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-25-termita">Problem 25 (Termita), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-26-parking">Problem 26 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-26-termita">Problem 26 (Termita), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-27-parking">Problem 27 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-27-termita">Problem 27 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-28-parking">Problem 28 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-29-parking">Problem 29 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-bloc-del-cami">Problem 3 (Bloc del Camí), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-boulder-1-roc-de-l-avi">Problem 3 (Boulder 1, Roc de l'Avi), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-la-fissura">Problem 3 (La Fissura), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-miseria">Problem 3 (Misèria), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-muralla-xina-6a">Problem 3 (Muralla Xina), 6a, 6a?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-parking">Problem 3 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-secretaria">Problem 3 (Secretaria), 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-termita">Problem 3 (Termita), 4</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-termita">Problem 3 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-directe-miseria">Problem 3 Directe (Misèria), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-3-extension-termita-6a">Problem 3 Extension (Termita), 6a, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-30-parking">Problem 30 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-30-parking">Problem 30 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-30a-durkuek">Problem 30a (Durkuek), 5+?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-30b-durkuek">Problem 30b (Durkuek), 5?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-31-parking">Problem 31 (Parking), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-32-cova-del-8">Problem 32 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-32-durkuek">Problem 32 (Durkuek), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-32-termita">Problem 32 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-33-cova-del-8">Problem 33 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-33-durkuek">Problem 33 (Durkuek), 4</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-33-termita">Problem 33 (Termita), 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-35b-durkuek">Problem 35b (Durkuek), 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-36-termita">Problem 36 (Termita), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-38-termita">Problem 38 (Termita), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-39-cova-del-8">Problem 39 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-39-durkuek">Problem 39 (Durkuek), 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-4-bloc-del-cami">Problem 4 (Bloc del Camí), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-4-boulder-1-roc-de-l-avi">Problem 4 (Boulder 1, Roc de l'Avi), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-4-secretaria-5">Problem 4 (Secretaria), 5, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-40-cova-del-8">Problem 40 (Cova del 8), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-40-durkuek">Problem 40 (Durkuek), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-41-cova-del-8">Problem 41 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-42-cova-del-8">Problem 42 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-43-cova-del-8">Problem 43 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-43-durkuek">Problem 43 (Durkuek), 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-44-durkuek">Problem 44 (Durkuek), 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-45-durkuek">Problem 45 (Durkuek), 4+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-45-cova-del-8">Problem 45' (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-46-durkuek">Problem 46 (Durkuek), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-47-cova-del-8">Problem 47 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-47-durkuek">Problem 47 (Durkuek), 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-48-durkuek">Problem 48 (Durkuek), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-5-boulder-1-roc-de-l-avi">Problem 5 (Boulder 1, Roc de l'Avi), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-5-cova-del-8">Problem 5 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-5-secretaria">Problem 5 (Secretaria), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-5-termita">Problem 5 (Termita), 3+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-5-secretaria">Problem 5' (Secretaria), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-51-durkuek">Problem 51 (Durkuek), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-52-durkuek">Problem 52 (Durkuek), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-52-sit-durkuek">Problem 52 sit (Durkuek), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-54-cova-del-8">Problem 54 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-54-durkuek-5">Problem 54 (Durkuek), 5, 5 (sit) </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-55-cova-del-8">Problem 55 (Cova del 8), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-55-durkuek-5">Problem 55 (Durkuek), 5+, 5+ (sit) </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-58-durkuek-5">Problem 58 (Durkuek), 5+, 5+ </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-59-durkuek">Problem 59' (Durkuek), Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-6-secretaria">Problem 6 (Secretaria), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-6-termita">Problem 6 (Termita), 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-7-summerhill">Problem 7 (SummerHill), 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-7-termita">Problem 7 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-70-durkuek">Problem 70 (Durkuek), 6b?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-71-durkuek">Problem 71 (Durkuek), 5?</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-8-summerhill">Problem 8 (SummerHill), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/problem-8-termita">Problem 8 (Termita), 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/rebuenas-prime">Rebuenas Prime, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/rebuenas-en-la-guantera">Rebuenas en la guantera, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/redireccio">Redirecció, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/requiem-por-un-romo">Requiem por un romo, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/revuelta-en-el-frenopatico">Revuelta en el frenopatico, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/romotrip">Romotrip, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/rummikub">Rummikub, 7c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sant-velcro">Sant Velcro, 7b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sauna-pilates">Sauna Pilates, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/se-te-va-la-pinza">Se te va la pinza, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sin-chinchetas-no-hay-paraiso">Sin chinchetas no hay paraiso, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sit-jail">Sit Jail, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sputnik">Sputnik, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/succionador-de-ments">Succionador de ments, 7a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/sindrome-de-shreck">Síndrome de Shreck, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/tajats-de-donsi">Tajats de Donsi, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/taratatxan">Taratatxan!, 6b</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/teina">Teïna, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/thunder-spirit">Thunder Spirit, 6c</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/titan-clan">Titàn Clan, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/trave-de-durkuek">Trave de Durkuek, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/trave-de-termita">Trave de Termita, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/vidrier-de-sants-project">Vidrier de Sants Project, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/villa-bugatti">Villa Bugatti, 6a+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/vivo-en-un-container">Vivo en un container, 5+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/wu-wei">Wu Wei, 5</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/yo-ho-ho">Yo Ho Ho, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/zippo">Zippo, 6a</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/problem/edip-de-cami">Èdip de camí, Unknown</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "can-bruguera_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="can-bruguera/sector/cova-del-8">Cova del 8</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/cova-del-8">Cova del 8 </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/durkuek">Durkuek</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/miratges">Miratges</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/muralla-xina">Muralla Xina</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/muralla-xina">Muralla Xina </a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/magia-blanca">Màgia Blanca</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/magic-blanca">Màgic Blanca</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/parking">Parking</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/roc-de-l-avi">Roc de l'Avi</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/santa-monica">Santa Monica</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/secretaria">Secretaria</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/summerhill">SummerHill</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/summerhill">Summerhill</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/termita">Termita</a>
+    </li>
+    
+    <li>
+      <a href="can-bruguera/sector/vall-de-cogombres">Vall de Cogombres</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "can-bruguera_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNoug_nCL7ixidEwjjSAM30"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Santa Monica</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN6ZsXUObP6OKfbqr3uIQht"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Roc de l'Avi</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNwaVxIU8OM8exoi-xDYpoH"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Vall de Cogombres</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP8SLOIEAG1VGcjo7RavAq0"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Secretaria</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPGZfjrBEUN05OouxwzTn_j"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Miratges</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOCUfN4seRLNJPDL4lypLDf"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Parking</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMnBWU8MZfB-m5GBMdhhhXy"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Muralla Xina</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOJ0GxBpV5wICdAm4L9vEMh"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Màgia Blanca</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOK8HS1XcY6aZPIpJ-wuplO"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Summerhill</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNEBFYdj6LAcE9FLjG-c4KK"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Termita</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNuD60ZaFB01vBB5Uebw4DV"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Cova del 8</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnND1DZa9mp27uOmC4b5cXtC"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Durkuek</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPn9ru9cZ4j_M-DBsoahSjG"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

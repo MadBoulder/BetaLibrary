@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Red Rocks  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Red Rocks | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Red Rocks 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="36.13129" />
+  <input type="hidden" id="lng" name="lng_val" value="-115.42453" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Red Rocks
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Red Rocks
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.snellpress.com/snbii"
+        target="_blank"
+        >Southern Nevada Bouldering II (Guide)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.amazon.com/Vegas-Bouldering-2008-Seth-Robinson/dp/0979264448"
+        target="_blank"
+        >Vegas Bouldering 2008 Edition (Guide)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/areas/red-rocks"
+        target="_blank"
+        >27 Crags</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/red-rocks"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="red-rocks/problem/adder-stone">Adder Stone, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/alexisizer">Alexisizer, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/angel-dyno">Angel Dyno, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/anthem">Anthem, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/astronomy">Astronomy, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/b-ch-slap-5">B**ch Slap 5, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/b-ch-slap-left">B**ch Slap Left, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/book-of-nightmares">Book of Nightmares, V11</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/bubble-butt">Bubble Butt, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/buried-alive">Buried Alive, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/campus-problem">Campus problem, V5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/carapace">Carapace, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/cocaine-biceps">Cocaine Biceps, V4-5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/cutters">Cutters, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/divergent-spectrum">Divergent Spectrum, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/down-the-line">Down the Line, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/drunken-monkey">Drunken Monkey, V8 (low)</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/drunken-monkey">Drunken Monkey, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/elaine">Elaine, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/family-feud">Family Feud, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/fear-of-a-black-hat">Fear of a Black Hat, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/freedom-fighter">Freedom Fighter, V7 (sit)</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/george">George, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/heat">Heat, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/in-our-time">In Our Time, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/innocent-exile">Innocent Exile, V12</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/jabberwockey">Jabberwockey, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/jerry">Jerry, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/king-troll">King Troll, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/kraft-dinner-right">Kraft Dinner Right, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/margin-of-error">Margin of Error, V10/11</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/meadowlark-lemon-stand">Meadowlark Lemon Stand, V13</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/memento-vitae">Memento Vitae, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-bar-direct">Monkey Bar Direct, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-bar-right">Monkey Bar Right, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-bar-traverse">Monkey Bar Traverse, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-trench">Monkey Trench, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-trench">Monkey Trench, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-wrench">Monkey Wrench, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/monkey-s-uncle">Monkey's Uncle, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/mr-moran">Mr Moran, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/mr-smiley">Mr. Smiley, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/natasha-s-highball">Natasha's Highball, V2</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/nut-dragger">Nut Dragger, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/ode-to-the-modern-mayor">Ode to the Modern Mayor, V9-</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/oompa-loompa">Oompa Loompa, V5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/orange-top-blue-sky">Orange Top Blue Sky, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/peruvian-flake">Peruvian Flake, V2</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/picasso">Picasso, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/potato-chips">Potato Chips, V2</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/pounding-sand">Pounding Sand, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/purple-haze">Purple Haze, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/red-wave">Red Wave, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/right-face">Right Face, V6-7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/sad-robot">Sad Robot, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/salt-is-salty">Salt is Salty, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/scare-tactics-direct">Scare Tactics Direct, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/scare-tactics-right">Scare Tactics Right, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/sorange">Sorange, V3</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/spittin-venom">Spittin Venom, V8-9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/sponge-worthy">Sponge Worthy, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/spring-loaded">Spring Loaded, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/square-arete">Square Arete, V6-7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/stake-your-claim">Stake Your Claim, V10</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-abstraction">The Abstraction, V8</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-dirty-rail">The Dirty Rail, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-fountainhead">The Fountainhead, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-harp">The Harp, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-high-road">The High Road, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-pearl">The Pearl, V5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-prowler">The Prowler, V5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-red-dragon">The Red Dragon, V7</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-shining-path">The Shining Path, V12</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/the-wave">The Wave, V63</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/thot-provoking">Thot Provoking, V5</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/thuggish-ruggish">Thuggish Ruggish, V11</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/tickle-pickle">Tickle Pickle, V4</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/tilt-shift">Tilt Shift, V9</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/tornado">Tornado, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/urban-fervor">Urban Fervor, V8 (low)</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/vino-rojo">Vino Rojo, V6</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/wasted-ape">Wasted Ape, V10-</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/problem/welcome-to-detroit">Welcome to Detroit, V5-</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "red-rocks_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="red-rocks/sector/black-velvet-canyon">Black Velvet Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/calico-basin">Calico Basin</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/calico-basin-boulders">Calico Basin Boulders</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/first-creek-canyon">First Creek Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/first-pullout">First Pullout</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/first-pullout">First Pullout </a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/gateway-canyon">Gateway Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/kraft-boulders">Kraft Boulders</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/mustang-canyon">Mustang Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/oak-creek">Oak Creek</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/oak-creek-canyon">Oak Creek Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/oak-tree-canyon">Oak Tree Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/oak-creeck-canyon">Oak creeck Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/pine-creek-canyon">Pine Creek Canyon</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/red-spring">Red Spring</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/unknown">Unknown</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/white-rock-spring">White Rock Spring</a>
+    </li>
+    
+    <li>
+      <a href="red-rocks/sector/willow-springs">Willow Springs</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "red-rocks_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMaNraSNMP_M5vLmXHOUzJL"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>White Rock Spring</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO0pjO9uLLIxm4wlPauSP3i"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Gateway Canyon</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOFH1R1yT22FWvFNp5DCeNh"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Red Spring</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOz79LCz3EKToHXfUWsCHKx"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Kraft Boulders</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNnafJ6zWlvf-NzN3H9zd2-"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>First Pullout</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNxMZmeMF45eSol6quAH8xz"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Calico basin</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNb5lwAPhu_pSu7gy9F66iW"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Black Velvet Canyon</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOI-SC8pFr6vmNfh2aDhIOr"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

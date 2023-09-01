@@ -111,32 +111,6 @@ def zoom_on_click(map_html, map_name, marker_name, zoom_level):
     return map_html[:script_tag_position] + code_to_inject + map_html[script_tag_position:]
 
 
-def replace_custom_placeholders(map_html, placeholders):
-    """
-    This method replaces the custom defined placeholders by jinja's
-    default variable placeholders ({{var_name}}). A method is defined
-    for this because when adding custom html (via folium.Html) to the already 
-    folium generated html it gets executed and the curly braces are lost.
-    After that, the specified variables in the template are no longer
-    recognized and the values are not updated. 
-    """
-    placeholders.sort(key=lambda s: len(s))
-    placeholders.reverse()
-    for placeholder in placeholders:
-        variable = placeholder.replace(PLACEHOLDER, '')
-        map_html = map_html.replace(placeholder, '{{'+variable+'}}')
-    return map_html
-
-
-def replace_sectors_placeholders_for_translations(map_html, sector_placeholder='sector_placeholder'):
-    """
-    Replace the sector's text placeholder in the HTML by the localized string.
-    This is to avoid the render() function throwing an error when processing the map's html
-    """
-    map_html = map_html.replace(sector_placeholder, '{{ _("Sectors") }}')
-    return map_html
-
-
 def replace_approx_placeholders_for_translations(map_html, approx_placeholder='approx_placeholder'):
     """
     Replace the sector's text placeholder in the HTML by the localized string.
@@ -147,7 +121,7 @@ def replace_approx_placeholders_for_translations(map_html, approx_placeholder='a
     return map_html
 
 
-def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
+def generate_area_popup_html(area_name, area_code, area_videos):
     """
     Generate the html code tat shows the zone name and a link
     to the page, as well as the number of videos of the zone
@@ -156,8 +130,7 @@ def generate_area_popup_html(area_name, area_filename, redirect, placeholder):
     placeholder indicator. This value will be replaced by the number
     of beta videos when rendering the pop up
     """
-    sector_count = utils.helpers.count_sectors_in_zone(area_name)
-    return '<p><a href="'+'/'+redirect+'"target="_blank">'+area_name+'</a></p><p>Beta Videos: '+placeholder+'</p>'
+    return '<p><a href="'+'/'+area_code+'"target="_blank">'+area_name+'</a></p><p>Beta Videos: '+ str(area_videos) +'</p>'
 
 
 def remove_geojson_zoom_on_click(map_html):

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Joshua Tree  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Joshua Tree | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Joshua Tree 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="34.018876" />
+  <input type="hidden" id="lng" name="lng_val" value="-116.167611" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Joshua Tree
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Joshua Tree
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.wolverinepublishing.com/store/joshua-tree-bouldering/"
+        target="_blank"
+        >Joshua Tree Bouldering</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.mountainproject.com/area/106098051/joshua-tree-bouldering"
+        target="_blank"
+        >Mountain Project</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/areas/joshua-tree"
+        target="_blank"
+        >27 Crags</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/joshua-tree"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="joshua-tree/problem/4-star-dyno">4-Star Dyno, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/alexandria">Alexandria, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/any-name-but-sue">Any Name But Sue, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/betty-jo-yablonski">Betty Jo  Yablonski, V0</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/bittersweet">Bittersweet, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/blood-diamond">Blood Diamond, V10</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/body-and-soul">Body and Soul, V5</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/broken-flowers">Broken Flowers, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/broken-flowers">Broken Flowers, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/caveman">Caveman, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/caveman-finish">Caveman Finish, V3</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/chasm-gasm">Chasm Gasm, V3</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/chili-sauce">Chili Sauce, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/claude-funstun">Claude Funstun, V5</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/dab-rig">Dab Rig, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/dark-matter">Dark Matter, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/digital-black">Digital Black, V10</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/dodging-bullets">Dodging Bullets, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/doesn-t-matter">Doesn't Matter, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/dream-sequence">Dream Sequence, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/dreaming-of-the-master">Dreaming of the Master, V8</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/false-hueco-traverse">False Hueco Traverse, V2</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/false-hueco-traverse">False Hueco Traverse, V2</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/false-up-20">False Up 20, V0</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/finger-fetish">Finger Fetish, V8</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/flight-attendant">Flight Attendant, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/igneous-ambiance">Igneous Ambiance, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/k-d-supreme">K.D. Supreme, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/lost-and-found">Lost and Found, V8</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/meadows-direct">Meadows Direct, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/nicole-face">Nicole Face, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/nicole-overhang">Nicole Overhang, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/penguins-in-bondage">Penguins in Bondage, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/planet-x">Planet X, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/poop-emoji">Poop Emoji, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/psyche">Psyche, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/pumping-monzonite">Pumping Monzonite, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/rail-shark">Rail Shark, V11</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/raspberry">Raspberry, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/ryan-s-roof">Ryan's roof, V5</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/saturday-night-live">Saturday Night Live, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/saxwing-on-the-dl">Saxwing on the DL, V5</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/scatterbrain">Scatterbrain, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/scorpion-roof">Scorpion Roof, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/skimbles">Skimbles, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/slashface">Slashface, V3</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/so-high">So High, V5</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/strawberry-contraceptives">Strawberry Contraceptives, V7</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/the-heart">The Heart, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/the-inquisition">The Inquisition, V6</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/the-love-machine">The Love Machine, V10</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/the-yogi">The Yogi, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/thin-lizzie">Thin Lizzie, V8</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/tidal-wave">Tidal Wave, V9</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/up-40">Up 40, V3</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/vicarious">Vicarious, V10</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/white-rastafarian">White Rastafarian, V2</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/yabo-roof-traverse">Yabo Roof Traverse, V4</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/problem/youth-body-explosion">Youth Body Explosion, V11</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "joshua-tree_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="joshua-tree/sector/central">Central</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/central-lonesome-crowded-west">Central - Lonesome Crowded West</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/central-planet-x">Central - Planet X</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/hidden-valley">Hidden Valley</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/lost-horse">Lost Horse</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/quail-springs">Quail Springs</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/queen-valley">Queen Valley</a>
+    </li>
+    
+    <li>
+      <a href="joshua-tree/sector/unknown">Unknown</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "joshua-tree_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnON7Nao1yrfaMQgwJ-4Eogu"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

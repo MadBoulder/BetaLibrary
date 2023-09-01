@@ -1,5 +1,5 @@
 import json
-from werkzeug.utils import secure_filename
+from slugify import slugify
 import handle_channel_data
 
 
@@ -66,7 +66,7 @@ def get_problem_name(problem_data):
 def get_problems_from_sector(problems_zone, sector_code):
     problems = []
     for p in problems_zone:
-        if secure_filename(p['sector']) == sector_code:
+        if slugify(p['sector']) == sector_code:
             problems.append(p)
 
     return problems
@@ -82,7 +82,7 @@ def get_sectors_from_zone(zone_code):
                 alreadyAdded=True
                 break
         if not alreadyAdded:
-            sectors.append([p['sector'], secure_filename(p['sector'])])
+            sectors.append([p['sector'], slugify(p['sector'])])
             
     if len(sectors) == 1:
         if sectors[0] == "Unknown":
@@ -95,7 +95,7 @@ def get_playlist_url_from_sector(zone_code, sector):
     playlists = get_playlists_url_from_zone(zone_code)
     if 'sectors' in playlists:
         for playlist in playlists['sectors']:
-            if secure_filename(playlist['name']) == sector:
+            if slugify(playlist['name']) == sector:
                 return playlist['url']
     return None
     

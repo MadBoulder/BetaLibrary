@@ -3,7 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
 import handle_channel_data
-from werkzeug.utils import secure_filename
+from slugify import slugify
 
 
 def main():
@@ -30,25 +30,25 @@ def main():
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
             for p in problems:
-                p['secure'] = secure_filename(p['name'])
+                p['secure'] = slugify(p['name'])
             video_url = ""
             if 'sectors' in zone:
                 for s in zone['sectors']:
-                    if sector[1] == s['name']:
+                    if sector[1] == slugify(s['name']):
                         video_url = s['url']
             template = template_env.get_template(
-                'templates/sector_layout.html')
+                'templates/templates/sector-layout.html')
             output = template.render(
                 zone_code=zone_code,
+                zone_name=zone['name'],
                 sector=sector,
                 problems=problems,
-                video_url=video_url,
-                layout_css='../../../static/css/layout.css'
+                video_url=video_url
             )
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')
 
-            with open(f'templates/sectors/{zone_code}/{sector[1]}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/sectors/{zone_code}/{slugify(sector[1])}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 

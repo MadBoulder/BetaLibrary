@@ -1,0 +1,2841 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  La Pedriza  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in La Pedriza | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             La Pedriza 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="40.749967285307875" />
+  <input type="hidden" id="lng" name="lng_val" value="-3.8962348707185583" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      La Pedriza
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      La Pedriza
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <div class="row pl-5 mb-3">
+    
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+      </iframe>
+    </div>
+   
+  </div>
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.instagram.com/pedrizaboulder/"
+        target="_blank"
+        >Instagram</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://pedrizaguidebooks.com/"
+        target="_blank"
+        >Pedriza Boulder</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://lapedrizaguiadebloque.webnode.es/"
+        target="_blank"
+        >La Pedriza Guía de Boque (Guide)</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/la-pedriza"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="la-pedriza/problem/a-verlas-venir">A verlas venir, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/aceleradores-punter">Aceleradores Punter, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/adios-nonino">Adiós Nonino, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/adriansito-morales">Adriansito Morales, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/advantage">Advantage, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/air">Air, 7c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/alligator">Alligator, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/amandarla">Amandarla, 8A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ano-bipolar">Ano Bipolar, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arena-mix">Arena Mix, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/argos">Argos, 7c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-hornli">Arista Hörnli, 5A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-tafraoute">Arista Tafraoute, 5B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-de-la-derecha">Arista de la Derecha, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-de-la-praderita">Arista de la Praderita, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-del-ahorcado">Arista del Ahorcado, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-del-diedro">Arista del Diedro, 5+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arista-del-tranvia">Arista del Tranvía, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ariston-el-es">Aristón Él Es, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/arroitatostegui">Arroitatostegui, 7C+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/babalum">Babalum, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/bavaremen">Bavaremen, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/bloque-del-chuuulo">Bloque del Chuuulo, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/bloque-del-chuuulo">Bloque del Chuuulo, 7A (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/boulder-de-la-pradera">Boulder de la Pradera, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/breaktime">Breaktime, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/bully-the-peich">Bully the Peich, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/cagando-melodias">Cagando Melodías, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/caligula">Calígula, 7C+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/caligula">Calígula, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/canchirlazo">Canchirlazo, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/caida-en-cuesta">Caída en Cuesta, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ceguera-temporal">Ceguera Temporal, 7c (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ceja-de-choc">Ceja de Choc, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/chino-todo-a-cien">Chino Todo A Cien, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/chorrohumo">Chorrohumo, 8a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/chuloxmanie">Chuloxmanie, 7A+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/clint-eastwood-directo">Clint Eastwood Directo, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/cobra-gay">Cobra Gay, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/coliseum">Coliseum, 7B+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/comando-comando">Comando - Comando, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/conflictos-personales">Conflictos Personales, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/cuna-de-hormigas">Cuña de Hormigas, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ce-pequenho">Cé Pequenho, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/delta-5">Delta 5, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/derecha-del-exploited">Derecha del Exploited, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/derecha-del-pupilo">Derecha del Pupilo, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/desde-la-profundidades">Desde la Profundidades, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/desplome-del-diedro">Desplome del Diedro, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/doberman-direct">Doberman Direct, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/doble-helice">Doble Hélice, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/dodo-s-delight">Dodo's Delight, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/dos-hombres-y-un-destino">Dos Hombres y un Destino, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/dos-patatas">Dos Patatas, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/dramas-y-comedias">Dramas y Comedias, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/drive">Drive, 8a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/edad-de-piedra">Edad de Piedra, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-alquimista">El Alquimista , 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-bloque-sharmatico">El Bloque Sharmático, 7b (with rock)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-bueno">El Bueno, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-burberries">El Burberries, 7b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-buscamigas">El Buscamigas, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-caballito-de-mar">El Caballito de Mar, 4A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-caiman">El Caimán, 7C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-caracol">El Caracol, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-cazo-roto">El Cazo Roto, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-coleccionista-de-yemas">El Coleccionista de Yemas, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-corazon">El Corazón, 4A (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-desplome-arenoso">El Desplome Arenoso, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-dique">El Dique, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-duelo">El Duelo, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-dia-del-juicio">El Día del Juicio, 7B+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-escaqueo">El Escaqueo, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-facil">El Fácil, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-irritador">El Irritador, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-jardin-de-mi-casa">El Jardín de mi Casa, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-lebrel">El Lebrel, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-murito">El Murito, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-palmero">El Palmero, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-palmero-de-estepona">El Palmero de Estepona, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-pescador-filo-del-grizzly">El Pescador/Filo del Grizzly, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-recto">El Recto, 6B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-salami">El Salami, 4A (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-secreto-de-broncano">El Secreto de Broncano, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-serbal-de-los-cazadores">El Serbal de los Cazadores, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-talador">El Talador, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-tiburon">El Tiburón, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-tridedo">El Tridedo, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-viajero">El Viajero, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-virus">El Virus, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-volao">El Volao, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-yugo">El Yugo, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-abominable">El abominable, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-de-la-cueva">El de la Cueva, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-de-la-laja">El de la Laja, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-de-la-rampa">El de la Rampa, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-de-las-balmas">El de las Balmas, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-del-dinamico">El del Dinámico, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-gorila">El gorila, 8a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-hechicero">El hechicero, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-intocable">El intocable, 7C+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-matiz">El matiz, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-pintamonas">El pintamonas, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/el-arbol-del-ahorcado">El Árbol del Ahorcado, 7b+ (dyno)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/elliot">Elliot, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/elvira-se-frota">Elvira se Frota, 7C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/elvis">Elvis, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/en-verga-dura">En Verga Dura, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/everlast">Everlast, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/far-west">Far West, 8a (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/feliz-falsedad">Feliz Falsedad, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/filo-del-cabras">Filo del Cabras, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/filo-del-frances">Filo del Francés, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/filo-del-tranvia">Filo del Tranvía, 6C (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/filo-del-yugo">Filo del Yugo, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/fisura-de-la-helice">Fisura de la Hélice, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/gases-lacrimogenos">Gases Lacrimógenos, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/grizzly-el-belen">Grizzly/El Belén, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/groucho">Groucho, 7C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/haiku">Haiku, 7C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/hala">Hala, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/huesit-directo">Huesit Directo, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/huracan-jara">Huracán Jara, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/i-want-to-believe">I Want To Believe, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/into-the-wild">Into the Wild, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/izquierda-hampi">Izquierda Hampi, 6B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/izquierda-los-problemas">Izquierda Los Problemas, 6B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/jaras-todas">Jaras Todas, 4C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/jorgeline">Jorgeline, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/katalefas">Katalefas, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/kembara">Kembara, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/krusty-el-payaso">Krusty el Payaso, 7B (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-ardilla-directo">La Ardilla Directo, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-arista">La Arista, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-arista-bajita">La Arista Bajita, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-boleadora-awesome">La Boleadora/Awesome, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-caperuza">La Caperuza, 7b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-china">La China, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-cornisa-cantabrica">La Cornisa Cantábrica, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-cueva-negra">La Cueva Negra, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-directa">La Directa, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-fisura">La Fisura, 5C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-gran-atalaya">La Gran Atalaya, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-laja-roja">La Laja Roja, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-monteria">La Montería, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-morena">La Morena, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-oruga-el-garbancito">La Oruga / El Garbancito, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-porche">La Porche, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-rana-cosmica">La Rana Cósmica, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-sonrisa">La Sonrisa, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-verdad-esta-ahi-fuera">La Verdad esta ahí Fuera, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-vira">La Vira, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-vagina-esquizofrenica">La vagina esquizofrenica, 7c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/la-ultima-ganga-en-paris">La Última Ganga en Paris, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/lance-de-la-cornisa">Lance de la Cornisa, 6b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/lance-del-manglar">Lance del Manglar, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/las-marias-fontaneda">Las Marías Fontaneda, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/los-alcalinos">Los Alcalinos, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/los-escaqueados">Los Escaqueados, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/los-guerreros-de-la-libertad-total">Los Guerreros de la Libertad Total, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/los-martinez">Los Martínez, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/magic-morgan">Magic Morgan, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/manga-larga">Manga Larga, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-anuar">Mantle Anuar, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-naranja">Mantle Naranja, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-verde">Mantle Verde, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-del-la-oruga">Mantle del La Oruga, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-del-musgo">Mantle del Musgo, 6B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mantle-del-roble">Mantle del Roble, 6B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/manzanitos-flow">Manzanitos Flow, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/maracanazo">Maracanazo, 7A (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/marco">Marco, 6C+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/mecanica-celeste">Mecánica Celeste, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/meetic">Meetic, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/melancolia">Melancolía, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/melocotonazo">Melocotonazo, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/musgoevash">Musgoevash, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/nariz-picassiana">Nariz Picassiana, 7B+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/nautilus">Nautilus, 7b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ninja-high-school">Ninja High School, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/panetonne">Panetonne, 7B (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/panoramix">Panoramix, 6C+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pequeno-dalton">Pequeño Dalton, 7A (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pi">Pi, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pin-y-pon-techo-del-gorila">Pin y pon/Techo del Gorila, 8B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-infinita">Placa Infinita, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-mix">Placa Mix, 6A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-punk">Placa Punk, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-tonin">Placa Toñín, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-de-georgio">Placa de Georgio, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-de-la-chorrera">Placa de la Chorrera, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-de-la-mamada">Placa de la Mamada, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-de-las-conchas">Placa de las Conchas, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-de-los-chorreras">Placa de los Chorreras, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-del-diedro">Placa del Diedro, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/placa-del-roble">Placa del Roble, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/plan-b">Plan B, 7A+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pleistoceno">Pleistoceno, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pontos">Pontos, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/prosciutto-iberico">Prosciutto Ibérico, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/pulgares-abajo">Pulgares Abajo, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/recibiendo-therapy">Recibiendo Therapy, 6B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/robin-de-los-bosques">Robin de los Bosques, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/robincolia">Robincolía, 7A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/rocio-jurado">Rocío Jurado, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/rompesacros">Rompesacros, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ronroneo">Ronroneo, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/rotomotor">Rotomotor, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/requiem-por-un-sueno">Réquiem por un Sueño, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/requiem-por-un-sueno">Réquiem por un Sueño, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/salida-de-emergencia">Salida de Emergencia, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/sancho-s-move">Sancho's Move, 6c</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/sin-perdon">Sin Perdón, 7B+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/sona-que-trona">Sona que Trona, 7a</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/star-wars">Star Wars, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/stranger-things">Stranger Things, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/sumideros-de-pinocha">Sumideros de Pinocha, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/sunset-boulevard">Sunset Boulevard, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/techo-del-lomo">Techo del Lomo, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/tetsuo">Tetsuo, 7A+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/the-exploited">The Exploited, 5+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/the-truth-is-out-there">The Truth is Out There, 6A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/travel-power">Travel Power, 8A+</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/travel-power">Travel Power, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/tritalon">Tritalón, 7A</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/tronchatalones-izquierda">Tronchatalones Izquierda, 6C</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ulang-tahun">Ulang Tahun, 7B</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/white-diamond">White Diamond, 7B (sit)</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/wild-wild-west">Wild Wild West, 8b</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/problem/ambar-misoginia">Ámbar/Misoginia, 6c</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "la-pedriza_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="la-pedriza/sector/1-dehesa-vaguada">1 - Dehesa Vaguada</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-el-canchal">1 - El Canchal</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-el-castillo">1 - El Castillo</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-el-indio">1 - El Indio</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-el-rodaje">1 - El Rodaje</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-olimpo">1 - Olimpo</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-perrillos">1 - Perrillos</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/1-pena-sirio">1 - Peña Sirio</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/10-kindelan">10 - Kindelán</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/10-nebula-central">10 - Nébula Central</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/11-nebula-inferior">11 - Nébula Inferior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/12-la-dehesa">12 - La Dehesa</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/12-la-foca">12 - La Foca</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-bolo-del-michel">2 - Bolo del Michel</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-dehesa-inferior">2 - Dehesa Inferior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-el-tiburon">2 - El Tiburón</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-la-cuesta">2 - La Cuesta</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-la-maquina">2 - La Máquina</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-los-martinez">2 - Los Martínez</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-pinocha">2 - Pinocha</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-quebrantaherraduras">2 - Quebrantaherraduras</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/2-la-maquina">2. La Máquina</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-caligula">3 - Calígula</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-crossroads-oeste">3 - Crossroads Oeste</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-dehesa-central">3 - Dehesa Central</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-el-rinconcito">3 - El Rinconcito</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-mancevilla-central">3 - Mancevilla Central</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/3-tres-coronas">3 - Tres Coronas</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-cancho-islazo">4 - Cancho Islazo</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-canto-del-tolmo">4 - Canto del Tolmo</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-crossroads-este">4 - Crossroads Este</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-depositos-este">4 - Depósitos Este</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-el-tobogan">4 - El Tobogán</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-mancevilla-inferior">4 - Mancevilla Inferior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/4-puntos-azules">4 - Puntos Azules</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/5-bosque-de-canto-cochino-oeste">5 - Bosque de Canto Cochino Oeste</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/5-la-colmena">5 - La Colmena</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/5-la-ermita">5 - La Ermita</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/5-laboratorio-superior">5 - Laboratorio Superior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/6-laboratorio-inferior">6 - Laboratorio Inferior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/6-las-ruinas">6 - Las Ruinas</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/6-los-quinones">6- Los Quiñones</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/7-laboratorio-central">7 - Laboratorio Central</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/8-el-mirador">8 - El Mirador</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/8-pradera-del-pancho">8 - Pradera del Pancho</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/8-quirofano">8 - Quirófano</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/9-el-manglar">9 - El Manglar</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/9-pradera-del-pancho">9 - Pradera del Pancho</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/dehesa-superior">Dehesa Superior</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/depositos-oeste">Depósitos Oeste</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/la-colmena">La Colmena</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/laboratorio-central">Laboratorio Central</a>
+    </li>
+    
+    <li>
+      <a href="la-pedriza/sector/miguel-angel-blanco">Miguel Ángel Blanco</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "la-pedriza_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPs-StHzJHqZN1dftKLUHyW"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Puntos Azules</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM9E5dBdbY1_LBM5qbJWamy"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Tiburón</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNMJjRdzFMktb3OxV3Hellj"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Máquina</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMaSzkD4ceSZCzF0yfHqBmD"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Perrillos</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNDNva_htPC1AboK7b0bf-F"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Kindelán</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOs2zfC1ZsXFlznTeJwt0FX"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Olimpo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMgwu3B9RZy7z6LqgoS0Srm"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Rinconcito</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNrK5TPJphD-2Edjzi-Octg"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Pinocha</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNJvdme94RmVquOCj-CjWTg"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Mirador</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOvl4p4-SeEWPDc9MTCV5Fl"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Pradera del Pancho</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPD6-R4uuzVKl1y0fy5i7S5"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Quirófano</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOpPb6k78IEAdQ1C-SvPIxu"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Nébula Central</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNJ0CImvZXye3Mckr8cIQWu"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Cuesta</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNzHVPypRQBgdun74qNM8bl"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Pradera del Pancho</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMZmSnV0Ke5cs9E5OZBdmfp"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Tobogán</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN1jjQmx-SI5vsfitUHgXKB"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Bolo del Michel</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNsbHSPwOla58ZIIgXciKcH"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dehesa Superior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPNhj2h3JqDrcfW8jhKu6BC"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dehesa Vaguada</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNdQH9p7PgZsx7ZOfOaSX26"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Crossroads Oeste</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPUvCaSXRnpEA-RIQrf2ULx"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Depósitos Este</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNIMayZQRG9xCnRVQpWNHDi"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Bosque de Canto Cochino Oeste</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMccTgT2dyYNdFNFdtlFzZ8"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Foca</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNrxejDKFGgDCibv5fFMscw"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Laboratorio Inferior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMiFCGbWo-ouQQhkVTQfts6"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Manglar</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMcuqAY8Ecme2HuGZ6KKX36"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Los Quiñones</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMj08-D7W4cx3NaeVwAI6en"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Canto del Tolmo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNNXK01t-zYEKt6QXHTq0z-"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Calígula</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNw6POAIaF_k7R7_IPl0xF-"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Nébula Inferior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMYwEXaqEyM6YbmO6-TpYTi"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Laboratorio Superior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMxBWJ4TKZRr0nFlGG1d0CS"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Indio</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNV1pBRpaR68qQ5naQq0FqN"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dehesa Central</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNpUJXpSbjc48EBrBia8ad9"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Las Ruinas</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO80h1cStRbU-9l1T8zXk7E"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Cancho Islazo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOAiBmtNfvkvS2axvO9TH9J"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Cuesta</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN2CpLk5w5lATbzKu1B0-in"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Canchal</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOQ8mgGWn20AdGZaMfVVsGG"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Los Martínez</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPoD3V2hsPExmlqZRq94V6y"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Mancevilla Inferior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPPJOWdxSh4-tKtNjYzmCZC"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Mancevilla Central</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMzbPiNHiLJRg2vp1fVTec8"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Colmena</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPq0hAJGfK8PjQ_HLrkyL0Q"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dehesa Inferior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPF7ZeUogzNj-Jpdv0xz16V"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Bosque de Canto Cochino Oeste</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO5HARu2QsQ_IX0e2Uvqgu5"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Crossroads Este</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOAAN5iItL4QHRAPcjH9AJV"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Rodaje</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNWIBo9Wxq4x72ZansF0e0c"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>El Castillo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMjjKS0dz0jo0kf5nM0OHIH"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Tres Coronas</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPWn1DPh7C8bXqdBy8FHwaz"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Quebrantaherraduras</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPxV5ngm7clTcS9kTPEWl4_"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Foca</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMn5mnjfzfJRkY5FLQNPphp"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La Ermita</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNcjPe70jRnL6VgWGr9RCiP"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Laboratorio Inferior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOlU6w618M9mzXRAbuPR7vk"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Depósitos Oeste</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPwATyA5jsPx5wCINLJrNDO"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Dehesa Superior</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMIqv8Hqy41eNWlD0m0CpLn"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Laboratorio Central</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP7SWa2BZqLpcVDRRxHVcsV"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

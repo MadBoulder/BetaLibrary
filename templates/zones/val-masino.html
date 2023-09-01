@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Bouldering in  Val Masino  | MadBoulder</title>
+	<meta name="description" content="Bouldering information and climbing videos in Val Masino | MadBoulder">
+    
+
+<!-- Widget dependencies-->
+<!-- TODO: Remove the unnecessary ones -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta charset="UTF-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+        <div class="container" id="pageContent">
+          <br />
+          <h2 style="text-align: center;">
+             Val Masino 
+          </h2>
+          
+
+<div class="container" style="margin-bottom: -20px;">
+  <br />
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+          
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="46.21884" />
+  <input type="hidden" id="lng" name="lng_val" value="9.637826" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Val Masino
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center;"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="row d-flex justify-content-center">
+              <i class="material-icons mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="d-flex col-8 flex-column justify-content-center">
+        <div id="big" class="row d-flex justify-content-center weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Val Masino
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto row d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <i class="material-icons mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+          <br />
+          <p>
+<div class="container">
+  
+  <h4>{{ _("Guides") }}</h4>
+  
+</div>
+<br />
+<div class="container">
+  
+  <div class="row pl-5 mb-3">
+    
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8885475310&linkId=d23a402a6a153ab938bcff88ecdf3086">
+      </iframe>
+    </div>
+   
+    <div class="mr-2">
+      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?ref=tf_til&t=madboulder00-21&m=amazon&o=30&p=8&l=as1&IS1=1&asins=8898609434&linkId=6dddda0afe6d613cb309a101f52062d9&bc1=FFFFFF&lt1=_top&fc1=333333&lc1=0066C0&bg1=FFFFFF&f=ifr">
+      </iframe>
+    </div>
+   
+  </div>
+  
+  <ul>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://www.versantesud.it/en/shop/mello-boulder/"
+        target="_blank"
+        >Mello Boulder (Guide)</a
+      >
+    </li>
+    
+    <li>
+      <a
+		id="guide_link"
+        href="https://27crags.com/crags/val-masino"
+        target="_blank"
+        >27Crags</a
+      >
+    </li>
+    
+  </ul>
+</div>
+</p>
+          <br />
+          
+<!-- Zone Map -->
+<div class="container">
+  
+  <h4>{{ _("Map") }}</h4>
+  
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-2 col-md-3"></div>
+  <div class="col-sm-8 col-md-6">
+    <div style="position: relative; padding-top: 56%;">
+      <iframe
+        src="maps/val-masino"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      >
+      </iframe>
+    </div>
+  </div>
+  <div class="col-sm-2 col-md-3"></div>
+</div>
+<br />
+<!--Problem List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listProblemsTitle">
+	{{ _("List of Problems") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
+  </h4>
+  
+  <ul id="listProblems" class="list closed">
+    
+    <li>
+      <a href="val-masino/problem/africa">Africa, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/alta-tensione">Alta Tensione, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/andrea-si-e-perso-diretto">Andrea si è perso diretto, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/bad-ass">Bad Ass, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/bad-ass-direct">Bad Ass Direct, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/berimbau">Berimbau, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/bidone">Bidone, 6c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/black-woman-dream">Black Woman Dream, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/briciola">Briciola, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/cadi-e-muori">Cadi e Muori, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/camarillo-per-tutti">Camarillo per Tutti, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/carlotta">Carlotta, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/ciucciati-il-calzino">Ciucciati il calzino, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/climb-for-life-woman">Climb For Life Woman, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/decol-tet">Decol-Tet, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/demenza-senile">Demenza senile, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/diavolo">Diavolo, 7a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/drum-n-tano">Drum'n'tano, 8b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/electra">Electra, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/euclide">Euclide, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/fallo-con-lancio">Fallo con lancio, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/foxy-lady">Foxy Lady, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/fuori-dal-tunnel">Fuori dal tunnel, 8b?</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/gica">Gica, 8b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/godzilla">Godzilla, 7c/+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/grace-kelly">Grace Kelly, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/green-man">Green Man, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/green-woman">Green Woman, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/grinnonno">Grinnonno, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/heart-of-stone">Heart of Stone, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/hell-boy">Hell Boy, 8b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/highball-rudy">Highball Rudy, 7a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-brutto">Il Brutto, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-gioco-di-nalle">Il Gioco di Nalle, 8a/+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-totem">Il Totem, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-tunnel">Il Tunnel, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-vampiro-the-vampire">Il Vampiro/The Vampire, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/il-diedrino-del-rudi">Il diedrino del rudi, 6c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/inshallah">Inshallah, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/inshallah-right-variant">Inshallah Right Variant, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/jhonny-crash">Jhonny crash, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/l-ambio">L'Ambio, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/l-arco-del-tetto">L'Arco del Tetto, 6c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/l-era-glaciale">L'Era Glaciale, 7b (stand)</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/l-ultima-follia-di-lawrence-d-arabia">L'Ultima Follia di Lawrence d'Arabia, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/l-opilione-e-grave">L'opilione e' grave, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-befana">La Befana, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-bistecca">La Bistecca, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-chimera">La Chimera, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-flaca">La Flaca, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-poppota">La Poppota, 6c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-spirale">La Spirale, 5b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-croce-bianca">La croce bianca, 8a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-discarica">La discarica, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/la-pioda-della-formica">La pioda della formica, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/le-pinze">Le Pinze, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/left-of-bad-ass">Left of Bad Ass, 8b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/lustrini-e-pon-pon">Lustrini e pon pon, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/lopinione-dellopilione">L’opinione dell’opilione, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/magica-miky">Magica Miky, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/manto-nero">Manto Nero, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/mare-nostrum">Mare Nostrum, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/mare-nostrum-hard">Mare Nostrum Hard, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/mazzinga-z">Mazzinga Z, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/melloblocco-version">Melloblocco Version, 7b (sit)</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/midnight-lightning-dei-poverissimi">Midnight lightning dei poverissimi, Unknown</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/nostradamus">Nostradamus, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/onice-nera">Onice nera, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/piatto-unico">Piatto Unico, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/pinnajet">Pinnajet, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/piri-tecnico">Piri Tecnico, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/pole-pole">Pole Pole, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-a-boulder-8-sega-lombarda">Problem A (Boulder 8, Sega lombarda), 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-a-le-pinze-campeggio">Problem A (Le Pinze, Campeggio), 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-a-pasqualino-campeggio">Problem A (Pasqualino, Campeggio), 6b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-a-sala-giochi">Problem A (Sala Giochi), 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-b-boulder-5-sega-lombarda">Problem B (Boulder 5, Sega lombarda), 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-f-multilinea-campeggio">Problem F (Multilinea, Campeggio), 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/problem-m-camarillo-brillo-scivolo">Problem M (Camarillo Brillo, Scivolo), 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/rastabilimento">Rastabilimento, 7c+ (sit)</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/sala-giochi">Sala giochi, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/saltamaria">Saltamaria, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/saluto-al-sole">Saluto al Sole, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/sega-il-crux">Sega il Crux, 7b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/signal-electrique">Signal électrique, 7a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/six-pistols">Six Pistols, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/sogno-di-tarzan">Sogno di Tarzan, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/spigolo-gladiatiore">Spigolo Gladiatiore, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/spigolo-del-cuore">Spigolo del cuore, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/sugar-for-life-baby">Sugar for Life Baby, 7c+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/terminato">Terminato, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/tondolandia">Tondolandia, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/toro">Toro, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/total-pole">Total Pole, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/totem">Totem, 6b+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/toy-boy">Toy Boy, 8a/8a+</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/traverso-brugi">Traverso Brugi, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/unita-di-produzione">Unità di Produzione, 8a</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/variante-ascari">Variante Ascari, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/virus-attack">Virus Attack, 7c</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/visioncino">VisionCino, 7b</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/problem/vivo-sovversivo">Vivo sovversivo, 7c</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listProblemsTitle = document.getElementById('listProblemsTitle');
+	const listProblemsId = "val-masino_problemsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
+		if (problemsListOpen) {
+		  listProblemsTitle.click();
+		}
+	});
+	
+	const listProblems = document.getElementById('listProblems');
+	const toggleIconProblems = document.getElementById('toggleIconProblems');
+
+	listProblemsTitle.addEventListener('click', function() {
+	  listProblems.classList.toggle('opened');
+	  const isListOpen = listProblems.classList.contains('opened');
+	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+	  localStorage.setItem(listProblemsId, isListOpen);
+	});
+  </script>
+</div>
+<!--Sector List-->
+<div class="container">
+  
+  <h4 class="listTitle" id="listSectorsTitle">
+	{{ _("List of Sectors") }}
+	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
+  </h4>
+  
+  <ul id="listSectors" class="list closed">
+    
+    <li>
+      <a href="val-masino/sector/altman">Altman</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/campeggio">Campeggio</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/campo-sportivo">Campo sportivo</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/la-mota">La mota</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/la-motta">La motta</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/nosferatu">Nosferatu</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/pedra-peintada">Pedra peintada</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/pilastri-del-pesgunfi">Pilastri del Pesgunfi</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/ponte-del-baffo">Ponte del Baffo</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/preda-peintada">Preda peintada</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/remenno">Remenno</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/scivolo">Scivolo</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/sega-lombarda">Sega lombarda</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/tarzan">Tarzan</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/unknown">Unknown</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-i-crotti">Visido - I crotti</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-il-tendine-dello-yeti">Visido - Il tendine dello Yeti</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-la-collinetta">Visido - La Collinetta</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-la-collinetta">Visido - La collinetta</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-tetto-di-filorera">Visido - Tetto di Filorera</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/visido-vermuth-strisciut">Visido - Vermuth Strisciut</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/zocca">Zocca</a>
+    </li>
+    
+    <li>
+      <a href="val-masino/sector/zocca-superiore">Zocca Superiore</a>
+    </li>
+    
+  </ul>
+  <script >
+	const listSectorsTitle = document.getElementById('listSectorsTitle');
+	const listSectorsId = "val-masino_sectorsList";
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
+		if (sectorListOpen) {
+		  listSectorsTitle.click();
+		}
+	});
+	
+	const listSectors = document.getElementById('listSectors');
+	const toggleIconSectors = document.getElementById('toggleIconSectors');
+
+	listSectorsTitle.addEventListener('click', function() {
+		listSectors.classList.toggle('opened');
+		const isListOpen = listSectors.classList.contains('opened');
+		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+		localStorage.setItem(listSectorsId, isListOpen);
+	});
+  </script>
+</div>
+ 
+<!--Playlists-->
+<div class="container">
+  <br />
+  
+  <h4>{{ _("Playlists") }}</h4>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        
+        <b>{{ _("Full") }}</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN1FEv4qfqEHPi7Ey1bTDN1"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Visido - Vermuth Strisciut</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNvbTjTXjPa3fMf9nn6M8e4"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Ponte del Baffo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPu9nBjcOoKE5uT81VBFZ1b"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Nosferatu</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOCJ4143Y0I0gUuUarvTcTv"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Campo sportivo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMLTnNUbwq0YEHxdPYJILk0"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Pilastri del Pesgunfi</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPVd5Cvmlx1JaJsNJp-5an-"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Visido - I crotti</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM_GC6dvlyGzsv0ZxuJ89ZS"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Visido - Il tendine dello Yeti</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOjIkKnxwBbxwbC5r1VRPnb"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Sega lombarda</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMJwiq4SxlSHFDtf5KJK4xq"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Preda peintada</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM7ccM4vbcoaLJuGqzOe5qy"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Visido - Tetto de la Filorera</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOqoPfUk6uTVeXsZJ2kFcPi"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Visido - La collinetta</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNBKiFwZzi6qJP-_eEPa7Ck"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Zocca Superiore</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMdaM9lEzW-GOKtyfn5Tp_D"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Campeggio</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMh1Jzv6yFUjrjR04zmsMJr"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>La mota</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO4Ahcr167S6DYYnpp-GTH_"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Nosferatu</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNwHdANJ7YLIimfeL89jwgu"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Remenno</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPX1WxD9b5TER2QsUgQ5i-6"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Scivolo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOccozkG_IQayrJLmpAn9-c"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Zocca</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMw3gJ1kHRj0DIUn4dG2VeB"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Tarzan</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNZ70-CTASwoPMWyJl6Zqog"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Ponte del Baffo</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNe6t6uUQtWE7x_aLkMQBon"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p>
+        <b>Altman</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPU0ZHrpw32SjWSiTDIZbCI"
+          frameborder="0"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+        </div>
+        <br />
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

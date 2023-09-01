@@ -2,7 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
-from werkzeug.utils import secure_filename
+from slugify import slugify
 
 LINK_FIELD = 'url'
 CLIMBER_FIELD = 'climber'
@@ -30,20 +30,19 @@ def main():
 
         for problem in problems:
             template = template_env.get_template(
-                'templates/problem_layout.html')
+                'templates/templates/problem-layout.html')
             output = template.render(
                 climber=problem[CLIMBER_FIELD],
                 name=problem[NAME_FIELD],
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
                 sector=problem[SSECTOR_FIELD],
-                video_url=get_embed_url(problem[LINK_FIELD]),
-                layout_css='../../../static/css/layout.css'
+                video_url=get_embed_url(problem[LINK_FIELD])
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')
 
-            with open(f'templates/problems/{zone_code}/{secure_filename(problem["name"])}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/problems/{zone_code}/{slugify(problem["name"])}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 
