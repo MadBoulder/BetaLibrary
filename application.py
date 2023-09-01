@@ -465,11 +465,11 @@ def render_page(page):
 
 @app.route('/<string:page>/problem/<string:problem_name>')
 def load_problem(page, problem_name):
-    return render_template(f'problems/{page}/{problem_name}.html')
+    return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
     
 @app.route('/<string:page>/sector/<string:sector_name>')
 def load_sector(page, sector_name):
-    return render_template(f'sectors/{page}/{sector_name}.html')
+    return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
 
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
