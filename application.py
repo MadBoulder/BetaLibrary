@@ -221,12 +221,12 @@ def search():
 
 
 @app.route('/video-uploader', methods=['GET', 'POST'])
-def upload():
+def video_uploader():
     return render_template('video-uploader-not-working.html')
     
     
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
-def upload():
+def video_uploader_test():
     return render_template('video-uploader.html')
     
 @app.route('/upload-file', methods=['GET', 'POST'])
@@ -262,14 +262,13 @@ def get_credentials():
         secret = os.environ['GOOGLE_SERVICE_ACCOUNT_JSON']
         credentials = service_account.Credentials.from_service_account_info(secret, scopes=SCOPES)
     else:
-        SERVICE_ACCOUNT_FILE = 'credentials.json'
+        SERVICE_ACCOUNT_FILE = 'madboulder.json'
         credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     
     return credentials
 
 
 def upload_to_google_drive(file):
-
     credentials = get_credentials()
     drive_service = build('drive', 'v3', credentials=credentials)
     
@@ -306,7 +305,7 @@ def get_progress():
     
 @app.route('/upload-completed', methods=['GET'])
 def upload_completed():
-    return render_template('thanks_for_uploading.html')
+    return render_template('thanks-for-uploading.html')
     
 
 @app.route('/<string:sitemap_name>.xml')
