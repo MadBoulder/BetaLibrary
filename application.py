@@ -1,7 +1,8 @@
 import json
 import os
 import random
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, send_file
+import io
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -13,11 +14,18 @@ import utils.js_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
+import threading
 import re
 from slugify import slugify
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
+
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
+from google.oauth2.credentials import Credentials
+from google.oauth2 import service_account
 
 
 EXTENSION = '.html'
@@ -31,6 +39,10 @@ app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+current_progress = 0
+
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -209,14 +221,92 @@ def search():
 
 
 @app.route('/video-uploader', methods=['GET', 'POST'])
-def upload_file():
+def video_uploader():
     return render_template('video-uploader-not-working.html')
-    #return render_template('video-uploader.html')
+    
     
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
-def upload_file_test():
+def video_uploader_test():
     return render_template('video-uploader.html')
+    
+@app.route('/upload-file', methods=['GET', 'POST'])
+def upload_file():
+    uploaded_file = request.files['file']
 
+    if uploaded_file:
+        response = upload_to_google_drive(uploaded_file)
+        
+        msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
+            request.form['climber'],
+            request.form['name'],
+            request.form['grade'],
+            request.form['zone'],
+            request.form['sector'],
+            request.form['notes'],
+            uploaded_file.filename,
+            response)
+            
+        msg = Message(
+            subject='MadBoulder New Video Beta Received',
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('EMAIL_RECIPIENTS'),
+            body=msg_body)
+        mail.send(msg)
+    else:
+        abort(404)
+
+
+def get_credentials():
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    if 'GOOGLE_SERVICE_ACCOUNT_JSON' in os.environ:
+        secret = os.environ['GOOGLE_SERVICE_ACCOUNT_JSON']
+        credentials = service_account.Credentials.from_service_account_info(secret, scopes=SCOPES)
+    else:
+        SERVICE_ACCOUNT_FILE = 'madboulder.json'
+        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    
+    return credentials
+
+
+def upload_to_google_drive(file):
+    credentials = get_credentials()
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+    file_metadata = {'name': file.filename,
+                     'parents': [CUSTOM_FOLDER_ID]}
+                     
+    video_content = file.read()
+    media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
+    
+    request = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    )
+                
+    response = None
+    global current_progress
+    current_progress = 0
+    while response is None:
+        status, response = request.next_chunk()
+        if status:
+            print("Uploaded %d%%." % int(status.progress() * 100))
+            current_progress = status.progress() * 100
+    current_progress = 100
+
+    print("Upload of {} is complete.".format(file.filename))
+
+
+@app.route('/progress', methods=['GET'])
+def get_progress():
+    return jsonify({'progress': current_progress})
+
+    
+@app.route('/upload-completed', methods=['GET'])
+def upload_completed():
+    return render_template('thanks-for-uploading.html')
+    
 
 @app.route('/<string:sitemap_name>.xml')
 def sitemap_file(sitemap_name):

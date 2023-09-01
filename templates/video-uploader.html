@@ -7,13 +7,141 @@
 	<meta name="description" content="Upload your climbing video and contribute to the climbing community | MadBoulder">
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
+	<style>
+        /* Style for the loading indicator */
+        .loading {
+            display: none;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}" />
 </head>
 
 <body>
 	{% include 'elements/main-menu.html' %}
 	<main>
 		<div class="container">
-			<script type="text/javascript" src="https://form.jotform.com/jsform/232305095289358"></script>
+			<div id="upload-container" class="form-container">
+				<form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data">
+					<h3>{{_("Upload Form")}}</h3>
+					<div>
+						<label class="form-label">{{ _("Climber") }}*:</label>
+						<input type="text" name="climber" required>
+					</div>
+					<div>
+						<label class="form-label">{{ _("Problem") }}*:</label>
+						<input type="text" name="name" required>
+					</div>
+					<div>
+						<label class="form-label">{{ _("Zone") }}*:</label>
+						<input type="text" name="zone" required>
+					</div>
+					<div>
+						<label class="form-label">{{ _("Grade") }}:</label>
+						<input type="text" name="grade">
+					</div>
+					<div>
+						<label class="form-label">{{ _("Sector") }}:</label>
+						<input type="text" name="sector">
+					</div>
+					<div style="display: flex;">
+						<label class="form-label">{{ _("Notes") }}:</label>
+						<textarea id="message" name="notes" rows="3" style="width: 100%;" required> </textarea>
+					</div>
+					<div style="padding: 5px;">
+						<input type="file" name="file" accept="video/*" required>
+						<div style="display: inline;">
+							<progress id="upload-progress" max="100" value="0"></progress>
+							<span id="progress-label">0%</span>
+							<div id="status" style="padding-left: 5px;"></div>
+						</div>
+					</div>
+					<div>
+						<input type="checkbox" id="notify-checkbox" name="permission" required>
+						<label >{{ _("I grant permission to MadBoulder to use the submitted video on YouTube for public display.") }} *</label>
+					</div>
+					<div style="text-align: Center;">
+						<input class="mad-button" type="submit" value="Upload">
+					</div>
+				</form>
+				<br />
+				<div style="width:75%; margin: 0 auto;">
+				{{ _(
+				  "MadBoulder reserves the right to not publish a video. Possible reasons are, but are not limited to:
+				  poor video quality, poor camera angle and wrong or repeated line. Please note that there might be a
+				  delay between uploading and publishing a video."
+				)}}
+			  </div>
+				<br />
+				
+				<script>
+					const form = document.getElementById('upload-form');
+					const progressBar = document.getElementById('upload-progress');
+					const progressLabel = document.getElementById('progress-label');
+					const statusDiv = document.getElementById('status');
+					let timeout;
+
+					form.addEventListener('submit', function (event) {
+						event.preventDefault();
+						progressBar.value = 0;
+						uploadFile(event);
+						pollProgress(); 
+					});
+
+					function updateProgress(progress) {
+						progressBar.value = progress;
+						progressLabel.textContent = `${Math.floor(progress)}%`;
+					}
+
+					function updateStatus(message) {
+						statusDiv.innerHTML = message;
+					}
+
+					function pollProgress() {
+						fetch('/progress', { method: 'GET' })
+							.then(response => response.json())
+							.then(data => {
+								if (data.progress !== undefined) {
+									updateProgress(data.progress);
+									
+									if (data.progress < 100) {
+										updateStatus("Uploading...");
+										timeout = setTimeout(pollProgress, 1000);
+									} else {
+										uploadCompleted();
+									}
+								}
+							})
+							.catch(error => {
+								console.error('Error fetching progress:', error);
+							});
+					}
+
+					function uploadFile(event) {
+						const formData = new FormData(form);
+
+						const xhr = new XMLHttpRequest();
+						xhr.open('POST', '/upload-file', true);
+
+						xhr.onreadystatechange = function () {
+							if (xhr.readyState === XMLHttpRequest.DONE) {
+								uploadCompleted();
+							}
+						};
+
+						xhr.send(formData);
+					}
+					
+					function uploadCompleted() {
+						updateStatus('Upload complete');
+						updateProgress(100);
+						clearTimeout(timeout);
+						window.location.href = '/upload-completed';
+					}
+					
+				</script>
+			</div>
 		</div>
 	</main>
 	{% include 'elements/footer.html' %}
