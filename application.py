@@ -255,11 +255,22 @@ def upload_file():
     else:
         abort(404)
 
-def upload_to_google_drive(file):
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = 'credentials.json'
 
-    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+def get_credentials():
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    if 'GOOGLE_SERVICE_ACCOUNT_JSON' in os.environ:
+        secret = os.environ['GOOGLE_SERVICE_ACCOUNT_JSON']
+        credentials = service_account.Credentials.from_service_account_info(secret, scopes=SCOPES)
+    else:
+        SERVICE_ACCOUNT_FILE = 'credentials.json'
+        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    
+    return credentials
+
+
+def upload_to_google_drive(file):
+
+    credentials = get_credentials()
     drive_service = build('drive', 'v3', credentials=credentials)
     
     CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
