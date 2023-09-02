@@ -263,7 +263,7 @@ def get_credentials():
         secret_dict = json.loads(secret)
         credentials = service_account.Credentials.from_service_account_info(secret_dict, scopes=SCOPES)
     else:
-        SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.json'
+        SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
         credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     
     return credentials
