@@ -300,7 +300,7 @@ def upload_to_google_drive(file):
 
         print("Upload of {} is complete.".format(file.filename))
     else:
-        print("Upload failed)
+        print("Upload failed")
 
 
 @app.route('/progress', methods=['GET'])
