@@ -262,12 +262,8 @@ def upload_file():
 def get_credentials():
     SCOPES = ['https://www.googleapis.com/auth/drive']
     SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
-    if os.path.exists(SERVICE_ACCOUNT_FILE):
-        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        return credentials
-    else:
-        print(f"The file '{SERVICE_ACCOUNT_FILE}' does not exist. Please check the file path.")
-        return None
+    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    return credentials
 
 
 def upload_to_google_drive(file):
