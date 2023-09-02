@@ -236,67 +236,67 @@ def upload_file():
     if uploaded_file:
         response = upload_to_google_drive(uploaded_file)
         
-        if response != 404:
-            msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
-                request.form['climber'],
-                request.form['name'],
-                request.form['grade'],
-                request.form['zone'],
-                request.form['sector'],
-                request.form['notes'],
-                uploaded_file.filename,
-                response)
-                
-            msg = Message(
-                subject='MadBoulder New Video Beta Received',
-                sender=app.config.get('MAIL_USERNAME'),
-                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-                body=msg_body)
-            mail.send(msg)
-        else:
-            abort(404)   
+        msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
+            request.form['climber'],
+            request.form['name'],
+            request.form['grade'],
+            request.form['zone'],
+            request.form['sector'],
+            request.form['notes'],
+            uploaded_file.filename,
+            response)
+            
+        msg = Message(
+            subject='MadBoulder New Video Beta Received',
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('EMAIL_RECIPIENTS'),
+            body=msg_body)
+        mail.send(msg)
     else:
         abort(404)
 
 
 def get_credentials():
     SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
-    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    if 'GOOGLE_SERVICE_ACCOUNT_JSON' in os.environ:
+        secret = os.environ['GOOGLE_SERVICE_ACCOUNT_JSON']
+        secret_dict = json.loads(secret)
+        credentials = service_account.Credentials.from_service_account_info(secret_dict, scopes=SCOPES)
+    else:
+        SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
+        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    
     return credentials
 
 
 def upload_to_google_drive(file):
     credentials = get_credentials()
-    if credentials:
-        drive_service = build('drive', 'v3', credentials=credentials)
-        
-        CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
-        file_metadata = {'name': file.filename,
-                         'parents': [CUSTOM_FOLDER_ID]}
-                         
-        video_content = file.read()
-        media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
-        
-        request = drive_service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        )
-                    
-        response = None
-        global current_progress
-        current_progress = 0
-        while response is None:
-            status, response = request.next_chunk()
-            if status:
-                print("Uploaded %d%%." % int(status.progress() * 100))
-                current_progress = status.progress() * 100
-        current_progress = 100
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+    file_metadata = {'name': file.filename,
+                     'parents': [CUSTOM_FOLDER_ID]}
+                     
+    video_content = file.read()
+    media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
+    
+    request = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    )
+                
+    response = None
+    global current_progress
+    current_progress = 0
+    while response is None:
+        status, response = request.next_chunk()
+        if status:
+            print("Uploaded %d%%." % int(status.progress() * 100))
+            current_progress = status.progress() * 100
+    current_progress = 100
 
-        print("Upload of {} is complete.".format(file.filename))
-    else:
-        print("Upload failed")
+    print("Upload of {} is complete.".format(file.filename))
 
 
 @app.route('/progress', methods=['GET'])
