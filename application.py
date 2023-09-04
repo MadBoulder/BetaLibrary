@@ -489,8 +489,9 @@ def render_area(area):
 @app.route('/download/<string:path>/<string:filename>')
 def download_file(path=None, filename=None):
     try:
-        download_path = os.path.join(app.root_path, 'data/zones/' + path)
+        download_path = os.path.join(app.root_path, 'data/zones/' + path) + '/' + filename
         print("download_path:", download_path)
+        return send_file(download_path, as_attachment=False)
         return send_from_directory(
             directory=download_path,
             filename=filename,
