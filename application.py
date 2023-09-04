@@ -14,7 +14,6 @@ import utils.js_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
-import threading
 import re
 from slugify import slugify
 
@@ -220,6 +219,12 @@ def search():
             search_term='')
 
 
+
+@app.route('/video-uploader-not-working', methods=['GET', 'POST'])
+def video_uploader_not_working():
+    return render_template('video-uploader-not-working.html')
+    
+
 @app.route('/video-uploader', methods=['GET', 'POST'])
 def video_uploader():
     return render_template('video-uploader-not-working.html')
@@ -234,26 +239,32 @@ def upload_file():
     uploaded_file = request.files['file']
 
     if uploaded_file:
-        response = upload_to_google_drive(uploaded_file)
-        
-        msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
-            request.form['climber'],
-            request.form['name'],
-            request.form['grade'],
-            request.form['zone'],
-            request.form['sector'],
-            request.form['notes'],
-            uploaded_file.filename,
-            response)
+        try:
+            response = upload_to_google_drive(uploaded_file)
             
-        msg = Message(
-            subject='MadBoulder New Video Beta Received',
-            sender=app.config.get('MAIL_USERNAME'),
-            recipients=app.config.get('EMAIL_RECIPIENTS'),
-            body=msg_body)
-        mail.send(msg)
+            msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
+                request.form['climber'],
+                request.form['name'],
+                request.form['grade'],
+                request.form['zone'],
+                request.form['sector'],
+                request.form['notes'],
+                uploaded_file.filename,
+                response)
+                
+            msg = Message(
+                subject='MadBoulder New Video Beta Received',
+                sender=app.config.get('MAIL_USERNAME'),
+                recipients=app.config.get('EMAIL_RECIPIENTS'),
+                body=msg_body)
+            mail.send(msg)
+            return jsonify({"message": "File uploaded and processed successfully"}), 200
+        except Exception as e:
+            print(f"Upload failed: {str(e)}")
+            return jsonify({"error": "Internal server error occurred"}), 500
     else:
-        abort(404)
+        return jsonify({"error": "File upload failed. Please check your request."}), 400
+
 
 
 def get_credentials():
@@ -264,33 +275,38 @@ def get_credentials():
 
 
 def upload_to_google_drive(file):
-    credentials = get_credentials()
-    drive_service = build('drive', 'v3', credentials=credentials)
-    
-    CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
-    file_metadata = {'name': file.filename,
-                     'parents': [CUSTOM_FOLDER_ID]}
-                     
-    video_content = file.read()
-    media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
-    
-    request = drive_service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    )
-                
-    response = None
-    global current_progress
-    current_progress = 0
-    while response is None:
-        status, response = request.next_chunk()
-        if status:
-            print("Uploaded %d%%." % int(status.progress() * 100))
-            current_progress = status.progress() * 100
-    current_progress = 100
+    try:
+        credentials = get_credentials()
+        drive_service = build('drive', 'v3', credentials=credentials)
+        if drive_service:
+            CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
+            file_metadata = {'name': file.filename,
+                             'parents': [CUSTOM_FOLDER_ID]}
+                             
+            video_content = file.read()
+            media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
+            
+            request = drive_service.files().create(
+                body=file_metadata,
+                media_body=media,
+                fields='id'
+            )
+                        
+            response = None
+            global current_progress
+            current_progress = 0
+            while response is None:
+                status, response = request.next_chunk()
+                if status:
+                    print("Uploaded %d%%." % int(status.progress() * 100))
+                    current_progress = status.progress() * 100
+            current_progress = 100
 
-    print("Upload of {} is complete.".format(file.filename))
+            print("Upload of {} is complete.".format(file.filename))
+        else:
+            print("Upload failed: Couldn't create Drive service")
+    except Exception as e:
+        print(f"Upload failed: {str(e)}")
 
 
 @app.route('/progress', methods=['GET'])
