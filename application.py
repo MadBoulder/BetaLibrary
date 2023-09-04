@@ -490,6 +490,7 @@ def render_area(area):
 def download_file(path=None, filename=None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path)
+        print("download_path:", download_path)
         return send_from_directory(
             directory=download_path,
             filename=filename,
