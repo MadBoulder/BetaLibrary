@@ -100,7 +100,7 @@ def set_language(language=None):
     else:
         return redirect('')
 
-@babel.localeselector
+#@babel.localeselector
 def get_locale():
     # if the user has set up the language manually it will be stored in the session,
     # so we use the locale from the user settings
@@ -111,6 +111,7 @@ def get_locale():
     if language is not None:
         return language
     return 'en'
+babel.init_app(app, locale_selector=get_locale)
 
 @app.context_processor
 def inject_language():
