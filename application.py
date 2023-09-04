@@ -304,9 +304,9 @@ def upload_to_google_drive(file):
 
             print("Upload of {} is complete.".format(file.filename))
         else:
-            print("Upload failed: Couldn't create Drive service")
+            raise Exception("Upload failed: Couldn't create Drive service")
     except Exception as e:
-        print(f"Upload failed: {str(e)}")
+        raise Exception(f"Upload failed: {str(e)}")
 
 
 @app.route('/progress', methods=['GET'])
