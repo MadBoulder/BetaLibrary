@@ -266,17 +266,11 @@ def upload_file():
         return jsonify({"error": "File upload failed. Please check your request."}), 400
 
 
-
-def get_credentials():
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
-    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    return credentials
-
-
 def upload_to_google_drive(file):
     try:
-        credentials = get_credentials()
+        SCOPES = ['https://www.googleapis.com/auth/drive']
+        SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
+        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
         drive_service = build('drive', 'v3', credentials=credentials)
         if drive_service:
             CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
