@@ -255,7 +255,7 @@ def upload_file():
             msg = Message(
                 subject='MadBoulder New Video Beta Received',
                 sender=app.config.get('MAIL_USERNAME'),
-                recipients=app.config.get('EMAIL_RECIPIENTS'),
+                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
                 body=msg_body)
             mail.send(msg)
             return jsonify({"message": "File uploaded and processed successfully"}), 200
