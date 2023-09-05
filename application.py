@@ -135,6 +135,7 @@ def zone_cache_key():
     return request.url
 
 # use decorators to link the function to a url
+@app.route('/home')
 @app.route('/')
 def home():
     channel_info = utils.helpers.get_channel_info()
@@ -490,13 +491,7 @@ def render_area(area):
 def download_file(path=None, filename=None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path) + '/' + filename
-        print("download_path:", download_path)
         return send_file(download_path, as_attachment=False)
-        return send_from_directory(
-            directory=download_path,
-            filename=filename,
-            as_attachment=False
-        )
     except:
         abort(404)
         
