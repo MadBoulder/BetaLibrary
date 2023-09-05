@@ -2,15 +2,15 @@ import os
 
 from datetime import datetime
 
-def get_html_files(folders_to_parse, include_subfolders=True):
+def get_files(folders_to_parse, include_subfolders, file_extension):
     html_files = []
     for folder in folders_to_parse:
         for item in os.listdir(folder):
             item_path = os.path.join(folder, item)
-            if item.endswith(".html") and os.path.isfile(item_path):
+            if item.endswith(file_extension) and os.path.isfile(item_path):
                 html_files.append(item_path)
             elif include_subfolders and os.path.isdir(item_path):
-                subfolder_files = get_html_files([item_path], include_subfolders=True)
+                subfolder_files = get_files([item_path], include_subfolders, file_extension)
                 html_files.extend(subfolder_files)
     return html_files
 
@@ -37,10 +37,11 @@ def create_sitemap(xml_filename, html_files):
 
 if __name__ == "__main__":
     sitemapFolders = ["templates", "templates/errors", "templates/policy"]
-    create_sitemap("sitemap-main.xml", get_html_files(sitemapFolders, False))
-    create_sitemap("sitemap-zones.xml", get_html_files(["templates/zones"]))
-    create_sitemap("sitemap-sectors.xml", get_html_files(["templates/sectors"]))
-    create_sitemap("sitemap-problems.xml", get_html_files(["templates/problems"]))
+    create_sitemap("sitemap-main.xml", get_files(sitemapFolders, False, ".html"))
+    create_sitemap("sitemap-zones.xml", get_files(["templates/zones"], True, ".html"))
+    create_sitemap("sitemap-sectors.xml", get_files(["templates/sectors"], True, ".html"))
+    create_sitemap("sitemap-problems.xml", get_files(["templates/problems"], True, ".html"))
+    create_sitemap("sitemap-pdfs.xml", get_files(["data/zones"], True, ".pdf"))
     
     
     print("Sitemaps created successfully!")
