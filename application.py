@@ -495,33 +495,6 @@ def download_file(path=None, filename=None):
         return send_file(download_path, as_attachment=False)
     except:
         abort(404)
-        
-@app.route('/test42')       
-def test42():
-    secret_key1 = os.getenv("EMAIL_USER")
-    if secret_key1:
-        print("EMAIL_USER:", secret_key1)
-    else:
-        print("The 'EMAIL_USER' environment variable is not set.")
-    
-    secret_key2 = os.getenv("RANDOM")
-    if secret_key2:
-        print("RANDOM:", secret_key2)
-    else:
-        print("The 'RANDOM' environment variable is not set.")
-    
-    file_path = "secret.env"
-    try:
-        with open(file_path, "r") as file:
-            json_data = json.load(file)
-        print("JSON Data:")
-        print(json_data)
-    except FileNotFoundError:
-        print(f"The file '{file_path}' does not exist.")
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-    except Exception as e:
-         print(f"Exception: {e}")
 
 
 @app.errorhandler(404)
