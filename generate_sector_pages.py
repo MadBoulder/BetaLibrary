@@ -42,6 +42,7 @@ def main():
                 zone_code=zone_code,
                 zone_name=zone['name'],
                 sector=sector,
+                sector_code=slugify(sector[1]),
                 problems=problems,
                 video_url=video_url
             )

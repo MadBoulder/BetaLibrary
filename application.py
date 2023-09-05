@@ -469,11 +469,13 @@ def render_page(page):
     except:
         abort(404)
 
-@app.route('/<string:page>/problem/<string:problem_name>')
+@app.route('/problems/<string:page>/<string:problem_name>')
+@app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
     return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
     
-@app.route('/<string:page>/sector/<string:sector_name>')
+@app.route('/sectors/<string:page>/<string:sector_name>')
+@app.route('/<string:page>/sector/<string:sector_name>') #deprecated
 def load_sector(page, sector_name):
     return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
 

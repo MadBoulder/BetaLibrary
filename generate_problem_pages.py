@@ -34,8 +34,10 @@ def main():
             output = template.render(
                 climber=problem[CLIMBER_FIELD],
                 name=problem[NAME_FIELD],
+                name_code=slugify(problem[NAME_FIELD]),
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
+                zone_code=zone_code,
                 sector=problem[SSECTOR_FIELD],
                 video_url=get_embed_url(problem[LINK_FIELD])
             )
