@@ -244,15 +244,14 @@ def upload_file():
         try:
             upload_to_google_drive(uploaded_file)
             
-            msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\nUpload response: {}\n'.format(
+            msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
                 request.form['climber'],
                 request.form['name'],
                 request.form['grade'],
                 request.form['zone'],
                 request.form['sector'],
                 request.form['notes'],
-                uploaded_file.filename,
-                response)
+                uploaded_file.filename)
                 
             msg = Message(
                 subject='MadBoulder New Video Beta Received',
