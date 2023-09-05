@@ -50,7 +50,8 @@ def enable_links_from_iframe(map_html):
     Insert links in iframes
     """
     code_to_inject = """<head>    
-    <base target="_blank">"""
+    <base target="_blank">
+    <meta name="robots" content="noindex, nofollow">"""
     return map_html.replace('<head>', code_to_inject)
 
 

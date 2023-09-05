@@ -469,11 +469,13 @@ def render_page(page):
     except:
         abort(404)
 
-@app.route('/<string:page>/problem/<string:problem_name>')
+@app.route('/problems/<string:page>/<string:problem_name>')
+@app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
     return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
     
-@app.route('/<string:page>/sector/<string:sector_name>')
+@app.route('/sectors/<string:page>/<string:sector_name>')
+@app.route('/<string:page>/sector/<string:sector_name>') #deprecated
 def load_sector(page, sector_name):
     return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
 
@@ -493,33 +495,6 @@ def download_file(path=None, filename=None):
         return send_file(download_path, as_attachment=False)
     except:
         abort(404)
-        
-@app.route('/test42')       
-def test42():
-    secret_key1 = os.getenv("EMAIL_USER")
-    if secret_key1:
-        print("EMAIL_USER:", secret_key1)
-    else:
-        print("The 'EMAIL_USER' environment variable is not set.")
-    
-    secret_key2 = os.getenv("RANDOM")
-    if secret_key2:
-        print("RANDOM:", secret_key2)
-    else:
-        print("The 'RANDOM' environment variable is not set.")
-    
-    file_path = "secret.env"
-    try:
-        with open(file_path, "r") as file:
-            json_data = json.load(file)
-        print("JSON Data:")
-        print(json_data)
-    except FileNotFoundError:
-        print(f"The file '{file_path}' does not exist.")
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-    except Exception as e:
-         print(f"Exception: {e}")
 
 
 @app.errorhandler(404)
