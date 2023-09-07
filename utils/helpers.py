@@ -291,19 +291,26 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
     API query format:
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
-    base_video_url = '//www.youtube.com/embed/'  # to embed video
-    query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
-        urllib.parse.quote(video_name), channel_id, api_key)
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-    for i in resp['items']:
-        if i['id']['kind'] == 'youtube#video':
-            i['snippet']['title'] = html.unescape(i['snippet']['title'])
-            i['video_url'] = base_video_url + i['id']['videoId']
-            i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
-    return resp['items'][0:results]
+    try:
+        with open('credentials.txt', 'r', encoding=ENCODING) as f:
+            api_key = f.read()
+        base_video_url = '//www.youtube.com/embed/'  # to embed video
+        query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
+            urllib.parse.quote(video_name), channel_id, api_key)
+        inp = urllib.request.urlopen(query_url)
+        resp = json.load(inp)
+        for i in resp['items']:
+            if i['id']['kind'] == 'youtube#video':
+                i['snippet']['title'] = html.unescape(i['snippet']['title'])
+                i['video_url'] = base_video_url + i['id']['videoId']
+                i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
+        return resp['items'][0:results]
+    except urllib.error.HTTPError as e:
+        print(f"HTTPError: {e}")
+        return []
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
     
 
 def load_data(infile):
