@@ -52,17 +52,19 @@
 						<textarea id="message" name="notes" rows="3" style="width: 100%;" required> </textarea>
 					</div>
 					<div style="padding: 5px;">
-						<input type="file" name="file" accept="video/*" required>
+						<input type="file" name="file" accept="video/*" onchange="updateFileSizeMessage(this)" required >
 						<div style="display: inline;">
 							<progress id="upload-progress" max="100" value="0"></progress>
 							<span id="progress-label">0%</span>
+							<div id="warning-alert" class="alert alert-warning alert-dismissible show d-none" style="margin-top: 10px;">
+								{{ _("File size exceeds the maximum allowed (2GB). Please choose a smaller file.") }}
+							</div>
 							<div id="uploading-alert" class="alert alert-dark alert-dismissible show d-none" style="margin-top: 10px;">
 								<strong id="uploading-text">placeholder</strong> {{ _("Please wait until the process is complete and success message appears.") }}
 							</div>
 							<div id="error-alert" class="alert alert-danger alert-dismissible show d-none" style="margin-top: 10px;">
 								<h4 class="alert-heading"><i class="bi-exclamation-octagon-fill"></i> <strong>Error!</strong> <span id="error-message"></span> </h4>
 								<p>{{ _("Please try again or use alternative method:") }} <a href="/video-uploader-not-working">{{ _("here") }}</a></p>
-								<button id="hide-button" type="button" class="btn-close"></button>
 							</div>
 						</div>
 					</div>
@@ -160,7 +162,7 @@
 						//pollProgress(); 
 						disableUploadButton();
 						showUploadingAlert();
-					
+						hideErrorAlert();
 					}
 					
 					function uploadFinishing(){
@@ -184,6 +186,21 @@
 						const errorMessage = document.getElementById('error-message');
 						errorMessage.textContent = customMessage;
 						errorAlert.classList.remove('d-none');
+					}
+					
+					function hideErrorAlert(customMessage) {
+						const errorAlert = document.getElementById('error-alert');
+						errorAlert.classList.add('d-none');
+					}
+					
+					function showWarningSizeAlert() {
+						const warningAlert = document.getElementById('warning-alert');
+						warningAlert.classList.remove('d-none');
+					}
+					
+					function hideWarningSizeAlert() {
+						const warningAlert = document.getElementById('warning-alert');
+						warningAlert.classList.add('d-none');
 					}
 					
 					function showUploadingAlert() {
@@ -226,6 +243,21 @@
 							errorAlert.classList.add('d-none');
 						});
 					});
+					
+					function updateFileSizeMessage(input) {
+						var maxSize = 2 * 1024 * 1024 * 1024; // 2GB in bytes
+
+						if (input.files.length > 0) {
+							var fileSize = input.files[0].size;
+
+							if (fileSize > maxSize) {
+								showWarningSizeAlert();
+								input.value = "";
+							} else {
+								hideWarningSizeAlert();
+							}
+						}
+					}
 					
 				</script>
 			</div>
