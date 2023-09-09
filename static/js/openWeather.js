@@ -283,16 +283,20 @@ Licensed under the MIT license
 							daysLength = 4;
 						}
 						for (let day = 1; day < daysLength; day++) {
-							const forecast = data.daily[day];
-							const weekday = moment.unix(data.daily[day].dt).format('dd');
+							var main_container = document.createElement("div");
+							main_container.setAttribute('class', 'col text-center');
+							element.appendChild(main_container)
 							// Week day and icon
-							var weather_icon = document.createElement("div");
-							weather_icon.id = 'day_' + day.toString();
-							var img = document. createElement("img");
 							var weekday_span = document.createElement('span');
 							weekday_span.setAttribute('style', 'font-size: small; align-self: center; text-transform: capitalize;');
+							const weekday = moment.unix(data.daily[day].dt).format('dd');
 							var textNode = document.createTextNode(weekday);
 							weekday_span.appendChild(textNode);
+							main_container.appendChild(weekday_span);
+							var weather_icon = document.createElement("div");
+							weather_icon.id = 'day_' + day.toString();
+							var img = document.createElement("img");
+							const forecast = data.daily[day];
 							if (s.customIcons != null) {
 								img.src = mapCustomIconToURL(forecast.weather[0].icon, 'day');
 							} else {
@@ -302,10 +306,6 @@ Licensed under the MIT license
 							img.setAttribute("height", "40px");
 							weather_icon.setAttribute("style", "justify-content: center; display: flex;");
 							weather_icon.appendChild(img);
-							var main_container = document.createElement("div");
-							main_container.setAttribute('class', 'd-flex flex-column justify-content-center mx-2');
-							element.appendChild(main_container)
-							main_container.appendChild(weekday_span);
 							main_container.appendChild(weather_icon);
 							// rest of data
 							// var weekday_data_container = document.createElement("div");
