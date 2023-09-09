@@ -78,7 +78,7 @@ def get_sectors_from_zone(zone_code):
     for p in problems:
         alreadyAdded=False
         for s in sectors:
-            if s[0] == p['sector']:
+            if s[1] == slugify(p['sector']):
                 alreadyAdded=True
                 break
         if not alreadyAdded:
