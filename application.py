@@ -88,15 +88,12 @@ def get_zone_data():
 # Set language
 @app.route('/language/<language>')
 def set_language(language=None):
+    print("set_language")
     session['language'] = language
     referrer_url = request.referrer
     if referrer_url:
         parsed_url = urlparse(referrer_url)
-        page_name = parsed_url.path.split('/')[-1]
-        
-        args = '&'.join(['{}={}'.format(str(key), str(value))
-            for key, value in request.args.items()])
-        return redirect('/{}?{}'.format(page_name, args))
+        return redirect(parsed_url.path)
     else:
         return redirect('')
 
