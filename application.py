@@ -139,31 +139,40 @@ def home():
     zones = utils.helpers.load_zones()
     stats_list = [
         {
-            'logo': 'fa fa-globe-americas',
             'text': _('Zones'),
             'data': len(zones)
         },
         {
-            'logo': 'fa fa-users',
             'text': _('Contributors'),
             'data': handle_channel_data.get_contributors_count()
         },
         {
-            'logo': 'fab fa-youtube',
             'text': _('Videos'),
             'data': channel_info['items'][0]['statistics']['videoCount']
-        },
-        {
-            'logo': 'fa fa-eye',
-            'text': _('Views'),
-            'data': channel_info['items'][0]['statistics']['viewCount']
         }
     ]
     return render_template('home.html', stats_list=stats_list)
 
 @app.route('/home2')
 def home2():
-    return render_template('home2.html')
+    channel_info = utils.helpers.get_channel_info()
+    zones = utils.helpers.load_zones()
+    stats_list = [
+        {
+            'text': _('Zones'),
+            'data': len(zones)
+        },
+        {
+            'text': _('Contributors'),
+            'data': handle_channel_data.get_contributors_count()
+        },
+        {
+            'text': _('Videos'),
+            'data': channel_info['items'][0]['statistics']['videoCount']
+        }
+    ]
+    return render_template('home2.html', stats_list=stats_list)
+
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
 def zones():
