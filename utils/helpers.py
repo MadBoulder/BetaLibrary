@@ -39,33 +39,15 @@ class bidict(dict):
         super(bidict, self).__delitem__(key)
 
 
-def load_zones():
-    """
-    Load the files and names of all the bouldering zones defined
-    in ./data/zones.
-    """
-    areas = next(os.walk(DATA_ZONES_PATH))[1]
-    zones = []
-    for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
-        with open(datafile, encoding=ENCODING) as data:
-            area_data = json.load(data)
-        zones += [{NAME: area_data[NAME], 'file': area}]
-    return zones
-
 def load_sectors():
-    """
-    Load all sectors defined in the bouldering zones at ./data/zones.
-    """
-    areas = next(os.walk(DATA_ZONES_PATH))[1]
+    zone_data = handle_channel_data.get_zone_data()
     sectors = []
-    for area in areas:
-        datafile = DATA_ZONES_PATH + area + '/' + area + '.json'
-        with open(datafile, encoding=ENCODING) as data:
-            area_data = json.load(data)
-        for sector in area_data.get('sectors', []):
-            sectors += [{NAME: sector[NAME], 'link': sector['link']}]
+    for item in zone_data['items']:
+        for sector in item.get('sectors', []):
+            sector['zone_code'] = item['zone_code']
+            sectors.append(sector)
     return sectors
+
 
 def count_sectors_in_zone(zone):
     """
@@ -169,6 +151,21 @@ def measure_similarity(query, zone):
 
 
 def search_zone(query, num_results=4, exact_match=False):
+    zone_data = handle_channel_data.get_zone_data()
+    return search(query, zone_data['items'], num_results, exact_match)
+
+
+def search_sector(query, num_results=4, exact_match=False):
+    sectors = load_sectors()
+    return search(query, sectors, num_results, exact_match)
+
+
+def search_problem(query, num_results=4, exact_match=False):
+    data = handle_channel_data.get_video_data()
+    return search(query, data['items'], num_results, exact_match)
+
+    
+def search(query, items, num_results=4, exact_match=False):
     """
     From an input search query, return at least the 4 best
     matches from the bouldering zones. A perfect match 
@@ -183,72 +180,31 @@ def search_zone(query, num_results=4, exact_match=False):
     """
     if not query:
         return []
-    zones = load_zones()
-    for zone in zones:
-        lev, long_sub = measure_similarity(query, zone[NAME])
+    
+    for item in items:
+        lev, long_sub = measure_similarity(query, item[NAME])
         score = lev / (long_sub ** 4 + 1)
-        zone['score'] = score
-        # If the inputed text is entirely matched in a zone,
+        item['score'] = score
+        # If the inputed text is entirely matched in a item,
         # add a score of 0
         if long_sub == len(query):
-            zone['score'] = 0
-    to_show = [zone for zone in zones if zone['score'] == 0]
+            item['score'] = 0
+    itemps_to_show = [item for item in items if item['score'] == 0]
     
     if exact_match:
-        return to_show
+        return itemps_to_show
 
-    # Add zones required to reach min number of results if non exact
+    # Add items required to reach min number of results if non exact
     # matches should be included
-    if len(to_show) < num_results:
-        # First remove already added zones
-        zones = [zone for zone in zones if zone['score'] != 0]
+    if len(itemps_to_show) < num_results:
+        # First remove already added items
+        no_match_items = [item for item in items if item['score'] != 0]
         # Sort by score
-        zones.sort(key=lambda x: x['score'])
+        no_match_items.sort(key=lambda x: x['score'])
         # Add the ones with the lowest score
-        to_show += zones[0:num_results-len(to_show)]
+        itemps_to_show += no_match_items[0:num_results-len(itemps_to_show)]
 
-    return to_show
-
-def search_sector(query, num_results=4, exact_match=False):
-    """
-    From an input search query, return at least the 4 best
-    matches from the sector list. A perfect match 
-    (which is achieved when the input query is completely contained
-    in the sector's name) is always returned. If the number of perfect
-    matches is less than 4 then we add partial matches, via a score,
-    until the list of results contains 4 entries.
-
-    The score is computed as:
-        - 0 if perfect match
-        - levenshtein / (longest substring ^ 4 + 1) otherwise
-    """
-    if not query:
-        return []
-    sectors = load_sectors()
-    for sector in sectors:
-        lev, long_sub = measure_similarity(query, sector[NAME])
-        score = lev / (long_sub ** 4 + 1)
-        sector['score'] = score
-        # If the inputed text is entirely matched in a zone,
-        # add a score of 0
-        if long_sub == len(query):
-            sector['score'] = 0
-    to_show = [sector for sector in sectors if sector['score'] == 0]
-
-    if exact_match:
-        return to_show
-
-    # Add zones required to reach min number of results if non exact
-    # matches should be included
-    if len(to_show) < num_results:
-        # First remove already added zones
-        sectors = [sector for sector in sectors if sector['score'] != 0]
-        # Sort by score
-        sectors.sort(key=lambda x: x['score'])
-        # Add the ones with the lowest score
-        to_show += sectors[0:num_results-len(to_show)]
-
-    return to_show
+    return itemps_to_show
 
 def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6):
     """

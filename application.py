@@ -2,7 +2,7 @@ import json
 import os
 import random
 import io
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, send_file, jsonify
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -15,6 +15,7 @@ import dashboard
 import dashboard_videos
 import handle_channel_data
 import re
+import time
 from slugify import slugify
 
 from bokeh.embed import components
@@ -197,17 +198,31 @@ def search():
         query = request.form.get('searchterm', '')
         if not query:
             query = request.form.get('searchterm-small', '')
+        return redirect(url_for('search', search_query=query))
     elif request.method == 'GET':
         query = request.args.get('search_query', '')
         
+    print(f"Search request: {query}")
     if query:
+        start_time = time.time()
         search_zone_results = utils.helpers.search_zone(
+            query, NUM_RESULTS, exact_match=True)
+        search_sector_results = utils.helpers.search_sector(
+            query, NUM_RESULTS, exact_match=True)
+        search_problem_results = utils.helpers.search_problem(
             query, NUM_RESULTS, exact_match=True)
         search_beta_results = utils.helpers.get_video_from_channel(
             query, results=5)
+            
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Search execution time: {elapsed_time} seconds")
+            
         return render_template(
             'area-problem-finder.html',
             zones=search_zone_results,
+            sectors=search_sector_results,
+            problems=search_problem_results,
             videos=search_beta_results,
             search_term=query
         )
