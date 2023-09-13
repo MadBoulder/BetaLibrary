@@ -457,6 +457,7 @@ def custom_statistics():
 
 # video count is cached for one hour
 @app.route('/<string:page>')
+@app.route('/templates/zones/<string:page>.html')
 @app.route('/<string:page>.html')
 def render_page(page):
     try:
@@ -475,22 +476,28 @@ def render_page(page):
         return render_template('zones/' + slugify(page) + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
+        
 
 @app.route('/problems/<string:page>/<string:problem_name>')
+@app.route('/templates/problems/<string:page>/<string:problem_name>.html')
 @app.route('/problems/<string:page>/<string:problem_name>.html')
 @app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
     return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
     
+    
 @app.route('/sectors/<string:page>/<string:sector_name>')
+@app.route('/templates/sectors/<string:page>/<string:sector_name>.html')
 @app.route('/sectors/<string:page>/<string:sector_name>.html')
 @app.route('/<string:page>/sector/<string:sector_name>') #deprecated
 def load_sector(page, sector_name):
     return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
 
+
 # this route is used for rendering maps inside an iframe
 @app.route('/maps/<string:area>')
 @app.route('/maps/<string:area>.html')
+@app.route('/templates/maps/<string:area>.html')
 def render_area(area):
     try:
         return render_template('maps/' + area + EXTENSION)
