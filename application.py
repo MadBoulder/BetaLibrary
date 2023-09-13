@@ -192,11 +192,15 @@ def zones():
 
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
 def search():
+    query = ""
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
         if not query:
             query = request.form.get('searchterm-small', '')
-        # Search zones and betas
+    elif request.method == 'GET':
+        query = request.args.get('search_query', '')
+        
+    if query:
         search_zone_results = utils.helpers.search_zone(
             query, NUM_RESULTS, exact_match=True)
         search_beta_results = utils.helpers.get_video_from_channel(
@@ -207,24 +211,11 @@ def search():
             videos=search_beta_results,
             search_term=query
         )
-    if request.method == 'GET':
-        query = request.args.get('search_query', '')
-        if query:
-            search_zone_results = utils.helpers.search_zone(
-                query, NUM_RESULTS, exact_match=True)
-            search_beta_results = utils.helpers.get_video_from_channel(
-                query, results=5)
-            return render_template(
-                'area-problem-finder.html',
-                zones=search_zone_results,
-                videos=search_beta_results,
-                search_term=query
-            )
-        return render_template(
-            'area-problem-finder.html',
-            zones=[],
-            videos=[],
-            search_term='')
+    return render_template(
+        'area-problem-finder.html',
+        zones=[],
+        videos=[],
+        search_term='')
 
 
 
