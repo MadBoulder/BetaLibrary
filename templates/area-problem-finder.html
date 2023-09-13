@@ -10,11 +10,11 @@
 	{% include 'elements/main-menu.html' %}
 	<main>
         <div class="container">
-          <br />
-          <!-- Search bar -->
-		  <div id="searchElement" style="display: block; vertical-align: middle;">
+			<br />
+			<!-- Search bar -->
+			<div id="searchElement" style="display: block; vertical-align: middle;">
 			<form class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
-				<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm"  value="{{ search_term }}" style="align-self: center; border-color: black;">
+				<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
 				<div class="input-group-append">
 				  <button
 					class="btn"
@@ -23,90 +23,112 @@
 				  </button>
 				</div>
 			</form>
-		  </div>
-          <br />
-		  
-          <!--Search results-->
-          {%- if zones -%}
-          <h4>{{ _("Zones") }}</h4>
-          <br />
-          {% for zone in zones %}
-          <p>&bull;<a href="/{{ zone['zone_code'] }}"> {{ zone["name"] }}</a></p>
-          {% endfor %} {%- endif -%}
-          <br />
-          {%- if sectors -%}
-          <h4>{{ _("Sectors") }}</h4>
-          <br />
-          {% for sector in sectors %}
-          <p>&bull;<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}"> {{ sector["name"] }}</a></p>
-		  {% endfor %} {%- endif -%} 
-          <br />
-          {%- if problems -%}
-          <h4>{{ _("Problems") }}</h4>
-          <br />
-          {% for problem in problems %}
-          <p>&bull;<a href="/problems/{{ problem['zone'] }}/{{ problem['name'] }}"> {{ problem["title"] }}</a></p>
-          {% endfor %} {%- endif -%} 
-		  
-		  {%- if videos -%}
-          <br />
-          <h4>{{ _("Betas") }}</h4>
-          <br />
-          {% for video in videos %}
-          <div class="row">
-            <div class="col-lg-2 col-sm-6 my-auto mx-auto">
-              <a href="{{ video['url'] }}" target="_blank">
-                <img
-                  src="{{ video['snippet']['thumbnails']['default']['url'] }}"
-              /></a>
-            </div>
-            <div class="col-lg-10 col-sm-6 my-auto">
-              <a href="{{ video['url'] }}" target="_blank"
-                >{{ video['snippet']['title'] }}</a
-              >
-            </div>
-          </div>
-          <!-- <div class="row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
-              <h5>{{ video["snippet"]["title"] }}</h5>
-              <div style="position: relative; padding-top: 56.25%;">
-                <iframe
-                  src="{{ video['video_url']}}"
-                  frameborder="0"
-                  allowfullscreen
-                  style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                  "
-                >
-                </iframe>
-              </div>
-            </div>
-            <div class="col-sm-3"></div>
-          </div> -->
-          <br />
-          {% endfor %} {%- endif -%} {%- if not zones and not sectors and not problems and not videos -%}
-          <p>{{ _("No results matched your query")}}</p>
-          {%- endif -%}
-          <br />
-          <!-- <h4>{{ _("Sectors") }}</h4>
-          <br />
-          {% for sector in sectors %}
-          <p>
-            &bull;<a href="{{ sector['link'] }}" target="_blank">
-              {{ sector["name"] }}</a
-            >
-          </p>
-          {% endfor %} {%- if not sectors -%}
-          <p>{{ _("No sectors matched your query") }}</p>
-          {%- endif -%}
-          <br /> -->
+			</div>
+			<br />
+			<div id="search_filter_container" class="container text-center" style="display: block;">
+				<button class="btn btn-sort-madboulder filter-button" data-filter="all">
+					<span>{{ _("All results") }} ({{zones|length+sectors|length+problems|length+videos|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="zone">
+					<span>{{ _("Areas") }} ({{zones|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="sector">
+					<span>{{ _("Sectors") }} ({{sectors|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="problem">
+					<span>{{ _("Problems") }} ({{problems|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="video">
+					<span>{{ _("YT Betas") }} ({{videos|length}})</span>
+				</button>
+			</div>
+			<br />
+
+			<!--Search results-->
+			<div id="zone_results" class="result-container">
+				<h4>{{ _("Zones") }}</h4>
+				<br />
+				{% for zone in zones %}
+				<p>&bull;<a href="/{{ zone['zone_code'] }}"> {{ zone["name"] }}</a></p>
+				<br />
+				{% endfor %}
+			</div>
+			
+			<div id="sector_results" class="result-container">
+				<h4>{{ _("Sectors") }}</h4>
+				<br />
+				{% for sector in sectors %}
+				<p>&bull;<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}"> {{ sector["name"] }}</a></p>
+				<br />
+				{% endfor %} 
+				</div>
+				
+			<div id="problem_results" class="result-container">
+				<h4>{{ _("Problems") }}</h4>
+				<br />
+				{% for problem in problems %}
+				<p>&bull;<a href="/problems/{{ problem['zone'] }}/{{ problem['name'] }}"> {{ problem["title"] }}</a></p>
+				<br />
+				{% endfor %} 
+			</div>
+
+			<div id="video_results" class="result-container">
+				<h4>{{ _("Betas") }}</h4>
+				<br />
+				{% for video in videos %}
+				<div class="row">
+				<div class="col-lg-2 col-sm-6 my-auto mx-auto">
+				  <a href="{{ video['url'] }}" target="_blank">
+					<img
+					  src="{{ video['snippet']['thumbnails']['default']['url'] }}"
+				  /></a>
+				</div>
+				<div class="col-lg-10 col-sm-6 my-auto">
+				  <a href="{{ video['url'] }}" target="_blank"
+					>{{ video['snippet']['title'] }}</a
+				  >
+				</div>
+				</div>
+				<br />
+				{% endfor %} 
+			</div>
+
+			{%- if not zones and not sectors and not problems and not videos -%}
+			<p>{{ _("No results matched your query")}}</p>
+			{%- endif -%}
+			<br />
         </div>
 	</main>
 	{% include 'elements/footer.html' %}
   </body>
 </html>
+<script>
+$(document).ready(function() {
+    $(".filter-button[data-filter='all']").addClass("active");
+
+    $(".filter-button").on("click", function() {
+		if ($(this).hasClass("active")) {
+			$(this).removeClass("active");
+			$(".filter-button[data-filter='all']").addClass("active");
+			$(".result-container").show();
+		}
+		else {
+			$(".filter-button").removeClass("active");
+			$(this).addClass("active");
+
+			var filter = $(this).data("filter");
+			if(filter.includes("all")){
+				$(".result-container").show();
+			}
+			else {
+				var show_container_id = "#" + filter + "_results";
+				$(".result-container").hide().not(show_container_id);
+				
+				if (!$(show_container_id).is(":visible")) {
+					$(show_container_id).show();
+				}
+			}
+		}	
+    });
+});
+</script>
