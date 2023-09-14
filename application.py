@@ -2,6 +2,7 @@ import json
 import os
 import random
 import io
+import threading
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
@@ -181,6 +182,8 @@ def zones():
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
 def search():
     query = ""
+    search_results = {}
+    
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
         if not query:
@@ -192,41 +195,60 @@ def search():
     print(f"Search request: {query}")
     if query:
         start_time = time.time()
-        
-        search_zone_start_time = time.time()
-        search_zone_results = utils.helpers.search_zone(
-            query, NUM_RESULTS, exact_match=True)
-        search_zone_elapsed_time = time.time() - search_zone_start_time
+        threads = []
 
-            
-        search_sector_start_time = time.time()
-        search_sector_results = utils.helpers.search_sector(
-            query, NUM_RESULTS, exact_match=True)
-        search_sector_elapsed_time = time.time() - search_sector_start_time
-        
-        search_problem_start_time = time.time()
-        search_problem_results = utils.helpers.search_problem(
-            query, NUM_RESULTS, exact_match=True)
-        search_problem_elapsed_time = time.time() - search_problem_start_time
-        
-        search_beta_start_time = time.time()
-        search_beta_results = utils.helpers.get_video_from_channel(
-            query, results=5)
-        search_beta_elapsed_time = time.time() - search_beta_start_time
-            
+        def search_zone():
+            search_zone_start_time = time.time()
+            search_results['zones'] = utils.helpers.search_zone(
+                query, NUM_RESULTS, exact_match=True)
+            search_zone_elapsed_time = time.time() - search_zone_start_time
+            print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
+
+        def search_sector():
+            search_sector_start_time = time.time()
+            search_results['sectors'] = utils.helpers.search_sector(
+                query, NUM_RESULTS, exact_match=True)
+            search_sector_elapsed_time = time.time() - search_sector_start_time
+            print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
+
+        def search_problem():
+            search_problem_start_time = time.time()
+            search_results['problems'] = utils.helpers.search_problem(
+                query, NUM_RESULTS, exact_match=True)
+            search_problem_elapsed_time = time.time() - search_problem_start_time
+            print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
+
+        def search_beta():
+            search_beta_start_time = time.time()
+            search_results['videos'] = utils.helpers.get_video_from_channel(
+                query, results=5)
+            search_beta_elapsed_time = time.time() - search_beta_start_time
+            print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
+
+        # Create and start threads for each search operation
+        search_zone_thread = threading.Thread(target=search_zone)
+        search_sector_thread = threading.Thread(target=search_sector)
+        search_problem_thread = threading.Thread(target=search_problem)
+        search_beta_thread = threading.Thread(target=search_beta)
+
+        threads.extend([search_zone_thread, search_sector_thread, search_problem_thread, search_beta_thread])
+
+        for thread in threads:
+            thread.start()
+
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+
         total_elapsed_time = time.time() - start_time
         print(f"Search execution time: {total_elapsed_time} seconds")
-        print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
-        print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
-        print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
-        print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
-            
+        
         return render_template(
             'area-problem-finder.html',
-            zones=search_zone_results,
-            sectors=search_sector_results,
-            problems=search_problem_results,
-            videos=search_beta_results,
+            zones=search_results.get('zones', []),
+            sectors=search_results.get('sectors', []),
+            problems=search_results.get('problems', []),
+            videos=search_results.get('videos', []),
             search_term=query
         )
     return render_template(

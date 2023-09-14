@@ -2,6 +2,7 @@ from enum import Enum
 import urllib.request
 import urllib.parse
 import json
+import threading
 from datetime import date
 import re
 import math
@@ -21,6 +22,8 @@ ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
 CONFIG_FILE = 'config.py'
+
+firebase_lock = threading.Lock()
 
 class Case(Enum):
     lower = 1
@@ -414,11 +417,12 @@ def regenerate_firebase_data(is_update=True):
     Load current data from local database and copy it to firebase database
     """
     print('Regenerating Firebase Data')
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
 
     root = db.reference()
     
@@ -435,11 +439,12 @@ def get_video_data():
     """
     Get data from firebase
     """
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
 
     root = db.reference()
     return root.child('video_data').get()
@@ -449,11 +454,12 @@ def get_last_update_date():
     """
     Retrieve the date when the data was last updated
     """
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
 
     root = db.reference()
     return root.child('video_data/date').get()
@@ -463,11 +469,12 @@ def get_contributors_count():
     """
     Get the number of contributors
     """
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
     return db.reference().child('contributor_count').get()
 
 
@@ -486,11 +493,12 @@ def get_zone_data_local():
 
 
 def get_zone_data():
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('madboulder.json')
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://madboulder.firebaseio.com'
-        })
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
 
     root = db.reference()
     return root.child('zone_data').get()
