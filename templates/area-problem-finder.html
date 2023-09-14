@@ -27,7 +27,7 @@
 			<br />
 			<div id="search_filter_container" class="container text-center" style="display: block;">
 				<button class="btn btn-sort-madboulder filter-button" data-filter="all">
-					<span>{{ _("All results") }} ({{zones|length+sectors|length+problems|length+videos|length}})</span>
+					<span>{{ _("All results") }}</span>
 				</button>
 				<button class="btn btn-sort-madboulder filter-button" data-filter="zone">
 					<span>{{ _("Areas") }} ({{zones|length}})</span>
@@ -46,35 +46,69 @@
 
 			<!--Search results-->
 			<div id="zone_results" class="result-container">
-				<h4>{{ _("Zones") }}</h4>
-				<br />
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Areas") }}</h2>
+				</div>
 				{% for zone in zones %}
-				<p>&bull;<a href="/{{ zone['zone_code'] }}"> {{ zone["name"] }}</a></p>
-				<br />
+					<a href="/{{ zone['zone_code'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold">{{ zone["name"] }}</h4>
+							</div>
+							<div class="result-item-subtitle-container">{{ zone["video_count"] }} Problems</div>
+						</div>
+						<div class="result-item-description-container">{{ zone["country"] }}</div>
+					</a>
 				{% endfor %}
+				{%- if not zones -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
 			</div>
 			
 			<div id="sector_results" class="result-container">
-				<h4>{{ _("Sectors") }}</h4>
-				<br />
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Sectors") }}</h2>
+				</div>
 				{% for sector in sectors %}
-				<p>&bull;<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}"> {{ sector["name"] }}</a></p>
-				<br />
+					<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold">{{ sector["name"] }}</h4>
+							</div>
+							<div class="result-item-subtitle-container">{{ sector["video_count"] }} Problems</div>
+						</div>
+						<div class="result-item-description-container">{{ sector["zone_name"] }}</div>
+					</a>
 				{% endfor %} 
+				{%- if not sectors -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
 				</div>
 				
 			<div id="problem_results" class="result-container">
-				<h4>{{ _("Problems") }}</h4>
-				<br />
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Problems") }}</h2>
+				</div>
 				{% for problem in problems %}
-				<p>&bull;<a href="/problems/{{ problem['zone'] }}/{{ problem['name'] }}"> {{ problem["title"] }}</a></p>
-				<br />
-				{% endfor %} 
+					<a href="/problems/{{ problem['zone'] }}/{{ problem['name'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem["name"] }}</h4>
+								<div style="white-space: nowrap;">{{ problem["grade_with_info"] }}</div>
+							</div>
+						</div>
+						<div class="result-item-description-container">{{ problem["zone"] }}</div>
+					</a>
+				{% endfor %}
+				{%- if not problems -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
 			</div>
 
 			<div id="video_results" class="result-container">
-				<h4>{{ _("Betas") }}</h4>
-				<br />
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Betas") }}</h2>
+				</div>
 				{% for video in videos %}
 				<div class="row">
 				<div class="col-lg-2 col-sm-6 my-auto mx-auto">
@@ -91,12 +125,10 @@
 				</div>
 				<br />
 				{% endfor %} 
+				{%- if not videos -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
 			</div>
-
-			{%- if not zones and not sectors and not problems and not videos -%}
-			<p>{{ _("No results matched your query")}}</p>
-			{%- endif -%}
-			<br />
         </div>
 	</main>
 	{% include 'elements/footer.html' %}

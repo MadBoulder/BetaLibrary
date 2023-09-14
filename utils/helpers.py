@@ -45,6 +45,7 @@ def load_sectors():
     for item in zone_data['items']:
         for sector in item.get('sectors', []):
             sector['zone_code'] = item['zone_code']
+            sector['zone_name'] = item['name']
             sectors.append(sector)
     return sectors
 
