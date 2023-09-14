@@ -9,6 +9,7 @@ import os
 from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
+from slugify import slugify
 
 import firebase_admin
 from firebase_admin import credentials
@@ -364,6 +365,7 @@ def process_zone_data_local(
             playlist_json_object['video_count'] = i['contentDetails']['itemCount']
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
+                                                    "sector_code": slugify(sector_name), 
                                                     "id": i['id'], 
                                                     "url": base_url + i['id'],
                                                     "video_count": i['contentDetails']['itemCount']})

@@ -2,95 +2,211 @@
 <html>
   <head>
 	{% include 'scripts/tracking-tools-scripts.html' %}
-    <title>{{ _("Search Results") }}</title>
+    <title>{{ _("Search Results") }} | MadBoulder</title>
+	<meta name="description" content="Search for bouldering areas or sectors, boulder problems and bouldering videos | MadBoulder">
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
   </head>
   <body>
+	<div id="current-language" hidden>{{ current_lang }}</div>
 	{% include 'elements/main-menu.html' %}
 	<main>
         <div class="container">
-          <br />
-          <!-- Search bar -->
-          <form method="post" action="{{ url_for('search') }}">
-            <input
-              type="text"
-              placeholder="{{ _('SEARCH') }}"
-              name="searchterm"
-              value="{{ search_term }}"
-            />
-            <button type="submit" class="btn btn-default">
-              <i class="fa fa-search"></i>
-            </button>
-          </form>
-          <br />
-          <h3>{{ _("You might be looking for") }}...</h3>
-          <br />
-          <!--Search results-->
-          {%- if zones -%}
-          <h4>{{ _("Zones") }}</h4>
-          <br />
-          {% for zone in zones %}
-          <p>&bull;<a href="/{{ zone['file'] }}"> {{ zone["name"] }}</a></p>
-          {% endfor %} {%- endif -%} {%- if videos -%}
-          <br />
-          <h4>{{ _("Betas") }}</h4>
-          <br />
-          {% for video in videos %}
-          <div class="row">
-            <div class="col-lg-2 col-sm-6 my-auto mx-auto">
-              <a href="{{ video['url'] }}" target="_blank">
-                <img
-                  src="{{ video['snippet']['thumbnails']['default']['url'] }}"
-              /></a>
-            </div>
-            <div class="col-lg-10 col-sm-6 my-auto">
-              <a href="{{ video['url'] }}" target="_blank"
-                >{{ video['snippet']['title'] }}</a
-              >
-            </div>
-          </div>
-          <!-- <div class="row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
-              <h5>{{ video["snippet"]["title"] }}</h5>
-              <div style="position: relative; padding-top: 56.25%;">
-                <iframe
-                  src="{{ video['video_url']}}"
-                  frameborder="0"
-                  allowfullscreen
-                  style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                  "
-                >
-                </iframe>
-              </div>
-            </div>
-            <div class="col-sm-3"></div>
-          </div> -->
-          <br />
-          {% endfor %} {%- endif -%} {%- if not zones and not videos -%}
-          <p>{{ _("No results matched your query")}}</p>
-          {%- endif -%}
-          <br />
-          <!-- <h4>{{ _("Sectors") }}</h4>
-          <br />
-          {% for sector in sectors %}
-          <p>
-            &bull;<a href="{{ sector['link'] }}" target="_blank">
-              {{ sector["name"] }}</a
-            >
-          </p>
-          {% endfor %} {%- if not sectors -%}
-          <p>{{ _("No sectors matched your query") }}</p>
-          {%- endif -%}
-          <br /> -->
+			<br />
+			<!-- Search bar -->
+			<div id="searchElement" style="display: block; vertical-align: middle;">
+				<form id="searchForm" class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
+					<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
+					<div class="input-group-append">
+					  <button class="btn" type="submit">
+						<i class="fa fa-search" style="font-size: 1.25rem;"></i>
+					  </button>
+					</div>
+				</form>
+			</div>
+			<br />
+			<div id="search_filter_container" class="container text-center" style="display: block;">
+				<button class="btn btn-sort-madboulder filter-button" data-filter="all">
+					<span>{{ _("All results") }}</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="zone">
+					<span>{{ _("Areas") }} ({{zones|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="sector">
+					<span>{{ _("Sectors") }} ({{sectors|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="problem">
+					<span>{{ _("Problems") }} ({{problems|length}})</span>
+				</button>
+				<button class="btn btn-sort-madboulder filter-button" data-filter="video">
+					<span>{{ _("YT Betas") }} ({{videos|length}})</span>
+				</button>
+			</div>
+			<br />
+
+			<!--Search results-->
+			<div id="zone_results" class="result-container">
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Areas") }}</h2>
+				</div>
+				{% for zone in zones %}
+					<a href="/{{ zone['zone_code'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold">{{ zone["name"] }}</h4>
+							</div>
+							<div class="result-item-subtitle-container">{{ zone["video_count"] }} {{ _("Problems") }}</div>
+						</div>
+						<div class="result-item-description-container">{{ zone["country"] }}</div>
+					</a>
+				{% endfor %}
+				{%- if not zones -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
+			</div>
+			
+			<div id="sector_results" class="result-container">
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Sectors") }}</h2>
+				</div>
+				{% for sector in sectors %}
+					<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold">{{ sector["name"] }}</h4>
+							</div>
+							<div class="result-item-subtitle-container">{{ sector["video_count"] }} {{ _("Problems") }}</div>
+						</div>
+						<div class="result-item-description-container">{{ sector["zone_name"] }}</div>
+					</a>
+				{% endfor %} 
+				{%- if not sectors -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
+				</div>
+				
+			<div id="problem_results" class="result-container">
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("Problems") }}</h2>
+				</div>
+				{% for problem in problems %}
+					<a href="/problems/{{ problem['zone'] }}/{{ problem['name'] }}" class="result-item">
+						<div class="result-item-header">
+							<div class="result-item-title-container">
+								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem["name"] }}</h4>
+								<div style="white-space: nowrap; line-height: 1.625rem;">{{ problem["grade_with_info"] }}</div>
+							</div>
+						</div>
+						<div class="result-item-description-container">{{ problem["zone"] }}</div>
+					</a>
+				{% endfor %}
+				{%- if not problems -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
+			</div>
+
+			<div id="video_results" class="result-container">
+				<div class="result-container-header">
+					<h2 class="text-bold">{{ _("YT Betas") }}</h2>
+				</div>
+				{% for video in videos %}
+					<div class="video-container">
+						<iframe width="560" height="315" src="{{ video['video_url'] }}" frameborder="0" allowfullscreen">
+						</iframe>
+					</div>
+				{% endfor %} 
+				{%- if not videos -%}
+					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+				{%- endif -%}
+			</div>
+			<div style="display: none" id="searchingElement">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header" style="justify-content: center">
+							<h5 class="modal-title">{{ _("Searching...") }}</h5>
+						</div>
+						<div class="modal-body">
+							<div class="text-center">
+								<!-- Loading spinner (replace with your preferred spinner) -->
+								<div class="spinner-border text-primary" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
         </div>
 	</main>
 	{% include 'elements/footer.html' %}
   </body>
 </html>
+<script>
+$(document).ready(function() {
+    $(".filter-button[data-filter='all']").addClass("active");
+
+    $(".filter-button").on("click", function() {
+		if ($(this).hasClass("active")) {
+			$(this).removeClass("active");
+			$(".filter-button[data-filter='all']").addClass("active");
+			$(".result-container").show();
+		}
+		else {
+			$(".filter-button").removeClass("active");
+			$(this).addClass("active");
+
+			var filter = $(this).data("filter");
+			if(filter.includes("all")){
+				$(".result-container").show();
+			}
+			else {
+				var show_container_id = "#" + filter + "_results";
+				$(".result-container").hide().not(show_container_id);
+				
+				if (!$(show_container_id).is(":visible")) {
+					$(show_container_id).show();
+				}
+			}
+		}	
+    });
+});
+
+fetch('/countries.json')
+	.then((response) => response.json())
+	.then((data) => {
+		const countryMappings = data;
+
+		document.querySelectorAll('.result-item-description-container').forEach((descriptionContainer) => {
+			const countryCode = descriptionContainer.textContent.trim();
+			const country = countryMappings[countryCode];
+			if (country) {
+				var current_lang = $("#current-language")[0].childNodes[0].nodeValue;
+				const localizedCountryName = country[current_lang]
+				if (localizedCountryName) {
+					descriptionContainer.textContent = localizedCountryName;
+				}
+			}
+		});
+	})
+	.catch((error) => console.error('Error fetching countries data:', error));
+
+$('#searchForm').submit(function(event) {
+    $(".result-container").hide();
+    $("#search_filter_container").hide();
+    $("#searchingElement").show();
+});
+
+$(document).ready(function() {
+	function showsearchingElement() {
+		$(".result-container").hide();
+		$("#search_filter_container").hide();
+		$("#searchingElement").show();
+	}
+
+	$(window).on('beforeunload', function(event) {
+		if (event.originalEvent && event.originalEvent.target.activeElement.nodeName === 'BODY') {
+			showsearchingElement();
+		}
+	});
+});
+</script>

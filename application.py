@@ -2,7 +2,7 @@ import json
 import os
 import random
 import io
-from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, send_file, jsonify
+from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
@@ -15,6 +15,7 @@ import dashboard
 import dashboard_videos
 import handle_channel_data
 import re
+import time
 from slugify import slugify
 
 from bokeh.embed import components
@@ -126,6 +127,11 @@ def favicon():
 @app.route('/robots.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
+    
+# countries
+@app.route('/countries.json')
+def get_countries():
+    return send_from_directory(os.path.join(app.root_path, 'data'), 'countries.json')
 
 # cache keys for zones
 def zone_cache_key():
@@ -135,12 +141,12 @@ def zone_cache_key():
 @app.route('/home')
 @app.route('/')
 def home():
-    channel_info = utils.helpers.get_channel_info()
-    zones = utils.helpers.load_zones()
+    #channel_info = utils.helpers.get_channel_info()
+    zone_data = handle_channel_data.get_zone_data()
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zones)
+            'data': len(zone_data['items'])
         },
         {
             'text': _('Contributors'),
@@ -148,19 +154,20 @@ def home():
         },
         {
             'text': _('Videos'),
-            'data': channel_info['items'][0]['statistics']['videoCount']
+            'data': 7.582
+            #channel_info['items'][0]['statistics']['videoCount']
         }
     ]
     return render_template('home.html', stats_list=stats_list)
 
 @app.route('/home2')
 def home2():
-    channel_info = utils.helpers.get_channel_info()
-    zones = utils.helpers.load_zones()
+    #channel_info = utils.helpers.get_channel_info()
+    zone_data = handle_channel_data.get_zone_data()
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zones)
+            'data': len(zone_data['items'])
         },
         {
             'text': _('Contributors'),
@@ -168,7 +175,8 @@ def home2():
         },
         {
             'text': _('Videos'),
-            'data': channel_info['items'][0]['statistics']['videoCount']
+            'data': 7.582
+            #channel_info['items'][0]['statistics']['videoCount']
         }
     ]
     return render_template('home2.html', stats_list=stats_list)
@@ -192,39 +200,60 @@ def zones():
 
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
 def search():
+    query = ""
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
         if not query:
             query = request.form.get('searchterm-small', '')
-        # Search zones and betas
+        return redirect(url_for('search', search_query=query))
+    elif request.method == 'GET':
+        query = request.args.get('search_query', '')
+        
+    print(f"Search request: {query}")
+    if query:
+        start_time = time.time()
+        
+        search_zone_start_time = time.time()
         search_zone_results = utils.helpers.search_zone(
             query, NUM_RESULTS, exact_match=True)
+        search_zone_elapsed_time = time.time() - search_zone_start_time
+
+            
+        search_sector_start_time = time.time()
+        search_sector_results = utils.helpers.search_sector(
+            query, NUM_RESULTS, exact_match=True)
+        search_sector_elapsed_time = time.time() - search_sector_start_time
+        
+        search_problem_start_time = time.time()
+        search_problem_results = utils.helpers.search_problem(
+            query, NUM_RESULTS, exact_match=True)
+        search_problem_elapsed_time = time.time() - search_problem_start_time
+        
+        search_beta_start_time = time.time()
         search_beta_results = utils.helpers.get_video_from_channel(
             query, results=5)
+        search_beta_elapsed_time = time.time() - search_beta_start_time
+            
+        total_elapsed_time = time.time() - start_time
+        print(f"Search execution time: {total_elapsed_time} seconds")
+        print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
+        print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
+        print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
+        print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
+            
         return render_template(
             'area-problem-finder.html',
             zones=search_zone_results,
+            sectors=search_sector_results,
+            problems=search_problem_results,
             videos=search_beta_results,
             search_term=query
         )
-    if request.method == 'GET':
-        query = request.args.get('search_query', '')
-        if query:
-            search_zone_results = utils.helpers.search_zone(
-                query, NUM_RESULTS, exact_match=True)
-            search_beta_results = utils.helpers.get_video_from_channel(
-                query, results=5)
-            return render_template(
-                'area-problem-finder.html',
-                zones=search_zone_results,
-                videos=search_beta_results,
-                search_term=query
-            )
-        return render_template(
-            'area-problem-finder.html',
-            zones=[],
-            videos=[],
-            search_term='')
+    return render_template(
+        'area-problem-finder.html',
+        zones=[],
+        videos=[],
+        search_term='')
 
 
 
