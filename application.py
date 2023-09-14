@@ -138,6 +138,7 @@ def zone_cache_key():
     return request.url
 
 # use decorators to link the function to a url
+@app.route('/home.html')
 @app.route('/home')
 @app.route('/')
 def home():
@@ -159,27 +160,6 @@ def home():
         }
     ]
     return render_template('home.html', stats_list=stats_list)
-
-@app.route('/home2')
-def home2():
-    #channel_info = utils.helpers.get_channel_info()
-    zone_data = handle_channel_data.get_zone_data()
-    stats_list = [
-        {
-            'text': _('Zones'),
-            'data': len(zone_data['items'])
-        },
-        {
-            'text': _('Contributors'),
-            'data': handle_channel_data.get_contributors_count()
-        },
-        {
-            'text': _('Videos'),
-            'data': 7.582
-            #channel_info['items'][0]['statistics']['videoCount']
-        }
-    ]
-    return render_template('home2.html', stats_list=stats_list)
 
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
