@@ -20,8 +20,8 @@ from googleapiclient.discovery import build
 
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
-Y_CRED = 'AIzaSyAbPC02W3k-MFU7TmvYCSXfUPfH10jNB7g'
 CONFIG_FILE = 'config.py'
+YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 firebase_lock = threading.Lock()
 
@@ -35,24 +35,18 @@ def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a YouTube channel from the channel's id
     """
-    api_key = None
-    with open('credentials.txt', 'r', encoding='utf-8') as f:
-        api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
-        channel_id, api_key)
+        channel_id, YOUTUBE_API_KEY)
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
 
-def get_video_info(id, api_key):
+def get_video_info(id):
     """
     Get the details of a YouTube video from its id
     """
-    # api_key = None
-    # with open('credentials.txt', 'r', encoding='utf-8') as f:
-    #     api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'.format(
-        id, api_key)
+        id, YOUTUBE_API_KEY)
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
@@ -66,7 +60,7 @@ def update_video_stats(video_data):
     current = 0
     for video in video_data:
         print(current * 100 / total)
-        v_stats = get_video_info(video['id'], Y_CRED)
+        v_stats = get_video_info(video['id'])
         video['stats'] = v_stats['items'][0]['statistics']
         current += 1
     return video_data
@@ -97,12 +91,8 @@ def retrieve_videos_from_channel(
     Get the title, description and id of all the videos uploaded to a channel
     """
     print("retrieve_videos_from_channel")
-    api_key = None
-    with open('credentials.txt', 'r', encoding='utf-8') as f:
-        api_key = f.read()
-
     url = 'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}'.format(
-        channel_id, api_key
+        channel_id, YOUTUBE_API_KEY
     )
     inp = urllib.request.urlopen(url)
     resp = json.load(inp)
@@ -131,7 +121,7 @@ def retrieve_videos_from_channel(
                 v_data['description'] = video['snippet']['description']
                 v_data['id'] = video['snippet']['resourceId']['videoId']
                 v_data['url'] = get_video_url_from_id(v_data['id'])
-                v_stats = get_video_info(v_data['id'], api_key)
+                v_stats = get_video_info(v_data['id'])
                 v_data['stats'] = v_stats['items'][0]['statistics']
                 videos.append(v_data)
             
@@ -146,10 +136,7 @@ def retrieve_videos_from_channel(
 
 
 def retrieve_playlists_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
-    api_key = None
-    with open('credentials.txt', 'r', encoding='utf-8') as f:
-        api_key = f.read()
-    youtube = build("youtube", "v3", developerKey=api_key)
+    youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
 
     playlists = []
     next_page_token = None

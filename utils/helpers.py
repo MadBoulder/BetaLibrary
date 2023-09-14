@@ -14,6 +14,7 @@ MAX_ITEMS_API_QUERY = 50
 DATA_ZONES_PATH = 'data/zones/'
 NAME = 'name'
 ENCODING = 'utf-8'
+YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 class bidict(dict):
     """
@@ -211,15 +212,12 @@ def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6)
     """
     Obtain the num_videos latest videos from MadBoulder's youtube channel
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
-
     base_video_url = '//www.youtube.com/embed/'
     base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
 
     url = base_search_url + \
         'key={}&channelId={}&part=snippet,id&order=date&maxResults={}&type=video'.format(
-            api_key, channel_id, str(num_videos))
+            YOUTUBE_API_KEY, channel_id, str(num_videos))
 
     video_links = []
     inp = urllib.request.urlopen(url)
@@ -235,10 +233,8 @@ def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
     """
     Get the info of a youtube channel from the channel's id
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
     query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
-        channel_id, api_key)
+        channel_id, YOUTUBE_API_KEY)
     inp = urllib.request.urlopen(query_url)
     return json.load(inp)
 
@@ -249,11 +245,9 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
     https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
     """
     try:
-        with open('credentials.txt', 'r', encoding=ENCODING) as f:
-            api_key = f.read()
         base_video_url = '//www.youtube.com/embed/'  # to embed video
         query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
-            urllib.parse.quote(video_name), channel_id, api_key)
+            urllib.parse.quote(video_name), channel_id, YOUTUBE_API_KEY)
         inp = urllib.request.urlopen(query_url)
         resp = json.load(inp)
         for i in resp['items']:
@@ -302,9 +296,6 @@ def get_number_of_videos_and_views_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    with open('credentials.txt', 'r', encoding=ENCODING) as f:
-        api_key = f.read()
-
     # with open('./data/playlist.json', 'r', encoding=ENCODING) as f:
     #     data = json.load(f)
 
@@ -312,7 +303,7 @@ def get_number_of_videos_and_views_for_zone(zone_name):
 
     query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
         data['playlist'],
-        api_key
+        YOUTUBE_API_KEY
     )
     inp = urllib.request.urlopen(query_url)
     resp = json.load(inp)
