@@ -2,7 +2,8 @@
 <html>
   <head>
 	{% include 'scripts/tracking-tools-scripts.html' %}
-    <title>{{ _("Search Results") }}</title>
+    <title>{{ _("Search Results") }} | MadBoulder</title>
+	<meta name="description" content="Search for bouldering areas or sectors, boulder problems and bouldering videos | MadBoulder">
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
   </head>
@@ -56,7 +57,7 @@
 							<div class="result-item-title-container">
 								<h4 class="result-item-title text-bold">{{ zone["name"] }}</h4>
 							</div>
-							<div class="result-item-subtitle-container">{{ zone["video_count"] }} Problems</div>
+							<div class="result-item-subtitle-container">{{ zone["video_count"] }} {{ _("Problems") }}</div>
 						</div>
 						<div class="result-item-description-container">{{ zone["country"] }}</div>
 					</a>
@@ -76,7 +77,7 @@
 							<div class="result-item-title-container">
 								<h4 class="result-item-title text-bold">{{ sector["name"] }}</h4>
 							</div>
-							<div class="result-item-subtitle-container">{{ sector["video_count"] }} Problems</div>
+							<div class="result-item-subtitle-container">{{ sector["video_count"] }} {{ _("Problems") }}</div>
 						</div>
 						<div class="result-item-description-container">{{ sector["zone_name"] }}</div>
 					</a>
@@ -95,7 +96,7 @@
 						<div class="result-item-header">
 							<div class="result-item-title-container">
 								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem["name"] }}</h4>
-								<div style="white-space: nowrap;">{{ problem["grade_with_info"] }}</div>
+								<div style="white-space: nowrap; line-height: 1.625rem;">{{ problem["grade_with_info"] }}</div>
 							</div>
 						</div>
 						<div class="result-item-description-container">{{ problem["zone"] }}</div>
@@ -108,23 +109,13 @@
 
 			<div id="video_results" class="result-container">
 				<div class="result-container-header">
-					<h2 class="text-bold">{{ _("Betas") }}</h2>
+					<h2 class="text-bold">{{ _("YT Betas") }}</h2>
 				</div>
 				{% for video in videos %}
-				<div class="row">
-				<div class="col-lg-2 col-sm-6 my-auto mx-auto">
-				  <a href="{{ video['url'] }}" target="_blank">
-					<img
-					  src="{{ video['snippet']['thumbnails']['default']['url'] }}"
-				  /></a>
-				</div>
-				<div class="col-lg-10 col-sm-6 my-auto">
-				  <a href="{{ video['url'] }}" target="_blank"
-					>{{ video['snippet']['title'] }}</a
-				  >
-				</div>
-				</div>
-				<br />
+					<div class="video-container">
+						<iframe width="560" height="315" src="{{ video['video_url'] }}" frameborder="0" allowfullscreen">
+						</iframe>
+					</div>
 				{% endfor %} 
 				{%- if not videos -%}
 					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
