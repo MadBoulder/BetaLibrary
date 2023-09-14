@@ -142,11 +142,11 @@ def zone_cache_key():
 @app.route('/')
 def home():
     channel_info = utils.helpers.get_channel_info()
-    zones = utils.helpers.load_zones()
+    zone_data = handle_channel_data.get_zone_data()
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zones)
+            'data': len(zone_data['items'])
         },
         {
             'text': _('Contributors'),
@@ -162,11 +162,11 @@ def home():
 @app.route('/home2')
 def home2():
     channel_info = utils.helpers.get_channel_info()
-    zones = utils.helpers.load_zones()
+    zone_data = handle_channel_data.get_zone_data()
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zones)
+            'data': len(zone_data['items'])
         },
         {
             'text': _('Contributors'),
@@ -210,18 +210,34 @@ def search():
     print(f"Search request: {query}")
     if query:
         start_time = time.time()
+        
+        search_zone_start_time = time.time()
         search_zone_results = utils.helpers.search_zone(
             query, NUM_RESULTS, exact_match=True)
+        search_zone_elapsed_time = time.time() - search_zone_start_time
+
+            
+        search_sector_start_time = time.time()
         search_sector_results = utils.helpers.search_sector(
             query, NUM_RESULTS, exact_match=True)
+        search_sector_elapsed_time = time.time() - search_sector_start_time
+        
+        search_problem_start_time = time.time()
         search_problem_results = utils.helpers.search_problem(
             query, NUM_RESULTS, exact_match=True)
+        search_problem_elapsed_time = time.time() - search_problem_start_time
+        
+        search_beta_start_time = time.time()
         search_beta_results = utils.helpers.get_video_from_channel(
             query, results=5)
+        search_beta_elapsed_time = time.time() - search_beta_start_time
             
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Search execution time: {elapsed_time} seconds")
+        total_elapsed_time = time.time() - start_time
+        print(f"Search execution time: {total_elapsed_time} seconds")
+        print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
+        print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
+        print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
+        print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
             
         return render_template(
             'area-problem-finder.html',

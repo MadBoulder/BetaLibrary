@@ -9,6 +9,7 @@ import os
 from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
+from slugify import slugify
 
 import firebase_admin
 from firebase_admin import credentials

@@ -15,16 +15,14 @@
 			<br />
 			<!-- Search bar -->
 			<div id="searchElement" style="display: block; vertical-align: middle;">
-			<form class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
-				<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
-				<div class="input-group-append">
-				  <button
-					class="btn"
-					type="submit" >
-					<i class="fa fa-search" style="font-size: 1.25rem;"></i>
-				  </button>
-				</div>
-			</form>
+				<form id="searchForm" class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
+					<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
+					<div class="input-group-append">
+					  <button class="btn" type="submit">
+						<i class="fa fa-search" style="font-size: 1.25rem;"></i>
+					  </button>
+					</div>
+				</form>
 			</div>
 			<br />
 			<div id="search_filter_container" class="container text-center" style="display: block;">
@@ -121,6 +119,23 @@
 					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
 				{%- endif -%}
 			</div>
+			<div style="display: none" id="searchingElement">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header" style="justify-content: center">
+							<h5 class="modal-title">{{ _("Searching...") }}</h5>
+						</div>
+						<div class="modal-body">
+							<div class="text-center">
+								<!-- Loading spinner (replace with your preferred spinner) -->
+								<div class="spinner-border text-primary" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
         </div>
 	</main>
 	{% include 'elements/footer.html' %}
@@ -174,4 +189,24 @@ fetch('/countries.json')
 		});
 	})
 	.catch((error) => console.error('Error fetching countries data:', error));
+
+$('#searchForm').submit(function(event) {
+    $(".result-container").hide();
+    $("#search_filter_container").hide();
+    $("#searchingElement").show();
+});
+
+$(document).ready(function() {
+	function showsearchingElement() {
+		$(".result-container").hide();
+		$("#search_filter_container").hide();
+		$("#searchingElement").show();
+	}
+
+	$(window).on('beforeunload', function(event) {
+		if (event.originalEvent && event.originalEvent.target.activeElement.nodeName === 'BODY') {
+			showsearchingElement();
+		}
+	});
+});
 </script>
