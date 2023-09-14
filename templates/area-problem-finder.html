@@ -7,6 +7,7 @@
 	{% include 'scripts/cookie-scripts.html' %}
   </head>
   <body>
+	<div id="current-language" hidden>{{ current_lang }}</div>
 	{% include 'elements/main-menu.html' %}
 	<main>
         <div class="container">
@@ -163,4 +164,23 @@ $(document).ready(function() {
 		}	
     });
 });
+
+fetch('/countries.json')
+	.then((response) => response.json())
+	.then((data) => {
+		const countryMappings = data;
+
+		document.querySelectorAll('.result-item-description-container').forEach((descriptionContainer) => {
+			const countryCode = descriptionContainer.textContent.trim();
+			const country = countryMappings[countryCode];
+			if (country) {
+				var current_lang = $("#current-language")[0].childNodes[0].nodeValue;
+				const localizedCountryName = country[current_lang]
+				if (localizedCountryName) {
+					descriptionContainer.textContent = localizedCountryName;
+				}
+			}
+		});
+	})
+	.catch((error) => console.error('Error fetching countries data:', error));
 </script>

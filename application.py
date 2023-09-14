@@ -127,6 +127,11 @@ def favicon():
 @app.route('/robots.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
+    
+# countries
+@app.route('/countries.json')
+def get_countries():
+    return send_from_directory(os.path.join(app.root_path, 'data'), 'countries.json')
 
 # cache keys for zones
 def zone_cache_key():
