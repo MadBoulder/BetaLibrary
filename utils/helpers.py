@@ -163,11 +163,11 @@ def search_sector(query, num_results=4, exact_match=False):
 
 
 def search_problem(query, num_results=4, exact_match=False):
-    data = handle_channel_data.get_video_data()
+    data = handle_channel_data.get_video_data_search_optimized()
     return search(query, data['items'], num_results, exact_match)
 
     
-def search(query, items, num_results=4, exact_match=False):
+def simple_search(query, items, num_results=4, exact_match=False):
     """
     From an input search query, return at least the 4 best
     matches from the bouldering zones. A perfect match 
@@ -180,6 +180,20 @@ def search(query, items, num_results=4, exact_match=False):
         - 0 if perfect match
         - levenshtein / (longest substring ^ 4 + 1) otherwise
     """
+    results = []
+    
+    if not query:
+        return []
+    
+    for item in items:
+        name = item.get("name", "").lower()
+        if query.lower() in name:
+            results.append(item)
+
+    return results
+    
+def search(query, items, num_results=4, exact_match=False):
+   
     if not query:
         return []
     

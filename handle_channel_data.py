@@ -21,7 +21,7 @@ from googleapiclient.discovery import build
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
 CONFIG_FILE = 'config.py'
-YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
+YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY_HANDLE_DATA']
 
 firebase_lock = threading.Lock()
 
@@ -311,10 +311,21 @@ def process_video_data_local(
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)
-
+    
+    processed_data_search_optimized = [video for video in processed_data if video['name'] != 'Unknown']
+    for video in processed_data_search_optimized:
+        del video['stats']
+        del video['description']
+        del video['id']
+        del video['date']
+    
+    
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                    'items': processed_data}, f, indent=4)
+    with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
+        json.dump({'date': str(date.today()),
+                   'items': processed_data_search_optimized}, f, indent=4)
                    
          
 def process_zone_data_local(
@@ -416,6 +427,9 @@ def regenerate_firebase_data(is_update=True):
     video_data = get_data_local()
     root.child('video_data').set(video_data)
     
+    video_data_search_optimized = get_data_local_search_optimized()
+    root.child('video_data_search_optimized').set(video_data_search_optimized)
+    
     zone_data = get_zone_data_local()
     root.child('zone_data').set(zone_data)
     
@@ -435,6 +449,20 @@ def get_video_data():
 
     root = db.reference()
     return root.child('video_data').get()
+    
+def get_video_data_search_optimized():
+    """
+    Get data optimized for searching from firebase
+    """
+    with firebase_lock:
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('madboulder.json')
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://madboulder.firebaseio.com'
+            })
+
+    root = db.reference()
+    return root.child('video_data_search_optimized').get()
 
 
 def get_last_update_date():
@@ -465,6 +493,12 @@ def get_contributors_count():
     return db.reference().child('contributor_count').get()
 
 
+def get_data_local_search_optimized():
+    video_data = {}
+    with open('data/channel/processed_data_search_optimized.json', 'r', encoding='utf-8') as f:
+        video_data = json.load(f)
+    return video_data
+    
 def get_data_local():
     video_data = {}
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
