@@ -80,9 +80,10 @@ def get_sectors_from_zone(zone_code):
         for s in sectors:
             if s[1] == slugify(p['sector']):
                 alreadyAdded=True
+                s[2] += 1
                 break
         if not alreadyAdded:
-            sectors.append([p['sector'], slugify(p['sector'])])
+            sectors.append([p['sector'], slugify(p['sector']), 1])
             
     if len(sectors) == 1:
         if sectors[0] == "Unknown":
