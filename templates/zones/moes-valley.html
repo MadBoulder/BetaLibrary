@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/moes-valley">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Moe's Valley 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="37.06622" />
   <input type="hidden" id="lng" name="lng_val" value="-113.629762" />
@@ -168,367 +248,119 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://stores.sharpendbooks.com/st-george-bouldering-includes-2-year-subscription-to-digital-edition-see-the-digital-page-for-complete-details/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			St. George Bouldering
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/moe-s-valley" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
+		<a id="guide_link"  href="https://www.mountainproject.com/area/106028834/moes-valley" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Mountain Project
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://stores.sharpendbooks.com/st-george-bouldering-includes-2-year-subscription-to-digital-edition-see-the-digital-page-for-complete-details/"
-        target="_blank"
-        >St. George Bouldering</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/moe-s-valley"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.mountainproject.com/area/106028834/moes-valley"
-        target="_blank"
-        >Mountain Project</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/moes-valley"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/moes-valley"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/moes-valley/a-word-from-our-sponsors">A Word From Our Sponsors, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/athletes-foot">Athlete’s Foot, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/backhoe-left">Backhoe Left, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/backhoe-middle">Backhoe Middle, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/backhoe-right">Backhoe Right, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/boris">Boris, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/boris">Boris, V9 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/crippler">Crippler, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/dead-rabbit">Dead Rabbit, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/device-ignitor-left">Device Ignitor Left, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/device-ignitor-middle">Device Ignitor Middle, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/full-garage">Full Garage, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/gravity-breach">Gravity Breach, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/gription">Gription, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/hesher-was-here">Hesher Was Here, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/high-value-target">High Value Target, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/huntsman-graffiti">Huntsman Graffiti, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/indolence">Indolence, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/israil">Israil, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/israil-direct">Israil Direct, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/jabberwock-arete">Jabberwock Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/kung-pao">Kung Pao, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/leaping-leptons">Leaping Leptons, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/linder-s-roof">Linder's Roof, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/linder-s-roof-variation">Linder's Roof Variation, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/loose-cannon">Loose Cannon, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/paradise-lost">Paradise Lost, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/pink-lady">Pink Lady, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/press-for-jess">Press for Jess, V6+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/rex-arete">Rex Arete, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/scavenger-soup">Scavenger Soup, V9-</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/sentinel">Sentinel, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/shot-hole">Shot Hole, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/shoulder-popper">Shoulder Popper, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/show-of-hands">Show of Hands, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/skinny-love">Skinny Love, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/solid-toad">Solid Toad, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/spectro">Spectro, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/spiral-helix">Spiral Helix, V9-10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/teepee-traverse">Teepee Traverse, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/the-drum">The Drum, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/the-goose">The Goose, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/the-spider">The Spider, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/thermal-detonator">Thermal Detonator, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/tight-cannon">Tight Cannon, V5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/toadstool-traverse">Toadstool Traverse, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/underwhelmed">UnderWhelmed, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/underachiever">Underachiever, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/white-rabbit">White Rabbit, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/moes-valley/yo-yo-boy">Yo Yo Boy, V8</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "moes-valley_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/moes-valley/mario-land">Mario Land</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/moes-valley/sentinel">Sentinel</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/moes-valley/south-end">South End</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/moes-valley/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "moes-valley_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/moes-valley/mario-land" class="table-row-name text-bold">Mario Land</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/moes-valley/sentinel" class="table-row-name text-bold">Sentinel</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/moes-valley/south-end" class="table-row-name text-bold">South End</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/moes-valley/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">44</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -553,8 +385,480 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/a-word-from-our-sponsors" class="table-row-name text-bold">A Word From Our Sponsors</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/athletes-foot" class="table-row-name text-bold">Athlete’s Foot</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/backhoe-left" class="table-row-name text-bold">Backhoe Left</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/backhoe-middle" class="table-row-name text-bold">Backhoe Middle</a>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/backhoe-right" class="table-row-name text-bold">Backhoe Right</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/boris" class="table-row-name text-bold">Boris</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/boris" class="table-row-name text-bold">Boris</a>
+					</td>
+					<td>V9 (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/crippler" class="table-row-name text-bold">Crippler</a>
+					</td>
+					<td>V6</td>
+					<td>Sentinel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/dead-rabbit" class="table-row-name text-bold">Dead Rabbit</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/device-ignitor-left" class="table-row-name text-bold">Device Ignitor Left</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/device-ignitor-middle" class="table-row-name text-bold">Device Ignitor Middle</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/full-garage" class="table-row-name text-bold">Full Garage</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/gravity-breach" class="table-row-name text-bold">Gravity Breach</a>
+					</td>
+					<td>V6</td>
+					<td>South End</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/gription" class="table-row-name text-bold">Gription</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/hesher-was-here" class="table-row-name text-bold">Hesher Was Here</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/high-value-target" class="table-row-name text-bold">High Value Target</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/huntsman-graffiti" class="table-row-name text-bold">Huntsman Graffiti</a>
+					</td>
+					<td>V5</td>
+					<td>Sentinel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/indolence" class="table-row-name text-bold">Indolence</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/israil" class="table-row-name text-bold">Israil</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/israil-direct" class="table-row-name text-bold">Israil Direct</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/jabberwock-arete" class="table-row-name text-bold">Jabberwock Arete</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/kung-pao" class="table-row-name text-bold">Kung Pao</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/leaping-leptons" class="table-row-name text-bold">Leaping Leptons</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/linder-s-roof" class="table-row-name text-bold">Linder's Roof</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/linder-s-roof-variation" class="table-row-name text-bold">Linder's Roof Variation</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/loose-cannon" class="table-row-name text-bold">Loose Cannon</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/paradise-lost" class="table-row-name text-bold">Paradise Lost</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/pink-lady" class="table-row-name text-bold">Pink Lady</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/press-for-jess" class="table-row-name text-bold">Press for Jess</a>
+					</td>
+					<td>V6+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/rex-arete" class="table-row-name text-bold">Rex Arete</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/scavenger-soup" class="table-row-name text-bold">Scavenger Soup</a>
+					</td>
+					<td>V9-</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/sentinel" class="table-row-name text-bold">Sentinel</a>
+					</td>
+					<td>V2</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/shot-hole" class="table-row-name text-bold">Shot Hole</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/shoulder-popper" class="table-row-name text-bold">Shoulder Popper</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/show-of-hands" class="table-row-name text-bold">Show of Hands</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/skinny-love" class="table-row-name text-bold">Skinny Love</a>
+					</td>
+					<td>V6</td>
+					<td>Mario Land</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/solid-toad" class="table-row-name text-bold">Solid Toad</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/spectro" class="table-row-name text-bold">Spectro</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/spiral-helix" class="table-row-name text-bold">Spiral Helix</a>
+					</td>
+					<td>V9-10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/teepee-traverse" class="table-row-name text-bold">Teepee Traverse</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/the-drum" class="table-row-name text-bold">The Drum</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/the-goose" class="table-row-name text-bold">The Goose</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/the-spider" class="table-row-name text-bold">The Spider</a>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/thermal-detonator" class="table-row-name text-bold">Thermal Detonator</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/tight-cannon" class="table-row-name text-bold">Tight Cannon</a>
+					</td>
+					<td>V5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/toadstool-traverse" class="table-row-name text-bold">Toadstool Traverse</a>
+					</td>
+					<td>V5</td>
+					<td>Mario Land</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/underwhelmed" class="table-row-name text-bold">UnderWhelmed</a>
+					</td>
+					<td>V6</td>
+					<td>South End</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/underachiever" class="table-row-name text-bold">Underachiever</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/white-rabbit" class="table-row-name text-bold">White Rabbit</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/moes-valley/yo-yo-boy" class="table-row-name text-bold">Yo Yo Boy</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/alcaniz">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Alcañiz 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.067511" />
   <input type="hidden" id="lng" name="lng_val" value="-0.091174" />
@@ -168,1075 +248,235 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.boulderalcaniz.com/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Boulder Alcañiz
+		</a>
+	
+		<a id="guide_link"  href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Boulder en España (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.boulderalcaniz.com/"
-        target="_blank"
-        >Boulder Alcañiz</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/"
-        target="_blank"
-        >Boulder en España (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/alcaniz"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/alcaniz"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/alcaniz/a-poing-fermes">A poing fermés, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/a-traves-de-los-huecos">A través de los huecos, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/abacus">Abacus, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/abreviatura">Abreviatura, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/adrenalina">Adrenalina, 7a (super sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/al-aya-que-voy">Al aya que voy, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/al-norte-del-eden">Al norte del Edén, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/al-otro-lado-finlandia">Al otro lado Finlandia, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/aliens">Aliens, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/alto-xico">Alto xico, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/amanecer">Amanecer, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/analogique">Analogique, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/anuros">Anuros, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/arenal-sound">Arenal Sound, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/aristocroto">Aristocroto, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/arrebato-primate">Arrebato primate, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/arrow-boys">Arrow boys, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/atardecer">Atardecer, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/atraco-a-las-tres">Atraco a las tres, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ave">Ave, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ano-del-conejo">Año del conejo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ba-boom">Ba-Boom, 8B+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/baby-rubik">Baby Rubik, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/batman-sin-sangre">Batman sin sangre, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/beginers-dyno">Beginers Dyno, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/birdmatching">Birdmatching, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/bonito-paseo">Bonito paseo, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/calefactor">Calefactor, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/calentando-el-biceps">Calentando el biceps, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/canguro">Canguro, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/cana-de-azucar">Caña de azúcar, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/chucrug">Chucrug, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/contre-nature">Contre Nature, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/dedo-vaginal">Dedo vaginal, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/delicatesen">Delicatesen, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/duotriphobie">Duotriphobie, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/durisimo-o-papel">Durísimo o papel, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-anfibio">El Anfibio, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-aprendiz-de-romos">El Aprendiz de Romos, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-barano-de-alcaniz">El Barano de Alcañiz, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-bunker">El Bunker, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-eden">El Edén, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-erizo">El Erizo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-finlandes-herrante">El Finlandes herrante, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-mochuelo">El Mochuelo, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-ninja-guarro">El Ninja Guarro, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-oraculo-de-delfos">El Oráculo de Delfos, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-portal-de-belen">El Portal de Belén, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-quintet">El Quintet, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-retorno-de-jonatan">El Retorno de Jonatan, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-arreclau">El arreclau, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-bidedo-motiferomotifero">El bidedo motiferomotifero, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-bidedo-motiferomotifero-izquierda">El bidedo motiferomotifero izquierda, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-carnivoro">El carnívoro, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-del-medio-de-los-primos">El del medio de los primos, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-ermitano">El ermitaño, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-hombre-de-negro">El hombre de negro, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-insecto">El insecto, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-mejor-quinto-del-mundo">El mejor quinto del mundo, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-muro-de-berlin">El muro de Berlín, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-nino-gusano">El niño gusano, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-pajarraco">El pajarraco, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-pajarraco">El pajarraco, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-sorpasso">El sorpasso, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/el-viajero-cuantico">El viajero cuántico, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ergomot">Ergomot, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/esclat">Esclat, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/eskimo">Eskimo, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/espinillaitor-izquierda">Espinillaitor izquierda, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/espoo">Espoo, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/espoo">Espoo, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/esquina-magnificulo">Esquina magnificulo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/faritraccion">Faritracción, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/faritraccion">Faritracción, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/fengshui">Fengshui, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/filito-de-cordoba">Filito de Córdoba, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/finnish-press">Finnish press, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/flu-g-ecko">Flu-G-ecko, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/for-shorties-with-love">For Shorties with love, 7a (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/fullet-tortuga">Fullet Tortuga, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/fun-people">Fun People, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/gethsemani">Gethsémani, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/glyphosate">Glyphosate, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/heiligs-blechle">Heiligs Blechle, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/helsinki">Helsinki, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/hidden-gem">Hidden Gem, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/hidden-gem-left">Hidden Gem left, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/hidden-gem-right">Hidden Gem right, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/hidroelectrico">Hidroeléctrico, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/holey-grail">Holey Grail, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/hydropaseo">Hydropaseo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/inesperada">Inesperada, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/introversion">Introversiòn, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/jinete-palido">Jinete pálido, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/kleine-meise-grosses-herz">Kleine Meise großes Herz, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/l-escanyolit">L'Escanyolit, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/l-esclafit">L'Esclafit, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-esquina">La Esquina, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-parca">La Parca, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-rana-fantasma">La Rana Fantasma, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-salada">La Salada, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-cabra-que-no-volo">La cabra que no voló, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-cabra-voladora">La cabra voladora, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-chimenea-de-andorra">La chimenea de Andorra, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-duda">La duda, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-ensalada">La ensalada, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-escalopendra">La escalopendra, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-espada-de-damocles">La espada de Damocles, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-ley-del-talion">La ley del Talión, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-naranja">La naranja, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-odisea">La odisea, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-ola">La ola, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-plegatina">La plegatina, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-princesa-de-grecia">La princesa de Grecia, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-travesia-del-buho">La travesía del buho, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/la-ultima-escapada">La última escapada, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/libertarias-para-los-makis">Libertarias para los makis, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/links-der-mit">Links der mit, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/lo-que-el-viento-se-llevo">Lo Que el Viento se Llevó, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/lo-que-nos-trajo-el-viento">Lo que nos trajo el viento, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/los-makis">Los Makis, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/los-lunes-al-sol">Los lunes al sol, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/los-tres-pinos">Los tres pinos, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/luigi">Luigi, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/lunacy">Lunacy, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/lunatron">Lunatron, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/machupichu">Machupichu, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/machupichu">Machupichu, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/macrodose">Macrodose, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/mangiare-il-culo">Mangiare il Culo, 8A</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/manjus-place">Manjus Place, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/manolo-el-yesero">Manolo el Yesero, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/mantel-easy">Mantel easy, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/mantelman">Mantelman, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/martzis-problem">Martzis problem, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/mate-te">Mate te, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/maximo-quinto-mas">Maximo quinto más, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/metano-man-lance">Metano Man lance, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/moist-side-of-the-moon">Moist side of the Moon, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/monolithe">Monolithe, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/mundo-romalia">Mundo romalia, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/nada-es-lo-que-parece">Nada es lo que parece, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/naturaleza-humana">Naturaleza humana, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/nature-ou-culture">Nature ou culture, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/nina-voladora">Niña voladora, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/no-relief">No Relief, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/no-fail-zone">No fail zone, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/no-fly-zone">No fly zone, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/not-so-evil-twin">Not so evil twin, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/neonicotinoide">Nèonicotinoide, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ojo-de-perrita">Ojo de Perrita, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/only-the-good-die-young">Only the good die young, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/otro-mason">Otro Mason, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/pan-con-aceite">Pan con aceite, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/pan-de-chocolate">Pan de chocolate, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/panaderia-de-agujeros">Panadería de agujeros, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/pasiego-desde-el-fondo">Pasiego desde el fondo, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/pasion-por-la-birra">Pasión por la birra, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/peakaboo">Peakaboo, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/percussion">Percussion, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/placa-final">Placa Final, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/placa-padre">Placa Padre, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/place-vendome">Place Vendome, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/plan-b">Plan B, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/purple-frog">Purple Frog, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/pyraminx">Pyraminx, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/quintessence">Quintessence, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/red">Red, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/reolardo-left">Reolardo Left, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/resilience">Resilience, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/romualdotegi">Romualdotegi, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/recession">Rècession, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/repercussion">Répercussion, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/saper">Saper, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/saper-de-calada">Saper de Calada, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/saurios">Saurios, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/signo-positivo">Signo positivo, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/signo-positivo-directo">Signo positivo directo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/sin-aliento">Sin aliento, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/sistema-iberico">Sistema Ibérico, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/sous-acide">Sous acide, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/stay-forever">Stay Forever, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/stay-for-day">Stay for day, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/super-mario">Super Mario, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/surco">Surco, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/tacto-rectal-left">Tacto rectal Left, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/tantantan">Tantantan, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/tepui">Tepui, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/test-av-teknik">Test av teknik, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/the-big-egg">The big egg, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/the-look-out">The look out, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/the-night-wanderer">The night wanderer, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/transpondeur">Transpondeur, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/triton">Tritón, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/una-escapada-perfecta">Una escapada perfecta, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/uplifting">Uplifting, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/vectrex">Vectrex, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/vertebrados">Vertebrados, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/via-finlandes">Via Finlandes, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/volando-voy">Volando voy, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/vuelo-de-fantasia">Vuelo de Fantasia, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/wtf">WTF, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/warmup">Warmup, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/watch-your-back">Watch your back, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/way-out-of-the-jam">Way out of the jam, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/wipeout">Wipeout, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/zelda">Zelda, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/zeta-negra">Zeta Negra, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/zimous">Zimous, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/anglahund">Änglahund, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/alcaniz/ejection-directe">Èjection directe, 7b</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "alcaniz_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/alcaniz/anfibio">Anfibio</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/cabezo-gordo">Cabezo Gordo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/camineros">Camineros</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/el-anfibio">El Anfibio</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/el-arenal">El Arenal</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/el-barranco-del-ciego">El Barranco del Ciego</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/el-bulevar">El Bulevar</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/la-badina">La Badina</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/la-dehesa">La Dehesa</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/la-paridera">La Paridera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/la-via">La Vía</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/la-bandereta">La bandereta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/manjus-place">Manjus Place</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/muralla-china">Muralla China</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/peche-melba">Peche melba</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/san-miguel">San Miguel</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/santa-barbara">Santa Bárbara</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/studio-54">Studio 54</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/val-de-sincesta">Val de Sincesta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/alcaniz/val-de-sincestas">Val de Sincestas</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "alcaniz_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/anfibio" class="table-row-name text-bold">Anfibio</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/cabezo-gordo" class="table-row-name text-bold">Cabezo Gordo</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/camineros" class="table-row-name text-bold">Camineros</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/el-anfibio" class="table-row-name text-bold">El Anfibio</a>
+					</td>
+					<td class="text-center">39</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/el-arenal" class="table-row-name text-bold">El Arenal</a>
+					</td>
+					<td class="text-center">41</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/el-barranco-del-ciego" class="table-row-name text-bold">El Barranco del Ciego</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/el-bulevar" class="table-row-name text-bold">El Bulevar</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/la-badina" class="table-row-name text-bold">La Badina</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/la-dehesa" class="table-row-name text-bold">La Dehesa</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/la-paridera" class="table-row-name text-bold">La Paridera</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/la-via" class="table-row-name text-bold">La Vía</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/la-bandereta" class="table-row-name text-bold">La bandereta</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/manjus-place" class="table-row-name text-bold">Manjus Place</a>
+					</td>
+					<td class="text-center">28</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/muralla-china" class="table-row-name text-bold">Muralla China</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/peche-melba" class="table-row-name text-bold">Peche melba</a>
+					</td>
+					<td class="text-center">21</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/san-miguel" class="table-row-name text-bold">San Miguel</a>
+					</td>
+					<td class="text-center">15</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/santa-barbara" class="table-row-name text-bold">Santa Bárbara</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/studio-54" class="table-row-name text-bold">Studio 54</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/val-de-sincesta" class="table-row-name text-bold">Val de Sincesta</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/alcaniz/val-de-sincestas" class="table-row-name text-bold">Val de Sincestas</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1264,7 +504,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Dehesa</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1290,7 +530,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Manjus Place</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1316,7 +556,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Camineros</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1342,7 +582,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La bandereta</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1368,7 +608,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Paridera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1394,7 +634,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Santa Bárbara</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1420,7 +660,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Studio 54</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1446,7 +686,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Barranco del Ciego</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1472,7 +712,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Peche melba</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1498,7 +738,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Arenal</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1524,7 +764,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>San Miguel</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1550,7 +790,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Val de Sincesta</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1576,7 +816,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Badina</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1602,7 +842,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Anfibio</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1628,7 +868,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Vía</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1651,8 +891,1929 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/a-poing-fermes" class="table-row-name text-bold">A poing fermés</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Muralla China</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/a-traves-de-los-huecos" class="table-row-name text-bold">A través de los huecos</a>
+					</td>
+					<td>7a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/abacus" class="table-row-name text-bold">Abacus</a>
+					</td>
+					<td>7a+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/abreviatura" class="table-row-name text-bold">Abreviatura</a>
+					</td>
+					<td>5</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/adrenalina" class="table-row-name text-bold">Adrenalina</a>
+					</td>
+					<td>7a (super sit)</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/al-aya-que-voy" class="table-row-name text-bold">Al aya que voy</a>
+					</td>
+					<td>6a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/al-norte-del-eden" class="table-row-name text-bold">Al norte del Edén</a>
+					</td>
+					<td>6a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/al-otro-lado-finlandia" class="table-row-name text-bold">Al otro lado Finlandia</a>
+					</td>
+					<td>5</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/aliens" class="table-row-name text-bold">Aliens</a>
+					</td>
+					<td>6b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/alto-xico" class="table-row-name text-bold">Alto xico</a>
+					</td>
+					<td>7c</td>
+					<td>La bandereta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/amanecer" class="table-row-name text-bold">Amanecer</a>
+					</td>
+					<td>7a+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/analogique" class="table-row-name text-bold">Analogique</a>
+					</td>
+					<td>8a</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/anuros" class="table-row-name text-bold">Anuros</a>
+					</td>
+					<td>5</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/arenal-sound" class="table-row-name text-bold">Arenal Sound</a>
+					</td>
+					<td>6c+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/aristocroto" class="table-row-name text-bold">Aristocroto</a>
+					</td>
+					<td>6c</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/arrebato-primate" class="table-row-name text-bold">Arrebato primate</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/arrow-boys" class="table-row-name text-bold">Arrow boys</a>
+					</td>
+					<td>7c</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/atardecer" class="table-row-name text-bold">Atardecer</a>
+					</td>
+					<td>6b</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/atraco-a-las-tres" class="table-row-name text-bold">Atraco a las tres</a>
+					</td>
+					<td>6b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ave" class="table-row-name text-bold">Ave</a>
+					</td>
+					<td>7a+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ano-del-conejo" class="table-row-name text-bold">Año del conejo</a>
+					</td>
+					<td>6a+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ba-boom" class="table-row-name text-bold">Ba-Boom</a>
+					</td>
+					<td>8B+</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/baby-rubik" class="table-row-name text-bold">Baby Rubik</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/batman-sin-sangre" class="table-row-name text-bold">Batman sin sangre</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/beginers-dyno" class="table-row-name text-bold">Beginers Dyno</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/birdmatching" class="table-row-name text-bold">Birdmatching</a>
+					</td>
+					<td>6c+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/bonito-paseo" class="table-row-name text-bold">Bonito paseo</a>
+					</td>
+					<td>5</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/calefactor" class="table-row-name text-bold">Calefactor</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/calentando-el-biceps" class="table-row-name text-bold">Calentando el biceps</a>
+					</td>
+					<td>6a</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/canguro" class="table-row-name text-bold">Canguro</a>
+					</td>
+					<td>7c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/cana-de-azucar" class="table-row-name text-bold">Caña de azúcar</a>
+					</td>
+					<td>7a</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/chucrug" class="table-row-name text-bold">Chucrug</a>
+					</td>
+					<td>6a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/contre-nature" class="table-row-name text-bold">Contre Nature</a>
+					</td>
+					<td>7b</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/dedo-vaginal" class="table-row-name text-bold">Dedo vaginal</a>
+					</td>
+					<td>7a+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/delicatesen" class="table-row-name text-bold">Delicatesen</a>
+					</td>
+					<td>5+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/duotriphobie" class="table-row-name text-bold">Duotriphobie</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/durisimo-o-papel" class="table-row-name text-bold">Durísimo o papel</a>
+					</td>
+					<td>7b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-anfibio" class="table-row-name text-bold">El Anfibio</a>
+					</td>
+					<td>7b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-aprendiz-de-romos" class="table-row-name text-bold">El Aprendiz de Romos</a>
+					</td>
+					<td>6b</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-barano-de-alcaniz" class="table-row-name text-bold">El Barano de Alcañiz</a>
+					</td>
+					<td>6c</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-bunker" class="table-row-name text-bold">El Bunker</a>
+					</td>
+					<td>6b+</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-eden" class="table-row-name text-bold">El Edén</a>
+					</td>
+					<td>5+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-erizo" class="table-row-name text-bold">El Erizo</a>
+					</td>
+					<td>7a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-finlandes-herrante" class="table-row-name text-bold">El Finlandes herrante</a>
+					</td>
+					<td>7a</td>
+					<td>La Dehesa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-mochuelo" class="table-row-name text-bold">El Mochuelo</a>
+					</td>
+					<td>4</td>
+					<td>El Barranco del Ciego</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-ninja-guarro" class="table-row-name text-bold">El Ninja Guarro</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bulevar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-oraculo-de-delfos" class="table-row-name text-bold">El Oráculo de Delfos</a>
+					</td>
+					<td>7b</td>
+					<td>Santa Bárbara</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-portal-de-belen" class="table-row-name text-bold">El Portal de Belén</a>
+					</td>
+					<td>7a</td>
+					<td>La Dehesa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-quintet" class="table-row-name text-bold">El Quintet</a>
+					</td>
+					<td>6b</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-retorno-de-jonatan" class="table-row-name text-bold">El Retorno de Jonatan</a>
+					</td>
+					<td>6b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-arreclau" class="table-row-name text-bold">El arreclau</a>
+					</td>
+					<td>6a+</td>
+					<td>El Barranco del Ciego</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-bidedo-motiferomotifero" class="table-row-name text-bold">El bidedo motiferomotifero</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-bidedo-motiferomotifero-izquierda" class="table-row-name text-bold">El bidedo motiferomotifero izquierda</a>
+					</td>
+					<td>6b+</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-carnivoro" class="table-row-name text-bold">El carnívoro</a>
+					</td>
+					<td>6c+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-del-medio-de-los-primos" class="table-row-name text-bold">El del medio de los primos</a>
+					</td>
+					<td>7a</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-ermitano" class="table-row-name text-bold">El ermitaño</a>
+					</td>
+					<td>7a</td>
+					<td>Santa Bárbara</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-hombre-de-negro" class="table-row-name text-bold">El hombre de negro</a>
+					</td>
+					<td>6b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-insecto" class="table-row-name text-bold">El insecto</a>
+					</td>
+					<td>6b</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-mejor-quinto-del-mundo" class="table-row-name text-bold">El mejor quinto del mundo</a>
+					</td>
+					<td>5</td>
+					<td>Studio 54</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-muro-de-berlin" class="table-row-name text-bold">El muro de Berlín</a>
+					</td>
+					<td>6c+</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-nino-gusano" class="table-row-name text-bold">El niño gusano</a>
+					</td>
+					<td>6b</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-pajarraco" class="table-row-name text-bold">El pajarraco</a>
+					</td>
+					<td>6b</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-pajarraco" class="table-row-name text-bold">El pajarraco</a>
+					</td>
+					<td>6c+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-sorpasso" class="table-row-name text-bold">El sorpasso</a>
+					</td>
+					<td>6a+</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/el-viajero-cuantico" class="table-row-name text-bold">El viajero cuántico</a>
+					</td>
+					<td>6c</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ergomot" class="table-row-name text-bold">Ergomot</a>
+					</td>
+					<td>6a</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/esclat" class="table-row-name text-bold">Esclat</a>
+					</td>
+					<td>6b+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/eskimo" class="table-row-name text-bold">Eskimo</a>
+					</td>
+					<td>5</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/espinillaitor-izquierda" class="table-row-name text-bold">Espinillaitor izquierda</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/espoo" class="table-row-name text-bold">Espoo</a>
+					</td>
+					<td>6a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/espoo" class="table-row-name text-bold">Espoo</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/esquina-magnificulo" class="table-row-name text-bold">Esquina magnificulo</a>
+					</td>
+					<td>7a</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/faritraccion" class="table-row-name text-bold">Faritracción</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/faritraccion" class="table-row-name text-bold">Faritracción</a>
+					</td>
+					<td>6c+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/fengshui" class="table-row-name text-bold">Fengshui</a>
+					</td>
+					<td>6b+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/filito-de-cordoba" class="table-row-name text-bold">Filito de Córdoba</a>
+					</td>
+					<td>7b</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/finnish-press" class="table-row-name text-bold">Finnish press</a>
+					</td>
+					<td>6b</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/flu-g-ecko" class="table-row-name text-bold">Flu-G-ecko</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/for-shorties-with-love" class="table-row-name text-bold">For Shorties with love</a>
+					</td>
+					<td>7a (low)</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/fullet-tortuga" class="table-row-name text-bold">Fullet Tortuga</a>
+					</td>
+					<td>7a</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/fun-people" class="table-row-name text-bold">Fun People</a>
+					</td>
+					<td>7b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/gethsemani" class="table-row-name text-bold">Gethsémani</a>
+					</td>
+					<td>7b</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/glyphosate" class="table-row-name text-bold">Glyphosate</a>
+					</td>
+					<td>6c</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/heiligs-blechle" class="table-row-name text-bold">Heiligs Blechle</a>
+					</td>
+					<td>6b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/helsinki" class="table-row-name text-bold">Helsinki</a>
+					</td>
+					<td>6a+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/hidden-gem" class="table-row-name text-bold">Hidden Gem</a>
+					</td>
+					<td>6c+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/hidden-gem-left" class="table-row-name text-bold">Hidden Gem left</a>
+					</td>
+					<td>6c+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/hidden-gem-right" class="table-row-name text-bold">Hidden Gem right</a>
+					</td>
+					<td>6c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/hidroelectrico" class="table-row-name text-bold">Hidroeléctrico</a>
+					</td>
+					<td>6a+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/holey-grail" class="table-row-name text-bold">Holey Grail</a>
+					</td>
+					<td>7a+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/hydropaseo" class="table-row-name text-bold">Hydropaseo</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/inesperada" class="table-row-name text-bold">Inesperada</a>
+					</td>
+					<td>7a+</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/introversion" class="table-row-name text-bold">Introversiòn</a>
+					</td>
+					<td>7b</td>
+					<td>Val de Sincesta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/jinete-palido" class="table-row-name text-bold">Jinete pálido</a>
+					</td>
+					<td>6a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/kleine-meise-grosses-herz" class="table-row-name text-bold">Kleine Meise großes Herz</a>
+					</td>
+					<td>6a+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/l-escanyolit" class="table-row-name text-bold">L'Escanyolit</a>
+					</td>
+					<td>7c</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/l-esclafit" class="table-row-name text-bold">L'Esclafit</a>
+					</td>
+					<td>7c</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-esquina" class="table-row-name text-bold">La Esquina</a>
+					</td>
+					<td>6a</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-parca" class="table-row-name text-bold">La Parca</a>
+					</td>
+					<td>7b+</td>
+					<td>La Paridera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-rana-fantasma" class="table-row-name text-bold">La Rana Fantasma</a>
+					</td>
+					<td>6a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-salada" class="table-row-name text-bold">La Salada</a>
+					</td>
+					<td>7a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-cabra-que-no-volo" class="table-row-name text-bold">La cabra que no voló</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-cabra-voladora" class="table-row-name text-bold">La cabra voladora</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-chimenea-de-andorra" class="table-row-name text-bold">La chimenea de Andorra</a>
+					</td>
+					<td>7a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-duda" class="table-row-name text-bold">La duda</a>
+					</td>
+					<td>7a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-ensalada" class="table-row-name text-bold">La ensalada</a>
+					</td>
+					<td>6b+</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-escalopendra" class="table-row-name text-bold">La escalopendra</a>
+					</td>
+					<td>6b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-espada-de-damocles" class="table-row-name text-bold">La espada de Damocles</a>
+					</td>
+					<td>6b</td>
+					<td>Santa Bárbara</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-ley-del-talion" class="table-row-name text-bold">La ley del Talión</a>
+					</td>
+					<td>6a+</td>
+					<td>El Barranco del Ciego</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-naranja" class="table-row-name text-bold">La naranja</a>
+					</td>
+					<td>6a</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-odisea" class="table-row-name text-bold">La odisea</a>
+					</td>
+					<td>7a+</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-ola" class="table-row-name text-bold">La ola</a>
+					</td>
+					<td>6b+</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-plegatina" class="table-row-name text-bold">La plegatina</a>
+					</td>
+					<td>6b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-princesa-de-grecia" class="table-row-name text-bold">La princesa de Grecia</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-travesia-del-buho" class="table-row-name text-bold">La travesía del buho</a>
+					</td>
+					<td>4</td>
+					<td>El Barranco del Ciego</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/la-ultima-escapada" class="table-row-name text-bold">La última escapada</a>
+					</td>
+					<td>6b+</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/libertarias-para-los-makis" class="table-row-name text-bold">Libertarias para los makis</a>
+					</td>
+					<td>7c</td>
+					<td>La Paridera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/links-der-mit" class="table-row-name text-bold">Links der mit</a>
+					</td>
+					<td>5</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/lo-que-el-viento-se-llevo" class="table-row-name text-bold">Lo Que el Viento se Llevó</a>
+					</td>
+					<td>7b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/lo-que-nos-trajo-el-viento" class="table-row-name text-bold">Lo que nos trajo el viento</a>
+					</td>
+					<td>6b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/los-makis" class="table-row-name text-bold">Los Makis</a>
+					</td>
+					<td>8a</td>
+					<td>La Paridera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/los-lunes-al-sol" class="table-row-name text-bold">Los lunes al sol</a>
+					</td>
+					<td>7b+</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/los-tres-pinos" class="table-row-name text-bold">Los tres pinos</a>
+					</td>
+					<td>8a</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/luigi" class="table-row-name text-bold">Luigi</a>
+					</td>
+					<td>6a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/lunacy" class="table-row-name text-bold">Lunacy</a>
+					</td>
+					<td>7b</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/lunatron" class="table-row-name text-bold">Lunatron</a>
+					</td>
+					<td>7b</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/machupichu" class="table-row-name text-bold">Machupichu</a>
+					</td>
+					<td>6c+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/machupichu" class="table-row-name text-bold">Machupichu</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/macrodose" class="table-row-name text-bold">Macrodose</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/mangiare-il-culo" class="table-row-name text-bold">Mangiare il Culo</a>
+					</td>
+					<td>8A</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/manjus-place" class="table-row-name text-bold">Manjus Place</a>
+					</td>
+					<td>6c+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/manolo-el-yesero" class="table-row-name text-bold">Manolo el Yesero</a>
+					</td>
+					<td>6b+</td>
+					<td>Santa Bárbara</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/mantel-easy" class="table-row-name text-bold">Mantel easy</a>
+					</td>
+					<td>6c+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/mantelman" class="table-row-name text-bold">Mantelman</a>
+					</td>
+					<td>7a</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/martzis-problem" class="table-row-name text-bold">Martzis problem</a>
+					</td>
+					<td>6b</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/mate-te" class="table-row-name text-bold">Mate te</a>
+					</td>
+					<td>5+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/maximo-quinto-mas" class="table-row-name text-bold">Maximo quinto más</a>
+					</td>
+					<td>6a+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/metano-man-lance" class="table-row-name text-bold">Metano Man lance</a>
+					</td>
+					<td>7a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/moist-side-of-the-moon" class="table-row-name text-bold">Moist side of the Moon</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/monolithe" class="table-row-name text-bold">Monolithe</a>
+					</td>
+					<td>7a</td>
+					<td>Cabezo Gordo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/mundo-romalia" class="table-row-name text-bold">Mundo romalia</a>
+					</td>
+					<td>6b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/nada-es-lo-que-parece" class="table-row-name text-bold">Nada es lo que parece</a>
+					</td>
+					<td>6b+</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/naturaleza-humana" class="table-row-name text-bold">Naturaleza humana</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Peche Melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/nature-ou-culture" class="table-row-name text-bold">Nature ou culture</a>
+					</td>
+					<td>7a+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/nina-voladora" class="table-row-name text-bold">Niña voladora</a>
+					</td>
+					<td>7a</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/no-relief" class="table-row-name text-bold">No Relief</a>
+					</td>
+					<td>7a+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/no-fail-zone" class="table-row-name text-bold">No fail zone</a>
+					</td>
+					<td>7b+</td>
+					<td>La bandereta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/no-fly-zone" class="table-row-name text-bold">No fly zone</a>
+					</td>
+					<td>7a</td>
+					<td>La bandereta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/not-so-evil-twin" class="table-row-name text-bold">Not so evil twin</a>
+					</td>
+					<td>5+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/neonicotinoide" class="table-row-name text-bold">Nèonicotinoide</a>
+					</td>
+					<td>7b</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ojo-de-perrita" class="table-row-name text-bold">Ojo de Perrita</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/only-the-good-die-young" class="table-row-name text-bold">Only the good die young</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bulevar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/otro-mason" class="table-row-name text-bold">Otro Mason</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/pan-con-aceite" class="table-row-name text-bold">Pan con aceite</a>
+					</td>
+					<td>6a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/pan-de-chocolate" class="table-row-name text-bold">Pan de chocolate</a>
+					</td>
+					<td>6b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/panaderia-de-agujeros" class="table-row-name text-bold">Panadería de agujeros</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/pasiego-desde-el-fondo" class="table-row-name text-bold">Pasiego desde el fondo</a>
+					</td>
+					<td>7b</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/pasion-por-la-birra" class="table-row-name text-bold">Pasión por la birra</a>
+					</td>
+					<td>6c+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/peakaboo" class="table-row-name text-bold">Peakaboo</a>
+					</td>
+					<td>5</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/percussion" class="table-row-name text-bold">Percussion</a>
+					</td>
+					<td>6c+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/placa-final" class="table-row-name text-bold">Placa Final</a>
+					</td>
+					<td>6a</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/placa-padre" class="table-row-name text-bold">Placa Padre</a>
+					</td>
+					<td>7a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/place-vendome" class="table-row-name text-bold">Place Vendome</a>
+					</td>
+					<td>7a</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/plan-b" class="table-row-name text-bold">Plan B</a>
+					</td>
+					<td>7a</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/purple-frog" class="table-row-name text-bold">Purple Frog</a>
+					</td>
+					<td>6a</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/pyraminx" class="table-row-name text-bold">Pyraminx</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/quintessence" class="table-row-name text-bold">Quintessence</a>
+					</td>
+					<td>7a</td>
+					<td>El Bulevar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/red" class="table-row-name text-bold">Red</a>
+					</td>
+					<td>7a+</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/reolardo-left" class="table-row-name text-bold">Reolardo Left</a>
+					</td>
+					<td>6c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/resilience" class="table-row-name text-bold">Resilience</a>
+					</td>
+					<td>6c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/romualdotegi" class="table-row-name text-bold">Romualdotegi</a>
+					</td>
+					<td>6b</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/recession" class="table-row-name text-bold">Rècession</a>
+					</td>
+					<td>7a+</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/repercussion" class="table-row-name text-bold">Répercussion</a>
+					</td>
+					<td>6c</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/saper" class="table-row-name text-bold">Saper</a>
+					</td>
+					<td>6b+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/saper-de-calada" class="table-row-name text-bold">Saper de Calada</a>
+					</td>
+					<td>6c+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/saurios" class="table-row-name text-bold">Saurios</a>
+					</td>
+					<td>5</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/signo-positivo" class="table-row-name text-bold">Signo positivo</a>
+					</td>
+					<td>6b</td>
+					<td>Val de Sincesta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/signo-positivo-directo" class="table-row-name text-bold">Signo positivo directo</a>
+					</td>
+					<td>7a</td>
+					<td>Val de Sincestas</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/sin-aliento" class="table-row-name text-bold">Sin aliento</a>
+					</td>
+					<td>6b</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/sistema-iberico" class="table-row-name text-bold">Sistema Ibérico</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/sous-acide" class="table-row-name text-bold">Sous acide</a>
+					</td>
+					<td>7a+</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/stay-forever" class="table-row-name text-bold">Stay Forever</a>
+					</td>
+					<td>7b</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/stay-for-day" class="table-row-name text-bold">Stay for day</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/super-mario" class="table-row-name text-bold">Super Mario</a>
+					</td>
+					<td>6c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/surco" class="table-row-name text-bold">Surco</a>
+					</td>
+					<td>6b</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/tacto-rectal-left" class="table-row-name text-bold">Tacto rectal Left</a>
+					</td>
+					<td>6b</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/tantantan" class="table-row-name text-bold">Tantantan</a>
+					</td>
+					<td>6a</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/tepui" class="table-row-name text-bold">Tepui</a>
+					</td>
+					<td>6c</td>
+					<td>Val de Sincesta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/test-av-teknik" class="table-row-name text-bold">Test av teknik</a>
+					</td>
+					<td>6b+</td>
+					<td>Studio 54</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/the-big-egg" class="table-row-name text-bold">The big egg</a>
+					</td>
+					<td>8a</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/the-look-out" class="table-row-name text-bold">The look out</a>
+					</td>
+					<td>7c</td>
+					<td>La vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/the-night-wanderer" class="table-row-name text-bold">The night wanderer</a>
+					</td>
+					<td>7c</td>
+					<td>La Vía</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/transpondeur" class="table-row-name text-bold">Transpondeur</a>
+					</td>
+					<td>7a</td>
+					<td>La Badina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/triton" class="table-row-name text-bold">Tritón</a>
+					</td>
+					<td>6a+</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/una-escapada-perfecta" class="table-row-name text-bold">Una escapada perfecta</a>
+					</td>
+					<td>6a</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/uplifting" class="table-row-name text-bold">Uplifting</a>
+					</td>
+					<td>6b+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/vectrex" class="table-row-name text-bold">Vectrex</a>
+					</td>
+					<td>6c</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/vertebrados" class="table-row-name text-bold">Vertebrados</a>
+					</td>
+					<td>6b+</td>
+					<td>Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/via-finlandes" class="table-row-name text-bold">Via Finlandes</a>
+					</td>
+					<td>6c+</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/volando-voy" class="table-row-name text-bold">Volando voy</a>
+					</td>
+					<td>7a+</td>
+					<td>San Miguel</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/vuelo-de-fantasia" class="table-row-name text-bold">Vuelo de Fantasia</a>
+					</td>
+					<td>7b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/wtf" class="table-row-name text-bold">WTF</a>
+					</td>
+					<td>6c</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/warmup" class="table-row-name text-bold">Warmup</a>
+					</td>
+					<td>6a</td>
+					<td>Peche melba</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/watch-your-back" class="table-row-name text-bold">Watch your back</a>
+					</td>
+					<td>5+</td>
+					<td>El Arenal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/way-out-of-the-jam" class="table-row-name text-bold">Way out of the jam</a>
+					</td>
+					<td>7b</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/wipeout" class="table-row-name text-bold">Wipeout</a>
+					</td>
+					<td>6c</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/zelda" class="table-row-name text-bold">Zelda</a>
+					</td>
+					<td>7a</td>
+					<td>Manjus Place</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/zeta-negra" class="table-row-name text-bold">Zeta Negra</a>
+					</td>
+					<td>7b</td>
+					<td>La Paridera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/zimous" class="table-row-name text-bold">Zimous</a>
+					</td>
+					<td>6b</td>
+					<td>Camineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/anglahund" class="table-row-name text-bold">Änglahund</a>
+					</td>
+					<td>7b</td>
+					<td>El Anfibio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/alcaniz/ejection-directe" class="table-row-name text-bold">Èjection directe</a>
+					</td>
+					<td>7b</td>
+					<td>San Miguel</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

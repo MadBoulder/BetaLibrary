@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/chironico">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Chironico 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="46.42778104652293" />
   <input type="hidden" id="lng" name="lng_val" value="8.849207004026766" />
@@ -168,1078 +248,261 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.ticinoboulder.ch/ticino-guides" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Guide
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/chironico" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.ticinoboulder.ch/ticino-guides"
-        target="_blank"
-        >Guide</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/chironico"
-        target="_blank"
-        >27Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/chironico"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/chironico"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/chironico/21-grammi">21 grammi, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/3o-cane">3º Cane, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/60-da-nient">60% da nient, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/actium">Actium, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/ada">Ada, 3 </a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/addis-a-baba">Addis a baba, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/agility">Agility, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/al-caprone">Al Caprone, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/alzati">Alzati, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/alzati-e-cammina">Alzati e cammina, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/anchor-s-punch">Anchor's punch, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/angelo-da-spoleto">Angelo da Spoleto, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/anna-s-best">Anna's best, 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/araucaria">Araucaria, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/auto-pilot">Auto pilot, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/azucarera">Azucarera, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/baby-boss">Baby Boss, 7C</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bastardo-dentro">Bastardo dentro, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/beat">Beat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bella-nicki">Bella Nicki, 6c+/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bella-gnocca">Bella gnocca, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bella-gnocca">Bella gnocca, 6c+/7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bella-luna">Bella luna, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/belzebu">Belzebù, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/big-kat">Big kat, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/big-paw">Big paw, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/blochx-addiction">Blochx addiction, 8A</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/boogalagga">Boogalagga, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/border-line">Border Line, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bridge-over-troubled-water">Bridge over troubled water, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/bugs-bunny">Bugs Bunny, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/cafe-de-la-gare">Café de la gare, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/call-of-duty">Call of duty, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/camilla">Camilla, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/carepe">Carepe, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/carta-bianca">Carta bianca, 5+/6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/cippili-merli">Cippili merli, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/confession-of-a-crap-artist">Confession of a crap artist, 7b+/7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/conquistador">Conquistador, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/conquistador-direct">Conquistador direct, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/cruncky">Cruncky, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/cubitus">Cubitus, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/deliverance">Deliverance, 8a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/delusion-of-grandeur">Delusion of grandeur, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/delusion-of-grandeur">Delusion of grandeur, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/der-mit-dem-fels-tanzt">Der mit dem Fels tanzt, 8b+/8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/dessert">Dessert, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/devil-s-bay">Devil's Bay, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/diapason">Diapason, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/die-roboter">Die Roboter, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/doctor-crimp">Doctor Crimp, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/doctor-jump">Doctor Jump, 7c+/8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/doctor-med-dent">Doctor Med Dent, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/doctor-pinch">Doctor Pinch, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/doctor-direct">Doctor direct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/drizzle">Drizzle, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/due-passi">Due passi, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/edizioni-limitate">Edizioni limitate, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/eduard">Eduard, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/el-talisman">El talisman, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/el-talisman-left">El talisman left, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/electro-swing">Electro Swing, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/expolama">Expolama, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/expolama">Expolama, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/eyorjoi">Eyorjoi, 6a+/6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/fast-food">Fast Food, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/fat-boy">Fat boy, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/feeling-the-wind">Feeling the wind, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/fengshui-masters">Fengshui masters, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/fire-and-fox-direct">Fire and fox Direct, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/forgotten-gem">Forgotten Gem, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/freak-brothers">Freak brothers, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/fresco-look">Fresco look, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/from-dirt-grows-the-flowers">From dirt grows the flowers, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/frontline">Frontline, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/galileo-bis">Galileo bis, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/ghe-pu-da-religion">Ghè pù da religion, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/giurin-giureta">Giurin giureta, 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/globetrotter">Globetrotter, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/gschirrlade">Gschirrlade, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/hebelgesetz">Hebelgesetz, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/hopper">Hopper, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/hurtigrutten">Hurtigrutten, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/ibex">Ibex, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/il-pilone">Il pilone, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/infognada">Infognada, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/insanity-of-grandeur">Insanity of grandeur, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/jim-s-nook-trav-s">Jim's nook trav's, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/julian">Julian, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/jya">Jya, 8A+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/jattene">Jättene, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/keinfisch-kleinfisch">Keinfisch Kleinfisch, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/kleine-lexicon">Kleine lexicon, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/komilator">Komilator, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/kristallpalast">Kristallpalast, 6c/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/l-equilibrista">L'equilibrista, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/l-uccello-in-chiesa">L'uccello in chiesa, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-dance-des-ceps">La dance des ceps, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-deliranza">La deliranza, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-persistenza-de-la-memoria">La persistenza de la memoria, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-piattosa">La piattosa, 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-scoira">La scoira, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/la-virtu-dei-forti">La virtù dei forti, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/le-pilier">Le pilier, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/le-trio-infernale">Le trio infernale, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/le-vent-nous-portera">Le vent nous portera, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/les-cliques-a-claques">Les cliquês à claques, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/les-cliques-a-claques">Les cliquês à claques, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/life-goes-on">Life goes on, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/life-s-good">Life's Good, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/los-cursos">Los cursos, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/lackerli-crack-variante">Läckerli crack variante, a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/made-in-norway">Made in Norway, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/mandarin-the">Mandarin the, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/maracas">Maracas, 5 </a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/marron-glace">Marron glacé, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/matusalem">Matusalem, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/midnight-lightning-of-ticino">Midnight lightning of Ticino, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/miss-schweiz">Miss Schweiz, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/muffin">Muffin, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/mystic-river">Mystic river, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/merite-le-detour">Mérite le détour, 8A+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/no-mistery">No mistery, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/noblesse-oblige">Noblesse oblige, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/nobody-ist-der-grosste">Nobody ist der Größte, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/number-one">Number one, 6c+/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/obiettivo-top">Obiettivo top, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/onda-verde">Onda verde, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/orgoglione-seduto">Orgoglione seduto, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/pause-caffe">Pause caffè, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/pekka">Pekka, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/pet-terapie-sit-down">Pet terapie sit down, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/petit-beurre">Petit beurre, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/picciriddu">Picciriddu, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/pizzinino">Pizzinino, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/plat-du-jour">Plat du jour, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/primitive-tango">Primitive tango, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-1-boulder-11-boogalagga">Problem 1 (Boulder 11, Boogalagga), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-1-boulder-12-centrale">Problem 1 (Boulder 12, Centrale), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-1-boulder-16a-deliverance">Problem 1 (Boulder 16a, Deliverance), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-2-boulder-1-freak-brothers">Problem 2 (Boulder 1, Freak brothers), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-2-boulder-3-deliverance">Problem 2 (Boulder 3, Deliverance), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-2a-boulder-12-centrale">Problem 2A (Boulder 12, Centrale), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-3-boulder-16-boogalagga">Problem 3 (Boulder 16, Boogalagga), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-3-boulder-2-schattental-fiume">Problem 3 (Boulder 2, Schattental fiume), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-4-boulder-10-boogalagga">Problem 4 (Boulder 10, Boogalagga), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-5-boulder-13-centrale">Problem 5 (Boulder 13, Centrale), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-6-boulder-13-centrale">Problem 6 (Boulder 13, Centrale), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/problem-8a-boulder-9-matusalem">Problem 8A (Boulder 9, Matusalem), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/pudding">Pudding, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/ragazzo-profumato">Ragazzo profumato, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rah-plats-plats">Rah, Plats, Plats, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rechtsrutsch">Rechtsrutsch, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rene">Renè, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/revolution">Revolution, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rizla">Rizla, 6a+/6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/road-to-permission">Road to Permission, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rovesciami">Rovesciami, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rummikub">Rummikub, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/rusca-plac">Rusca plac, 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/san-pedro">San Pedro, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/santo-subito">Santo subito, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/saponetta-meili">Saponetta meili, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/saponetta-meili">Saponetta meili, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/satanik">Satanik, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/schlonziges-weiner-schmankerl">Schlonziges weiner Schmankerl, 8a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/schnittstelle">Schnittstelle, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/schuhschachtel">Schuhschachtel, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/schule-des-lebens">Schule des Lebens, 8a+/8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/schwarzes-loch">Schwarzes Loch, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/second-life">Second life, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/seconda-chance">Seconda chance, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/see-leunch">See leunch, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/senza-mani">Senza mani, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/seppi-s-boulder">Seppi's boulder, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/serre-moi-fort">Serre moi fort, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/serre-moi-fort">Serre moi fort, 8A (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/shadowfax">Shadowfax, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/shamans">Shamans, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/sloggia-massonica">Sloggia Massonica, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/smemory">Smemory, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/snowdonia">Snowdonia, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/sollbruchstelle">Sollbruchstelle, 7a+/7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/spider-catcher">Spider catcher, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/split-in-two">Split in two, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/stars-gate">Stars gate, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/super-gulp">Super gulp, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/switcher">Switcher, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/team-work">Team work, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-great-shark-hunt">The Great Shark Hunt, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-alphane-moon">The alphane moon, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-aviator">The aviator, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-big-swing">The big swing, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-real-shield">The real shield, 7b+/7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-scent-of-snow">The scent of snow, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/the-sickle">The sickle, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/tiranocc">Tiranocc, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/tomahawk">Tomahawk, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/traumadienst">Traumadienst, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/tricky">Tricky, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/urbi-et-orbi">Urbi et orbi, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/vecchia-fiamma">Vecchia fiamma, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/verita-nascosta">Verità nascosta, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/vier-gleiche">Vier Gleiche, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/vitruvian-man">Vitruvian Man, 7a (with chipped pocket)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/white-noise">White noise, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/willenberg-dach">Willenberg Dach, 7c+/8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/wrap-artist">Wrap Artist, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/chironico/zen-boulder">Zen boulder, 6a+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "chironico_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/chironico/101">101</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/altirolo-barriera">Altirolo barriera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/altirolo-chiesa">Altirolo chiesa</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/anchor-s-punch">Anchor's punch</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/barriera">Barriera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/boogalagga">Boogalagga</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/border-line">Border line</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/centrale">Centrale</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/deliverance">Deliverance</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/doctor-med-dent">Doctor Med Dent</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/freak-brothers">Freak brothers</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/la-soucoupe">La soucoupe</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/les-doigts-verts">Les doigts verts</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/matusalem">Matusalem</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/new-age">New Age</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/nivo-alta">Nivo alta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/nivo-bassa">Nivo bassa</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/paese">Paese</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/rah-plats-plat">Rah Plats Plat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/rah-plats-plats">Rah Plats Plats</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/schattental">Schattental</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/schattental-fiume">Schattental fiume</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/serre-moi-fort">Serre moi fort</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/shattental">Shattental</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/chironico/teamwork">Teamwork</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "chironico_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/101" class="table-row-name text-bold">101</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/altirolo-barriera" class="table-row-name text-bold">Altirolo barriera</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/altirolo-chiesa" class="table-row-name text-bold">Altirolo chiesa</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/anchor-s-punch" class="table-row-name text-bold">Anchor's punch</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/barriera" class="table-row-name text-bold">Barriera</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/boogalagga" class="table-row-name text-bold">Boogalagga</a>
+					</td>
+					<td class="text-center">20</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/border-line" class="table-row-name text-bold">Border line</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/centrale" class="table-row-name text-bold">Centrale</a>
+					</td>
+					<td class="text-center">18</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/deliverance" class="table-row-name text-bold">Deliverance</a>
+					</td>
+					<td class="text-center">28</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/doctor-med-dent" class="table-row-name text-bold">Doctor Med Dent</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/freak-brothers" class="table-row-name text-bold">Freak brothers</a>
+					</td>
+					<td class="text-center">10</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/la-soucoupe" class="table-row-name text-bold">La soucoupe</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/les-doigts-verts" class="table-row-name text-bold">Les doigts verts</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/matusalem" class="table-row-name text-bold">Matusalem</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/new-age" class="table-row-name text-bold">New Age</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/nivo-alta" class="table-row-name text-bold">Nivo alta</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/nivo-bassa" class="table-row-name text-bold">Nivo bassa</a>
+					</td>
+					<td class="text-center">22</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/paese" class="table-row-name text-bold">Paese</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/rah-plats-plat" class="table-row-name text-bold">Rah Plats Plat</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/rah-plats-plats" class="table-row-name text-bold">Rah Plats Plats</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/schattental" class="table-row-name text-bold">Schattental</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/schattental-fiume" class="table-row-name text-bold">Schattental fiume</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/serre-moi-fort" class="table-row-name text-bold">Serre moi fort</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/shattental" class="table-row-name text-bold">Shattental</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/chironico/teamwork" class="table-row-name text-bold">Teamwork</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1267,7 +530,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La soucoupe</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1293,7 +556,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Altirolo barriera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1319,7 +582,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>New Age</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1345,7 +608,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Barriera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1371,7 +634,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Altirolo chiesa</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1397,7 +660,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Border line</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1423,7 +686,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Serre moi fort</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1449,7 +712,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Doctor Med Dent</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1475,7 +738,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Anchor's punch</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1501,7 +764,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Paese</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1527,7 +790,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Schattental fiume</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1553,7 +816,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Schattental</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1579,7 +842,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Teamwork</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1605,7 +868,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Freak brothers</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1631,7 +894,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>101</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1657,7 +920,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Barriera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1683,7 +946,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>New Age</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1709,7 +972,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Les doigts verts</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1735,7 +998,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Rah Plats Plats</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1761,7 +1024,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La soucoupe</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1787,7 +1050,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Boogalagga</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1813,7 +1076,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Nivo bassa</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1839,7 +1102,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Centrale</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1865,7 +1128,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Nivo alta</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1891,7 +1154,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Matusalem</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1917,7 +1180,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Deliverance</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1940,8 +1203,1911 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/21-grammi" class="table-row-name text-bold">21 grammi</a>
+					</td>
+					<td>7c+</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/3o-cane" class="table-row-name text-bold">3º Cane</a>
+					</td>
+					<td>8a</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/60-da-nient" class="table-row-name text-bold">60% da nient</a>
+					</td>
+					<td>7a</td>
+					<td>Anchor's punch</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/actium" class="table-row-name text-bold">Actium</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/ada" class="table-row-name text-bold">Ada</a>
+					</td>
+					<td>3 </td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/addis-a-baba" class="table-row-name text-bold">Addis a baba</a>
+					</td>
+					<td>6b</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/agility" class="table-row-name text-bold">Agility</a>
+					</td>
+					<td>7b+</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/al-caprone" class="table-row-name text-bold">Al Caprone</a>
+					</td>
+					<td>5+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/alzati" class="table-row-name text-bold">Alzati</a>
+					</td>
+					<td>6a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/alzati-e-cammina" class="table-row-name text-bold">Alzati e cammina</a>
+					</td>
+					<td>6b+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/anchor-s-punch" class="table-row-name text-bold">Anchor's punch</a>
+					</td>
+					<td>8a</td>
+					<td>Anchor's punch</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/angelo-da-spoleto" class="table-row-name text-bold">Angelo da Spoleto</a>
+					</td>
+					<td>6b+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/anna-s-best" class="table-row-name text-bold">Anna's best</a>
+					</td>
+					<td>3</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/araucaria" class="table-row-name text-bold">Araucaria</a>
+					</td>
+					<td>6a</td>
+					<td>Rah Plats Plat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/auto-pilot" class="table-row-name text-bold">Auto pilot</a>
+					</td>
+					<td>7a+</td>
+					<td>Serre moi fort</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/azucarera" class="table-row-name text-bold">Azucarera</a>
+					</td>
+					<td>6a</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/baby-boss" class="table-row-name text-bold">Baby Boss</a>
+					</td>
+					<td>7C</td>
+					<td>Altirolo barriera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bastardo-dentro" class="table-row-name text-bold">Bastardo dentro</a>
+					</td>
+					<td>6b</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/beat" class="table-row-name text-bold">Beat</a>
+					</td>
+					<td>6b</td>
+					<td>Doctor Med Dent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bella-nicki" class="table-row-name text-bold">Bella Nicki</a>
+					</td>
+					<td>6c+/7a</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bella-gnocca" class="table-row-name text-bold">Bella gnocca</a>
+					</td>
+					<td>5+</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bella-gnocca" class="table-row-name text-bold">Bella gnocca</a>
+					</td>
+					<td>6c+/7a+</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bella-luna" class="table-row-name text-bold">Bella luna</a>
+					</td>
+					<td>8b</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/belzebu" class="table-row-name text-bold">Belzebù</a>
+					</td>
+					<td>6a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/big-kat" class="table-row-name text-bold">Big kat</a>
+					</td>
+					<td>8b+</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/big-paw" class="table-row-name text-bold">Big paw</a>
+					</td>
+					<td>8b+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/blochx-addiction" class="table-row-name text-bold">Blochx addiction</a>
+					</td>
+					<td>8A</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/boogalagga" class="table-row-name text-bold">Boogalagga</a>
+					</td>
+					<td>8b</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/border-line" class="table-row-name text-bold">Border Line</a>
+					</td>
+					<td>7a</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bridge-over-troubled-water" class="table-row-name text-bold">Bridge over troubled water</a>
+					</td>
+					<td>7c+</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/bugs-bunny" class="table-row-name text-bold">Bugs Bunny</a>
+					</td>
+					<td>7a+</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/cafe-de-la-gare" class="table-row-name text-bold">Café de la gare</a>
+					</td>
+					<td>6b+</td>
+					<td>Les doigts verts</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/call-of-duty" class="table-row-name text-bold">Call of duty</a>
+					</td>
+					<td>7c+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/camilla" class="table-row-name text-bold">Camilla</a>
+					</td>
+					<td>6a+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/carepe" class="table-row-name text-bold">Carepe</a>
+					</td>
+					<td>6c</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/carta-bianca" class="table-row-name text-bold">Carta bianca</a>
+					</td>
+					<td>5+/6a</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/cippili-merli" class="table-row-name text-bold">Cippili merli</a>
+					</td>
+					<td>6a+</td>
+					<td>New Age</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/confession-of-a-crap-artist" class="table-row-name text-bold">Confession of a crap artist</a>
+					</td>
+					<td>7b+/7c</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/conquistador" class="table-row-name text-bold">Conquistador</a>
+					</td>
+					<td>8a+</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/conquistador-direct" class="table-row-name text-bold">Conquistador direct</a>
+					</td>
+					<td>8b</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/cruncky" class="table-row-name text-bold">Cruncky</a>
+					</td>
+					<td>6a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/cubitus" class="table-row-name text-bold">Cubitus</a>
+					</td>
+					<td>6b</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/deliverance" class="table-row-name text-bold">Deliverance</a>
+					</td>
+					<td>8a/+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/delusion-of-grandeur" class="table-row-name text-bold">Delusion of grandeur</a>
+					</td>
+					<td>8a+</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/delusion-of-grandeur" class="table-row-name text-bold">Delusion of grandeur</a>
+					</td>
+					<td>8a+</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/der-mit-dem-fels-tanzt" class="table-row-name text-bold">Der mit dem Fels tanzt</a>
+					</td>
+					<td>8b+/8c</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/dessert" class="table-row-name text-bold">Dessert</a>
+					</td>
+					<td>6b+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/devil-s-bay" class="table-row-name text-bold">Devil's Bay</a>
+					</td>
+					<td>6a+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/diapason" class="table-row-name text-bold">Diapason</a>
+					</td>
+					<td>6a+</td>
+					<td>Les doigts verts</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/die-roboter" class="table-row-name text-bold">Die Roboter</a>
+					</td>
+					<td>6a</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/doctor-crimp" class="table-row-name text-bold">Doctor Crimp</a>
+					</td>
+					<td>7b</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/doctor-jump" class="table-row-name text-bold">Doctor Jump</a>
+					</td>
+					<td>7c+/8a</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/doctor-med-dent" class="table-row-name text-bold">Doctor Med Dent</a>
+					</td>
+					<td>7b</td>
+					<td>Doctor Med Dent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/doctor-pinch" class="table-row-name text-bold">Doctor Pinch</a>
+					</td>
+					<td>7c</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/doctor-direct" class="table-row-name text-bold">Doctor direct</a>
+					</td>
+					<td>7c</td>
+					<td>Doctor Med Dent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/drizzle" class="table-row-name text-bold">Drizzle</a>
+					</td>
+					<td>6a</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/due-passi" class="table-row-name text-bold">Due passi</a>
+					</td>
+					<td>5+</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/edizioni-limitate" class="table-row-name text-bold">Edizioni limitate</a>
+					</td>
+					<td>7a</td>
+					<td>New Age</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/eduard" class="table-row-name text-bold">Eduard</a>
+					</td>
+					<td>6b+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/el-talisman" class="table-row-name text-bold">El talisman</a>
+					</td>
+					<td>6b+</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/el-talisman-left" class="table-row-name text-bold">El talisman left</a>
+					</td>
+					<td>7b</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/electro-swing" class="table-row-name text-bold">Electro Swing</a>
+					</td>
+					<td>8a+</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/expolama" class="table-row-name text-bold">Expolama</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/expolama" class="table-row-name text-bold">Expolama</a>
+					</td>
+					<td>6b</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/eyorjoi" class="table-row-name text-bold">Eyorjoi</a>
+					</td>
+					<td>6a+/6b</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/fast-food" class="table-row-name text-bold">Fast Food</a>
+					</td>
+					<td>6a</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/fat-boy" class="table-row-name text-bold">Fat boy</a>
+					</td>
+					<td>7c+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/feeling-the-wind" class="table-row-name text-bold">Feeling the wind</a>
+					</td>
+					<td>8a</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/fengshui-masters" class="table-row-name text-bold">Fengshui masters</a>
+					</td>
+					<td>7a</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/fire-and-fox-direct" class="table-row-name text-bold">Fire and fox Direct</a>
+					</td>
+					<td>7a</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/forgotten-gem" class="table-row-name text-bold">Forgotten Gem</a>
+					</td>
+					<td>8c</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/freak-brothers" class="table-row-name text-bold">Freak brothers</a>
+					</td>
+					<td>8a</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/fresco-look" class="table-row-name text-bold">Fresco look</a>
+					</td>
+					<td>5+</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/from-dirt-grows-the-flowers" class="table-row-name text-bold">From dirt grows the flowers</a>
+					</td>
+					<td>8c</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/frontline" class="table-row-name text-bold">Frontline</a>
+					</td>
+					<td>8a+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/galileo-bis" class="table-row-name text-bold">Galileo bis</a>
+					</td>
+					<td>6a</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/ghe-pu-da-religion" class="table-row-name text-bold">Ghè pù da religion</a>
+					</td>
+					<td>6b</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/giurin-giureta" class="table-row-name text-bold">Giurin giureta</a>
+					</td>
+					<td>3</td>
+					<td>Barriera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/globetrotter" class="table-row-name text-bold">Globetrotter</a>
+					</td>
+					<td>7a</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/gschirrlade" class="table-row-name text-bold">Gschirrlade</a>
+					</td>
+					<td>6b</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/hebelgesetz" class="table-row-name text-bold">Hebelgesetz</a>
+					</td>
+					<td>7a</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/hopper" class="table-row-name text-bold">Hopper</a>
+					</td>
+					<td>6c+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/hurtigrutten" class="table-row-name text-bold">Hurtigrutten</a>
+					</td>
+					<td>6c</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/ibex" class="table-row-name text-bold">Ibex</a>
+					</td>
+					<td>7c+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/il-pilone" class="table-row-name text-bold">Il pilone</a>
+					</td>
+					<td>6a+</td>
+					<td>New Age</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/infognada" class="table-row-name text-bold">Infognada</a>
+					</td>
+					<td>6a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/insanity-of-grandeur" class="table-row-name text-bold">Insanity of grandeur</a>
+					</td>
+					<td>8b+</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/jim-s-nook-trav-s" class="table-row-name text-bold">Jim's nook trav's</a>
+					</td>
+					<td>6a+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/julian" class="table-row-name text-bold">Julian</a>
+					</td>
+					<td>6c</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/jya" class="table-row-name text-bold">Jya</a>
+					</td>
+					<td>8A+</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/jattene" class="table-row-name text-bold">Jättene</a>
+					</td>
+					<td>6b+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/keinfisch-kleinfisch" class="table-row-name text-bold">Keinfisch Kleinfisch</a>
+					</td>
+					<td>8a+</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/kleine-lexicon" class="table-row-name text-bold">Kleine lexicon</a>
+					</td>
+					<td>6b</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/komilator" class="table-row-name text-bold">Komilator</a>
+					</td>
+					<td>7c</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/kristallpalast" class="table-row-name text-bold">Kristallpalast</a>
+					</td>
+					<td>6c/7a</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/l-equilibrista" class="table-row-name text-bold">L'equilibrista</a>
+					</td>
+					<td>7c</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/l-uccello-in-chiesa" class="table-row-name text-bold">L'uccello in chiesa</a>
+					</td>
+					<td>6a+</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-dance-des-ceps" class="table-row-name text-bold">La dance des ceps</a>
+					</td>
+					<td>6a</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-deliranza" class="table-row-name text-bold">La deliranza</a>
+					</td>
+					<td>7c</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-persistenza-de-la-memoria" class="table-row-name text-bold">La persistenza de la memoria</a>
+					</td>
+					<td>8a</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-piattosa" class="table-row-name text-bold">La piattosa</a>
+					</td>
+					<td>3</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-scoira" class="table-row-name text-bold">La scoira</a>
+					</td>
+					<td>6a+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/la-virtu-dei-forti" class="table-row-name text-bold">La virtù dei forti</a>
+					</td>
+					<td>6b+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/le-pilier" class="table-row-name text-bold">Le pilier</a>
+					</td>
+					<td>8a</td>
+					<td>Les doigts verts</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/le-trio-infernale" class="table-row-name text-bold">Le trio infernale</a>
+					</td>
+					<td>8a+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/le-vent-nous-portera" class="table-row-name text-bold">Le vent nous portera</a>
+					</td>
+					<td>7c+</td>
+					<td>Serre moi fort</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/les-cliques-a-claques" class="table-row-name text-bold">Les cliquês à claques</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/les-cliques-a-claques" class="table-row-name text-bold">Les cliquês à claques</a>
+					</td>
+					<td>7b+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/life-goes-on" class="table-row-name text-bold">Life goes on</a>
+					</td>
+					<td>8b+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/life-s-good" class="table-row-name text-bold">Life's Good</a>
+					</td>
+					<td>6a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/los-cursos" class="table-row-name text-bold">Los cursos</a>
+					</td>
+					<td>7a</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/lackerli-crack-variante" class="table-row-name text-bold">Läckerli crack variante</a>
+					</td>
+					<td>a+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/made-in-norway" class="table-row-name text-bold">Made in Norway</a>
+					</td>
+					<td>7b</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/mandarin-the" class="table-row-name text-bold">Mandarin the</a>
+					</td>
+					<td>6a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/maracas" class="table-row-name text-bold">Maracas</a>
+					</td>
+					<td>5 </td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/marron-glace" class="table-row-name text-bold">Marron glacé</a>
+					</td>
+					<td>7a</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/matusalem" class="table-row-name text-bold">Matusalem</a>
+					</td>
+					<td>6c+</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/midnight-lightning-of-ticino" class="table-row-name text-bold">Midnight lightning of Ticino</a>
+					</td>
+					<td>7c+</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/miss-schweiz" class="table-row-name text-bold">Miss Schweiz</a>
+					</td>
+					<td>8a</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/muffin" class="table-row-name text-bold">Muffin</a>
+					</td>
+					<td>5</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/mystic-river" class="table-row-name text-bold">Mystic river</a>
+					</td>
+					<td>7c+</td>
+					<td>Anchor's punch</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/merite-le-detour" class="table-row-name text-bold">Mérite le détour</a>
+					</td>
+					<td>8A+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/no-mistery" class="table-row-name text-bold">No mistery</a>
+					</td>
+					<td>8a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/noblesse-oblige" class="table-row-name text-bold">Noblesse oblige</a>
+					</td>
+					<td>6c</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/nobody-ist-der-grosste" class="table-row-name text-bold">Nobody ist der Größte</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Shattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/number-one" class="table-row-name text-bold">Number one</a>
+					</td>
+					<td>6c+/7a</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/obiettivo-top" class="table-row-name text-bold">Obiettivo top</a>
+					</td>
+					<td>6b+</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/onda-verde" class="table-row-name text-bold">Onda verde</a>
+					</td>
+					<td>6c</td>
+					<td>Barriera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/orgoglione-seduto" class="table-row-name text-bold">Orgoglione seduto</a>
+					</td>
+					<td>7b</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/pause-caffe" class="table-row-name text-bold">Pause caffè</a>
+					</td>
+					<td>7c</td>
+					<td>Teamwork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/pekka" class="table-row-name text-bold">Pekka</a>
+					</td>
+					<td>6a</td>
+					<td>New Age</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/pet-terapie-sit-down" class="table-row-name text-bold">Pet terapie sit down</a>
+					</td>
+					<td>7b+</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/petit-beurre" class="table-row-name text-bold">Petit beurre</a>
+					</td>
+					<td>6c</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/picciriddu" class="table-row-name text-bold">Picciriddu</a>
+					</td>
+					<td>5+</td>
+					<td>Barriera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/pizzinino" class="table-row-name text-bold">Pizzinino</a>
+					</td>
+					<td>6a</td>
+					<td>Doctor Med Dent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/plat-du-jour" class="table-row-name text-bold">Plat du jour</a>
+					</td>
+					<td>5</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/primitive-tango" class="table-row-name text-bold">Primitive tango</a>
+					</td>
+					<td>5</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-1-boulder-11-boogalagga" class="table-row-name text-bold">Problem 1 (Boulder 11, Boogalagga)</a>
+					</td>
+					<td>6b</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-1-boulder-12-centrale" class="table-row-name text-bold">Problem 1 (Boulder 12, Centrale)</a>
+					</td>
+					<td>6b</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-1-boulder-16a-deliverance" class="table-row-name text-bold">Problem 1 (Boulder 16a, Deliverance)</a>
+					</td>
+					<td>5+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-2-boulder-1-freak-brothers" class="table-row-name text-bold">Problem 2 (Boulder 1, Freak brothers)</a>
+					</td>
+					<td>5</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-2-boulder-3-deliverance" class="table-row-name text-bold">Problem 2 (Boulder 3, Deliverance)</a>
+					</td>
+					<td>4+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-2a-boulder-12-centrale" class="table-row-name text-bold">Problem 2A (Boulder 12, Centrale)</a>
+					</td>
+					<td>5+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-3-boulder-16-boogalagga" class="table-row-name text-bold">Problem 3 (Boulder 16, Boogalagga)</a>
+					</td>
+					<td>5+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-3-boulder-2-schattental-fiume" class="table-row-name text-bold">Problem 3 (Boulder 2, Schattental fiume)</a>
+					</td>
+					<td>6b+</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-4-boulder-10-boogalagga" class="table-row-name text-bold">Problem 4 (Boulder 10, Boogalagga)</a>
+					</td>
+					<td>6b</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-5-boulder-13-centrale" class="table-row-name text-bold">Problem 5 (Boulder 13, Centrale)</a>
+					</td>
+					<td>6a+</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-6-boulder-13-centrale" class="table-row-name text-bold">Problem 6 (Boulder 13, Centrale)</a>
+					</td>
+					<td>4</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/problem-8a-boulder-9-matusalem" class="table-row-name text-bold">Problem 8A (Boulder 9, Matusalem)</a>
+					</td>
+					<td>5</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/pudding" class="table-row-name text-bold">Pudding</a>
+					</td>
+					<td>5+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/ragazzo-profumato" class="table-row-name text-bold">Ragazzo profumato</a>
+					</td>
+					<td>7a+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rah-plats-plats" class="table-row-name text-bold">Rah, Plats, Plats</a>
+					</td>
+					<td>8a</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rechtsrutsch" class="table-row-name text-bold">Rechtsrutsch</a>
+					</td>
+					<td>6b</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rene" class="table-row-name text-bold">Renè</a>
+					</td>
+					<td>6a+</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/revolution" class="table-row-name text-bold">Revolution</a>
+					</td>
+					<td>7b+</td>
+					<td>Les doigts verts</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rizla" class="table-row-name text-bold">Rizla</a>
+					</td>
+					<td>6a+/6b</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/road-to-permission" class="table-row-name text-bold">Road to Permission</a>
+					</td>
+					<td>7c+</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rovesciami" class="table-row-name text-bold">Rovesciami</a>
+					</td>
+					<td>5</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rummikub" class="table-row-name text-bold">Rummikub</a>
+					</td>
+					<td>6b+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/rusca-plac" class="table-row-name text-bold">Rusca plac</a>
+					</td>
+					<td>3</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/san-pedro" class="table-row-name text-bold">San Pedro</a>
+					</td>
+					<td>5+</td>
+					<td>Shattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/santo-subito" class="table-row-name text-bold">Santo subito</a>
+					</td>
+					<td>6c</td>
+					<td>Schattental fiume</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/saponetta-meili" class="table-row-name text-bold">Saponetta meili</a>
+					</td>
+					<td>7a</td>
+					<td>La soucoupe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/saponetta-meili" class="table-row-name text-bold">Saponetta meili</a>
+					</td>
+					<td>6a</td>
+					<td>La soucoupe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/satanik" class="table-row-name text-bold">Satanik</a>
+					</td>
+					<td>6a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/schlonziges-weiner-schmankerl" class="table-row-name text-bold">Schlonziges weiner Schmankerl</a>
+					</td>
+					<td>8a+ (sit)</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/schnittstelle" class="table-row-name text-bold">Schnittstelle</a>
+					</td>
+					<td>7a+</td>
+					<td>Shattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/schuhschachtel" class="table-row-name text-bold">Schuhschachtel</a>
+					</td>
+					<td>6c</td>
+					<td>Border line</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/schule-des-lebens" class="table-row-name text-bold">Schule des Lebens</a>
+					</td>
+					<td>8a+/8b</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/schwarzes-loch" class="table-row-name text-bold">Schwarzes Loch</a>
+					</td>
+					<td>7a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/second-life" class="table-row-name text-bold">Second life</a>
+					</td>
+					<td>8a+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/seconda-chance" class="table-row-name text-bold">Seconda chance</a>
+					</td>
+					<td>6a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/see-leunch" class="table-row-name text-bold">See leunch</a>
+					</td>
+					<td>5+</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/senza-mani" class="table-row-name text-bold">Senza mani</a>
+					</td>
+					<td>6b+</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/seppi-s-boulder" class="table-row-name text-bold">Seppi's boulder</a>
+					</td>
+					<td>7a</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/serre-moi-fort" class="table-row-name text-bold">Serre moi fort</a>
+					</td>
+					<td>7b+</td>
+					<td>Serre moi fort</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/serre-moi-fort" class="table-row-name text-bold">Serre moi fort</a>
+					</td>
+					<td>8A (sit)</td>
+					<td>Serre moi fort</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/shadowfax" class="table-row-name text-bold">Shadowfax</a>
+					</td>
+					<td>8b</td>
+					<td>La soucoupe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/shamans" class="table-row-name text-bold">Shamans</a>
+					</td>
+					<td>6a</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/sloggia-massonica" class="table-row-name text-bold">Sloggia Massonica</a>
+					</td>
+					<td>6b</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/smemory" class="table-row-name text-bold">Smemory</a>
+					</td>
+					<td>7a</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/snowdonia" class="table-row-name text-bold">Snowdonia</a>
+					</td>
+					<td>6b+</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/sollbruchstelle" class="table-row-name text-bold">Sollbruchstelle</a>
+					</td>
+					<td>7a+/7b</td>
+					<td>Schattental</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/spider-catcher" class="table-row-name text-bold">Spider catcher</a>
+					</td>
+					<td>6b+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/split-in-two" class="table-row-name text-bold">Split in two</a>
+					</td>
+					<td>5</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/stars-gate" class="table-row-name text-bold">Stars gate</a>
+					</td>
+					<td>6b+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/super-gulp" class="table-row-name text-bold">Super gulp</a>
+					</td>
+					<td>6b</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/switcher" class="table-row-name text-bold">Switcher</a>
+					</td>
+					<td>6c</td>
+					<td>Centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/team-work" class="table-row-name text-bold">Team work</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Teamwork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-great-shark-hunt" class="table-row-name text-bold">The Great Shark Hunt</a>
+					</td>
+					<td>8a+</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-alphane-moon" class="table-row-name text-bold">The alphane moon</a>
+					</td>
+					<td>8a</td>
+					<td>Nivo alta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-aviator" class="table-row-name text-bold">The aviator</a>
+					</td>
+					<td>6c+</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-big-swing" class="table-row-name text-bold">The big swing</a>
+					</td>
+					<td>6c+</td>
+					<td>Les doigts verts</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-real-shield" class="table-row-name text-bold">The real shield</a>
+					</td>
+					<td>7b+/7c</td>
+					<td>Rah Plats Plats</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-scent-of-snow" class="table-row-name text-bold">The scent of snow</a>
+					</td>
+					<td>8a</td>
+					<td>Nivo bassa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/the-sickle" class="table-row-name text-bold">The sickle</a>
+					</td>
+					<td>7b</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/tiranocc" class="table-row-name text-bold">Tiranocc</a>
+					</td>
+					<td>7c</td>
+					<td>Altirolo chiesa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/tomahawk" class="table-row-name text-bold">Tomahawk</a>
+					</td>
+					<td>7b</td>
+					<td>Freak brothers</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/traumadienst" class="table-row-name text-bold">Traumadienst</a>
+					</td>
+					<td>6a</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/tricky" class="table-row-name text-bold">Tricky</a>
+					</td>
+					<td>8a</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/urbi-et-orbi" class="table-row-name text-bold">Urbi et orbi</a>
+					</td>
+					<td>6c</td>
+					<td>Paese</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/vecchia-fiamma" class="table-row-name text-bold">Vecchia fiamma</a>
+					</td>
+					<td>6b</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/verita-nascosta" class="table-row-name text-bold">Verità nascosta</a>
+					</td>
+					<td>7c</td>
+					<td>101</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/vier-gleiche" class="table-row-name text-bold">Vier Gleiche</a>
+					</td>
+					<td>6a+</td>
+					<td>Matusalem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/vitruvian-man" class="table-row-name text-bold">Vitruvian Man</a>
+					</td>
+					<td>7a (with chipped pocket)</td>
+					<td>La soucoupe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/white-noise" class="table-row-name text-bold">White noise</a>
+					</td>
+					<td>6a+</td>
+					<td>Deliverance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/willenberg-dach" class="table-row-name text-bold">Willenberg Dach</a>
+					</td>
+					<td>7c+/8a</td>
+					<td>La soucoupe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/wrap-artist" class="table-row-name text-bold">Wrap Artist</a>
+					</td>
+					<td>8a</td>
+					<td>Boogalagga</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/chironico/zen-boulder" class="table-row-name text-bold">Zen boulder</a>
+					</td>
+					<td>6a+</td>
+					<td>New age</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

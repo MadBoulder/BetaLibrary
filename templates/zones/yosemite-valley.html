@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/yosemite-valley">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Yosemite Valley 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="37.7415236" />
   <input type="hidden" id="lng" name="lng_val" value="-119.6040167" />
@@ -168,501 +248,207 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.supertopo.com/packs/yosemiteboulder.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Yosemite Valley Bouldering (supertopo)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.supertopo.com/packs/yosemiteboulder.html"
-        target="_blank"
-        >Yosemite Valley Bouldering (supertopo)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/yosemite-valley"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/yosemite-valley"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/yosemite-valley/180-degree-arete">180 Degree Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/a-primates-memoir">A Primate’s Memoir, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/across-the-tracks">Across the Tracks, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/all-start-movie-mantel">All start movie mantel, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/ataturk">Ataturk, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/atlantis">Atlantis, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/atlantis">Atlantis, V6 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/balance-of-opposites">Balance of Opposites, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/battle-of-the-bulge">Battle of the Bulge, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/big-bessey">Big Bessey, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/big-present">Big Present, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/bipolar">Bipolar, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/black-widow">Black Widow, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/bridalveil-pogo">Bridalveil Pogo, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/bridge-to-nowhere">Bridge to nowhere, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/bruce-lee">Bruce Lee, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/budokan">Budokan, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/chapman-overhang">Chapman overhang, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/cocaine-corner">Cocaine Corner, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/cookie-monster">Cookie Monster, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/cranium-crusher">Cranium crusher, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/crossroads-moe">Crossroads Moe, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/flatline">Flatline, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/good-vibrations">Good Vibrations, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/greener-pastures">Greener Pastures, V10 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/heart-of-darkness">Heart of Darkness, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/hit-man">Hit Man, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/honor-among-thieves">Honor Among Thieves, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/honor-among-thieves">Honor Among Thieves, V9 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/hug-a-rock">Hug a rock, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/karate">Karate, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/kor-problem">Kor Problem, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/marco-s-traverse">Marco's traverse, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/midnight-lightning">Midnight Lightning, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/montezuma-s-revenge-right">Montezuma's Revenge Right, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/no-holds-bard">No Holds Bard, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/octagon-traverse">Octagon Traverse, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/orange-fever">Orange Fever, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/orange-fever">Orange Fever, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/panic-room">Panic Room, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/pine-box">Pine Box, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/plenty-of-fish">Plenty of Fish, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-11-camp-4">Problem 11 (Camp 4), V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-14-housekeeping-v0">Problem 14 (Housekeeping), V0, V0 </a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-20-housekeeping">Problem 20 (Housekeeping), V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-35-camp-4">Problem 35 (Camp 4), V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-40-camp-4">Problem 40 (Camp 4), V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-6-housekeeping">Problem 6 (Housekeeping), V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-9-housekeeping">Problem 9 (Housekeeping), V4-</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/problem-unknown-curry-village">Problem Unknown (Curry village), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/purple-barrel">Purple Barrel, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/raven-haired-woman">Raven Haired Woman, V14</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/root-canal">Root Canal, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/rubik-s-revenge">Rubik's Revenge, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/silent-spotter">Silent Spotter, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/slice-of-life">Slice of life, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/so-good">So Good, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/spock-direct">Spock Direct, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/stream-of-being">Stream of Being, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/teenage-mutant-ninja-gerbils">Teenage Mutant Ninja Gerbils, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-diamond">The Diamond, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-diamond-direct">The Diamond Direct, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-force">The Force, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-happening">The Happening, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-james-lucas-memorial-arete-problem">The James Lucas Memorial Arête Problem, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-rift">The Rift, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/the-squirrel">The Squirrel, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/too-big-to-fail">Too Big to Fail, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/torque">Torque, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/torque-spanner">Torque Spanner, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/unknown-arete">Unknown Arete, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/where-the-sidewalk-ends">Where the sidewalk ends, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/zodiac">Zodiac, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/yosemite-valley/zorro">Zorro, V4</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "yosemite-valley_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/yosemite-valley/ahwahnee-boulders">Ahwahnee Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/bridalveil">Bridalveil</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/camp-4">Camp 4</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/candyland">Candyland</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/cathedral-boulders">Cathedral Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/curry-village">Curry Village</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/happy-isles">Happy Isles</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/hapy-isles">Hapy Isles</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/highway-140-generator-boulders">Highway 140 Generator Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/housekeeping">Housekeeping</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/intersection">Intersection</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/riverside-block">Riverside Block</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/sentinel-boulders">Sentinel Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/the-crumbs">The Crumbs</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/the-crystals">The Crystals</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/the-garden">The Garden</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/yosemite-valley/woodyard">Woodyard</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "yosemite-valley_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/ahwahnee-boulders" class="table-row-name text-bold">Ahwahnee Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/bridalveil" class="table-row-name text-bold">Bridalveil</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/camp-4" class="table-row-name text-bold">Camp 4</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/candyland" class="table-row-name text-bold">Candyland</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/cathedral-boulders" class="table-row-name text-bold">Cathedral Boulders</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/curry-village" class="table-row-name text-bold">Curry Village</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/happy-isles" class="table-row-name text-bold">Happy Isles</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/hapy-isles" class="table-row-name text-bold">Hapy Isles</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/highway-140-generator-boulders" class="table-row-name text-bold">Highway 140 Generator Boulders</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/housekeeping" class="table-row-name text-bold">Housekeeping</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/intersection" class="table-row-name text-bold">Intersection</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/riverside-block" class="table-row-name text-bold">Riverside Block</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/sentinel-boulders" class="table-row-name text-bold">Sentinel Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/the-crumbs" class="table-row-name text-bold">The Crumbs</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/the-crystals" class="table-row-name text-bold">The Crystals</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/the-garden" class="table-row-name text-bold">The Garden</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">18</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/yosemite-valley/woodyard" class="table-row-name text-bold">Woodyard</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -690,7 +476,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Housekeeping</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -716,7 +502,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Camp 4</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -739,8 +525,696 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/180-degree-arete" class="table-row-name text-bold">180 Degree Arete</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/a-primates-memoir" class="table-row-name text-bold">A Primate’s Memoir</a>
+					</td>
+					<td>V6</td>
+					<td>The Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/across-the-tracks" class="table-row-name text-bold">Across the Tracks</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/all-start-movie-mantel" class="table-row-name text-bold">All start movie mantel</a>
+					</td>
+					<td>V1</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/ataturk" class="table-row-name text-bold">Ataturk</a>
+					</td>
+					<td>V5</td>
+					<td>Bridalveil</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/atlantis" class="table-row-name text-bold">Atlantis</a>
+					</td>
+					<td>V5</td>
+					<td>Intersection</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/atlantis" class="table-row-name text-bold">Atlantis</a>
+					</td>
+					<td>V6 (low)</td>
+					<td>Intersection</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/balance-of-opposites" class="table-row-name text-bold">Balance of Opposites</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/battle-of-the-bulge" class="table-row-name text-bold">Battle of the Bulge</a>
+					</td>
+					<td>V6</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/big-bessey" class="table-row-name text-bold">Big Bessey</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/big-present" class="table-row-name text-bold">Big Present</a>
+					</td>
+					<td>V9</td>
+					<td>Hapy Isles</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/bipolar" class="table-row-name text-bold">Bipolar</a>
+					</td>
+					<td>V7</td>
+					<td>The Crumbs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/black-widow" class="table-row-name text-bold">Black Widow</a>
+					</td>
+					<td>V8</td>
+					<td>The Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/bridalveil-pogo" class="table-row-name text-bold">Bridalveil Pogo</a>
+					</td>
+					<td>V7</td>
+					<td>Bridalveil</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/bridge-to-nowhere" class="table-row-name text-bold">Bridge to nowhere</a>
+					</td>
+					<td>V8</td>
+					<td>Bridalveil</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/bruce-lee" class="table-row-name text-bold">Bruce Lee</a>
+					</td>
+					<td>V8</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/budokan" class="table-row-name text-bold">Budokan</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/chapman-overhang" class="table-row-name text-bold">Chapman overhang</a>
+					</td>
+					<td>V1</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/cocaine-corner" class="table-row-name text-bold">Cocaine Corner</a>
+					</td>
+					<td>V5</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/cookie-monster" class="table-row-name text-bold">Cookie Monster</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/cranium-crusher" class="table-row-name text-bold">Cranium crusher</a>
+					</td>
+					<td>V3</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/crossroads-moe" class="table-row-name text-bold">Crossroads Moe</a>
+					</td>
+					<td>V6</td>
+					<td>Bridalveil</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/flatline" class="table-row-name text-bold">Flatline</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/good-vibrations" class="table-row-name text-bold">Good Vibrations</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/greener-pastures" class="table-row-name text-bold">Greener Pastures</a>
+					</td>
+					<td>V10 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/heart-of-darkness" class="table-row-name text-bold">Heart of Darkness</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/hit-man" class="table-row-name text-bold">Hit Man</a>
+					</td>
+					<td>V5</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/honor-among-thieves" class="table-row-name text-bold">Honor Among Thieves</a>
+					</td>
+					<td>V7</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/honor-among-thieves" class="table-row-name text-bold">Honor Among Thieves</a>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/hug-a-rock" class="table-row-name text-bold">Hug a rock</a>
+					</td>
+					<td>V0</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/karate" class="table-row-name text-bold">Karate</a>
+					</td>
+					<td>V8</td>
+					<td>Riverside Block</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/kor-problem" class="table-row-name text-bold">Kor Problem</a>
+					</td>
+					<td>V3</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/marco-s-traverse" class="table-row-name text-bold">Marco's traverse</a>
+					</td>
+					<td>V1</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/midnight-lightning" class="table-row-name text-bold">Midnight Lightning</a>
+					</td>
+					<td>V8</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/montezuma-s-revenge-right" class="table-row-name text-bold">Montezuma's Revenge Right</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/no-holds-bard" class="table-row-name text-bold">No Holds Bard</a>
+					</td>
+					<td>V7</td>
+					<td>Sentinel Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/octagon-traverse" class="table-row-name text-bold">Octagon Traverse</a>
+					</td>
+					<td>V8</td>
+					<td>Cathedral Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/orange-fever" class="table-row-name text-bold">Orange Fever</a>
+					</td>
+					<td>V7</td>
+					<td>Happy Isles</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/orange-fever" class="table-row-name text-bold">Orange Fever</a>
+					</td>
+					<td>V10</td>
+					<td>Hapy Isles</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/panic-room" class="table-row-name text-bold">Panic Room</a>
+					</td>
+					<td>V9</td>
+					<td>Curry Village</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/pine-box" class="table-row-name text-bold">Pine Box</a>
+					</td>
+					<td>V10</td>
+					<td>Happy Isles</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/plenty-of-fish" class="table-row-name text-bold">Plenty of Fish</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-11-camp-4" class="table-row-name text-bold">Problem 11 (Camp 4)</a>
+					</td>
+					<td>V3</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-14-housekeeping-v0" class="table-row-name text-bold">Problem 14 (Housekeeping), V0</a>
+					</td>
+					<td>V0 </td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-20-housekeeping" class="table-row-name text-bold">Problem 20 (Housekeeping)</a>
+					</td>
+					<td>V3</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-35-camp-4" class="table-row-name text-bold">Problem 35 (Camp 4)</a>
+					</td>
+					<td>V4</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-40-camp-4" class="table-row-name text-bold">Problem 40 (Camp 4)</a>
+					</td>
+					<td>V3</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-6-housekeeping" class="table-row-name text-bold">Problem 6 (Housekeeping)</a>
+					</td>
+					<td>V4</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-9-housekeeping" class="table-row-name text-bold">Problem 9 (Housekeeping)</a>
+					</td>
+					<td>V4-</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/problem-unknown-curry-village" class="table-row-name text-bold">Problem Unknown (Curry village)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Curry village</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/purple-barrel" class="table-row-name text-bold">Purple Barrel</a>
+					</td>
+					<td>V8</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/raven-haired-woman" class="table-row-name text-bold">Raven Haired Woman</a>
+					</td>
+					<td>V14</td>
+					<td>Happy Isles</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/root-canal" class="table-row-name text-bold">Root Canal</a>
+					</td>
+					<td>V7</td>
+					<td>Curry Village</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/rubik-s-revenge" class="table-row-name text-bold">Rubik's Revenge</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/silent-spotter" class="table-row-name text-bold">Silent Spotter</a>
+					</td>
+					<td>V6</td>
+					<td>Ahwahnee Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/slice-of-life" class="table-row-name text-bold">Slice of life</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/so-good" class="table-row-name text-bold">So Good</a>
+					</td>
+					<td>V5</td>
+					<td>Cathedral Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/spock-direct" class="table-row-name text-bold">Spock Direct</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/stream-of-being" class="table-row-name text-bold">Stream of Being</a>
+					</td>
+					<td>V8</td>
+					<td>Highway 140 Generator Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/teenage-mutant-ninja-gerbils" class="table-row-name text-bold">Teenage Mutant Ninja Gerbils</a>
+					</td>
+					<td>V9</td>
+					<td>Woodyard</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-diamond" class="table-row-name text-bold">The Diamond</a>
+					</td>
+					<td>V8</td>
+					<td>Candyland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-diamond-direct" class="table-row-name text-bold">The Diamond Direct</a>
+					</td>
+					<td>V10</td>
+					<td>Candyland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-force" class="table-row-name text-bold">The Force</a>
+					</td>
+					<td>V9</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-happening" class="table-row-name text-bold">The Happening</a>
+					</td>
+					<td>V10</td>
+					<td>The Crystals</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-james-lucas-memorial-arete-problem" class="table-row-name text-bold">The James Lucas Memorial Arête Problem</a>
+					</td>
+					<td>V3</td>
+					<td>Candyland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-rift" class="table-row-name text-bold">The Rift</a>
+					</td>
+					<td>V8</td>
+					<td>The Crumbs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/the-squirrel" class="table-row-name text-bold">The Squirrel</a>
+					</td>
+					<td>V7</td>
+					<td>Cathedral Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/too-big-to-fail" class="table-row-name text-bold">Too Big to Fail</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/torque" class="table-row-name text-bold">Torque</a>
+					</td>
+					<td>V7</td>
+					<td>Housekeeping</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/torque-spanner" class="table-row-name text-bold">Torque Spanner</a>
+					</td>
+					<td>V8</td>
+					<td>Camp 4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/unknown-arete" class="table-row-name text-bold">Unknown Arete</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/where-the-sidewalk-ends" class="table-row-name text-bold">Where the sidewalk ends</a>
+					</td>
+					<td>V8</td>
+					<td>Highway 140 Generator Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/zodiac" class="table-row-name text-bold">Zodiac</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/yosemite-valley/zorro" class="table-row-name text-bold">Zorro</a>
+					</td>
+					<td>V4</td>
+					<td>Curry Village</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

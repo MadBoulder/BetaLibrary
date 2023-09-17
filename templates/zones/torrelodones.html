@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/torrelodones">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Torrelodones 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="40.584208" />
   <input type="hidden" id="lng" name="lng_val" value="-3.929676" />
@@ -168,191 +248,109 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/torrelodones" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Online)
+		</a>
+	
+		<a id="guide_link"  href="http://sitioboulder.blogspot.com/2012/08/torrelodonoes_22.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Guía Boulder en Madrid (online)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/torrelodones"
-        target="_blank"
-        >27 Crags (Online)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://sitioboulder.blogspot.com/2012/08/torrelodonoes_22.html"
-        target="_blank"
-        >Guía Boulder en Madrid (online)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/torrelodones"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/torrelodones"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/torrelodones/aeroplano">Aeroplano, 6c+/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/arramplachoflas">Arramplachoflas, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/el-ruisenor">El Ruiseñor, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/farias-izquierda">Farias izquierda, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/gato-cosmico">Gato Cósmico, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/la-oreja">La Oreja, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/ruisenor-extension">Ruiseñor Extensión, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/torrelodones/zanzibar">Zanzibar, 7c</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "torrelodones_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/torrelodones/patoneros">Patoneros</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/torrelodones/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "torrelodones_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/torrelodones/patoneros" class="table-row-name text-bold">Patoneros</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/torrelodones/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -377,8 +375,102 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/aeroplano" class="table-row-name text-bold">Aeroplano</a>
+					</td>
+					<td>6c+/7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/arramplachoflas" class="table-row-name text-bold">Arramplachoflas</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/el-ruisenor" class="table-row-name text-bold">El Ruiseñor</a>
+					</td>
+					<td>7c</td>
+					<td>Patoneros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/farias-izquierda" class="table-row-name text-bold">Farias izquierda</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/gato-cosmico" class="table-row-name text-bold">Gato Cósmico</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/la-oreja" class="table-row-name text-bold">La Oreja</a>
+					</td>
+					<td>6c</td>
+					<td>Patoneros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/ruisenor-extension" class="table-row-name text-bold">Ruiseñor Extensión</a>
+					</td>
+					<td>8b</td>
+					<td>Patoneros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/torrelodones/zanzibar" class="table-row-name text-bold">Zanzibar</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/brione">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Brione 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="46.290832" />
   <input type="hidden" id="lng" name="lng_val" value="8.794853" />
@@ -168,666 +248,205 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.ticinoboulder.ch/ticino-guides" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Guide
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/brione" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.ticinoboulder.ch/ticino-guides"
-        target="_blank"
-        >Guide</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/brione"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/brione"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/brione"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/brione/9th-power">9th power, 7B+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/acqua-santa">Acqua santa, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/all-i-want-for-christmas">All I want for Christmas, 8a+/b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/amber">Amber, 8a+/8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/apollo">Apollo, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/atlantis">Atlantis, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/bach-bloc">Bach bloc, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/ballermann">Ballermann, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/beach-boys">Beach boys, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/beast">Beast, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/benvenuti-in-placca">Benvenuti in placca, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/bisex">Bisex, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/bishop">Bishop, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/black-miror">Black Miror, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/black-pearl">Black Pearl, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/black-arete">Black arete, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/blinded-by-the-light">Blinded by the light, 8B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/brasil">Brasil, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/brione-arete">Brione arete, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/canarini-svolazzanti">Canarini svolazzanti, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/casavino">Casavino, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/cellar-door">Cellar door, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/chesnut-five">Chesnut five, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/chocolate-horse">Chocolate horse, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/clean-climb">Clean climb, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/contro-tendenza">Contro tendenza, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/darkness">Darkness, 8A+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/darkness-right">Darkness Right, 7C</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/disney-production">Disney production, 8a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/django">Django, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/dosage-jump">Dosage jump, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/dosage-left">Dosage left, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/echoes">Echoes, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/ellis-island">Ellis island, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/entwash">Entwash, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/extra">Extra, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/fa-cup">FA cup, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/fabri-fibra">Fabri Fibra, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/fake-pamplemousse">Fake pamplemousse, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/flash-flood">Flash Flood, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/flash-off">Flash off, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/forever-more">Forever More, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/forever-green">Forever green, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/frank-morris">Frank Morris, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/frogger">Frogger, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/fuco-di-paglia">Fuco di paglia, 8a+ (8b in guide)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/fulcrum-direct">Fulcrum Direct, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/ganymede-takeover">Ganymede takeover, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/general-disarray">General Disarray, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/half-moon-bay">Half moon bay, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/hip-hop-gone-wild">Hip-Hop gone wild, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/humphrey-bogart">Humphrey Bogart, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/humphrey-bogart-direct">Humphrey Bogart Direct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/il-leviatano">Il leviatano, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/il-paradiso-dei-cani">Il paradiso dei cani, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/ita">Ita, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/jock-of-the-bushveld">Jock of the bushveld, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/just-toe-it">Just Toe It, 7A+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/king-slab">King slab, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/kubalik">Kubalik, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/l-orso-voga">L'orso Voga, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-brionesque">La brionesque, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-gloire">La gloire, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-manovra">La manovra, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-piattosa">La piattosa, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-planche">La planche, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-sfinge">La sfinge, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-vie-en-rose">La vie en rose, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/la-vince">La vince, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/lapsus">Lapsus, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/manicure">Manicure, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/manson">Manson, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/marilyn-monroe">Marilyn Monroe, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/mister-orange">Mister Orange, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/molonk">Molonk, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/nael">Nael, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/oblivion">Oblivion, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/oggi-jump">Oggi jump, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/onda-rosa">Onda rosa, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/orange-county">Orange county, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/pamplemousse">Pamplemousse, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/pause-cervelas">Pause cervelas, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/picnic-boulder">Picnic boulder, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/ponk">Ponk, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/pro-touch-traverse-low">Pro touch traverse low, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/randy-s-slab">Randy's slab, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/resa-immediata">Resa immediata, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/right-angle">Right angle, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/right-of-molonk">Right of Molonk, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/salamandre">Salamandre, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/side-effect">Side effect, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/slow-down">Slow Down, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/soft-touch">Soft touch, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/special-edition">Special Edition, 8a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/speedy-pizza">Speedy Pizza, 8a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/spoonerism">Spoonerism, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/squalo-in-faccia">Squalo in faccia, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/supertussi">Supertussi, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/switcher">Switcher, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/terranova">Terranova, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/the-dead-terrorist">The Dead Terrorist, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/the-fulcrum">The fulcrum, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/the-impossible-reta">The impossible reta, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/there-is-no-spoon">There is no spoon, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/tu-vuo-fa-l-americano">Tu vuò fa l'americano, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/twice">Twice, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/uela-li">Uela lì, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/vecchio-leone">Vecchio Leone, 8b+/c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/vecchio-leone">Vecchio Leone, 8B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/versace">Versace, 8B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/west-and-girls">West and girls, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/wie-im-urlaub">Wie im Urlaub, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/yoga-roof">Yoga Roof, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/brione/zio-fester">Zio Fester, 7B</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "brione_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/brione/atlantis">Atlantis</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/ballerman">Ballerman</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/black-pearl">Black Pearl</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/brionesque-amber">Brionesque - Amber</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/chiossetto">Chiossetto</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/frogger">Frogger</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/fulcrum">Fulcrum</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/ganne">Ganne</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/kubalik">Kubalik</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/lavertezzo-ai-poss">Lavertezzo - Ai Poss</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/limited-edition">Limited Edition</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/molonk">Molonk</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/pamplemousse">Pamplemousse</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/pianesc">Pianesc</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/piee">Pièe</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/salamandre">Salamandre</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/brione/vecchio-leone">Vecchio Leone</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "brione_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/atlantis" class="table-row-name text-bold">Atlantis</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/ballerman" class="table-row-name text-bold">Ballerman</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/black-pearl" class="table-row-name text-bold">Black Pearl</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/brionesque-amber" class="table-row-name text-bold">Brionesque - Amber</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/chiossetto" class="table-row-name text-bold">Chiossetto</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/frogger" class="table-row-name text-bold">Frogger</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/fulcrum" class="table-row-name text-bold">Fulcrum</a>
+					</td>
+					<td class="text-center">15</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/ganne" class="table-row-name text-bold">Ganne</a>
+					</td>
+					<td class="text-center">41</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/kubalik" class="table-row-name text-bold">Kubalik</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/lavertezzo-ai-poss" class="table-row-name text-bold">Lavertezzo - Ai Poss</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/limited-edition" class="table-row-name text-bold">Limited Edition</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/molonk" class="table-row-name text-bold">Molonk</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/pamplemousse" class="table-row-name text-bold">Pamplemousse</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/pianesc" class="table-row-name text-bold">Pianesc</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/piee" class="table-row-name text-bold">Pièe</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/salamandre" class="table-row-name text-bold">Salamandre</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/brione/vecchio-leone" class="table-row-name text-bold">Vecchio Leone</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -855,7 +474,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Vecchio Leone</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -881,7 +500,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Black Pearl</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -907,7 +526,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Salamandre</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -933,7 +552,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Molonk</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -959,7 +578,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Chiossetto</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -985,7 +604,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Ballerman</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1011,7 +630,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Kubalik</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1037,7 +656,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pianesc</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1063,7 +682,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pièe</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1089,7 +708,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Fulcrum</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1115,7 +734,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Vecchio Leone</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1141,7 +760,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Brionesque - Amber</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1167,7 +786,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Salamandre</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1193,7 +812,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Atlantis</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1219,7 +838,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Frogger</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1245,7 +864,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pamplemousse</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1271,7 +890,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Ganne</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1297,7 +916,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Limited Edition</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1320,8 +939,1056 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/9th-power" class="table-row-name text-bold">9th power</a>
+					</td>
+					<td>7B+</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/acqua-santa" class="table-row-name text-bold">Acqua santa</a>
+					</td>
+					<td>6a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/all-i-want-for-christmas" class="table-row-name text-bold">All I want for Christmas</a>
+					</td>
+					<td>8a+/b</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/amber" class="table-row-name text-bold">Amber</a>
+					</td>
+					<td>8a+/8b</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/apollo" class="table-row-name text-bold">Apollo</a>
+					</td>
+					<td>8a</td>
+					<td>Atlantis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/atlantis" class="table-row-name text-bold">Atlantis</a>
+					</td>
+					<td>7c</td>
+					<td>Atlantis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/bach-bloc" class="table-row-name text-bold">Bach bloc</a>
+					</td>
+					<td>7b+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/ballermann" class="table-row-name text-bold">Ballermann</a>
+					</td>
+					<td>7b+</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/beach-boys" class="table-row-name text-bold">Beach boys</a>
+					</td>
+					<td>8a</td>
+					<td>Lavertezzo - Ai Poss</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/beast" class="table-row-name text-bold">Beast</a>
+					</td>
+					<td>8a</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/benvenuti-in-placca" class="table-row-name text-bold">Benvenuti in placca</a>
+					</td>
+					<td>7b</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/bisex" class="table-row-name text-bold">Bisex</a>
+					</td>
+					<td>6c</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/bishop" class="table-row-name text-bold">Bishop</a>
+					</td>
+					<td>6b+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/black-miror" class="table-row-name text-bold">Black Miror</a>
+					</td>
+					<td>6b+</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/black-pearl" class="table-row-name text-bold">Black Pearl</a>
+					</td>
+					<td>7c+</td>
+					<td>Black Pearl</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/black-arete" class="table-row-name text-bold">Black arete</a>
+					</td>
+					<td>7c</td>
+					<td>Pièe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/blinded-by-the-light" class="table-row-name text-bold">Blinded by the light</a>
+					</td>
+					<td>8B</td>
+					<td>Salamandre</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/brasil" class="table-row-name text-bold">Brasil</a>
+					</td>
+					<td>7a</td>
+					<td>Atlantis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/brione-arete" class="table-row-name text-bold">Brione arete</a>
+					</td>
+					<td>6b</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/canarini-svolazzanti" class="table-row-name text-bold">Canarini svolazzanti</a>
+					</td>
+					<td>5</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/casavino" class="table-row-name text-bold">Casavino</a>
+					</td>
+					<td>8b+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/cellar-door" class="table-row-name text-bold">Cellar door</a>
+					</td>
+					<td>8a</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/chesnut-five" class="table-row-name text-bold">Chesnut five</a>
+					</td>
+					<td>7a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/chocolate-horse" class="table-row-name text-bold">Chocolate horse</a>
+					</td>
+					<td>7a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/clean-climb" class="table-row-name text-bold">Clean climb</a>
+					</td>
+					<td>6b</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/contro-tendenza" class="table-row-name text-bold">Contro tendenza</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/darkness" class="table-row-name text-bold">Darkness</a>
+					</td>
+					<td>8A+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/darkness-right" class="table-row-name text-bold">Darkness Right</a>
+					</td>
+					<td>7C</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/disney-production" class="table-row-name text-bold">Disney production</a>
+					</td>
+					<td>8a/+</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/django" class="table-row-name text-bold">Django</a>
+					</td>
+					<td>7b+</td>
+					<td>Chiossetto</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/dosage-jump" class="table-row-name text-bold">Dosage jump</a>
+					</td>
+					<td>6c+</td>
+					<td>Pamplemousse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/dosage-left" class="table-row-name text-bold">Dosage left</a>
+					</td>
+					<td>7a</td>
+					<td>Pamplemousse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/echoes" class="table-row-name text-bold">Echoes</a>
+					</td>
+					<td>8a+</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/ellis-island" class="table-row-name text-bold">Ellis island</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/entwash" class="table-row-name text-bold">Entwash</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/extra" class="table-row-name text-bold">Extra</a>
+					</td>
+					<td>6b</td>
+					<td>Molonk</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/fa-cup" class="table-row-name text-bold">FA cup</a>
+					</td>
+					<td>7b+</td>
+					<td>Kubalik</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/fabri-fibra" class="table-row-name text-bold">Fabri Fibra</a>
+					</td>
+					<td>8a+</td>
+					<td>Pamplemousse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/fake-pamplemousse" class="table-row-name text-bold">Fake pamplemousse</a>
+					</td>
+					<td>8a</td>
+					<td>Frogger</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/flash-flood" class="table-row-name text-bold">Flash Flood</a>
+					</td>
+					<td>8b</td>
+					<td>Frogger</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/flash-off" class="table-row-name text-bold">Flash off</a>
+					</td>
+					<td>6b</td>
+					<td>Kubalik</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/forever-more" class="table-row-name text-bold">Forever More</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/forever-green" class="table-row-name text-bold">Forever green</a>
+					</td>
+					<td>6c+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/frank-morris" class="table-row-name text-bold">Frank Morris</a>
+					</td>
+					<td>7b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/frogger" class="table-row-name text-bold">Frogger</a>
+					</td>
+					<td>8a</td>
+					<td>Frogger</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/fuco-di-paglia" class="table-row-name text-bold">Fuco di paglia</a>
+					</td>
+					<td>8a+ (8b in guide)</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/fulcrum-direct" class="table-row-name text-bold">Fulcrum Direct</a>
+					</td>
+					<td>8a+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/ganymede-takeover" class="table-row-name text-bold">Ganymede takeover</a>
+					</td>
+					<td>8a+</td>
+					<td>Frogger</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/general-disarray" class="table-row-name text-bold">General Disarray</a>
+					</td>
+					<td>8b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/half-moon-bay" class="table-row-name text-bold">Half moon bay</a>
+					</td>
+					<td>7a+</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/hip-hop-gone-wild" class="table-row-name text-bold">Hip-Hop gone wild</a>
+					</td>
+					<td>7a+</td>
+					<td>Pianesc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/humphrey-bogart" class="table-row-name text-bold">Humphrey Bogart</a>
+					</td>
+					<td>8a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/humphrey-bogart-direct" class="table-row-name text-bold">Humphrey Bogart Direct</a>
+					</td>
+					<td>7c</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/il-leviatano" class="table-row-name text-bold">Il leviatano</a>
+					</td>
+					<td>6a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/il-paradiso-dei-cani" class="table-row-name text-bold">Il paradiso dei cani</a>
+					</td>
+					<td>7c+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/ita" class="table-row-name text-bold">Ita</a>
+					</td>
+					<td>6b</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/jock-of-the-bushveld" class="table-row-name text-bold">Jock of the bushveld</a>
+					</td>
+					<td>7c+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/just-toe-it" class="table-row-name text-bold">Just Toe It</a>
+					</td>
+					<td>7A+</td>
+					<td>Atlantis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/king-slab" class="table-row-name text-bold">King slab</a>
+					</td>
+					<td>6a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/kubalik" class="table-row-name text-bold">Kubalik</a>
+					</td>
+					<td>8b</td>
+					<td>Kubalik</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/l-orso-voga" class="table-row-name text-bold">L'orso Voga</a>
+					</td>
+					<td>6c+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-brionesque" class="table-row-name text-bold">La brionesque</a>
+					</td>
+					<td>8a</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-gloire" class="table-row-name text-bold">La gloire</a>
+					</td>
+					<td>6a+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-manovra" class="table-row-name text-bold">La manovra</a>
+					</td>
+					<td>6c</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-piattosa" class="table-row-name text-bold">La piattosa</a>
+					</td>
+					<td>6b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-planche" class="table-row-name text-bold">La planche</a>
+					</td>
+					<td>7c+</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-sfinge" class="table-row-name text-bold">La sfinge</a>
+					</td>
+					<td>7b</td>
+					<td>Black Pearl</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-vie-en-rose" class="table-row-name text-bold">La vie en rose</a>
+					</td>
+					<td>6b</td>
+					<td>Lavertezzo - Ai Poss</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/la-vince" class="table-row-name text-bold">La vince</a>
+					</td>
+					<td>7b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/lapsus" class="table-row-name text-bold">Lapsus</a>
+					</td>
+					<td>6b+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/manicure" class="table-row-name text-bold">Manicure</a>
+					</td>
+					<td>6b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/manson" class="table-row-name text-bold">Manson</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/marilyn-monroe" class="table-row-name text-bold">Marilyn Monroe</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/mister-orange" class="table-row-name text-bold">Mister Orange</a>
+					</td>
+					<td>7a+</td>
+					<td>Pièe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/molonk" class="table-row-name text-bold">Molonk</a>
+					</td>
+					<td>7c</td>
+					<td>Molonk</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/nael" class="table-row-name text-bold">Nael</a>
+					</td>
+					<td>6b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/oblivion" class="table-row-name text-bold">Oblivion</a>
+					</td>
+					<td>7a</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/oggi-jump" class="table-row-name text-bold">Oggi jump</a>
+					</td>
+					<td>6b</td>
+					<td>Molonk</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/onda-rosa" class="table-row-name text-bold">Onda rosa</a>
+					</td>
+					<td>7b</td>
+					<td>Black Pearl</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/orange-county" class="table-row-name text-bold">Orange county</a>
+					</td>
+					<td>7c+</td>
+					<td>Pamplemousse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/pamplemousse" class="table-row-name text-bold">Pamplemousse</a>
+					</td>
+					<td>7c+</td>
+					<td>Pamplemousse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/pause-cervelas" class="table-row-name text-bold">Pause cervelas</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/picnic-boulder" class="table-row-name text-bold">Picnic boulder</a>
+					</td>
+					<td>7b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/ponk" class="table-row-name text-bold">Ponk</a>
+					</td>
+					<td>8a</td>
+					<td>Vecchio Leone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/pro-touch-traverse-low" class="table-row-name text-bold">Pro touch traverse low</a>
+					</td>
+					<td>7a</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/randy-s-slab" class="table-row-name text-bold">Randy's slab</a>
+					</td>
+					<td>7b</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/resa-immediata" class="table-row-name text-bold">Resa immediata</a>
+					</td>
+					<td>6b</td>
+					<td>Black Pearl</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/right-angle" class="table-row-name text-bold">Right angle</a>
+					</td>
+					<td>5+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/right-of-molonk" class="table-row-name text-bold">Right of Molonk</a>
+					</td>
+					<td>7a+</td>
+					<td>Molonk</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/salamandre" class="table-row-name text-bold">Salamandre</a>
+					</td>
+					<td>8a+</td>
+					<td>Salamandre</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/side-effect" class="table-row-name text-bold">Side effect</a>
+					</td>
+					<td>8a</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/slow-down" class="table-row-name text-bold">Slow Down</a>
+					</td>
+					<td>8a</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/soft-touch" class="table-row-name text-bold">Soft touch</a>
+					</td>
+					<td>6b</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/special-edition" class="table-row-name text-bold">Special Edition</a>
+					</td>
+					<td>8a+ (sit)</td>
+					<td>Limited Edition</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/speedy-pizza" class="table-row-name text-bold">Speedy Pizza</a>
+					</td>
+					<td>8a/+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/spoonerism" class="table-row-name text-bold">Spoonerism</a>
+					</td>
+					<td>8a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/squalo-in-faccia" class="table-row-name text-bold">Squalo in faccia</a>
+					</td>
+					<td>7a</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/supertussi" class="table-row-name text-bold">Supertussi</a>
+					</td>
+					<td>8b</td>
+					<td>Atlantis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/switcher" class="table-row-name text-bold">Switcher</a>
+					</td>
+					<td>7c+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/terranova" class="table-row-name text-bold">Terranova</a>
+					</td>
+					<td>7c</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/the-dead-terrorist" class="table-row-name text-bold">The Dead Terrorist</a>
+					</td>
+					<td>7b+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/the-fulcrum" class="table-row-name text-bold">The fulcrum</a>
+					</td>
+					<td>8a+</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/the-impossible-reta" class="table-row-name text-bold">The impossible reta</a>
+					</td>
+					<td>7b+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/there-is-no-spoon" class="table-row-name text-bold">There is no spoon</a>
+					</td>
+					<td>7a+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/tu-vuo-fa-l-americano" class="table-row-name text-bold">Tu vuò fa l'americano</a>
+					</td>
+					<td>8a</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/twice" class="table-row-name text-bold">Twice</a>
+					</td>
+					<td>7a</td>
+					<td>Vecchio Leone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/uela-li" class="table-row-name text-bold">Uela lì</a>
+					</td>
+					<td>6a+</td>
+					<td>Brionesque - Amber</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/vecchio-leone" class="table-row-name text-bold">Vecchio Leone</a>
+					</td>
+					<td>8b+/c</td>
+					<td>Vecchio Leone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/vecchio-leone" class="table-row-name text-bold">Vecchio Leone</a>
+					</td>
+					<td>8B</td>
+					<td>Vecchio Leone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/versace" class="table-row-name text-bold">Versace</a>
+					</td>
+					<td>8B</td>
+					<td>Ballerman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/west-and-girls" class="table-row-name text-bold">West and girls</a>
+					</td>
+					<td>7a</td>
+					<td>Salamandre</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/wie-im-urlaub" class="table-row-name text-bold">Wie im Urlaub</a>
+					</td>
+					<td>7c+</td>
+					<td>Ganne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/yoga-roof" class="table-row-name text-bold">Yoga Roof</a>
+					</td>
+					<td>7c</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/brione/zio-fester" class="table-row-name text-bold">Zio Fester</a>
+					</td>
+					<td>7B</td>
+					<td>Fulcrum</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/joes-valley">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Joe's Valley 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="39.289613" />
   <input type="hidden" id="lng" name="lng_val" value="-111.17789" />
@@ -168,692 +248,156 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=0972160914&linkId=0047d8bf763b84e209a83e7e725393ea">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.mountainproject.com/area/105880382/joes-valley" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Mountain Project
+		</a>
+	
+		<a id="guide_link"  href="https://www.lulu.com/shop/brian-koralewski/joes-valley-a-bouldering-guide-to-classic-moderates/paperback/product-24221487.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Joe’s Valley: A Bouldering Guide to Classic Moderates
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/joe-s-valley-ut" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=0972160914&linkId=0047d8bf763b84e209a83e7e725393ea">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.mountainproject.com/area/105880382/joes-valley"
-        target="_blank"
-        >Mountain Project</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.lulu.com/shop/brian-koralewski/joes-valley-a-bouldering-guide-to-classic-moderates/paperback/product-24221487.html"
-        target="_blank"
-        >Joe’s Valley: A Bouldering Guide to Classic Moderates</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/joe-s-valley-ut"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/joes-valley"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/joes-valley"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/joes-valley/all-you-sinners">All You Sinners, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/anatomy-act">Anatomy Act, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/antaeus">Antaeus, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/apple-bottom-jeans">Apple Bottom Jeans, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/arma">Arma, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/baldwin-bash">Baldwin Bash, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/barely-legal">Barely Legal, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/beyond-life">Beyond Life, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/big-boy">Big Boy, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/big-cheesy">Big Cheesy, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/big-joe">Big Joe, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/boysize">Boysize, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/bring-the-heatwole">Bring the Heatwole, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/bubbatronic">Bubbatronic, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/champagne-supernova">Champagne Supernova, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/chips">Chips, V</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/contact">Contact, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/cook-the-patty">Cook the Patty, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/cook-the-patty">Cook the Patty, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/cosmos">Cosmos, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/counter-clockwork">Counter Clockwork, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/crescent-moon">Crescent Moon, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/cue-ball">Cue Ball, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/dark-continent">Dark Continent, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/death-scream">Death Scream, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/dirty-harry">Dirty Harry, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/double-delicious">Double Delicious, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/dungeon-master">Dungeon Master, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/dunkin-donuts-variation">Dunkin’ Donuts Variation, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/dyno-time-low">Dyno Time Low, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/eden">Eden, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/electric-fence">Electric Fence, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/entrance-exam">Entrance Exam, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/eurosize">Eurosize, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/external-tulips">External Tulips, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/fanstasy-factory">Fanstasy Factory, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/feels-like-grit">Feels Like Grit, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/fig-fart">Fig Fart, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/finger-hut">Finger Hut, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/fortune-cookie">Fortune Cookie, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/foxy-whore">Foxy Whore, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/frosted-flakes">Frosted Flakes, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/g207">G207, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/ghost-king">Ghost King, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/great-white">Great White, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/gurkha-knife">Gurkha Knife, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/hand-of-doom">Hand of Doom, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/heartless">Heartless, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/i-d-rather-be-climbing-her">I'd Rather Be Climbing Her, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/jarash">Jarash, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/jarash">Jarash, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/killa-bees">Killa Bees, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/kobra-khan">Kobra Khan, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/kung-fu-theatre">Kung Fu Theatre, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/kung-fury">Kung Fury, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/lady-hips">Lady Hips, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/loc-nar">Loc-Nar, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/low-tide">Low Tide, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/lumberjack">Lumberjack, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/mars-attacks">Mars attacks, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/master-po">Master Po, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/mono-e-mono">Mono E Mono, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/mononoke">Mononoke, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/mr-duck">Mr. Duck, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/near-beers">Near Beers, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/nerve-extension">Nerve Extension, V10-</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/ninja-please">Ninja Please, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/no-substance">No Substance, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/north-arete">North Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/o-face">O Face, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/pandemic">Pandemic, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/phony-baloney-traverse">Phony Baloney Traverse, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/pilot-light">Pilot Light, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/pitbull">Pitbull, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/planet-of-apes">Planet of Apes, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/playmate-of-the-year">Playmate of the Year, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/playtime-is-over">Playtime Is Over, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/pocket-rocket">Pocket Rocket, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/poricini-or-portabello">Poricini or Portabello, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/poseidon">Poseidon, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/projectile-dysfunction">Projectile Dysfunction, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/proppa-dyno">Proppa Dyno, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/rabbit-fur">Rabbit Fur, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/raiden">Raiden, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/rawhide">Rawhide, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/reduced-fat-milk">Reduced Fat Milk, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/renaissance-man">Renaissance Man, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/resident-evil">Resident Evil, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/rug-rat">Rug Rat, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/runt">Runt, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/spam">SPAM, V6-7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/scary-monsters">Scary Monsters, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/scrawny-and-brawny">Scrawny and Brawny, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/self-service">Self Service, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/shadow-of-death">Shadow of Death, V7 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/shaolin-slab">Shaolin Slab, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/shark-bait">Shark Bait, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/smokin-joe">Smokin' Joe, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/speak-of-the-devil">Speak of the Devil, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/stand-up">Stand Up, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/stand-up-comedian">Stand Up Comedian, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/stir-the-pie">Stir The Pie, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/streaked">Streaked, V6+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/sun-in-my-eye-traverse">Sun in My Eye Traverse, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/sunshine-daydream">Sunshine Daydream, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/superman">Superman, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/team-effort">Team Effort, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-angler">The Angler, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-coaster">The Coaster, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-dead-sea-aka-black-sea">The Dead Sea aka Black Sea, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-flu">The Flu, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-hulk">The Hulk, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/the-wind-below">The Wind Below, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/thor-s-hammer">Thor's Hammer, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/three-amigos">Three Amigos, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/trent-s-mom">Trent's Mom, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/tubesnake-boogie">Tubesnake Boogie, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/vertical-ice">Vertical Ice, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/walrus">Walrus, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/water-paintings">Water Paintings, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/white-buffalo">White Buffalo, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/wills-afire">Wills Afire, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/worst-case-scenario">Worst Case Scenario, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/wrecking-ball">Wrecking Ball, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joes-valley/zatoichi">Zatoichi, V8</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "joes-valley_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/joes-valley/area-51">Area 51</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/cabin-fever">Cabin Fever</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/dairy-canyon">Dairy Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/left-fork">Left Fork</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/new-joe-s">New Joe's</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/right-fork">Right Fork</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/right-sign-area">Right Sign Area</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joes-valley/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "joes-valley_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/area-51" class="table-row-name text-bold">Area 51</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/cabin-fever" class="table-row-name text-bold">Cabin Fever</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/dairy-canyon" class="table-row-name text-bold">Dairy Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/left-fork" class="table-row-name text-bold">Left Fork</a>
+					</td>
+					<td class="text-center">38</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/new-joe-s" class="table-row-name text-bold">New Joe's</a>
+					</td>
+					<td class="text-center">22</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/right-fork" class="table-row-name text-bold">Right Fork</a>
+					</td>
+					<td class="text-center">58</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/right-sign-area" class="table-row-name text-bold">Right Sign Area</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joes-valley/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -878,8 +422,1155 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/all-you-sinners" class="table-row-name text-bold">All You Sinners</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/anatomy-act" class="table-row-name text-bold">Anatomy Act</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/antaeus" class="table-row-name text-bold">Antaeus</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/apple-bottom-jeans" class="table-row-name text-bold">Apple Bottom Jeans</a>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/arma" class="table-row-name text-bold">Arma</a>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/baldwin-bash" class="table-row-name text-bold">Baldwin Bash</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/barely-legal" class="table-row-name text-bold">Barely Legal</a>
+					</td>
+					<td>V11</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/beyond-life" class="table-row-name text-bold">Beyond Life</a>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/big-boy" class="table-row-name text-bold">Big Boy</a>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/big-cheesy" class="table-row-name text-bold">Big Cheesy</a>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/big-joe" class="table-row-name text-bold">Big Joe</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/boysize" class="table-row-name text-bold">Boysize</a>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/bring-the-heatwole" class="table-row-name text-bold">Bring the Heatwole</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/bubbatronic" class="table-row-name text-bold">Bubbatronic</a>
+					</td>
+					<td>V9</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/champagne-supernova" class="table-row-name text-bold">Champagne Supernova</a>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/chips" class="table-row-name text-bold">Chips</a>
+					</td>
+					<td>V</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/contact" class="table-row-name text-bold">Contact</a>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/cook-the-patty" class="table-row-name text-bold">Cook the Patty</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/cook-the-patty" class="table-row-name text-bold">Cook the Patty</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/cosmos" class="table-row-name text-bold">Cosmos</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/counter-clockwork" class="table-row-name text-bold">Counter Clockwork</a>
+					</td>
+					<td>V11</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/crescent-moon" class="table-row-name text-bold">Crescent Moon</a>
+					</td>
+					<td>V2</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/cue-ball" class="table-row-name text-bold">Cue Ball</a>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/dark-continent" class="table-row-name text-bold">Dark Continent</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/death-scream" class="table-row-name text-bold">Death Scream</a>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/dirty-harry" class="table-row-name text-bold">Dirty Harry</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/double-delicious" class="table-row-name text-bold">Double Delicious</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/dungeon-master" class="table-row-name text-bold">Dungeon Master</a>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/dunkin-donuts-variation" class="table-row-name text-bold">Dunkin’ Donuts Variation</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/dyno-time-low" class="table-row-name text-bold">Dyno Time Low</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/eden" class="table-row-name text-bold">Eden</a>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/electric-fence" class="table-row-name text-bold">Electric Fence</a>
+					</td>
+					<td>V7</td>
+					<td>Cabin Fever</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/entrance-exam" class="table-row-name text-bold">Entrance Exam</a>
+					</td>
+					<td>V8</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/eurosize" class="table-row-name text-bold">Eurosize</a>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/external-tulips" class="table-row-name text-bold">External Tulips</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/fanstasy-factory" class="table-row-name text-bold">Fanstasy Factory</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/feels-like-grit" class="table-row-name text-bold">Feels Like Grit</a>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/fig-fart" class="table-row-name text-bold">Fig Fart</a>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/finger-hut" class="table-row-name text-bold">Finger Hut</a>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/fortune-cookie" class="table-row-name text-bold">Fortune Cookie</a>
+					</td>
+					<td>V3</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/foxy-whore" class="table-row-name text-bold">Foxy Whore</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/frosted-flakes" class="table-row-name text-bold">Frosted Flakes</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/g207" class="table-row-name text-bold">G207</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/ghost-king" class="table-row-name text-bold">Ghost King</a>
+					</td>
+					<td>V11</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/great-white" class="table-row-name text-bold">Great White</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/gurkha-knife" class="table-row-name text-bold">Gurkha Knife</a>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/hand-of-doom" class="table-row-name text-bold">Hand of Doom</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/heartless" class="table-row-name text-bold">Heartless</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/i-d-rather-be-climbing-her" class="table-row-name text-bold">I'd Rather Be Climbing Her</a>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/jarash" class="table-row-name text-bold">Jarash</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/jarash" class="table-row-name text-bold">Jarash</a>
+					</td>
+					<td>V6</td>
+					<td>Left  Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/killa-bees" class="table-row-name text-bold">Killa Bees</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/kobra-khan" class="table-row-name text-bold">Kobra Khan</a>
+					</td>
+					<td>V4</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/kung-fu-theatre" class="table-row-name text-bold">Kung Fu Theatre</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/kung-fury" class="table-row-name text-bold">Kung Fury</a>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/lady-hips" class="table-row-name text-bold">Lady Hips</a>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/loc-nar" class="table-row-name text-bold">Loc-Nar</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/low-tide" class="table-row-name text-bold">Low Tide</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/lumberjack" class="table-row-name text-bold">Lumberjack</a>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/mars-attacks" class="table-row-name text-bold">Mars attacks</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/master-po" class="table-row-name text-bold">Master Po</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/mono-e-mono" class="table-row-name text-bold">Mono E Mono</a>
+					</td>
+					<td>V4</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/mononoke" class="table-row-name text-bold">Mononoke</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/mr-duck" class="table-row-name text-bold">Mr. Duck</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/near-beers" class="table-row-name text-bold">Near Beers</a>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/nerve-extension" class="table-row-name text-bold">Nerve Extension</a>
+					</td>
+					<td>V10-</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/ninja-please" class="table-row-name text-bold">Ninja Please</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/no-substance" class="table-row-name text-bold">No Substance</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/north-arete" class="table-row-name text-bold">North Arete</a>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/o-face" class="table-row-name text-bold">O Face</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/pandemic" class="table-row-name text-bold">Pandemic</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/phony-baloney-traverse" class="table-row-name text-bold">Phony Baloney Traverse</a>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/pilot-light" class="table-row-name text-bold">Pilot Light</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/pitbull" class="table-row-name text-bold">Pitbull</a>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/planet-of-apes" class="table-row-name text-bold">Planet of Apes</a>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/playmate-of-the-year" class="table-row-name text-bold">Playmate of the Year</a>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/playtime-is-over" class="table-row-name text-bold">Playtime Is Over</a>
+					</td>
+					<td>V9</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/pocket-rocket" class="table-row-name text-bold">Pocket Rocket</a>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/poricini-or-portabello" class="table-row-name text-bold">Poricini or Portabello</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/poseidon" class="table-row-name text-bold">Poseidon</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/projectile-dysfunction" class="table-row-name text-bold">Projectile Dysfunction</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/proppa-dyno" class="table-row-name text-bold">Proppa Dyno</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/rabbit-fur" class="table-row-name text-bold">Rabbit Fur</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/raiden" class="table-row-name text-bold">Raiden</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/rawhide" class="table-row-name text-bold">Rawhide</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/reduced-fat-milk" class="table-row-name text-bold">Reduced Fat Milk</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/renaissance-man" class="table-row-name text-bold">Renaissance Man</a>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/resident-evil" class="table-row-name text-bold">Resident Evil</a>
+					</td>
+					<td>V10</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/rug-rat" class="table-row-name text-bold">Rug Rat</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/runt" class="table-row-name text-bold">Runt</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/spam" class="table-row-name text-bold">SPAM</a>
+					</td>
+					<td>V6-7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/scary-monsters" class="table-row-name text-bold">Scary Monsters</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/scrawny-and-brawny" class="table-row-name text-bold">Scrawny and Brawny</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/self-service" class="table-row-name text-bold">Self Service</a>
+					</td>
+					<td>V4</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/shadow-of-death" class="table-row-name text-bold">Shadow of Death</a>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/shaolin-slab" class="table-row-name text-bold">Shaolin Slab</a>
+					</td>
+					<td>V4</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/shark-bait" class="table-row-name text-bold">Shark Bait</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/smokin-joe" class="table-row-name text-bold">Smokin' Joe</a>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/speak-of-the-devil" class="table-row-name text-bold">Speak of the Devil</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/stand-up" class="table-row-name text-bold">Stand Up</a>
+					</td>
+					<td>V8</td>
+					<td>Area 51</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/stand-up-comedian" class="table-row-name text-bold">Stand Up Comedian</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/stir-the-pie" class="table-row-name text-bold">Stir The Pie</a>
+					</td>
+					<td>V8</td>
+					<td>Dairy Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/streaked" class="table-row-name text-bold">Streaked</a>
+					</td>
+					<td>V6+</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/sun-in-my-eye-traverse" class="table-row-name text-bold">Sun in My Eye Traverse</a>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/sunshine-daydream" class="table-row-name text-bold">Sunshine Daydream</a>
+					</td>
+					<td>V7</td>
+					<td>Right Sign Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/superman" class="table-row-name text-bold">Superman</a>
+					</td>
+					<td>V4</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/team-effort" class="table-row-name text-bold">Team Effort</a>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-angler" class="table-row-name text-bold">The Angler</a>
+					</td>
+					<td>V2</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-coaster" class="table-row-name text-bold">The Coaster</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-dead-sea-aka-black-sea" class="table-row-name text-bold">The Dead Sea aka Black Sea</a>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-flu" class="table-row-name text-bold">The Flu</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-hulk" class="table-row-name text-bold">The Hulk</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/the-wind-below" class="table-row-name text-bold">The Wind Below</a>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/thor-s-hammer" class="table-row-name text-bold">Thor's Hammer</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/three-amigos" class="table-row-name text-bold">Three Amigos</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/trent-s-mom" class="table-row-name text-bold">Trent's Mom</a>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/tubesnake-boogie" class="table-row-name text-bold">Tubesnake Boogie</a>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/vertical-ice" class="table-row-name text-bold">Vertical Ice</a>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/walrus" class="table-row-name text-bold">Walrus</a>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/water-paintings" class="table-row-name text-bold">Water Paintings</a>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/white-buffalo" class="table-row-name text-bold">White Buffalo</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/wills-afire" class="table-row-name text-bold">Wills Afire</a>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/worst-case-scenario" class="table-row-name text-bold">Worst Case Scenario</a>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/wrecking-ball" class="table-row-name text-bold">Wrecking Ball</a>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joes-valley/zatoichi" class="table-row-name text-bold">Zatoichi</a>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/can-bruguera">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Can Bruguera 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.59212082176253" />
   <input type="hidden" id="lng" name="lng_val" value="2.475067377090454" />
@@ -168,1458 +248,177 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://canbru.blogspot.com/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			canbru (Blog)
+		</a>
+	
+		<a id="guide_link"  href="http://boulderinbcn.blogspot.com/2013/10/blocs-can-bruguera-sectors-parking.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			boulderingbcn (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://canbru.blogspot.com/"
-        target="_blank"
-        >canbru (Blog)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://boulderinbcn.blogspot.com/2013/10/blocs-can-bruguera-sectors-parking.html"
-        target="_blank"
-        >boulderingbcn (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/can-bruguera"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/can-bruguera"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/can-bruguera/adsl-aplec-de-sardanistes-llavaneres">ADSL (Aplec De Sardanistes Llavaneres), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/abnegacio">Abnegació, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/absenta">Absenta, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/abstinencia">Abstinència, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/abstraccio">Abstracció, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/almorrana">Almorrana, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/alpha-blondy">Alpha Blondy, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/anibal">Aníbal, 7c/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/aresta-canalo">Aresta canaló, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/arribaba">Arribaba, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/atrofia-multisistemica">Atrofia multisistèmica, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/auschwitz-animal">Auschwitz animal, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/auschwitz-vegetal">Auschwitz vegetal, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/ayuno-intermitente">Ayuno intermitente, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/ball-de-rojos">Ball de Rojos, 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/bamboleo-la-polea">Bamboleo la polea, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/batalla-de-zama">Batalla de Zama, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/better-call-saulo">Better call sauló, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/big-fat">Big Fat, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/boferton">Bofertón, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/boulderking">Boulderking, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/caballo-maldito">Caballo maldito, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/cafeina">Cafeïna, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/callos-a-la-maresmenya">Callos a la Maresmenya, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/callos-a-la-maresmenya">Callos a la Maresmenya, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/candado-chino">Candado chino, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/capitan-sangre-de-toro">Capitán Sangre de Toro, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/capitan-vladimir">Capitán Vladimir, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/cervicazo-latigal">Cervicazo Latigal, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/colico-anonimo">Colico anonimo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/contigo-caer-siempre-es-un-placer">Contigo caer siempre es un placer, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/costella-de-xai">Costella de xai, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/cotolengo-direct">Cotolengo direct, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/cous-cous-clan">Cous Cous Clan, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/cuentagotas">Cuentagotas, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/dersu-uzala">Dersu Uzala, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/dimitri">Dimitri, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/diposit-de-cadavers">Dipòsit de Cadàvers, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/django">Django, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/dos-de-coprolit">Dos de copròlit, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/double-tap">Double Tap, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/durkuek">Durkuek, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/durkuek">Durkuek, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/durkuek-direct">Durkuek direct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-canuto">El Canuto, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-catxalot">El Catxalot, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-cervol">El Cérvol, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-cervol">El Cérvol, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-despertar">El Despertar, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-gran-jb">El Gran JB, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-morro">El Morro, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-petit-jb">El Petit JB, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-port-ben-moll">El Port ben Moll, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-resplandor">El Resplandor, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-tribunal-de-la-haya">El Tribunal de la Haya, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-andamio">El andamio, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-borratxo">El borratxo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-buscador-de-xinxetes">El buscador de xinxetes, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-cami">El camí, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-cranc">El cranc, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-espantapajaros">El espantapájaros, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-globus-d-elio">El globus d'Elio, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-gorila-volador">El gorila volador, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-peregrino">El peregrino, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-retrovisor">El retrovisor, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-sardinita">El sardinita, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-timbal-de-llauna">El timbal de llauna, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/el-venedor-de-fum">El venedor de fum, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/empotra-i-puja">Empotra i puja, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/en-dique-seco">En Dique Seco, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/en-dique-recto">En dique recto, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/encegat">Encegat, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/eneatipo-7">Eneatipo 7, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/entre-tots">Entre tots, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/es-baixa-per-aqui">Es baixa per aquí, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/escaleta">Escaleta, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/escaqueo-de-los-necios">Escaqueo de los necios, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/eucaliptus">Eucaliptus, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fa-hunter">FA Hunter, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/falocracia">Falocràcia, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/feeling-ratio">Feeling Ratio, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fideua">Fideuà, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/final-fantasy">Final Fantasy, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fino-y-se-fue">Fino y se fue, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fissura-del-termita">Fissura del Termita, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fissura-del-termita">Fissura del Termita, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/fisura-y-romo">Fisura y Romo, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/francisco-fontaneda-samanta">Francisco Fontaneda Samanta, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/grano-angular">Grano angular, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/hemoal">Hemoal, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/humor-amarillo">Humor amarillo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/javalee-spirit">JavaLee Spirit, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/jil-barril">Jil Barril, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/jil-al-halal">Jil al Halal, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/judas">Judas, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/juma-pardo">Juma Pardo, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/julia">Júlia, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/king-of-jambon">King of jambon, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/king-of-jambon-right">King of jambon Right, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/komando-basura">Komando Basura, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-ego">L'Ego, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-esperonaco">L'Esperonaco, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-essencia">L'Essència, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-arpo">L'arpó, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-esbudellador-de-canbru">L'esbudellador de Canbru, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-homo-plat">L'homo-plat, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/l-homo-plat-directe">L'homo-plat directe, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/lsd-la-sardana-direct">LSD (La Sardana Direct), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-benzinera">La Benzinera, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-bestia">La Bestia, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-bestia">La Bestia, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-flexadora">La Flexadora, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-frontissa">La Frontissa, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-linea-de-la-vida">La Linea de la Vida, 7c+ (sit). Proposed 7c+/8a (sit) by maki.</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-princesa-de-ceilan">La Princesa de Ceilán, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-sibella">La Sibella, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-sika-yeye">La Sika yeye, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-boina">La boina, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-cara">La cara, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-gran-estafa">La gran estafa, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-isla-de-pederjil">La isla de Pederjil, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-llosa">La llosa, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-lluna">La lluna, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-motoserra">La motoserra, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-ola">La ola, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-palanca">La palanca, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-placa">La placa, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-trave-de-ponent">La trave de Ponent, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/la-via-del-covard">La via del covard, 7a+ </a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/lago-combambas">Lago Combambas, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/latigazo-cervical">Latigazo Cervical, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/le-boule">Le boule, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/le-boule">Le boule, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/le-porsche-parisien">Le porsche parisien, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/le-temps-des-cerises">Le temps des cerises, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/litofag">Litofag, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/los-mundos-de-yupi">Los mundos de Yupi, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/magique-latrine">Magique latrine, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/malditos-bastardos">Malditos bastardos, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/mantelitzat">Mantelitzat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/masnou-crew">Masnou Crew, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/minimalista">Minimalista, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/miseria-i-companyia">Misèria i Companyia, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/mito-sonde">Mito sonde, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/moby-dick">Moby Dick, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/monsieur-bisone">Monsieur Bisoñé, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/morralla-china">Morralla China, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/mr-potato">Mr. Potato, ?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/mugrons-de-iaia">Mugrons de iaia, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/muralla-xina">Muralla Xina, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/magia-blanca">Màgia Blanca, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/magia-borras">Màgia Borràs, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/magia-negra">Màgia Negra, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/nach">Nach, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/nachos-con-guacamole">Nachos con Guacamole, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/nicotina">Nicotina, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/okhet-on-thosoi">Okhêt on thosoï, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/padre-he-picado">Padre, he picado, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/paellador">Paellador, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/palomo-cojo">Palomo cojo, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/pare-onofre">Pare Onofre, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/parkinson">Parkinson, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/parkinson">Parkinson, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/perros-de-la-noche">Perros de la noche, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-bloc-del-cami">Problem 1 (Bloc del Camí), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-boulder-1-roc-de-l-avi">Problem 1 (Boulder 1, Roc de l'Avi), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-l-entrada">Problem 1 (L'entrada), 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-la-fissura">Problem 1 (La Fissura), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-secretaria">Problem 1 (Secretaria), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-1-summerhill">Problem 1 (Summerhill), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-11-parking">Problem 11 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-11-summerhill">Problem 11 (SummerHill), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-12-cova-del-8">Problem 12 (Cova del 8), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-12-parking">Problem 12 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-12-summerhill">Problem 12 (SummerHill), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-12-termita">Problem 12 (Termita), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-13-parking">Problem 13 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-13-summerhill">Problem 13 (SummerHill), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-13-termita">Problem 13 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-14-durkuek">Problem 14 (Durkuek), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-14-parking">Problem 14 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-15-muralla-xina">Problem 15 (Muralla Xina), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-15-parking">Problem 15 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-15-termita">Problem 15 (Termita), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-16-muralla-xina">Problem 16 (Muralla Xina), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-16-parking">Problem 16 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-17-parking">Problem 17 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-17-termita">Problem 17 (Termita), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-19-durkuek">Problem 19 (Durkuek), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-19-parking">Problem 19 (Parking), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-bloc-del-cami">Problem 2 (Bloc del Camí), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-boulder-1-roc-de-l-avi">Problem 2 (Boulder 1, Roc de l'Avi), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-cous-cous-clan">Problem 2 (Cous Cous Clan), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-l-entrada">Problem 2 (L'entrada), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-la-fissura">Problem 2 (La Fissura), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-miseria">Problem 2 (Misèria), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-muralla-xina">Problem 2 (Muralla Xina), 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-rascant-grau">Problem 2 (Rascant Grau), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-summerhill">Problem 2 (Summerhill), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-2-termita">Problem 2 (Termita), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-20-parking">Problem 20 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-cova-del-8">Problem 21 (Cova del 8), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-durkuek">Problem 21 (Durkuek), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-parking">Problem 21 (Parking), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-secretaria">Problem 21 (Secretaria), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-termita">Problem 21 (Termita), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-21-cova-del-8">Problem 21' (Cova del 8), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-22-durkuek">Problem 22 (Durkuek), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-22-secretaria">Problem 22 (Secretaria), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-22-termita">Problem 22 (Termita), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-22-left-termita">Problem 22 Left (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-24-termita">Problem 24 (Termita), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-25-cova-del-8">Problem 25 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-25-durkuek">Problem 25 (Durkuek), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-25-parking">Problem 25 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-25-termita">Problem 25 (Termita), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-26-parking">Problem 26 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-26-termita">Problem 26 (Termita), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-27-parking">Problem 27 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-27-termita">Problem 27 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-28-parking">Problem 28 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-29-parking">Problem 29 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-bloc-del-cami">Problem 3 (Bloc del Camí), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-boulder-1-roc-de-l-avi">Problem 3 (Boulder 1, Roc de l'Avi), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-la-fissura">Problem 3 (La Fissura), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-miseria">Problem 3 (Misèria), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-muralla-xina-6a">Problem 3 (Muralla Xina), 6a, 6a?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-parking">Problem 3 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-secretaria">Problem 3 (Secretaria), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-termita">Problem 3 (Termita), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-termita">Problem 3 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-directe-miseria">Problem 3 Directe (Misèria), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-3-extension-termita-6a">Problem 3 Extension (Termita), 6a, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-30-parking">Problem 30 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-30-parking">Problem 30 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-30a-durkuek">Problem 30a (Durkuek), 5+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-30b-durkuek">Problem 30b (Durkuek), 5?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-31-parking">Problem 31 (Parking), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-32-cova-del-8">Problem 32 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-32-durkuek">Problem 32 (Durkuek), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-32-termita">Problem 32 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-33-cova-del-8">Problem 33 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-33-durkuek">Problem 33 (Durkuek), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-33-termita">Problem 33 (Termita), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-35b-durkuek">Problem 35b (Durkuek), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-36-termita">Problem 36 (Termita), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-38-termita">Problem 38 (Termita), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-39-cova-del-8">Problem 39 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-39-durkuek">Problem 39 (Durkuek), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-4-bloc-del-cami">Problem 4 (Bloc del Camí), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-4-boulder-1-roc-de-l-avi">Problem 4 (Boulder 1, Roc de l'Avi), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-4-secretaria-5">Problem 4 (Secretaria), 5, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-40-cova-del-8">Problem 40 (Cova del 8), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-40-durkuek">Problem 40 (Durkuek), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-41-cova-del-8">Problem 41 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-42-cova-del-8">Problem 42 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-43-cova-del-8">Problem 43 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-43-durkuek">Problem 43 (Durkuek), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-44-durkuek">Problem 44 (Durkuek), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-45-durkuek">Problem 45 (Durkuek), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-45-cova-del-8">Problem 45' (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-46-durkuek">Problem 46 (Durkuek), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-47-cova-del-8">Problem 47 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-47-durkuek">Problem 47 (Durkuek), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-48-durkuek">Problem 48 (Durkuek), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-5-boulder-1-roc-de-l-avi">Problem 5 (Boulder 1, Roc de l'Avi), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-5-cova-del-8">Problem 5 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-5-secretaria">Problem 5 (Secretaria), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-5-termita">Problem 5 (Termita), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-5-secretaria">Problem 5' (Secretaria), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-51-durkuek">Problem 51 (Durkuek), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-52-durkuek">Problem 52 (Durkuek), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-52-sit-durkuek">Problem 52 sit (Durkuek), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-54-cova-del-8">Problem 54 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-54-durkuek-5">Problem 54 (Durkuek), 5, 5 (sit) </a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-55-cova-del-8">Problem 55 (Cova del 8), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-55-durkuek-5">Problem 55 (Durkuek), 5+, 5+ (sit) </a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-58-durkuek-5">Problem 58 (Durkuek), 5+, 5+ </a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-59-durkuek">Problem 59' (Durkuek), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-6-secretaria">Problem 6 (Secretaria), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-6-termita">Problem 6 (Termita), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-7-summerhill">Problem 7 (SummerHill), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-7-termita">Problem 7 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-70-durkuek">Problem 70 (Durkuek), 6b?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-71-durkuek">Problem 71 (Durkuek), 5?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-8-summerhill">Problem 8 (SummerHill), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/problem-8-termita">Problem 8 (Termita), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/rebuenas-prime">Rebuenas Prime, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/rebuenas-en-la-guantera">Rebuenas en la guantera, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/redireccio">Redirecció, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/requiem-por-un-romo">Requiem por un romo, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/revuelta-en-el-frenopatico">Revuelta en el frenopatico, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/romotrip">Romotrip, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/rummikub">Rummikub, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sant-velcro">Sant Velcro, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sauna-pilates">Sauna Pilates, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/se-te-va-la-pinza">Se te va la pinza, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sin-chinchetas-no-hay-paraiso">Sin chinchetas no hay paraiso, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sit-jail">Sit Jail, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sputnik">Sputnik, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/succionador-de-ments">Succionador de ments, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/sindrome-de-shreck">Síndrome de Shreck, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/tajats-de-donsi">Tajats de Donsi, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/taratatxan">Taratatxan!, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/teina">Teïna, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/thunder-spirit">Thunder Spirit, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/titan-clan">Titàn Clan, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/trave-de-durkuek">Trave de Durkuek, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/trave-de-termita">Trave de Termita, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/vidrier-de-sants-project">Vidrier de Sants Project, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/villa-bugatti">Villa Bugatti, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/vivo-en-un-container">Vivo en un container, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/wu-wei">Wu Wei, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/yo-ho-ho">Yo Ho Ho, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/zippo">Zippo, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bruguera/edip-de-cami">Èdip de camí, Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "can-bruguera_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/can-bruguera/cova-del-8">Cova del 8</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/durkuek">Durkuek</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/miratges">Miratges</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/muralla-xina">Muralla Xina</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/magia-blanca">Màgia Blanca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/magic-blanca">Màgic Blanca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/parking">Parking</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/roc-de-l-avi">Roc de l'Avi</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/santa-monica">Santa Monica</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/secretaria">Secretaria</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/summerhill">Summerhill</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/termita">Termita</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bruguera/vall-de-cogombres">Vall de Cogombres</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "can-bruguera_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/cova-del-8" class="table-row-name text-bold">Cova del 8</a>
+					</td>
+					<td class="text-center">55</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/durkuek" class="table-row-name text-bold">Durkuek</a>
+					</td>
+					<td class="text-center">83</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/miratges" class="table-row-name text-bold">Miratges</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/muralla-xina" class="table-row-name text-bold">Muralla Xina</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/magia-blanca" class="table-row-name text-bold">Màgia Blanca</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/magic-blanca" class="table-row-name text-bold">Màgic Blanca</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/parking" class="table-row-name text-bold">Parking</a>
+					</td>
+					<td class="text-center">42</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/roc-de-l-avi" class="table-row-name text-bold">Roc de l'Avi</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/santa-monica" class="table-row-name text-bold">Santa Monica</a>
+					</td>
+					<td class="text-center">10</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/secretaria" class="table-row-name text-bold">Secretaria</a>
+					</td>
+					<td class="text-center">24</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/summerhill" class="table-row-name text-bold">Summerhill</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/termita" class="table-row-name text-bold">Termita</a>
+					</td>
+					<td class="text-center">42</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bruguera/vall-de-cogombres" class="table-row-name text-bold">Vall de Cogombres</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1647,7 +446,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Santa Monica</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1673,7 +472,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Roc de l'Avi</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1699,7 +498,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Vall de Cogombres</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1725,7 +524,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Secretaria</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1751,7 +550,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Miratges</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1777,7 +576,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Parking</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1803,7 +602,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Muralla Xina</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1829,7 +628,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Màgia Blanca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1855,7 +654,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Summerhill</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1881,7 +680,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Termita</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1907,7 +706,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Cova del 8</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1933,7 +732,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Durkuek</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1956,8 +755,2874 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/adsl-aplec-de-sardanistes-llavaneres" class="table-row-name text-bold">ADSL (Aplec De Sardanistes Llavaneres)</a>
+					</td>
+					<td>5+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/abnegacio" class="table-row-name text-bold">Abnegació</a>
+					</td>
+					<td>5</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/absenta" class="table-row-name text-bold">Absenta</a>
+					</td>
+					<td>5+</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/abstinencia" class="table-row-name text-bold">Abstinència</a>
+					</td>
+					<td>5+</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/abstraccio" class="table-row-name text-bold">Abstracció</a>
+					</td>
+					<td>5</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/almorrana" class="table-row-name text-bold">Almorrana</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/alpha-blondy" class="table-row-name text-bold">Alpha Blondy</a>
+					</td>
+					<td>8a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/anibal" class="table-row-name text-bold">Aníbal</a>
+					</td>
+					<td>7c/+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/aresta-canalo" class="table-row-name text-bold">Aresta canaló</a>
+					</td>
+					<td>6a+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/arribaba" class="table-row-name text-bold">Arribaba</a>
+					</td>
+					<td>6b</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/atrofia-multisistemica" class="table-row-name text-bold">Atrofia multisistèmica</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/auschwitz-animal" class="table-row-name text-bold">Auschwitz animal</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/auschwitz-vegetal" class="table-row-name text-bold">Auschwitz vegetal</a>
+					</td>
+					<td>6b</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/ayuno-intermitente" class="table-row-name text-bold">Ayuno intermitente</a>
+					</td>
+					<td>5+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/ball-de-rojos" class="table-row-name text-bold">Ball de Rojos</a>
+					</td>
+					<td>3+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/bamboleo-la-polea" class="table-row-name text-bold">Bamboleo la polea</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/batalla-de-zama" class="table-row-name text-bold">Batalla de Zama</a>
+					</td>
+					<td>6a</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/better-call-saulo" class="table-row-name text-bold">Better call sauló</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/big-fat" class="table-row-name text-bold">Big Fat</a>
+					</td>
+					<td>7a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/boferton" class="table-row-name text-bold">Bofertón</a>
+					</td>
+					<td>6b</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/boulderking" class="table-row-name text-bold">Boulderking</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8 </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/caballo-maldito" class="table-row-name text-bold">Caballo maldito</a>
+					</td>
+					<td>6a+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/cafeina" class="table-row-name text-bold">Cafeïna</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/callos-a-la-maresmenya" class="table-row-name text-bold">Callos a la Maresmenya</a>
+					</td>
+					<td>7a</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/callos-a-la-maresmenya" class="table-row-name text-bold">Callos a la Maresmenya</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/candado-chino" class="table-row-name text-bold">Candado chino</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/capitan-sangre-de-toro" class="table-row-name text-bold">Capitán Sangre de Toro</a>
+					</td>
+					<td>5</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/capitan-vladimir" class="table-row-name text-bold">Capitán Vladimir</a>
+					</td>
+					<td>6a+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/cervicazo-latigal" class="table-row-name text-bold">Cervicazo Latigal</a>
+					</td>
+					<td>6c</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/colico-anonimo" class="table-row-name text-bold">Colico anonimo</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/contigo-caer-siempre-es-un-placer" class="table-row-name text-bold">Contigo caer siempre es un placer</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/costella-de-xai" class="table-row-name text-bold">Costella de xai</a>
+					</td>
+					<td>6c</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/cotolengo-direct" class="table-row-name text-bold">Cotolengo direct</a>
+					</td>
+					<td>5+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/cous-cous-clan" class="table-row-name text-bold">Cous Cous Clan</a>
+					</td>
+					<td>6c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/cuentagotas" class="table-row-name text-bold">Cuentagotas</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/dersu-uzala" class="table-row-name text-bold">Dersu Uzala</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/dimitri" class="table-row-name text-bold">Dimitri</a>
+					</td>
+					<td>6c</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/diposit-de-cadavers" class="table-row-name text-bold">Dipòsit de Cadàvers</a>
+					</td>
+					<td>6b</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/django" class="table-row-name text-bold">Django</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/dos-de-coprolit" class="table-row-name text-bold">Dos de copròlit</a>
+					</td>
+					<td>6a+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/double-tap" class="table-row-name text-bold">Double Tap</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/durkuek" class="table-row-name text-bold">Durkuek</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/durkuek" class="table-row-name text-bold">Durkuek</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/durkuek-direct" class="table-row-name text-bold">Durkuek direct</a>
+					</td>
+					<td>7c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-canuto" class="table-row-name text-bold">El Canuto</a>
+					</td>
+					<td>5+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-catxalot" class="table-row-name text-bold">El Catxalot</a>
+					</td>
+					<td>6b+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-cervol" class="table-row-name text-bold">El Cérvol</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-cervol" class="table-row-name text-bold">El Cérvol</a>
+					</td>
+					<td>6c</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-despertar" class="table-row-name text-bold">El Despertar</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-gran-jb" class="table-row-name text-bold">El Gran JB</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-morro" class="table-row-name text-bold">El Morro</a>
+					</td>
+					<td>6c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-petit-jb" class="table-row-name text-bold">El Petit JB</a>
+					</td>
+					<td>6b+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-port-ben-moll" class="table-row-name text-bold">El Port ben Moll</a>
+					</td>
+					<td>6a+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-resplandor" class="table-row-name text-bold">El Resplandor</a>
+					</td>
+					<td>7b</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-tribunal-de-la-haya" class="table-row-name text-bold">El Tribunal de la Haya</a>
+					</td>
+					<td>6a+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-andamio" class="table-row-name text-bold">El andamio</a>
+					</td>
+					<td>7a</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-borratxo" class="table-row-name text-bold">El borratxo</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-buscador-de-xinxetes" class="table-row-name text-bold">El buscador de xinxetes</a>
+					</td>
+					<td>5+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-cami" class="table-row-name text-bold">El camí</a>
+					</td>
+					<td>5</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-cranc" class="table-row-name text-bold">El cranc</a>
+					</td>
+					<td>7a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-espantapajaros" class="table-row-name text-bold">El espantapájaros</a>
+					</td>
+					<td>6c</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-globus-d-elio" class="table-row-name text-bold">El globus d'Elio</a>
+					</td>
+					<td>6b+</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-gorila-volador" class="table-row-name text-bold">El gorila volador</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-peregrino" class="table-row-name text-bold">El peregrino</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8 </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-retrovisor" class="table-row-name text-bold">El retrovisor</a>
+					</td>
+					<td>6a+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-sardinita" class="table-row-name text-bold">El sardinita</a>
+					</td>
+					<td>6a+</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-timbal-de-llauna" class="table-row-name text-bold">El timbal de llauna</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/el-venedor-de-fum" class="table-row-name text-bold">El venedor de fum</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/empotra-i-puja" class="table-row-name text-bold">Empotra i puja</a>
+					</td>
+					<td>6a+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/en-dique-seco" class="table-row-name text-bold">En Dique Seco</a>
+					</td>
+					<td>6b</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/en-dique-recto" class="table-row-name text-bold">En dique recto</a>
+					</td>
+					<td>6a</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/encegat" class="table-row-name text-bold">Encegat</a>
+					</td>
+					<td>6a+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/eneatipo-7" class="table-row-name text-bold">Eneatipo 7</a>
+					</td>
+					<td>6b+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/entre-tots" class="table-row-name text-bold">Entre tots</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/es-baixa-per-aqui" class="table-row-name text-bold">Es baixa per aquí</a>
+					</td>
+					<td>4</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/escaleta" class="table-row-name text-bold">Escaleta</a>
+					</td>
+					<td>5</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/escaqueo-de-los-necios" class="table-row-name text-bold">Escaqueo de los necios</a>
+					</td>
+					<td>6c</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/eucaliptus" class="table-row-name text-bold">Eucaliptus</a>
+					</td>
+					<td>6b+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fa-hunter" class="table-row-name text-bold">FA Hunter</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/falocracia" class="table-row-name text-bold">Falocràcia</a>
+					</td>
+					<td>5+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/feeling-ratio" class="table-row-name text-bold">Feeling Ratio</a>
+					</td>
+					<td>8b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fideua" class="table-row-name text-bold">Fideuà</a>
+					</td>
+					<td>7b+</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/final-fantasy" class="table-row-name text-bold">Final Fantasy</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fino-y-se-fue" class="table-row-name text-bold">Fino y se fue</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fissura-del-termita" class="table-row-name text-bold">Fissura del Termita</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fissura-del-termita" class="table-row-name text-bold">Fissura del Termita</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/fisura-y-romo" class="table-row-name text-bold">Fisura y Romo</a>
+					</td>
+					<td>6c</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/francisco-fontaneda-samanta" class="table-row-name text-bold">Francisco Fontaneda Samanta</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/grano-angular" class="table-row-name text-bold">Grano angular</a>
+					</td>
+					<td>Unknown</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/hemoal" class="table-row-name text-bold">Hemoal</a>
+					</td>
+					<td>6b</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/humor-amarillo" class="table-row-name text-bold">Humor amarillo</a>
+					</td>
+					<td>6a+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/javalee-spirit" class="table-row-name text-bold">JavaLee Spirit</a>
+					</td>
+					<td>Unknown</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/jil-barril" class="table-row-name text-bold">Jil Barril</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/jil-al-halal" class="table-row-name text-bold">Jil al Halal</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/judas" class="table-row-name text-bold">Judas</a>
+					</td>
+					<td>6b</td>
+					<td>SummerHill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/juma-pardo" class="table-row-name text-bold">Juma Pardo</a>
+					</td>
+					<td>Unknown</td>
+					<td>Màgic Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/julia" class="table-row-name text-bold">Júlia</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/king-of-jambon" class="table-row-name text-bold">King of jambon</a>
+					</td>
+					<td>6c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/king-of-jambon-right" class="table-row-name text-bold">King of jambon Right</a>
+					</td>
+					<td>5</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/komando-basura" class="table-row-name text-bold">Komando Basura</a>
+					</td>
+					<td>Unknown</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-ego" class="table-row-name text-bold">L'Ego</a>
+					</td>
+					<td>6a</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-esperonaco" class="table-row-name text-bold">L'Esperonaco</a>
+					</td>
+					<td>7a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-essencia" class="table-row-name text-bold">L'Essència</a>
+					</td>
+					<td>5+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-arpo" class="table-row-name text-bold">L'arpó</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-esbudellador-de-canbru" class="table-row-name text-bold">L'esbudellador de Canbru</a>
+					</td>
+					<td>6c</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-homo-plat" class="table-row-name text-bold">L'homo-plat</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/l-homo-plat-directe" class="table-row-name text-bold">L'homo-plat directe</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/lsd-la-sardana-direct" class="table-row-name text-bold">LSD (La Sardana Direct)</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-benzinera" class="table-row-name text-bold">La Benzinera</a>
+					</td>
+					<td>6c</td>
+					<td>Miratges</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-bestia" class="table-row-name text-bold">La Bestia</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-bestia" class="table-row-name text-bold">La Bestia</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-flexadora" class="table-row-name text-bold">La Flexadora</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-frontissa" class="table-row-name text-bold">La Frontissa</a>
+					</td>
+					<td>4+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-linea-de-la-vida" class="table-row-name text-bold">La Linea de la Vida</a>
+					</td>
+					<td>7c+ (sit). Proposed 7c+/8a (sit) by maki.</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-princesa-de-ceilan" class="table-row-name text-bold">La Princesa de Ceilán</a>
+					</td>
+					<td>6b+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-sibella" class="table-row-name text-bold">La Sibella</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-sika-yeye" class="table-row-name text-bold">La Sika yeye</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-boina" class="table-row-name text-bold">La boina</a>
+					</td>
+					<td>6a+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-cara" class="table-row-name text-bold">La cara</a>
+					</td>
+					<td>6a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-gran-estafa" class="table-row-name text-bold">La gran estafa</a>
+					</td>
+					<td>7a</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-isla-de-pederjil" class="table-row-name text-bold">La isla de Pederjil</a>
+					</td>
+					<td>6a</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-llosa" class="table-row-name text-bold">La llosa</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-lluna" class="table-row-name text-bold">La lluna</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-motoserra" class="table-row-name text-bold">La motoserra</a>
+					</td>
+					<td>5+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-ola" class="table-row-name text-bold">La ola</a>
+					</td>
+					<td>6c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-palanca" class="table-row-name text-bold">La palanca</a>
+					</td>
+					<td>6a</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-placa" class="table-row-name text-bold">La placa</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-trave-de-ponent" class="table-row-name text-bold">La trave de Ponent</a>
+					</td>
+					<td>6b</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/la-via-del-covard" class="table-row-name text-bold">La via del covard</a>
+					</td>
+					<td>7a+ </td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/lago-combambas" class="table-row-name text-bold">Lago Combambas</a>
+					</td>
+					<td>6b</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/latigazo-cervical" class="table-row-name text-bold">Latigazo Cervical</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/le-boule" class="table-row-name text-bold">Le boule</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/le-boule" class="table-row-name text-bold">Le boule</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/le-porsche-parisien" class="table-row-name text-bold">Le porsche parisien</a>
+					</td>
+					<td>6b+</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/le-temps-des-cerises" class="table-row-name text-bold">Le temps des cerises</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/litofag" class="table-row-name text-bold">Litofag</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/los-mundos-de-yupi" class="table-row-name text-bold">Los mundos de Yupi</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/magique-latrine" class="table-row-name text-bold">Magique latrine</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/malditos-bastardos" class="table-row-name text-bold">Malditos bastardos</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/mantelitzat" class="table-row-name text-bold">Mantelitzat</a>
+					</td>
+					<td>6b</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/masnou-crew" class="table-row-name text-bold">Masnou Crew</a>
+					</td>
+					<td>6b</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/minimalista" class="table-row-name text-bold">Minimalista</a>
+					</td>
+					<td>8a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/miseria-i-companyia" class="table-row-name text-bold">Misèria i Companyia</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/mito-sonde" class="table-row-name text-bold">Mito sonde</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/moby-dick" class="table-row-name text-bold">Moby Dick</a>
+					</td>
+					<td>7b</td>
+					<td>Vall de Cogombres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/monsieur-bisone" class="table-row-name text-bold">Monsieur Bisoñé</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/morralla-china" class="table-row-name text-bold">Morralla China</a>
+					</td>
+					<td>5</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/mr-potato" class="table-row-name text-bold">Mr. Potato</a>
+					</td>
+					<td>?</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/mugrons-de-iaia" class="table-row-name text-bold">Mugrons de iaia</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/muralla-xina" class="table-row-name text-bold">Muralla Xina</a>
+					</td>
+					<td>Unknown</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/magia-blanca" class="table-row-name text-bold">Màgia Blanca</a>
+					</td>
+					<td>6b</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/magia-borras" class="table-row-name text-bold">Màgia Borràs</a>
+					</td>
+					<td>6a+</td>
+					<td>Màgic Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/magia-negra" class="table-row-name text-bold">Màgia Negra</a>
+					</td>
+					<td>6b+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/nach" class="table-row-name text-bold">Nach</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/nachos-con-guacamole" class="table-row-name text-bold">Nachos con Guacamole</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/nicotina" class="table-row-name text-bold">Nicotina</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/okhet-on-thosoi" class="table-row-name text-bold">Okhêt on thosoï</a>
+					</td>
+					<td>Unknown</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/padre-he-picado" class="table-row-name text-bold">Padre, he picado</a>
+					</td>
+					<td>Unknown</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/paellador" class="table-row-name text-bold">Paellador</a>
+					</td>
+					<td>7b</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/palomo-cojo" class="table-row-name text-bold">Palomo cojo</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/pare-onofre" class="table-row-name text-bold">Pare Onofre</a>
+					</td>
+					<td>5</td>
+					<td>Màgic Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/parkinson" class="table-row-name text-bold">Parkinson</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/parkinson" class="table-row-name text-bold">Parkinson</a>
+					</td>
+					<td>6c</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/perros-de-la-noche" class="table-row-name text-bold">Perros de la noche</a>
+					</td>
+					<td>6b+</td>
+					<td>Màgic Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-bloc-del-cami" class="table-row-name text-bold">Problem 1 (Bloc del Camí)</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-boulder-1-roc-de-l-avi" class="table-row-name text-bold">Problem 1 (Boulder 1, Roc de l'Avi)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Roc de l'Avi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-l-entrada" class="table-row-name text-bold">Problem 1 (L'entrada)</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-la-fissura" class="table-row-name text-bold">Problem 1 (La Fissura)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-secretaria" class="table-row-name text-bold">Problem 1 (Secretaria)</a>
+					</td>
+					<td>6a</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-1-summerhill" class="table-row-name text-bold">Problem 1 (Summerhill)</a>
+					</td>
+					<td>6a</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-11-parking" class="table-row-name text-bold">Problem 11 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-11-summerhill" class="table-row-name text-bold">Problem 11 (SummerHill)</a>
+					</td>
+					<td>5+</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-12-cova-del-8" class="table-row-name text-bold">Problem 12 (Cova del 8)</a>
+					</td>
+					<td>6b</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-12-parking" class="table-row-name text-bold">Problem 12 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-12-summerhill" class="table-row-name text-bold">Problem 12 (SummerHill)</a>
+					</td>
+					<td>5+</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-12-termita" class="table-row-name text-bold">Problem 12 (Termita)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-13-parking" class="table-row-name text-bold">Problem 13 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-13-summerhill" class="table-row-name text-bold">Problem 13 (SummerHill)</a>
+					</td>
+					<td>5</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-13-termita" class="table-row-name text-bold">Problem 13 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-14-durkuek" class="table-row-name text-bold">Problem 14 (Durkuek)</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-14-parking" class="table-row-name text-bold">Problem 14 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-15-muralla-xina" class="table-row-name text-bold">Problem 15 (Muralla Xina)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-15-parking" class="table-row-name text-bold">Problem 15 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-15-termita" class="table-row-name text-bold">Problem 15 (Termita)</a>
+					</td>
+					<td>6b</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-16-muralla-xina" class="table-row-name text-bold">Problem 16 (Muralla Xina)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-16-parking" class="table-row-name text-bold">Problem 16 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-17-parking" class="table-row-name text-bold">Problem 17 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-17-termita" class="table-row-name text-bold">Problem 17 (Termita)</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-19-durkuek" class="table-row-name text-bold">Problem 19 (Durkuek)</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-19-parking" class="table-row-name text-bold">Problem 19 (Parking)</a>
+					</td>
+					<td>6a</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-bloc-del-cami" class="table-row-name text-bold">Problem 2 (Bloc del Camí)</a>
+					</td>
+					<td>6a</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-boulder-1-roc-de-l-avi" class="table-row-name text-bold">Problem 2 (Boulder 1, Roc de l'Avi)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Roc de l'Avi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-cous-cous-clan" class="table-row-name text-bold">Problem 2 (Cous Cous Clan)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-l-entrada" class="table-row-name text-bold">Problem 2 (L'entrada)</a>
+					</td>
+					<td>5+</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-la-fissura" class="table-row-name text-bold">Problem 2 (La Fissura)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-miseria" class="table-row-name text-bold">Problem 2 (Misèria)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-muralla-xina" class="table-row-name text-bold">Problem 2 (Muralla Xina)</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-rascant-grau" class="table-row-name text-bold">Problem 2 (Rascant Grau)</a>
+					</td>
+					<td>5+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-summerhill" class="table-row-name text-bold">Problem 2 (Summerhill)</a>
+					</td>
+					<td>5</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-2-termita" class="table-row-name text-bold">Problem 2 (Termita)</a>
+					</td>
+					<td>5+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-20-parking" class="table-row-name text-bold">Problem 20 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-cova-del-8" class="table-row-name text-bold">Problem 21 (Cova del 8)</a>
+					</td>
+					<td>3+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-durkuek" class="table-row-name text-bold">Problem 21 (Durkuek)</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-parking" class="table-row-name text-bold">Problem 21 (Parking)</a>
+					</td>
+					<td>6a</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-secretaria" class="table-row-name text-bold">Problem 21 (Secretaria)</a>
+					</td>
+					<td>6a+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-termita" class="table-row-name text-bold">Problem 21 (Termita)</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-21-cova-del-8" class="table-row-name text-bold">Problem 21' (Cova del 8)</a>
+					</td>
+					<td>4</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-22-durkuek" class="table-row-name text-bold">Problem 22 (Durkuek)</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-22-secretaria" class="table-row-name text-bold">Problem 22 (Secretaria)</a>
+					</td>
+					<td>6a</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-22-termita" class="table-row-name text-bold">Problem 22 (Termita)</a>
+					</td>
+					<td>5+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-22-left-termita" class="table-row-name text-bold">Problem 22 Left (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-24-termita" class="table-row-name text-bold">Problem 24 (Termita)</a>
+					</td>
+					<td>5+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-25-cova-del-8" class="table-row-name text-bold">Problem 25 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-25-durkuek" class="table-row-name text-bold">Problem 25 (Durkuek)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-25-parking" class="table-row-name text-bold">Problem 25 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-25-termita" class="table-row-name text-bold">Problem 25 (Termita)</a>
+					</td>
+					<td>6a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-26-parking" class="table-row-name text-bold">Problem 26 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-26-termita" class="table-row-name text-bold">Problem 26 (Termita)</a>
+					</td>
+					<td>6a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-27-parking" class="table-row-name text-bold">Problem 27 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-27-termita" class="table-row-name text-bold">Problem 27 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-28-parking" class="table-row-name text-bold">Problem 28 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-29-parking" class="table-row-name text-bold">Problem 29 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-bloc-del-cami" class="table-row-name text-bold">Problem 3 (Bloc del Camí)</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-boulder-1-roc-de-l-avi" class="table-row-name text-bold">Problem 3 (Boulder 1, Roc de l'Avi)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Roc de l'Avi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-la-fissura" class="table-row-name text-bold">Problem 3 (La Fissura)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-miseria" class="table-row-name text-bold">Problem 3 (Misèria)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-muralla-xina-6a" class="table-row-name text-bold">Problem 3 (Muralla Xina), 6a</a>
+					</td>
+					<td>6a?</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-parking" class="table-row-name text-bold">Problem 3 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-secretaria" class="table-row-name text-bold">Problem 3 (Secretaria)</a>
+					</td>
+					<td>4+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-termita" class="table-row-name text-bold">Problem 3 (Termita)</a>
+					</td>
+					<td>4</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-termita" class="table-row-name text-bold">Problem 3 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-directe-miseria" class="table-row-name text-bold">Problem 3 Directe (Misèria)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Santa Monica</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-3-extension-termita-6a" class="table-row-name text-bold">Problem 3 Extension (Termita), 6a</a>
+					</td>
+					<td>Unknown</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-30-parking" class="table-row-name text-bold">Problem 30 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-30-parking" class="table-row-name text-bold">Problem 30 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-30a-durkuek" class="table-row-name text-bold">Problem 30a (Durkuek)</a>
+					</td>
+					<td>5+?</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-30b-durkuek" class="table-row-name text-bold">Problem 30b (Durkuek)</a>
+					</td>
+					<td>5?</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-31-parking" class="table-row-name text-bold">Problem 31 (Parking)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-32-cova-del-8" class="table-row-name text-bold">Problem 32 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-32-durkuek" class="table-row-name text-bold">Problem 32 (Durkuek)</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-32-termita" class="table-row-name text-bold">Problem 32 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-33-cova-del-8" class="table-row-name text-bold">Problem 33 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-33-durkuek" class="table-row-name text-bold">Problem 33 (Durkuek)</a>
+					</td>
+					<td>4</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-33-termita" class="table-row-name text-bold">Problem 33 (Termita)</a>
+					</td>
+					<td>4+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-35b-durkuek" class="table-row-name text-bold">Problem 35b (Durkuek)</a>
+					</td>
+					<td>6c</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-36-termita" class="table-row-name text-bold">Problem 36 (Termita)</a>
+					</td>
+					<td>6a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-38-termita" class="table-row-name text-bold">Problem 38 (Termita)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-39-cova-del-8" class="table-row-name text-bold">Problem 39 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-39-durkuek" class="table-row-name text-bold">Problem 39 (Durkuek)</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-4-bloc-del-cami" class="table-row-name text-bold">Problem 4 (Bloc del Camí)</a>
+					</td>
+					<td>5+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-4-boulder-1-roc-de-l-avi" class="table-row-name text-bold">Problem 4 (Boulder 1, Roc de l'Avi)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Roc de l'Avi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-4-secretaria-5" class="table-row-name text-bold">Problem 4 (Secretaria), 5</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-40-cova-del-8" class="table-row-name text-bold">Problem 40 (Cova del 8)</a>
+					</td>
+					<td>5</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-40-durkuek" class="table-row-name text-bold">Problem 40 (Durkuek)</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-41-cova-del-8" class="table-row-name text-bold">Problem 41 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-42-cova-del-8" class="table-row-name text-bold">Problem 42 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-43-cova-del-8" class="table-row-name text-bold">Problem 43 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-43-durkuek" class="table-row-name text-bold">Problem 43 (Durkuek)</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-44-durkuek" class="table-row-name text-bold">Problem 44 (Durkuek)</a>
+					</td>
+					<td>4+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-45-durkuek" class="table-row-name text-bold">Problem 45 (Durkuek)</a>
+					</td>
+					<td>4+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-45-cova-del-8" class="table-row-name text-bold">Problem 45' (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-46-durkuek" class="table-row-name text-bold">Problem 46 (Durkuek)</a>
+					</td>
+					<td>5</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-47-cova-del-8" class="table-row-name text-bold">Problem 47 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-47-durkuek" class="table-row-name text-bold">Problem 47 (Durkuek)</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-48-durkuek" class="table-row-name text-bold">Problem 48 (Durkuek)</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-5-boulder-1-roc-de-l-avi" class="table-row-name text-bold">Problem 5 (Boulder 1, Roc de l'Avi)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Roc de l'Avi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-5-cova-del-8" class="table-row-name text-bold">Problem 5 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-5-secretaria" class="table-row-name text-bold">Problem 5 (Secretaria)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-5-termita" class="table-row-name text-bold">Problem 5 (Termita)</a>
+					</td>
+					<td>3+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-5-secretaria" class="table-row-name text-bold">Problem 5' (Secretaria)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-51-durkuek" class="table-row-name text-bold">Problem 51 (Durkuek)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-52-durkuek" class="table-row-name text-bold">Problem 52 (Durkuek)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-52-sit-durkuek" class="table-row-name text-bold">Problem 52 sit (Durkuek)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-54-cova-del-8" class="table-row-name text-bold">Problem 54 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-54-durkuek-5" class="table-row-name text-bold">Problem 54 (Durkuek), 5</a>
+					</td>
+					<td>5 (sit) </td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-55-cova-del-8" class="table-row-name text-bold">Problem 55 (Cova del 8)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-55-durkuek-5" class="table-row-name text-bold">Problem 55 (Durkuek), 5+</a>
+					</td>
+					<td>5+ (sit) </td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-58-durkuek-5" class="table-row-name text-bold">Problem 58 (Durkuek), 5+</a>
+					</td>
+					<td>5+ </td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-59-durkuek" class="table-row-name text-bold">Problem 59' (Durkuek)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-6-secretaria" class="table-row-name text-bold">Problem 6 (Secretaria)</a>
+					</td>
+					<td>5</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-6-termita" class="table-row-name text-bold">Problem 6 (Termita)</a>
+					</td>
+					<td>6a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-7-summerhill" class="table-row-name text-bold">Problem 7 (SummerHill)</a>
+					</td>
+					<td>5+</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-7-termita" class="table-row-name text-bold">Problem 7 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-70-durkuek" class="table-row-name text-bold">Problem 70 (Durkuek)</a>
+					</td>
+					<td>6b?</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-71-durkuek" class="table-row-name text-bold">Problem 71 (Durkuek)</a>
+					</td>
+					<td>5?</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-8-summerhill" class="table-row-name text-bold">Problem 8 (SummerHill)</a>
+					</td>
+					<td>5</td>
+					<td>Summerhill</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/problem-8-termita" class="table-row-name text-bold">Problem 8 (Termita)</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/rebuenas-prime" class="table-row-name text-bold">Rebuenas Prime</a>
+					</td>
+					<td>6b+</td>
+					<td>Muralla Xina </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/rebuenas-en-la-guantera" class="table-row-name text-bold">Rebuenas en la guantera</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/redireccio" class="table-row-name text-bold">Redirecció</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/requiem-por-un-romo" class="table-row-name text-bold">Requiem por un romo</a>
+					</td>
+					<td>6c</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/revuelta-en-el-frenopatico" class="table-row-name text-bold">Revuelta en el frenopatico</a>
+					</td>
+					<td>Unknown</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/romotrip" class="table-row-name text-bold">Romotrip</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/rummikub" class="table-row-name text-bold">Rummikub</a>
+					</td>
+					<td>7c</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sant-velcro" class="table-row-name text-bold">Sant Velcro</a>
+					</td>
+					<td>7b</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sauna-pilates" class="table-row-name text-bold">Sauna Pilates</a>
+					</td>
+					<td>6b+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/se-te-va-la-pinza" class="table-row-name text-bold">Se te va la pinza</a>
+					</td>
+					<td>7a+</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sin-chinchetas-no-hay-paraiso" class="table-row-name text-bold">Sin chinchetas no hay paraiso</a>
+					</td>
+					<td>6a+</td>
+					<td>Cova del 8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sit-jail" class="table-row-name text-bold">Sit Jail</a>
+					</td>
+					<td>7b+</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sputnik" class="table-row-name text-bold">Sputnik</a>
+					</td>
+					<td>6b</td>
+					<td>Màgia Blanca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/succionador-de-ments" class="table-row-name text-bold">Succionador de ments</a>
+					</td>
+					<td>7a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/sindrome-de-shreck" class="table-row-name text-bold">Síndrome de Shreck</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/tajats-de-donsi" class="table-row-name text-bold">Tajats de Donsi</a>
+					</td>
+					<td>6a+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/taratatxan" class="table-row-name text-bold">Taratatxan!</a>
+					</td>
+					<td>6b</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/teina" class="table-row-name text-bold">Teïna</a>
+					</td>
+					<td>5+</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/thunder-spirit" class="table-row-name text-bold">Thunder Spirit</a>
+					</td>
+					<td>6c</td>
+					<td>Secretaria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/titan-clan" class="table-row-name text-bold">Titàn Clan</a>
+					</td>
+					<td>5</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/trave-de-durkuek" class="table-row-name text-bold">Trave de Durkuek</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/trave-de-termita" class="table-row-name text-bold">Trave de Termita</a>
+					</td>
+					<td>6a</td>
+					<td>Termita</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/vidrier-de-sants-project" class="table-row-name text-bold">Vidrier de Sants Project</a>
+					</td>
+					<td>5+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/villa-bugatti" class="table-row-name text-bold">Villa Bugatti</a>
+					</td>
+					<td>6a+</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/vivo-en-un-container" class="table-row-name text-bold">Vivo en un container</a>
+					</td>
+					<td>5+</td>
+					<td>Muralla Xina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/wu-wei" class="table-row-name text-bold">Wu Wei</a>
+					</td>
+					<td>5</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/yo-ho-ho" class="table-row-name text-bold">Yo Ho Ho</a>
+					</td>
+					<td>6b+</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/zippo" class="table-row-name text-bold">Zippo</a>
+					</td>
+					<td>6a</td>
+					<td>Durkuek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bruguera/edip-de-cami" class="table-row-name text-bold">Èdip de camí</a>
+					</td>
+					<td>Unknown</td>
+					<td>Secretaria</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

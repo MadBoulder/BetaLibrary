@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/la-comarca">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              La Comarca 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.979547" />
   <input type="hidden" id="lng" name="lng_val" value="2.343454" />
@@ -168,432 +248,121 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/la-comarca" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
+		<a id="guide_link"  href="http://rotpunktholds.blogspot.com/2014/11/la-comarca-resenas-actualizadas.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			rotpunktholds (Guide + Blog)
+		</a>
+	
+		<a id="guide_link"  href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Boulder en España (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/la-comarca"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://rotpunktholds.blogspot.com/2014/11/la-comarca-resenas-actualizadas.html"
-        target="_blank"
-        >rotpunktholds (Guide + Blog)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/"
-        target="_blank"
-        >Boulder en España (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/la-comarca"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/la-comarca"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/la-comarca/adictes">Adictes, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/alberto-s-boulder">Alberto's Boulder, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/alberto-s-boulder">Alberto's Boulder, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/anis-del-mono">Anís del mono, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/ayurveda">Ayurveda, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/azar-kaos">Azar & Kaos, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/boira">Boira, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/boira-low">Boira Low, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/buda">Buda, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/bulder-del-kueka-direct">Bulder del Kueka Direct, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/computer-love">Computer Love, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/computer-love-direct">Computer Love Direct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/dharma">Dharma, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/door-to-the-wild">Door to the Wild, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/double-bobble">Double Bobble, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/duggati-suggati">Duggati suggati, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-tobogan-del-ter">El Tobogan del Ter, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-bloc-de-l-stephan">El bloc de l'Stephan, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-bloc-de-l-stephan">El bloc de l'Stephan, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-club-de-los-poetas-muertos">El club de los poetas muertos, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-club-de-los-poetas-muertos-extension">El club de los poetas muertos Extension, 8a?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/el-precio-del-magnesio-ii">El precio del magnesio II, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/fisical">Fisical, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/guerilla-s-crack">Guerilla's crack, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/hiperlaxitud">Hiperlaxitud, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/kaos">Kaos, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/kerala">Kerala, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/king-of-ganja">King of ganja, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/krishna-direct">Krishna direct, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/l-estalquer">L'estalquer, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/la-comarca">La comarca, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/la-sorpresa-del-chef">La sorpresa del chef, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/la-vida-es-krishna">La vida es Krishna, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/la-vida-es-boulder">La vida es boulder, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/los-invasores">Los invasores, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/mentalmente-imperfecto">Mentalmente imperfecto, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/menu-familia-feliz">Menú: familia feliz, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/modus-operandi">Modus Operandi, 8b/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/modus-vivendi">Modus Vivendi, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/nomadas">Nómadas, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/padsamanbhaba">Padsamanbhaba, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-1-bloque-del-camino-caido">Problem 1 (Bloque del Camino Caído), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-3">Problem 3, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-3-la-tortuga">Problem 3 (La Tortuga), 7b? (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-4-bloque-del-camino-caido">Problem 4 (Bloque del Camino Caído), 4+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-8-la-tortuga">Problem 8 (La Tortuga), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/problem-8-low-la-tortuga">Problem 8 Low (La Tortuga), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/putas-f-as">Putas F.As, 7b+/c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/romeo-y-regleta-sit">Romeo y regleta sit, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/sahasrara">Sahasrara, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/salsa-roquera">Salsa roquera, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/samadhi">Samadhi, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/samsara">Samsara, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/samsara">Samsara, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/samsara-traverse">Samsara traverse, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/sila">Sila, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/smash-the-hole">Smash the hole, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/somnis-de-primavera">Somnis de Primavera, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/somnis-de-primavera">Somnis de Primavera, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/swing">Swing, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/tantra">Tantra, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/technical">Technical, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/the-shire">The Shire, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/tio-caga">Tio caga, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-comarca/trave-traviesa">Trave traviesa, 6b+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "la-comarca_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/la-comarca/bloc-de-la-cova">Bloc de la Cova</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-comarca/cova-del-codol">Cova del Còdol</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-comarca/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "la-comarca_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-comarca/bloc-de-la-cova" class="table-row-name text-bold">Bloc de la Cova</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-comarca/cova-del-codol" class="table-row-name text-bold">Cova del Còdol</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-comarca/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">62</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -618,8 +387,615 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/adictes" class="table-row-name text-bold">Adictes</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/alberto-s-boulder" class="table-row-name text-bold">Alberto's Boulder</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/alberto-s-boulder" class="table-row-name text-bold">Alberto's Boulder</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/anis-del-mono" class="table-row-name text-bold">Anís del mono</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/ayurveda" class="table-row-name text-bold">Ayurveda</a>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/azar-kaos" class="table-row-name text-bold">Azar & Kaos</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/boira" class="table-row-name text-bold">Boira</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/boira-low" class="table-row-name text-bold">Boira Low</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/buda" class="table-row-name text-bold">Buda</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/bulder-del-kueka-direct" class="table-row-name text-bold">Bulder del Kueka Direct</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/computer-love" class="table-row-name text-bold">Computer Love</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/computer-love-direct" class="table-row-name text-bold">Computer Love Direct</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/dharma" class="table-row-name text-bold">Dharma</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/door-to-the-wild" class="table-row-name text-bold">Door to the Wild</a>
+					</td>
+					<td>8a+</td>
+					<td>Cova del Còdol</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/double-bobble" class="table-row-name text-bold">Double Bobble</a>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/duggati-suggati" class="table-row-name text-bold">Duggati suggati</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-tobogan-del-ter" class="table-row-name text-bold">El Tobogan del Ter</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-bloc-de-l-stephan" class="table-row-name text-bold">El bloc de l'Stephan</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-bloc-de-l-stephan" class="table-row-name text-bold">El bloc de l'Stephan</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-club-de-los-poetas-muertos" class="table-row-name text-bold">El club de los poetas muertos</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-club-de-los-poetas-muertos-extension" class="table-row-name text-bold">El club de los poetas muertos Extension</a>
+					</td>
+					<td>8a?</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/el-precio-del-magnesio-ii" class="table-row-name text-bold">El precio del magnesio II</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/fisical" class="table-row-name text-bold">Fisical</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/guerilla-s-crack" class="table-row-name text-bold">Guerilla's crack</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/hiperlaxitud" class="table-row-name text-bold">Hiperlaxitud</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/kaos" class="table-row-name text-bold">Kaos</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/kerala" class="table-row-name text-bold">Kerala</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/king-of-ganja" class="table-row-name text-bold">King of ganja</a>
+					</td>
+					<td>6b+</td>
+					<td>Bloc de la Cova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/krishna-direct" class="table-row-name text-bold">Krishna direct</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/l-estalquer" class="table-row-name text-bold">L'estalquer</a>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/la-comarca" class="table-row-name text-bold">La comarca</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/la-sorpresa-del-chef" class="table-row-name text-bold">La sorpresa del chef</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/la-vida-es-krishna" class="table-row-name text-bold">La vida es Krishna</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/la-vida-es-boulder" class="table-row-name text-bold">La vida es boulder</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/los-invasores" class="table-row-name text-bold">Los invasores</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/mentalmente-imperfecto" class="table-row-name text-bold">Mentalmente imperfecto</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/menu-familia-feliz" class="table-row-name text-bold">Menú: familia feliz</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/modus-operandi" class="table-row-name text-bold">Modus Operandi</a>
+					</td>
+					<td>8b/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/modus-vivendi" class="table-row-name text-bold">Modus Vivendi</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/nomadas" class="table-row-name text-bold">Nómadas</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/padsamanbhaba" class="table-row-name text-bold">Padsamanbhaba</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-1-bloque-del-camino-caido" class="table-row-name text-bold">Problem 1 (Bloque del Camino Caído)</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-3" class="table-row-name text-bold">Problem 3</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-3-la-tortuga" class="table-row-name text-bold">Problem 3 (La Tortuga)</a>
+					</td>
+					<td>7b? (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-4-bloque-del-camino-caido" class="table-row-name text-bold">Problem 4 (Bloque del Camino Caído)</a>
+					</td>
+					<td>4+?</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-8-la-tortuga" class="table-row-name text-bold">Problem 8 (La Tortuga)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/problem-8-low-la-tortuga" class="table-row-name text-bold">Problem 8 Low (La Tortuga)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/putas-f-as" class="table-row-name text-bold">Putas F.As</a>
+					</td>
+					<td>7b+/c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/romeo-y-regleta-sit" class="table-row-name text-bold">Romeo y regleta sit</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/sahasrara" class="table-row-name text-bold">Sahasrara</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/salsa-roquera" class="table-row-name text-bold">Salsa roquera</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/samadhi" class="table-row-name text-bold">Samadhi</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/samsara" class="table-row-name text-bold">Samsara</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/samsara" class="table-row-name text-bold">Samsara</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/samsara-traverse" class="table-row-name text-bold">Samsara traverse</a>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/sila" class="table-row-name text-bold">Sila</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/smash-the-hole" class="table-row-name text-bold">Smash the hole</a>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/somnis-de-primavera" class="table-row-name text-bold">Somnis de Primavera</a>
+					</td>
+					<td>7a+</td>
+					<td>Cova del Còdol</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/somnis-de-primavera" class="table-row-name text-bold">Somnis de Primavera</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/swing" class="table-row-name text-bold">Swing</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/tantra" class="table-row-name text-bold">Tantra</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/technical" class="table-row-name text-bold">Technical</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/the-shire" class="table-row-name text-bold">The Shire</a>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/tio-caga" class="table-row-name text-bold">Tio caga</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-comarca/trave-traviesa" class="table-row-name text-bold">Trave traviesa</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

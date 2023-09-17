@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/val-masino">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Val Masino 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="46.21884" />
   <input type="hidden" id="lng" name="lng_val" value="9.637826" />
@@ -168,664 +248,254 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8885475310&linkId=d23a402a6a153ab938bcff88ecdf3086">
+				</iframe>
+			</div>
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?ref=tf_til&t=madboulder00-21&m=amazon&o=30&p=8&l=as1&IS1=1&asins=8898609434&linkId=6dddda0afe6d613cb309a101f52062d9&bc1=FFFFFF&lt1=_top&fc1=333333&lc1=0066C0&bg1=FFFFFF&f=ifr">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.versantesud.it/en/shop/mello-boulder/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Mello Boulder (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/val-masino" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8885475310&linkId=d23a402a6a153ab938bcff88ecdf3086">
-      </iframe>
-    </div>
-   
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?ref=tf_til&t=madboulder00-21&m=amazon&o=30&p=8&l=as1&IS1=1&asins=8898609434&linkId=6dddda0afe6d613cb309a101f52062d9&bc1=FFFFFF&lt1=_top&fc1=333333&lc1=0066C0&bg1=FFFFFF&f=ifr">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.versantesud.it/en/shop/mello-boulder/"
-        target="_blank"
-        >Mello Boulder (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/val-masino"
-        target="_blank"
-        >27Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/val-masino"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/val-masino"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/val-masino/africa">Africa, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/alta-tensione">Alta Tensione, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/andrea-si-e-perso-diretto">Andrea si è perso diretto, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/bad-ass">Bad Ass, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/bad-ass-direct">Bad Ass Direct, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/berimbau">Berimbau, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/bidone">Bidone, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/black-woman-dream">Black Woman Dream, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/briciola">Briciola, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/cadi-e-muori">Cadi e Muori, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/camarillo-per-tutti">Camarillo per Tutti, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/carlotta">Carlotta, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/ciucciati-il-calzino">Ciucciati il calzino, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/climb-for-life-woman">Climb For Life Woman, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/decol-tet">Decol-Tet, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/demenza-senile">Demenza senile, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/diavolo">Diavolo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/drum-n-tano">Drum'n'tano, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/electra">Electra, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/euclide">Euclide, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/fallo-con-lancio">Fallo con lancio, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/fessurina-con-bidito">Fessurina con Bidito, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/foxy-lady">Foxy Lady, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/fuori-dal-tunnel">Fuori dal tunnel, 8b?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/gica">Gica, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/godzilla">Godzilla, 7c/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/grace-kelly">Grace Kelly, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/green-man">Green Man, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/green-woman">Green Woman, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/grinnonno">Grinnonno, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/heart-of-stone">Heart of Stone, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/hell-boy">Hell Boy, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/highball-rudy">Highball Rudy, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-brutto">Il Brutto, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-gioco-di-nalle">Il Gioco di Nalle, 8a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-totem">Il Totem, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-tunnel">Il Tunnel, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-vampiro-the-vampire">Il Vampiro/The Vampire, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/il-diedrino-del-rudi">Il diedrino del rudi, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/inshallah">Inshallah, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/inshallah-right-variant">Inshallah Right Variant, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/jhonny-crash">Jhonny crash, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/l-ambio">L'Ambio, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/l-arco-del-tetto">L'Arco del Tetto, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/l-era-glaciale">L'Era Glaciale, 7b (stand)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/l-ultima-follia-di-lawrence-d-arabia">L'Ultima Follia di Lawrence d'Arabia, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/l-opilione-e-grave">L'opilione e' grave, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-befana">La Befana, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-bistecca">La Bistecca, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-chimera">La Chimera, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-flaca">La Flaca, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-poppota">La Poppota, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-spirale">La Spirale, 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-croce-bianca">La croce bianca, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-discarica">La discarica, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/la-pioda-della-formica">La pioda della formica, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/le-pinze">Le Pinze, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/left-of-bad-ass">Left of Bad Ass, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/lustrini-e-pon-pon">Lustrini e pon pon, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/lopinione-dellopilione">L’opinione dell’opilione, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/magica-miky">Magica Miky, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/manto-nero">Manto Nero, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/mare-nostrum">Mare Nostrum, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/mare-nostrum-hard">Mare Nostrum Hard, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/mazzinga-z">Mazzinga Z, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/melloblocco-version">Melloblocco Version, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/midnight-lightning-dei-poverissimi">Midnight lightning dei poverissimi, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/nostradamus">Nostradamus, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/onice-nera">Onice nera, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/piatto-unico">Piatto Unico, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/pinnajet">Pinnajet, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/piri-tecnico">Piri Tecnico, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/pole-pole">Pole Pole, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-a-boulder-8-sega-lombarda">Problem A (Boulder 8, Sega lombarda), 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-a-le-pinze-campeggio">Problem A (Le Pinze, Campeggio), 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-a-pasqualino-campeggio">Problem A (Pasqualino, Campeggio), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-a-sala-giochi">Problem A (Sala Giochi), 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-b-boulder-5-sega-lombarda">Problem B (Boulder 5, Sega lombarda), 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-d-il-profeta-visido-tetto-di-filorera">Problem D (Il Profeta, Visido - Tetto di Filorera), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-f-multilinea-campeggio">Problem F (Multilinea, Campeggio), 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/problem-m-camarillo-brillo-scivolo">Problem M (Camarillo Brillo, Scivolo), 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/rastabilimento">Rastabilimento, 7c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/sala-giochi">Sala giochi, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/saltamaria">Saltamaria, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/saluto-al-sole">Saluto al Sole, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/sega-il-crux">Sega il Crux, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/signal-electrique">Signal électrique, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/six-pistols">Six Pistols, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/sogno-di-tarzan">Sogno di Tarzan, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/spigolo-gladiatiore">Spigolo Gladiatiore, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/spigolo-del-cuore">Spigolo del cuore, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/sugar-for-life-baby">Sugar for Life Baby, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/terminato">Terminato, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/tondolandia">Tondolandia, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/toro">Toro, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/total-pole">Total Pole, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/totem">Totem, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/toy-boy">Toy Boy, 8a/8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/traverso-brugi">Traverso Brugi, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/ubi-minor-maior-cessat">Ubi Minor Maior Cessat, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/unita-di-produzione">Unità di Produzione, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/variante-ascari">Variante Ascari, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/virus-attack">Virus Attack, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/visioncino">VisionCino, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/val-masino/vivo-sovversivo">Vivo sovversivo, 7c</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "val-masino_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/val-masino/altman">Altman</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/campeggio">Campeggio</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/campo-sportivo">Campo sportivo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/la-mota">La mota</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/la-motta">La motta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/nosferatu">Nosferatu</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/pedra-peintada">Pedra peintada</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/pilastri-del-pesgunfi">Pilastri del Pesgunfi</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/ponte-del-baffo">Ponte del Baffo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/preda-peintada">Preda peintada</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/remenno">Remenno</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/scivolo">Scivolo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/sega-lombarda">Sega lombarda</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/tarzan">Tarzan</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/visido-i-crotti">Visido - I crotti</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/visido-il-tendine-dello-yeti">Visido - Il tendine dello Yeti</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/visido-la-collinetta">Visido - La collinetta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/visido-tetto-di-filorera">Visido - Tetto di Filorera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/visido-vermuth-strisciut">Visido - Vermuth Strisciut</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/zocca">Zocca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/val-masino/zocca-superiore">Zocca Superiore</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "val-masino_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/altman" class="table-row-name text-bold">Altman</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/campeggio" class="table-row-name text-bold">Campeggio</a>
+					</td>
+					<td class="text-center">15</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/campo-sportivo" class="table-row-name text-bold">Campo sportivo</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/la-mota" class="table-row-name text-bold">La mota</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/la-motta" class="table-row-name text-bold">La motta</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/nosferatu" class="table-row-name text-bold">Nosferatu</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/pedra-peintada" class="table-row-name text-bold">Pedra peintada</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/pilastri-del-pesgunfi" class="table-row-name text-bold">Pilastri del Pesgunfi</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/ponte-del-baffo" class="table-row-name text-bold">Ponte del Baffo</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/preda-peintada" class="table-row-name text-bold">Preda peintada</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/remenno" class="table-row-name text-bold">Remenno</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/scivolo" class="table-row-name text-bold">Scivolo</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/sega-lombarda" class="table-row-name text-bold">Sega lombarda</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/tarzan" class="table-row-name text-bold">Tarzan</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/visido-i-crotti" class="table-row-name text-bold">Visido - I crotti</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/visido-il-tendine-dello-yeti" class="table-row-name text-bold">Visido - Il tendine dello Yeti</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/visido-la-collinetta" class="table-row-name text-bold">Visido - La collinetta</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/visido-tetto-di-filorera" class="table-row-name text-bold">Visido - Tetto di Filorera</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/visido-vermuth-strisciut" class="table-row-name text-bold">Visido - Vermuth Strisciut</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/zocca" class="table-row-name text-bold">Zocca</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/val-masino/zocca-superiore" class="table-row-name text-bold">Zocca Superiore</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -853,7 +523,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Visido - Vermuth Strisciut</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -879,7 +549,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Ponte del Baffo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -905,7 +575,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Nosferatu</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -931,7 +601,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Campo sportivo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -957,7 +627,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pilastri del Pesgunfi</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -983,7 +653,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Visido - I crotti</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1009,7 +679,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Visido - Il tendine dello Yeti</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1035,7 +705,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Sega lombarda</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1061,7 +731,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Preda peintada</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1087,7 +757,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Visido - Tetto de la Filorera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1113,7 +783,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Visido - La collinetta</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1139,7 +809,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Zocca Superiore</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1165,7 +835,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Campeggio</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1191,7 +861,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La mota</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1217,7 +887,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Nosferatu</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1243,7 +913,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Remenno</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1269,7 +939,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Scivolo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1295,7 +965,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Zocca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1321,7 +991,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Tarzan</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1347,7 +1017,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Ponte del Baffo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1373,7 +1043,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Altman</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1396,8 +1066,975 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/africa" class="table-row-name text-bold">Africa</a>
+					</td>
+					<td>7b</td>
+					<td>Sega lombarda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/alta-tensione" class="table-row-name text-bold">Alta Tensione</a>
+					</td>
+					<td>7c</td>
+					<td>Visido - La Collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/andrea-si-e-perso-diretto" class="table-row-name text-bold">Andrea si è perso diretto</a>
+					</td>
+					<td>7b</td>
+					<td>Visido - Il tendine dello Yeti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/bad-ass" class="table-row-name text-bold">Bad Ass</a>
+					</td>
+					<td>8a</td>
+					<td>Ponte del Baffo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/bad-ass-direct" class="table-row-name text-bold">Bad Ass Direct</a>
+					</td>
+					<td>7c+</td>
+					<td>Ponte del Baffo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/berimbau" class="table-row-name text-bold">Berimbau</a>
+					</td>
+					<td>7b</td>
+					<td>Visido - I crotti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/bidone" class="table-row-name text-bold">Bidone</a>
+					</td>
+					<td>6c+</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/black-woman-dream" class="table-row-name text-bold">Black Woman Dream</a>
+					</td>
+					<td>7b+</td>
+					<td>Sega lombarda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/briciola" class="table-row-name text-bold">Briciola</a>
+					</td>
+					<td>7b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/cadi-e-muori" class="table-row-name text-bold">Cadi e Muori</a>
+					</td>
+					<td>7a+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/camarillo-per-tutti" class="table-row-name text-bold">Camarillo per Tutti</a>
+					</td>
+					<td>7a+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/carlotta" class="table-row-name text-bold">Carlotta</a>
+					</td>
+					<td>7b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/ciucciati-il-calzino" class="table-row-name text-bold">Ciucciati il calzino</a>
+					</td>
+					<td>Unknown</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/climb-for-life-woman" class="table-row-name text-bold">Climb For Life Woman</a>
+					</td>
+					<td>7b</td>
+					<td>Preda peintada</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/decol-tet" class="table-row-name text-bold">Decol-Tet</a>
+					</td>
+					<td>7b</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/demenza-senile" class="table-row-name text-bold">Demenza senile</a>
+					</td>
+					<td>7a+</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/diavolo" class="table-row-name text-bold">Diavolo</a>
+					</td>
+					<td>7a</td>
+					<td>La mota</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/drum-n-tano" class="table-row-name text-bold">Drum'n'tano</a>
+					</td>
+					<td>8b+</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/electra" class="table-row-name text-bold">Electra</a>
+					</td>
+					<td>7b+</td>
+					<td>Visido - Vermuth Strisciut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/euclide" class="table-row-name text-bold">Euclide</a>
+					</td>
+					<td>7c</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/fallo-con-lancio" class="table-row-name text-bold">Fallo con lancio</a>
+					</td>
+					<td>7c</td>
+					<td>Pedra peintada</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/fessurina-con-bidito" class="table-row-name text-bold">Fessurina con Bidito</a>
+					</td>
+					<td>6a+</td>
+					<td>Visido - Il tendine dello Yeti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/foxy-lady" class="table-row-name text-bold">Foxy Lady</a>
+					</td>
+					<td>7c</td>
+					<td>La mota</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/fuori-dal-tunnel" class="table-row-name text-bold">Fuori dal tunnel</a>
+					</td>
+					<td>8b?</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/gica" class="table-row-name text-bold">Gica</a>
+					</td>
+					<td>8b</td>
+					<td>Ponte del Baffo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/godzilla" class="table-row-name text-bold">Godzilla</a>
+					</td>
+					<td>7c/+</td>
+					<td>La mota</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/grace-kelly" class="table-row-name text-bold">Grace Kelly</a>
+					</td>
+					<td>7b</td>
+					<td>Visido - La Collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/green-man" class="table-row-name text-bold">Green Man</a>
+					</td>
+					<td>7c+</td>
+					<td>Visido - La collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/green-woman" class="table-row-name text-bold">Green Woman</a>
+					</td>
+					<td>7a+</td>
+					<td>Visido - La collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/grinnonno" class="table-row-name text-bold">Grinnonno</a>
+					</td>
+					<td>7c+</td>
+					<td>Visido - La collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/heart-of-stone" class="table-row-name text-bold">Heart of Stone</a>
+					</td>
+					<td>7b</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/hell-boy" class="table-row-name text-bold">Hell Boy</a>
+					</td>
+					<td>8b</td>
+					<td>Nosferatu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/highball-rudy" class="table-row-name text-bold">Highball Rudy</a>
+					</td>
+					<td>7a</td>
+					<td>Visido - Vermuth Strisciut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-brutto" class="table-row-name text-bold">Il Brutto</a>
+					</td>
+					<td>7c+</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-gioco-di-nalle" class="table-row-name text-bold">Il Gioco di Nalle</a>
+					</td>
+					<td>8a/+</td>
+					<td>Nosferatu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-totem" class="table-row-name text-bold">Il Totem</a>
+					</td>
+					<td>7a+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-tunnel" class="table-row-name text-bold">Il Tunnel</a>
+					</td>
+					<td>7b+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-vampiro-the-vampire" class="table-row-name text-bold">Il Vampiro/The Vampire</a>
+					</td>
+					<td>7c</td>
+					<td>Ponte del Baffo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/il-diedrino-del-rudi" class="table-row-name text-bold">Il diedrino del rudi</a>
+					</td>
+					<td>6c</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/inshallah" class="table-row-name text-bold">Inshallah</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/inshallah-right-variant" class="table-row-name text-bold">Inshallah Right Variant</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/jhonny-crash" class="table-row-name text-bold">Jhonny crash</a>
+					</td>
+					<td>7b</td>
+					<td>Altman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/l-ambio" class="table-row-name text-bold">L'Ambio</a>
+					</td>
+					<td>7b</td>
+					<td>Campo sportivo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/l-arco-del-tetto" class="table-row-name text-bold">L'Arco del Tetto</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/l-era-glaciale" class="table-row-name text-bold">L'Era Glaciale</a>
+					</td>
+					<td>7b (stand)</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/l-ultima-follia-di-lawrence-d-arabia" class="table-row-name text-bold">L'Ultima Follia di Lawrence d'Arabia</a>
+					</td>
+					<td>7b+</td>
+					<td>Pilastri del Pesgunfi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/l-opilione-e-grave" class="table-row-name text-bold">L'opilione e' grave</a>
+					</td>
+					<td>7c+</td>
+					<td>Zocca Superiore</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-befana" class="table-row-name text-bold">La Befana</a>
+					</td>
+					<td>7b</td>
+					<td>Zocca Superiore</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-bistecca" class="table-row-name text-bold">La Bistecca</a>
+					</td>
+					<td>7b</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-chimera" class="table-row-name text-bold">La Chimera</a>
+					</td>
+					<td>8a</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-flaca" class="table-row-name text-bold">La Flaca</a>
+					</td>
+					<td>7a+</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-poppota" class="table-row-name text-bold">La Poppota</a>
+					</td>
+					<td>6c</td>
+					<td>Zocca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-spirale" class="table-row-name text-bold">La Spirale</a>
+					</td>
+					<td>5b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-croce-bianca" class="table-row-name text-bold">La croce bianca</a>
+					</td>
+					<td>8a+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-discarica" class="table-row-name text-bold">La discarica</a>
+					</td>
+					<td>7b</td>
+					<td>Zocca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/la-pioda-della-formica" class="table-row-name text-bold">La pioda della formica</a>
+					</td>
+					<td>7c</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/le-pinze" class="table-row-name text-bold">Le Pinze</a>
+					</td>
+					<td>7b+</td>
+					<td>Visido - Il tendine dello Yeti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/left-of-bad-ass" class="table-row-name text-bold">Left of Bad Ass</a>
+					</td>
+					<td>8b</td>
+					<td>Ponte del Baffo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/lustrini-e-pon-pon" class="table-row-name text-bold">Lustrini e pon pon</a>
+					</td>
+					<td>7a+</td>
+					<td>Zocca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/lopinione-dellopilione" class="table-row-name text-bold">L’opinione dell’opilione</a>
+					</td>
+					<td>7b</td>
+					<td>Zocca Superiore</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/magica-miky" class="table-row-name text-bold">Magica Miky</a>
+					</td>
+					<td>7b+</td>
+					<td>Visido - La Collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/manto-nero" class="table-row-name text-bold">Manto Nero</a>
+					</td>
+					<td>7c</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/mare-nostrum" class="table-row-name text-bold">Mare Nostrum</a>
+					</td>
+					<td>7c</td>
+					<td>Visido - I crotti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/mare-nostrum-hard" class="table-row-name text-bold">Mare Nostrum Hard</a>
+					</td>
+					<td>8a</td>
+					<td>Visido - I crotti</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/mazzinga-z" class="table-row-name text-bold">Mazzinga Z</a>
+					</td>
+					<td>7c</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/melloblocco-version" class="table-row-name text-bold">Melloblocco Version</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>La motta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/midnight-lightning-dei-poverissimi" class="table-row-name text-bold">Midnight lightning dei poverissimi</a>
+					</td>
+					<td>Unknown</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/nostradamus" class="table-row-name text-bold">Nostradamus</a>
+					</td>
+					<td>7c</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/onice-nera" class="table-row-name text-bold">Onice nera</a>
+					</td>
+					<td>7b</td>
+					<td>Campo sportivo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/piatto-unico" class="table-row-name text-bold">Piatto Unico</a>
+					</td>
+					<td>7c</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/pinnajet" class="table-row-name text-bold">Pinnajet</a>
+					</td>
+					<td>7b</td>
+					<td>Campo sportivo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/piri-tecnico" class="table-row-name text-bold">Piri Tecnico</a>
+					</td>
+					<td>7b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/pole-pole" class="table-row-name text-bold">Pole Pole</a>
+					</td>
+					<td>7a+</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-a-boulder-8-sega-lombarda" class="table-row-name text-bold">Problem A (Boulder 8, Sega lombarda)</a>
+					</td>
+					<td>7c</td>
+					<td>Sega lombarda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-a-le-pinze-campeggio" class="table-row-name text-bold">Problem A (Le Pinze, Campeggio)</a>
+					</td>
+					<td>7b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-a-pasqualino-campeggio" class="table-row-name text-bold">Problem A (Pasqualino, Campeggio)</a>
+					</td>
+					<td>6b</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-a-sala-giochi" class="table-row-name text-bold">Problem A (Sala Giochi)</a>
+					</td>
+					<td>7a+</td>
+					<td>Nosferatu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-b-boulder-5-sega-lombarda" class="table-row-name text-bold">Problem B (Boulder 5, Sega lombarda)</a>
+					</td>
+					<td>7b</td>
+					<td>Sega lombarda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-d-il-profeta-visido-tetto-di-filorera" class="table-row-name text-bold">Problem D (Il Profeta, Visido - Tetto di Filorera)</a>
+					</td>
+					<td>5b</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-f-multilinea-campeggio" class="table-row-name text-bold">Problem F (Multilinea, Campeggio)</a>
+					</td>
+					<td>7a+</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/problem-m-camarillo-brillo-scivolo" class="table-row-name text-bold">Problem M (Camarillo Brillo, Scivolo)</a>
+					</td>
+					<td>7b</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/rastabilimento" class="table-row-name text-bold">Rastabilimento</a>
+					</td>
+					<td>7c+ (sit)</td>
+					<td>Sega lombarda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/sala-giochi" class="table-row-name text-bold">Sala giochi</a>
+					</td>
+					<td>7c+</td>
+					<td>Nosferatu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/saltamaria" class="table-row-name text-bold">Saltamaria</a>
+					</td>
+					<td>7c</td>
+					<td>Altman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/saluto-al-sole" class="table-row-name text-bold">Saluto al Sole</a>
+					</td>
+					<td>7c</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/sega-il-crux" class="table-row-name text-bold">Sega il Crux</a>
+					</td>
+					<td>7b+</td>
+					<td>Nosferatu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/signal-electrique" class="table-row-name text-bold">Signal électrique</a>
+					</td>
+					<td>7a+</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/six-pistols" class="table-row-name text-bold">Six Pistols</a>
+					</td>
+					<td>7c</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/sogno-di-tarzan" class="table-row-name text-bold">Sogno di Tarzan</a>
+					</td>
+					<td>7b</td>
+					<td>Tarzan</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/spigolo-gladiatiore" class="table-row-name text-bold">Spigolo Gladiatiore</a>
+					</td>
+					<td>8a</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/spigolo-del-cuore" class="table-row-name text-bold">Spigolo del cuore</a>
+					</td>
+					<td>7b</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/sugar-for-life-baby" class="table-row-name text-bold">Sugar for Life Baby</a>
+					</td>
+					<td>7c+</td>
+					<td>Preda peintada</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/terminato" class="table-row-name text-bold">Terminato</a>
+					</td>
+					<td>7c</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/tondolandia" class="table-row-name text-bold">Tondolandia</a>
+					</td>
+					<td>7b</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/toro" class="table-row-name text-bold">Toro</a>
+					</td>
+					<td>7c</td>
+					<td>Altman</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/total-pole" class="table-row-name text-bold">Total Pole</a>
+					</td>
+					<td>7b</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/totem" class="table-row-name text-bold">Totem</a>
+					</td>
+					<td>6b+</td>
+					<td>Visido - La collinetta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/toy-boy" class="table-row-name text-bold">Toy Boy</a>
+					</td>
+					<td>8a/8a+</td>
+					<td>Scivolo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/traverso-brugi" class="table-row-name text-bold">Traverso Brugi</a>
+					</td>
+					<td>8a</td>
+					<td>Campeggio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/ubi-minor-maior-cessat" class="table-row-name text-bold">Ubi Minor Maior Cessat</a>
+					</td>
+					<td>4c</td>
+					<td>Visido - Tetto di Filorera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/unita-di-produzione" class="table-row-name text-bold">Unità di Produzione</a>
+					</td>
+					<td>8a</td>
+					<td>Remenno</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/variante-ascari" class="table-row-name text-bold">Variante Ascari</a>
+					</td>
+					<td>7c</td>
+					<td>Zocca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/virus-attack" class="table-row-name text-bold">Virus Attack</a>
+					</td>
+					<td>7c</td>
+					<td>Pilastri del Pesgunfi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/visioncino" class="table-row-name text-bold">VisionCino</a>
+					</td>
+					<td>7b</td>
+					<td>Campo sportivo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/val-masino/vivo-sovversivo" class="table-row-name text-bold">Vivo sovversivo</a>
+					</td>
+					<td>7c</td>
+					<td>Altman</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

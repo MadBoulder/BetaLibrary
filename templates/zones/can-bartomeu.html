@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/can-bartomeu">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Can Bartomeu 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.64088636626326" />
   <input type="hidden" id="lng" name="lng_val" value="2.6035692805189683" />
@@ -168,383 +248,119 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/can-bartomeu-26750" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
+		<a id="guide_link"  href="http://canbarto.blogspot.com/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			canbarto (Blog)
+		</a>
+	
+		<a id="guide_link"  href="http://canbarto.blogspot.com/2016/10/mapa-sectors-can-bartomeu.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Guide
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/can-bartomeu-26750"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://canbarto.blogspot.com/"
-        target="_blank"
-        >canbarto (Blog)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://canbarto.blogspot.com/2016/10/mapa-sectors-can-bartomeu.html"
-        target="_blank"
-        >Guide</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/can-bartomeu"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/can-bartomeu"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/can-bartomeu/bartolo-style-sit">Bartolo Style sit, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/bartolo-style">Bartolo style, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/cascada-negre">Cascada negre, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/catba">Catba, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/comete-el-pollo-andreita">Comete el pollo Andreita, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-abrazo-del-lomo">El abrazo del lomo, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-caganer">El caganer, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-cor">El cor, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-monstre-bu">El monstre Bu, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-vedell">El vedell, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/el-vedell-per-sota">El vedell per sota, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/fraggle-rock">Fraggle Rock , Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/gumercito">Gumercito, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/huesitos">Huesitos, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/huesitos-crack">Huesitos crack, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/l-esbarzenager">L'esbarzenager, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/l-escut-dret">L'escut dret, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/l-escut-esquerra">L'escut esquerra, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/l-estelada">L'estelada, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-pepa-creu">La Pepa creu, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-trinxera">La Trinxera, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-batamanta">La batamanta, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-cascadeta">La cascadeta, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-cresta">La cresta, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-fisura">La fisura, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-hormiga-asesina">La hormiga asesina, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-lletja">La lletja, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-lletja-directe">La lletja Directe, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-ola">La ola, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-petita-llagosta">La petita llagosta, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-placa-de-la-nevera">La placa de la nevera, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-sonrisa">La sonrisa, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-trave-de-la-ola">La trave de la ola, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/la-trave-del-rallador">La trave del rallador., Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/luigi">Luigi, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/mantalaz">Mantalaz, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/martrix">Martrix, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/nits-blanques">Nits blanques, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/obi-wan-kenobi">Obi-Wan Kenobi, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/operacio-biquini">Operació biquini, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/paella-pa-tres">Paella pa tres, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/papa-jo-vull-ser-torero">Papa jo vull ser torero, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/papa-jo-vull-ser-torero-direct">Papa jo vull ser torero Direct, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/pepillo-lance">Pepillo lance, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/pinza-invertida">Pinza invertida, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/placa-nadia">Placa Nadia, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/problem-20-aigues-5">Problem 20 (Aigües), 5+, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/rallador-direct">Rallador direct, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/sipiaman">Sipiaman, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/super-mario-bros">Super Mario Bros, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/the-crack">The crack, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/turmells-de-sang">Turmells de Sang, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/ulls-de-bruixa">Ulls de bruixa, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-bartomeu/yosemite-crag">Yosemite crag, Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "can-bartomeu_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/can-bartomeu/aigues">Aigües</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bartomeu/de-baix">De baix</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bartomeu/diposit">Dipòsit</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-bartomeu/les-aigues">Les Aigües</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "can-bartomeu_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bartomeu/aigues" class="table-row-name text-bold">Aigües</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bartomeu/de-baix" class="table-row-name text-bold">De baix</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bartomeu/diposit" class="table-row-name text-bold">Dipòsit</a>
+					</td>
+					<td class="text-center">40</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-bartomeu/les-aigues" class="table-row-name text-bold">Les Aigües</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -572,7 +388,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>de baix</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -598,7 +414,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Aigües</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -624,7 +440,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Dipòsit</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -647,8 +463,516 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/bartolo-style-sit" class="table-row-name text-bold">Bartolo Style sit</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/bartolo-style" class="table-row-name text-bold">Bartolo style</a>
+					</td>
+					<td>7a</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/cascada-negre" class="table-row-name text-bold">Cascada negre</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/catba" class="table-row-name text-bold">Catba</a>
+					</td>
+					<td>7a</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/comete-el-pollo-andreita" class="table-row-name text-bold">Comete el pollo Andreita</a>
+					</td>
+					<td>Unknown</td>
+					<td>Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-abrazo-del-lomo" class="table-row-name text-bold">El abrazo del lomo</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-caganer" class="table-row-name text-bold">El caganer</a>
+					</td>
+					<td>5</td>
+					<td>Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-cor" class="table-row-name text-bold">El cor</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-monstre-bu" class="table-row-name text-bold">El monstre Bu</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-vedell" class="table-row-name text-bold">El vedell</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/el-vedell-per-sota" class="table-row-name text-bold">El vedell per sota</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/fraggle-rock" class="table-row-name text-bold">Fraggle Rock </a>
+					</td>
+					<td>Unknown</td>
+					<td>Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/gumercito" class="table-row-name text-bold">Gumercito</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/huesitos" class="table-row-name text-bold">Huesitos</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/huesitos-crack" class="table-row-name text-bold">Huesitos crack</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/l-esbarzenager" class="table-row-name text-bold">L'esbarzenager</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/l-escut-dret" class="table-row-name text-bold">L'escut dret</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/l-escut-esquerra" class="table-row-name text-bold">L'escut esquerra</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/l-estelada" class="table-row-name text-bold">L'estelada</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-pepa-creu" class="table-row-name text-bold">La Pepa creu</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-trinxera" class="table-row-name text-bold">La Trinxera</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-batamanta" class="table-row-name text-bold">La batamanta</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Les Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-cascadeta" class="table-row-name text-bold">La cascadeta</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-cresta" class="table-row-name text-bold">La cresta</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-fisura" class="table-row-name text-bold">La fisura</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-hormiga-asesina" class="table-row-name text-bold">La hormiga asesina</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-lletja" class="table-row-name text-bold">La lletja</a>
+					</td>
+					<td>6a</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-lletja-directe" class="table-row-name text-bold">La lletja Directe</a>
+					</td>
+					<td>4+</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-ola" class="table-row-name text-bold">La ola</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-petita-llagosta" class="table-row-name text-bold">La petita llagosta</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-placa-de-la-nevera" class="table-row-name text-bold">La placa de la nevera</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-sonrisa" class="table-row-name text-bold">La sonrisa</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-trave-de-la-ola" class="table-row-name text-bold">La trave de la ola</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/la-trave-del-rallador" class="table-row-name text-bold">La trave del rallador.</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/luigi" class="table-row-name text-bold">Luigi</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/mantalaz" class="table-row-name text-bold">Mantalaz</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/martrix" class="table-row-name text-bold">Martrix</a>
+					</td>
+					<td>7a</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/nits-blanques" class="table-row-name text-bold">Nits blanques</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/obi-wan-kenobi" class="table-row-name text-bold">Obi-Wan Kenobi</a>
+					</td>
+					<td>6b+</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/operacio-biquini" class="table-row-name text-bold">Operació biquini</a>
+					</td>
+					<td>7a+</td>
+					<td>Les Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/paella-pa-tres" class="table-row-name text-bold">Paella pa tres</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/papa-jo-vull-ser-torero" class="table-row-name text-bold">Papa jo vull ser torero</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/papa-jo-vull-ser-torero-direct" class="table-row-name text-bold">Papa jo vull ser torero Direct</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/pepillo-lance" class="table-row-name text-bold">Pepillo lance</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/pinza-invertida" class="table-row-name text-bold">Pinza invertida</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/placa-nadia" class="table-row-name text-bold">Placa Nadia</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/problem-20-aigues-5" class="table-row-name text-bold">Problem 20 (Aigües), 5+</a>
+					</td>
+					<td>Unknown</td>
+					<td>Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/rallador-direct" class="table-row-name text-bold">Rallador direct</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/sipiaman" class="table-row-name text-bold">Sipiaman</a>
+					</td>
+					<td>Unknown</td>
+					<td>Aigües</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/super-mario-bros" class="table-row-name text-bold">Super Mario Bros</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/the-crack" class="table-row-name text-bold">The crack</a>
+					</td>
+					<td>Unknown</td>
+					<td>De baix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/turmells-de-sang" class="table-row-name text-bold">Turmells de Sang</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/ulls-de-bruixa" class="table-row-name text-bold">Ulls de bruixa</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-bartomeu/yosemite-crag" class="table-row-name text-bold">Yosemite crag</a>
+					</td>
+					<td>Unknown</td>
+					<td>Dipòsit</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

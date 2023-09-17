@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/can-camps">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Can Camps 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.6573761365082" />
   <input type="hidden" id="lng" name="lng_val" value="2.546367067982601" />
@@ -168,477 +248,102 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/can-camps" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/can-camps"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/can-camps"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/can-camps"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/can-camps/alfil">Alfil, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/arritmia">Arritmia, 6a+ </a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/bucket-list">Bucket List, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/butterfly">Butterfly, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/canvi-de-dimensio">Canvi de Dimensió, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/cop-de-mall">Cop de mall, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/cor-a-foc">Cor a foc, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/crank">Crank, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/crank-ii">Crank II, 4+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/crimpless">Crimpless, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/de-salat-a-agri">De salat a agri, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/debris">Debris, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/diposit-d-arbres">Dipòsit d'arbres, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/doble-pedra">Doble Pedra, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/dr-famal">Dr. FaMal, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/dues-regletes-i-un-desti">Dues regletes i un destí, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/eclosio">Eclosió, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/efecte-papallona">Efecte papallona, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-casquet-volador">El casquet volador, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-cigronet">El cigronet, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-cigronet-junior">El cigronet Junior, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-cor-trencat">El cor trencat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-drac">El drac, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-granit-no-perdona">El granit no perdona, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/el-llom">El llom, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/escac-i-mat">Escac i mat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/escletxa-inacabada">Escletxa inacabada, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/fisicalsaurus">Fisicalsaurus, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/fisicalsaurus-direct">Fisicalsaurus Direct, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/hell-patrol">Hell Patrol, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/interferencia">Interferència, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/jazzne-granit">Jazzne Granit, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-butxaca-magica">La Butxaca Màgica, 5 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-butxaca-magica-directe">La Butxaca Màgica Directe, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-geneta">La Geneta, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-nevera">La Nevera, 5 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-placa-de-babord">La Placa de Babord, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-babosa-dislexica">La babosa dislèxica, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-bufetada">La bufetada, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-caputxa">La caputxa, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-caputxa">La caputxa, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-lenta-agonia">La lenta agonia, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-mandibula">La mandíbula, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-trave-de-l-escorpora">La trave de l'Escórpora, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/la-trave-de-l-escorpora-extended">La trave de l'Escórpora Extended, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/lacasitos">Lacasitos, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/les-esquerdes">Les esquerdes, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/les-parences-enganyen">Les parences enganyen, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/llepada-fanatica">Llepada fanàtica, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/mal-d-altura">Mal d'altura, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/mal-de-cap">Mal de Cap, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/malabars">Malabars, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/mini-szpako">Mini Szpako, 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/montnegre-air-line">Montnegre air line, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/nautilus">Nautilus, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/nervi-alveolar">Nervi alveolar, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/no-facis-trampa">No facis trampa, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/ou-de-drac">Ou de drac, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/painkiller">Painkiller, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/pendent-mortal">Pendent Mortal, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/pols-en-suspensio">Pols en suspensió, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/popa">Popa, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/proactivitat">Proactivitat, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/ramus">Ramus, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/release-the-kraken">Release the Kraken, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/roza-y-goza">Roza y goza, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/rubik">Rubik, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/slopers-to-heaven">Slopers to Heaven, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/sloppy-heel">Sloppy Heel, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/sloppy-moss">Sloppy Moss, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/staham">Staham, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/terreny-ferestec">Terreny feréstec, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/the-italian-job">The Italian Job, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/the-sky-is-the-limit">The sky is the limit, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/the-sky-is-the-limit-direct">The sky is the limit Direct, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/trave-szpako">Trave Szpako, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/trave-de-rubik">Trave de Rubik, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/trave-de-rubik-extended">Trave de Rubik extended, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/trave-de-la-geneta">Trave de la geneta, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/trave-del-cub">Trave del Cub, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/triple-vertex">Triple Vèrtex, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/vistge-cosmic">Vistge Còsmic, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/can-camps/wavelenght">Wavelenght, 4</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "can-camps_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/can-camps/masia">Masia</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-camps/turo">Turó</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/can-camps/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "can-camps_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-camps/masia" class="table-row-name text-bold">Masia</a>
+					</td>
+					<td class="text-center">18</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-camps/turo" class="table-row-name text-bold">Turó</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/can-camps/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">61</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -663,8 +368,777 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/alfil" class="table-row-name text-bold">Alfil</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/arritmia" class="table-row-name text-bold">Arritmia</a>
+					</td>
+					<td>6a+ </td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/bucket-list" class="table-row-name text-bold">Bucket List</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/butterfly" class="table-row-name text-bold">Butterfly</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/canvi-de-dimensio" class="table-row-name text-bold">Canvi de Dimensió</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/cop-de-mall" class="table-row-name text-bold">Cop de mall</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/cor-a-foc" class="table-row-name text-bold">Cor a foc</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/crank" class="table-row-name text-bold">Crank</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/crank-ii" class="table-row-name text-bold">Crank II</a>
+					</td>
+					<td>4+ (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/crimpless" class="table-row-name text-bold">Crimpless</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/de-salat-a-agri" class="table-row-name text-bold">De salat a agri</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/debris" class="table-row-name text-bold">Debris</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/diposit-d-arbres" class="table-row-name text-bold">Dipòsit d'arbres</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/doble-pedra" class="table-row-name text-bold">Doble Pedra</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/dr-famal" class="table-row-name text-bold">Dr. FaMal</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/dues-regletes-i-un-desti" class="table-row-name text-bold">Dues regletes i un destí</a>
+					</td>
+					<td>6b+</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/eclosio" class="table-row-name text-bold">Eclosió</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/efecte-papallona" class="table-row-name text-bold">Efecte papallona</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-casquet-volador" class="table-row-name text-bold">El casquet volador</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-cigronet" class="table-row-name text-bold">El cigronet</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-cigronet-junior" class="table-row-name text-bold">El cigronet Junior</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-cor-trencat" class="table-row-name text-bold">El cor trencat</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-drac" class="table-row-name text-bold">El drac</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-granit-no-perdona" class="table-row-name text-bold">El granit no perdona</a>
+					</td>
+					<td>6a+</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/el-llom" class="table-row-name text-bold">El llom</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/escac-i-mat" class="table-row-name text-bold">Escac i mat</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/escletxa-inacabada" class="table-row-name text-bold">Escletxa inacabada</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/fisicalsaurus" class="table-row-name text-bold">Fisicalsaurus</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/fisicalsaurus-direct" class="table-row-name text-bold">Fisicalsaurus Direct</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/hell-patrol" class="table-row-name text-bold">Hell Patrol</a>
+					</td>
+					<td>6b</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/interferencia" class="table-row-name text-bold">Interferència</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/jazzne-granit" class="table-row-name text-bold">Jazzne Granit</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-butxaca-magica" class="table-row-name text-bold">La Butxaca Màgica</a>
+					</td>
+					<td>5 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-butxaca-magica-directe" class="table-row-name text-bold">La Butxaca Màgica Directe</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-geneta" class="table-row-name text-bold">La Geneta</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-nevera" class="table-row-name text-bold">La Nevera</a>
+					</td>
+					<td>5 (sit)</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-placa-de-babord" class="table-row-name text-bold">La Placa de Babord</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-babosa-dislexica" class="table-row-name text-bold">La babosa dislèxica</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-bufetada" class="table-row-name text-bold">La bufetada</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-caputxa" class="table-row-name text-bold">La caputxa</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-caputxa" class="table-row-name text-bold">La caputxa</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-lenta-agonia" class="table-row-name text-bold">La lenta agonia</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-mandibula" class="table-row-name text-bold">La mandíbula</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-trave-de-l-escorpora" class="table-row-name text-bold">La trave de l'Escórpora</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/la-trave-de-l-escorpora-extended" class="table-row-name text-bold">La trave de l'Escórpora Extended</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/lacasitos" class="table-row-name text-bold">Lacasitos</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/les-esquerdes" class="table-row-name text-bold">Les esquerdes</a>
+					</td>
+					<td>5</td>
+					<td>Turó</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/les-parences-enganyen" class="table-row-name text-bold">Les parences enganyen</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/llepada-fanatica" class="table-row-name text-bold">Llepada fanàtica</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/mal-d-altura" class="table-row-name text-bold">Mal d'altura</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/mal-de-cap" class="table-row-name text-bold">Mal de Cap</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/malabars" class="table-row-name text-bold">Malabars</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/mini-szpako" class="table-row-name text-bold">Mini Szpako</a>
+					</td>
+					<td>3+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/montnegre-air-line" class="table-row-name text-bold">Montnegre air line</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/nautilus" class="table-row-name text-bold">Nautilus</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/nervi-alveolar" class="table-row-name text-bold">Nervi alveolar</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/no-facis-trampa" class="table-row-name text-bold">No facis trampa</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/ou-de-drac" class="table-row-name text-bold">Ou de drac</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/painkiller" class="table-row-name text-bold">Painkiller</a>
+					</td>
+					<td>6a+</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/pendent-mortal" class="table-row-name text-bold">Pendent Mortal</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/pols-en-suspensio" class="table-row-name text-bold">Pols en suspensió</a>
+					</td>
+					<td>6a</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/popa" class="table-row-name text-bold">Popa</a>
+					</td>
+					<td>4+</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/proactivitat" class="table-row-name text-bold">Proactivitat</a>
+					</td>
+					<td>6a+</td>
+					<td>Turó</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/ramus" class="table-row-name text-bold">Ramus</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/release-the-kraken" class="table-row-name text-bold">Release the Kraken</a>
+					</td>
+					<td>6a</td>
+					<td>Turó</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/roza-y-goza" class="table-row-name text-bold">Roza y goza</a>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/rubik" class="table-row-name text-bold">Rubik</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/slopers-to-heaven" class="table-row-name text-bold">Slopers to Heaven</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/sloppy-heel" class="table-row-name text-bold">Sloppy Heel</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/sloppy-moss" class="table-row-name text-bold">Sloppy Moss</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/staham" class="table-row-name text-bold">Staham</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/terreny-ferestec" class="table-row-name text-bold">Terreny feréstec</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/the-italian-job" class="table-row-name text-bold">The Italian Job</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/the-sky-is-the-limit" class="table-row-name text-bold">The sky is the limit</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/the-sky-is-the-limit-direct" class="table-row-name text-bold">The sky is the limit Direct</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/trave-szpako" class="table-row-name text-bold">Trave Szpako</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/trave-de-rubik" class="table-row-name text-bold">Trave de Rubik</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/trave-de-rubik-extended" class="table-row-name text-bold">Trave de Rubik extended</a>
+					</td>
+					<td>6a+</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/trave-de-la-geneta" class="table-row-name text-bold">Trave de la geneta</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Turó</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/trave-del-cub" class="table-row-name text-bold">Trave del Cub</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/triple-vertex" class="table-row-name text-bold">Triple Vèrtex</a>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/vistge-cosmic" class="table-row-name text-bold">Vistge Còsmic</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Masia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/can-camps/wavelenght" class="table-row-name text-bold">Wavelenght</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

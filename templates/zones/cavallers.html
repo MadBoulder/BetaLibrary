@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/cavallers">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Cavallers 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="42.571857" />
   <input type="hidden" id="lng" name="lng_val" value="0.846636" />
@@ -168,1506 +248,240 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://cavallersbloc.jimdo.com/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Cavallers Bloc
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/cavallers" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://cavallersbloc.jimdo.com/"
-        target="_blank"
-        >Cavallers Bloc</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/cavallers"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/cavallers"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/cavallers"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/cavallers/3-estudio">3-Estudio, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/3d">3D, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/abracada">Abraçada, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/acte-directe">Acte directe, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/acte-vandalic">Acte vandàlic, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ades">Adés, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/alabama">Alabama, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/albania">Albània, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/alicates">Alicates, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/aloevera">Aloevera, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/amagatall">Amagatall, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/amanita">Amanita, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/amodal">Amodal, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/anatomia">Anatomia, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/andromeda">Andròmeda, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/anticrits">Anticrits, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/antosta">Antosta, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/api">Api, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/arcanons">Arcanons, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/aresta">Aresta, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/aristocrata">Aristòcrata, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/arqueig">Arqueig, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/arrencament">Arrencament, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/atlas">Atlas, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/atlantic">Atlàntic, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/au">Au, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/avellabaleine">Avellabaleine, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/avellana">Avellana, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/aversions">Aversions, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/baba">Baba, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/balu">Balu, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bancal">Bancal, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/banyera">Banyera, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/baranes">Baranes, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bits">Bits, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/boca-negra">Boca negra, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/boca-seca-man">Boca seca man, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bona-baba">Bona-baba, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bord">Bord, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bosc">Bosc, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/bot">Bot, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/botxeador">Botxeador, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/brasa">Brasa, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/broma">Broma, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/buscallada">Buscallada, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/camp-de-trumfos">Camp de trumfos, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/campament">Campament, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/canalla">Canalla, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cap-praball">Cap praball, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/capell">Capell, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/carbo">Carbó, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/carlos-fantova">Carlos Fantova, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/carmanyola">Carmanyola, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/carretera-i-manta">Carretera i manta, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/carretera-y-monta">Carretera y monta, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cassigall">Cassigall, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/canamera">Cañamera, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/chatarra">Chatarra, 3c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/chi-chi-lou">Chi chi lou, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cigrons">Cigrons, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/clavament">Clavament, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cleopatra">Cleòpatra, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/classic">Clàssic, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/clasicos-ocultos">Clásicos ocultos, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/codigo-tactil">Codigo táctil, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cohesiona">Cohesiona, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/commodore">Commodore, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/conectic">Conectic, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/conillet">Conillet, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/connectat">Connectat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/contrapeus">Contrapeus, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/control-s">Control S, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/corbar">Corbar, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/corcs">Corcs, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/corder">Corder, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/corrupcio">Corrupció, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/crac">Crac, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/cracker">Cracker, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/culot">Culot, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/culot">Culot, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/curvar">Curvar, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/decadencia">Decadència, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/delicatessen">Delicatessen, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dia">Dia, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/diaboliques">Diabòliques, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dilatacio">Dilatació, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dilluns">Dilluns, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/diplomacia">Diplomàcia, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/directa-italiana">Directa italiana, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/discriminatori">Discriminatori, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/disloco">Disloco, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dissabte">Dissabte, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/distribucio">Distribució, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ditxous">Ditxous, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/divendres">Divendres, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/diversio">Diversió, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/do">Do, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dolor-mental">Dolor mental, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dora">Dora, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/dr-fite">Dr Fite, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/efecte-pigmalio">Efecte pigmalió, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-litri">El Litri, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-canvi">El canvi, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-detergent">El detergent, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-forat">El forat, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-facil">El fàcil, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-piano-directe">El piano directe, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/el-quadrat">El quadrat, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/els-baixos">Els baixos, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/enciam">Enciam, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/entrerocks">Entrerocks, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/enxaneta">Enxaneta, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/epidural">Epidural, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/episiotomia">Episiotomia, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/equilibri">Equilibri, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/escacs">Escacs, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/escarpe">Escarpe, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/escorxador">Escorxador, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/espero-del-prat">Esperó del prat, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/espina-de-rata">Espina de rata, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/estenalles">Estenalles, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/faceman">Faceman, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fills-dels-mitjons">Fills dels mitjons, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fissurata">Fissurata,  6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fonda">Fonda, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fora-de-lloc">Fora de lloc, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fora-de-temps">Fora de temps, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/formacions">Formacions, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/formatge">Formatge, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/formatge">Formatge, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/foro">Foro,  6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fosforescencia">Fosforescència, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fotografica">Fotogràfica, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/frontal">Frontal, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/fruita">Fruita, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/furax">Furax, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gaudi">Gaudí, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/genbeta">Genbeta, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/genio-y-figura">Genio y figura, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/genoll-falcat">Genoll falcat, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/genollera">Genollera,  5c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gigahertzs">Gigahertzs, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/golden-gay">Golden gay, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/goma-natural">Goma natural, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gorge-aus-rats">Gorge aus rats, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gormanda">Gormanda, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gps">Gps, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gratuit">Gratuït, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/gronxador">Gronxador, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/h-h">H.h, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/h-h-h">H.h.h, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/harri-jasotze">Harri-jasotze, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/hipocondriacs">Hipocondríacs, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/holy-motors">Holy motors, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/hospet">Hospet, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/hostaler">Hostaler, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/housen">Housen, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/incomoda">Incòmoda, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/inquisicio">Inquisició, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/inversio">Inversió, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/iron-andrer">Iron Andrer, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/irrita">Irrita, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/johnny-rotten">Johnny Rotten, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/julianes">Julianes, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/karakorum">Karakorum, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/kiwi">Kiwi, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/kubala">Kubala, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/kubala">Kubala, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/kus-kus">Kus kus, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/l-arc">L'arc, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-forca">La Força, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-trave-del-prat">La Trave del Prat, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-campana">La campana, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-cansalada">La cansalada, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-cara">La cara, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-carnisseria">La carnisseria, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-ceba">La ceba, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-col-locacio">La col·locació, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-comuna">La comuna, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-contra">La contra, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-cuca-fera">La cuca fera, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-fissura">La fissura, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-formiga-atomica">La formiga atòmica, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-gallina-turuleca">La gallina Turuleca, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-jeta">La jeta, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-maduixa">La maduixa, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-mancha">La mancha, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-mestra">La mestra, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-placa">La placa, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-plaza">La plaza, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-pluja">La pluja, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-punta">La punta, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-vaca">La vaca, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/la-vascargentina">La vascargentina, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/langosta-al-sol">Langosta al sol, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/lapedrasival">Lapedrasival, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/lil-liput">Lil·liput, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/llargs-i-curts">Llargs i curts, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/llastra-man">Llastra-man, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/llevadora">Llevadora, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/lo-barret">Lo barret, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/lo-cau">Lo cau, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/lo-ruc">Lo ruc, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/macarro">Macarró, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mala-conducta">Mala conducta, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mala-baba">Mala-baba, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/malaltia">Malaltia, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/malament">Malament, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/maldedits">Maldedits, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/malo">Malo, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mandarina">Mandarina, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mandongo">Mandongo, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/maniatic">Maniàtic, 3c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/masala">Masala, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mdt">Mdt, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mecanica-quantica">Mecànica quàntica, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/micro">Micro, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mikeleta">Mikeleta, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mister-and-comander">Mister and comander, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mojito">Mojito, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/molt-facil">Molt fàcil, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/moltagana">Moltagana, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mono">Mono, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mono-left">Mono Left, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mosquits">Mosquits, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/moviment-actiu">Moviment Actiu, 7a+ altough we believe that the actual grade is 7b+ and the guide is mistaken.</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/mr-pink">Mr. Pink, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/multipreses">Multipreses, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/muntada">Muntada, 3c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/muricec">Muricec, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/nenuco">Nenuco, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/no-feelings-variant">No feelings Variant, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/noche-y-alcohol">Noche y alcohol, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/nosferatu">Nosferatu, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ocb">OCB, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/oa">Oa, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/obliqua">Obliqua, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/omega">Omega, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/orinal">Orinal, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/osmosis-inversa">Osmosis inversa, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/outlet">Outlet, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ovella">Ovella, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/pala">Pala, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/pallasso">Pallasso, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/palpin">Palpin, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/panellet">Panellet, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/passadis">Passadís, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/pastanaga">Pastanaga, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/patinar">Patinar, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/peatge">Peatge, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/perdedors">Perdedors, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/perduts">Perduts, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/perurena">Perurena, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/petita-puca">Petita puça, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/pink">Pink, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/piramideta">Piramideta,  5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/piramideta">Piramideta,  5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/placa-del-prat">Placa del Prat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/planificacio-linguistica">Planificació lingüística, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/plaqueta">Plaqueta, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/plaqueta">Plaqueta, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/plorar">Plorar, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/plastic">Plàstic, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/poli">Poli, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/presoner">Presoner, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/primera">Primera, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/primera-hora">Primera hora, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/puntera">Puntera, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/retransmissio">Retransmissió, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/romossoma">Romossoma, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/romantica">Romàntica, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/roquera">Roquera, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/rovalla">Rovalla, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/requiem-per-un-somni">Rèquiem per un somni, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/sabates-d-home-mort">Sabates d'home mort, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/salsa-de-romesco">Salsa de romesco, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/saltet">Saltet, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/seixantes">Seixantes, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/shanti-shanti">Shanti, shanti, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/simple">Simple, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/singlot">Singlot, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/socios">Socios, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/solfa">Solfa, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/somriure">Somriure, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/super-sonic">Super sonic, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/superficie">Superfície, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/surfista">Surfista, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/symbian">Symbian, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/talone-t">Talone't, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/taronja">Taronja, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/taula-plegable">Taula plegable, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tauro">Tauró, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/test">Test, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tonadeta">Tonadeta, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tor">Tor, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tornavis">Tornavís, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/toro-sentado">Toro sentado, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tossut">Tossut, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tota">Tota, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tovallola">Tovallola, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tractament">Tractament, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tradicional">Tradicional, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tremolor">Tremolor, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/tremolor">Tremolor, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/trenca-aigues">Trenca aigües, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/trola-de-trol">Trola de trol, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ulls">Ulls, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/unisex">Unisex, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/vande">Vande, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/victoria">Victòria, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/videoconferencia">Videoconferència, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/violeta">Violeta, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/voraelriu">Voraelriu, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/voxel">Vòxel, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/x-men">X-Men, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/xat">Xat, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/xic">Xic, 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/zaldia">Zaldia, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cavallers/ultima-hora">Última hora, 6b</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "cavallers_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/cavallers/bosc-mapa-1">Bosc (Mapa 1)</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/bosc-magic">Bosc Màgic</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/corbar">Corbar</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/el-bosc">El Bosc</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/el-prat">El Prat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/hampi">Hampi</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-ferradura">La Ferradura</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-fissura">La Fissura</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-llosa">La Llosa</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-pedrera">La Pedrera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-reserva">La Reserva</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/la-residencia">La Residència</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/les-murgues">Les Murgues</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/mct">Mct</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/noves-tecnologies">Noves Tecnologies</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/paritori">Paritori</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/pikenike">Pikenike</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/pj">Pj</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/prat">Prat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/sec-xop">Sec Xop</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/toirigo">Toirigo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cavallers/voraelriu">Voraelriu</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "cavallers_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/bosc-mapa-1" class="table-row-name text-bold">Bosc (Mapa 1)</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/bosc-magic" class="table-row-name text-bold">Bosc Màgic</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/corbar" class="table-row-name text-bold">Corbar</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/el-bosc" class="table-row-name text-bold">El Bosc</a>
+					</td>
+					<td class="text-center">64</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/el-prat" class="table-row-name text-bold">El Prat</a>
+					</td>
+					<td class="text-center">43</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/hampi" class="table-row-name text-bold">Hampi</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-ferradura" class="table-row-name text-bold">La Ferradura</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-fissura" class="table-row-name text-bold">La Fissura</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-llosa" class="table-row-name text-bold">La Llosa</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-pedrera" class="table-row-name text-bold">La Pedrera</a>
+					</td>
+					<td class="text-center">22</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-reserva" class="table-row-name text-bold">La Reserva</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/la-residencia" class="table-row-name text-bold">La Residència</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/les-murgues" class="table-row-name text-bold">Les Murgues</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/mct" class="table-row-name text-bold">Mct</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/noves-tecnologies" class="table-row-name text-bold">Noves Tecnologies</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/paritori" class="table-row-name text-bold">Paritori</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/pikenike" class="table-row-name text-bold">Pikenike</a>
+					</td>
+					<td class="text-center">23</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/pj" class="table-row-name text-bold">Pj</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/prat" class="table-row-name text-bold">Prat</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/sec-xop" class="table-row-name text-bold">Sec Xop</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/toirigo" class="table-row-name text-bold">Toirigo</a>
+					</td>
+					<td class="text-center">25</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cavallers/voraelriu" class="table-row-name text-bold">Voraelriu</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1695,7 +509,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pj</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1721,7 +535,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Paritori</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1747,7 +561,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Reserva</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1773,7 +587,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Residència</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1799,7 +613,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Corbar</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1825,7 +639,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Ferradura</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1851,7 +665,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Llosa</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1877,7 +691,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Les Murgues</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1903,7 +717,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Fissura</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1929,7 +743,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Hampi</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1955,7 +769,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Pedrera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1981,7 +795,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Bosc Màgic</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2007,7 +821,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Toirigo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2033,7 +847,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Noves Tecnologies</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2059,7 +873,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Mct</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2085,7 +899,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pikenike</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2111,7 +925,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Voraelriu</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2137,7 +951,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Bosc</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2163,7 +977,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Prat</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2189,7 +1003,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Sec Xop</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2212,8 +1026,2901 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/3-estudio" class="table-row-name text-bold">3-Estudio</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/3d" class="table-row-name text-bold">3D</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Noves tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/abracada" class="table-row-name text-bold">Abraçada</a>
+					</td>
+					<td>6c+</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/acte-directe" class="table-row-name text-bold">Acte directe</a>
+					</td>
+					<td>7a+</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/acte-vandalic" class="table-row-name text-bold">Acte vandàlic</a>
+					</td>
+					<td>4a</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ades" class="table-row-name text-bold">Adés</a>
+					</td>
+					<td>4c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/alabama" class="table-row-name text-bold">Alabama</a>
+					</td>
+					<td>7c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/albania" class="table-row-name text-bold">Albània</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/alicates" class="table-row-name text-bold">Alicates</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/aloevera" class="table-row-name text-bold">Aloevera</a>
+					</td>
+					<td>6c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/amagatall" class="table-row-name text-bold">Amagatall</a>
+					</td>
+					<td>6c+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/amanita" class="table-row-name text-bold">Amanita</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/amodal" class="table-row-name text-bold">Amodal</a>
+					</td>
+					<td>6b</td>
+					<td>La Reserva</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/anatomia" class="table-row-name text-bold">Anatomia</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/andromeda" class="table-row-name text-bold">Andròmeda</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Bosc (Mapa 1)</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/anticrits" class="table-row-name text-bold">Anticrits</a>
+					</td>
+					<td>6b</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/antosta" class="table-row-name text-bold">Antosta</a>
+					</td>
+					<td>6b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/api" class="table-row-name text-bold">Api</a>
+					</td>
+					<td>5a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/arcanons" class="table-row-name text-bold">Arcanons</a>
+					</td>
+					<td>6b</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/aresta" class="table-row-name text-bold">Aresta</a>
+					</td>
+					<td>6b+</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/aristocrata" class="table-row-name text-bold">Aristòcrata</a>
+					</td>
+					<td>6b+</td>
+					<td>Sec Xop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/arqueig" class="table-row-name text-bold">Arqueig</a>
+					</td>
+					<td>6b</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/arrencament" class="table-row-name text-bold">Arrencament</a>
+					</td>
+					<td>5c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/atlas" class="table-row-name text-bold">Atlas</a>
+					</td>
+					<td>5c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/atlantic" class="table-row-name text-bold">Atlàntic</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/au" class="table-row-name text-bold">Au</a>
+					</td>
+					<td>6a</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/avellabaleine" class="table-row-name text-bold">Avellabaleine</a>
+					</td>
+					<td>7a</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/avellana" class="table-row-name text-bold">Avellana</a>
+					</td>
+					<td>6b+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/aversions" class="table-row-name text-bold">Aversions</a>
+					</td>
+					<td>7a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/baba" class="table-row-name text-bold">Baba</a>
+					</td>
+					<td>7a</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/balu" class="table-row-name text-bold">Balu</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bancal" class="table-row-name text-bold">Bancal</a>
+					</td>
+					<td>4a</td>
+					<td>Sec Xop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/banyera" class="table-row-name text-bold">Banyera</a>
+					</td>
+					<td>5a</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/baranes" class="table-row-name text-bold">Baranes</a>
+					</td>
+					<td>3a</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bits" class="table-row-name text-bold">Bits</a>
+					</td>
+					<td>6b+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/boca-negra" class="table-row-name text-bold">Boca negra</a>
+					</td>
+					<td>7a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/boca-seca-man" class="table-row-name text-bold">Boca seca man</a>
+					</td>
+					<td>7b+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bona-baba" class="table-row-name text-bold">Bona-baba</a>
+					</td>
+					<td>5c</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bord" class="table-row-name text-bold">Bord</a>
+					</td>
+					<td>6b+</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bosc" class="table-row-name text-bold">Bosc</a>
+					</td>
+					<td>5c</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/bot" class="table-row-name text-bold">Bot</a>
+					</td>
+					<td>7a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/botxeador" class="table-row-name text-bold">Botxeador</a>
+					</td>
+					<td>6b+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/brasa" class="table-row-name text-bold">Brasa</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/broma" class="table-row-name text-bold">Broma</a>
+					</td>
+					<td>5c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/buscallada" class="table-row-name text-bold">Buscallada</a>
+					</td>
+					<td>6a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/camp-de-trumfos" class="table-row-name text-bold">Camp de trumfos</a>
+					</td>
+					<td>6a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/campament" class="table-row-name text-bold">Campament</a>
+					</td>
+					<td>5a</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/canalla" class="table-row-name text-bold">Canalla</a>
+					</td>
+					<td>4a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cap-praball" class="table-row-name text-bold">Cap praball</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/capell" class="table-row-name text-bold">Capell</a>
+					</td>
+					<td>5c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/carbo" class="table-row-name text-bold">Carbó</a>
+					</td>
+					<td>6a+</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/carlos-fantova" class="table-row-name text-bold">Carlos Fantova</a>
+					</td>
+					<td>7c+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/carmanyola" class="table-row-name text-bold">Carmanyola</a>
+					</td>
+					<td>6b</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/carretera-i-manta" class="table-row-name text-bold">Carretera i manta</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/carretera-y-monta" class="table-row-name text-bold">Carretera y monta</a>
+					</td>
+					<td>6b+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cassigall" class="table-row-name text-bold">Cassigall</a>
+					</td>
+					<td>5c</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/canamera" class="table-row-name text-bold">Cañamera</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/chatarra" class="table-row-name text-bold">Chatarra</a>
+					</td>
+					<td>3c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/chi-chi-lou" class="table-row-name text-bold">Chi chi lou</a>
+					</td>
+					<td>7a+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cigrons" class="table-row-name text-bold">Cigrons</a>
+					</td>
+					<td>6b+</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/clavament" class="table-row-name text-bold">Clavament</a>
+					</td>
+					<td>6a+</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cleopatra" class="table-row-name text-bold">Cleòpatra</a>
+					</td>
+					<td>6a</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/classic" class="table-row-name text-bold">Clàssic</a>
+					</td>
+					<td>6b+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/clasicos-ocultos" class="table-row-name text-bold">Clásicos ocultos</a>
+					</td>
+					<td>6c+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/codigo-tactil" class="table-row-name text-bold">Codigo táctil</a>
+					</td>
+					<td>7a+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cohesiona" class="table-row-name text-bold">Cohesiona</a>
+					</td>
+					<td>6a</td>
+					<td>La Reserva</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/commodore" class="table-row-name text-bold">Commodore</a>
+					</td>
+					<td>4c</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/conectic" class="table-row-name text-bold">Conectic</a>
+					</td>
+					<td>7b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/conillet" class="table-row-name text-bold">Conillet</a>
+					</td>
+					<td>4c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/connectat" class="table-row-name text-bold">Connectat</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/contrapeus" class="table-row-name text-bold">Contrapeus</a>
+					</td>
+					<td>6a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/control-s" class="table-row-name text-bold">Control S</a>
+					</td>
+					<td>6b+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/corbar" class="table-row-name text-bold">Corbar</a>
+					</td>
+					<td>6b</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/corcs" class="table-row-name text-bold">Corcs</a>
+					</td>
+					<td>4c</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/corder" class="table-row-name text-bold">Corder</a>
+					</td>
+					<td>6a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/corrupcio" class="table-row-name text-bold">Corrupció</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Mct</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/crac" class="table-row-name text-bold">Crac</a>
+					</td>
+					<td>6a+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/cracker" class="table-row-name text-bold">Cracker</a>
+					</td>
+					<td>6b+</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/culot" class="table-row-name text-bold">Culot</a>
+					</td>
+					<td>3a</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/culot" class="table-row-name text-bold">Culot</a>
+					</td>
+					<td>3a</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/curvar" class="table-row-name text-bold">Curvar</a>
+					</td>
+					<td>6a+</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/decadencia" class="table-row-name text-bold">Decadència</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/delicatessen" class="table-row-name text-bold">Delicatessen</a>
+					</td>
+					<td>6b</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dia" class="table-row-name text-bold">Dia</a>
+					</td>
+					<td>5a</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/diaboliques" class="table-row-name text-bold">Diabòliques</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dilatacio" class="table-row-name text-bold">Dilatació</a>
+					</td>
+					<td>6b+</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dilluns" class="table-row-name text-bold">Dilluns</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/diplomacia" class="table-row-name text-bold">Diplomàcia</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Mct</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/directa-italiana" class="table-row-name text-bold">Directa italiana</a>
+					</td>
+					<td>7b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/discriminatori" class="table-row-name text-bold">Discriminatori</a>
+					</td>
+					<td>4a</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/disloco" class="table-row-name text-bold">Disloco</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dissabte" class="table-row-name text-bold">Dissabte</a>
+					</td>
+					<td>6a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/distribucio" class="table-row-name text-bold">Distribució</a>
+					</td>
+					<td>6b+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ditxous" class="table-row-name text-bold">Ditxous</a>
+					</td>
+					<td>6b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/divendres" class="table-row-name text-bold">Divendres</a>
+					</td>
+					<td>3a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/diversio" class="table-row-name text-bold">Diversió</a>
+					</td>
+					<td>3a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/do" class="table-row-name text-bold">Do</a>
+					</td>
+					<td>6a</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dolor-mental" class="table-row-name text-bold">Dolor mental</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dora" class="table-row-name text-bold">Dora</a>
+					</td>
+					<td>3a</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/dr-fite" class="table-row-name text-bold">Dr Fite</a>
+					</td>
+					<td>6a+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/efecte-pigmalio" class="table-row-name text-bold">Efecte pigmalió</a>
+					</td>
+					<td>6b</td>
+					<td>La Reserva</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-litri" class="table-row-name text-bold">El Litri</a>
+					</td>
+					<td>6c</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-canvi" class="table-row-name text-bold">El canvi</a>
+					</td>
+					<td>6c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-detergent" class="table-row-name text-bold">El detergent</a>
+					</td>
+					<td>7a+</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-forat" class="table-row-name text-bold">El forat</a>
+					</td>
+					<td>6b+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-facil" class="table-row-name text-bold">El fàcil</a>
+					</td>
+					<td>4c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-piano-directe" class="table-row-name text-bold">El piano directe</a>
+					</td>
+					<td>7c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/el-quadrat" class="table-row-name text-bold">El quadrat</a>
+					</td>
+					<td>5c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/els-baixos" class="table-row-name text-bold">Els baixos</a>
+					</td>
+					<td>6c</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/enciam" class="table-row-name text-bold">Enciam</a>
+					</td>
+					<td>5c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/entrerocks" class="table-row-name text-bold">Entrerocks</a>
+					</td>
+					<td>5c</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/enxaneta" class="table-row-name text-bold">Enxaneta</a>
+					</td>
+					<td>6b+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/epidural" class="table-row-name text-bold">Epidural</a>
+					</td>
+					<td>6a</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/episiotomia" class="table-row-name text-bold">Episiotomia</a>
+					</td>
+					<td>7a+</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/equilibri" class="table-row-name text-bold">Equilibri</a>
+					</td>
+					<td>5c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/escacs" class="table-row-name text-bold">Escacs</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/escarpe" class="table-row-name text-bold">Escarpe</a>
+					</td>
+					<td>6b</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/escorxador" class="table-row-name text-bold">Escorxador</a>
+					</td>
+					<td>6c</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/espero-del-prat" class="table-row-name text-bold">Esperó del prat</a>
+					</td>
+					<td>7a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/espina-de-rata" class="table-row-name text-bold">Espina de rata</a>
+					</td>
+					<td>5a</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/estenalles" class="table-row-name text-bold">Estenalles</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/faceman" class="table-row-name text-bold">Faceman</a>
+					</td>
+					<td>6b+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fills-dels-mitjons" class="table-row-name text-bold">Fills dels mitjons</a>
+					</td>
+					<td>7c+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fissurata" class="table-row-name text-bold">Fissurata</a>
+					</td>
+					<td> 6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fonda" class="table-row-name text-bold">Fonda</a>
+					</td>
+					<td>6c+</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fora-de-lloc" class="table-row-name text-bold">Fora de lloc</a>
+					</td>
+					<td>5c</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fora-de-temps" class="table-row-name text-bold">Fora de temps</a>
+					</td>
+					<td>5c</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/formacions" class="table-row-name text-bold">Formacions</a>
+					</td>
+					<td>5c</td>
+					<td>Sec Xop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/formatge" class="table-row-name text-bold">Formatge</a>
+					</td>
+					<td>5c</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/formatge" class="table-row-name text-bold">Formatge</a>
+					</td>
+					<td>4c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/foro" class="table-row-name text-bold">Foro</a>
+					</td>
+					<td> 6b (sit)</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fosforescencia" class="table-row-name text-bold">Fosforescència</a>
+					</td>
+					<td>6b</td>
+					<td>Sec Xop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fotografica" class="table-row-name text-bold">Fotogràfica</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/frontal" class="table-row-name text-bold">Frontal</a>
+					</td>
+					<td>4a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/fruita" class="table-row-name text-bold">Fruita</a>
+					</td>
+					<td>5c</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/furax" class="table-row-name text-bold">Furax</a>
+					</td>
+					<td>6c+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gaudi" class="table-row-name text-bold">Gaudí</a>
+					</td>
+					<td>7b</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/genbeta" class="table-row-name text-bold">Genbeta</a>
+					</td>
+					<td>5c</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/genio-y-figura" class="table-row-name text-bold">Genio y figura</a>
+					</td>
+					<td>5a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/genoll-falcat" class="table-row-name text-bold">Genoll falcat</a>
+					</td>
+					<td>6a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/genollera" class="table-row-name text-bold">Genollera</a>
+					</td>
+					<td> 5c (sit)</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gigahertzs" class="table-row-name text-bold">Gigahertzs</a>
+					</td>
+					<td>6a+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/golden-gay" class="table-row-name text-bold">Golden gay</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/goma-natural" class="table-row-name text-bold">Goma natural</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gorge-aus-rats" class="table-row-name text-bold">Gorge aus rats</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gormanda" class="table-row-name text-bold">Gormanda</a>
+					</td>
+					<td>6b+</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gps" class="table-row-name text-bold">Gps</a>
+					</td>
+					<td>5c</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gratuit" class="table-row-name text-bold">Gratuït</a>
+					</td>
+					<td>5c</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/gronxador" class="table-row-name text-bold">Gronxador</a>
+					</td>
+					<td>5c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/h-h" class="table-row-name text-bold">H.h</a>
+					</td>
+					<td>7b</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/h-h-h" class="table-row-name text-bold">H.h.h</a>
+					</td>
+					<td>7b+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/harri-jasotze" class="table-row-name text-bold">Harri-jasotze</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/hipocondriacs" class="table-row-name text-bold">Hipocondríacs</a>
+					</td>
+					<td>7b</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/holy-motors" class="table-row-name text-bold">Holy motors</a>
+					</td>
+					<td>7a</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/hospet" class="table-row-name text-bold">Hospet</a>
+					</td>
+					<td>6c+</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/hostaler" class="table-row-name text-bold">Hostaler</a>
+					</td>
+					<td>6a</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/housen" class="table-row-name text-bold">Housen</a>
+					</td>
+					<td>4c</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/incomoda" class="table-row-name text-bold">Incòmoda</a>
+					</td>
+					<td>6a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/inquisicio" class="table-row-name text-bold">Inquisició</a>
+					</td>
+					<td>5c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/inversio" class="table-row-name text-bold">Inversió</a>
+					</td>
+					<td>6b</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/iron-andrer" class="table-row-name text-bold">Iron Andrer</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/irrita" class="table-row-name text-bold">Irrita</a>
+					</td>
+					<td>5a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/johnny-rotten" class="table-row-name text-bold">Johnny Rotten</a>
+					</td>
+					<td>7b+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/julianes" class="table-row-name text-bold">Julianes</a>
+					</td>
+					<td>6c+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/karakorum" class="table-row-name text-bold">Karakorum</a>
+					</td>
+					<td>3a</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/kiwi" class="table-row-name text-bold">Kiwi</a>
+					</td>
+					<td>6b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/kubala" class="table-row-name text-bold">Kubala</a>
+					</td>
+					<td>6a+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/kubala" class="table-row-name text-bold">Kubala</a>
+					</td>
+					<td>6a</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/kus-kus" class="table-row-name text-bold">Kus kus</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/l-arc" class="table-row-name text-bold">L'arc</a>
+					</td>
+					<td>6b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-forca" class="table-row-name text-bold">La Força</a>
+					</td>
+					<td>7c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-trave-del-prat" class="table-row-name text-bold">La Trave del Prat</a>
+					</td>
+					<td>6c+</td>
+					<td>Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-campana" class="table-row-name text-bold">La campana</a>
+					</td>
+					<td>6b+</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-cansalada" class="table-row-name text-bold">La cansalada</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-cara" class="table-row-name text-bold">La cara</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-carnisseria" class="table-row-name text-bold">La carnisseria</a>
+					</td>
+					<td>7a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-ceba" class="table-row-name text-bold">La ceba</a>
+					</td>
+					<td>5c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-col-locacio" class="table-row-name text-bold">La col·locació</a>
+					</td>
+					<td>5c</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-comuna" class="table-row-name text-bold">La comuna</a>
+					</td>
+					<td>6c+</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-contra" class="table-row-name text-bold">La contra</a>
+					</td>
+					<td>6a</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-cuca-fera" class="table-row-name text-bold">La cuca fera</a>
+					</td>
+					<td>6a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-fissura" class="table-row-name text-bold">La fissura</a>
+					</td>
+					<td>6c</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-formiga-atomica" class="table-row-name text-bold">La formiga atòmica</a>
+					</td>
+					<td>7a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-gallina-turuleca" class="table-row-name text-bold">La gallina Turuleca</a>
+					</td>
+					<td>5c</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-jeta" class="table-row-name text-bold">La jeta</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-maduixa" class="table-row-name text-bold">La maduixa</a>
+					</td>
+					<td>6c</td>
+					<td>Sec Xop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-mancha" class="table-row-name text-bold">La mancha</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-mestra" class="table-row-name text-bold">La mestra</a>
+					</td>
+					<td>6b+</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-placa" class="table-row-name text-bold">La placa</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-plaza" class="table-row-name text-bold">La plaza</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-pluja" class="table-row-name text-bold">La pluja</a>
+					</td>
+					<td>6a+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-punta" class="table-row-name text-bold">La punta</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Mct</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-vaca" class="table-row-name text-bold">La vaca</a>
+					</td>
+					<td>6b+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/la-vascargentina" class="table-row-name text-bold">La vascargentina</a>
+					</td>
+					<td>6a</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/langosta-al-sol" class="table-row-name text-bold">Langosta al sol</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/lapedrasival" class="table-row-name text-bold">Lapedrasival</a>
+					</td>
+					<td>6a+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/lil-liput" class="table-row-name text-bold">Lil·liput</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/llargs-i-curts" class="table-row-name text-bold">Llargs i curts</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/llastra-man" class="table-row-name text-bold">Llastra-man</a>
+					</td>
+					<td>6a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/llevadora" class="table-row-name text-bold">Llevadora</a>
+					</td>
+					<td>6c+</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/lo-barret" class="table-row-name text-bold">Lo barret</a>
+					</td>
+					<td>6b</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/lo-cau" class="table-row-name text-bold">Lo cau</a>
+					</td>
+					<td>6c</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/lo-ruc" class="table-row-name text-bold">Lo ruc</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/macarro" class="table-row-name text-bold">Macarró</a>
+					</td>
+					<td>5a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mala-conducta" class="table-row-name text-bold">Mala conducta</a>
+					</td>
+					<td>6b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mala-baba" class="table-row-name text-bold">Mala-baba</a>
+					</td>
+					<td>6a+</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/malaltia" class="table-row-name text-bold">Malaltia</a>
+					</td>
+					<td>6b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/malament" class="table-row-name text-bold">Malament</a>
+					</td>
+					<td>7a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/maldedits" class="table-row-name text-bold">Maldedits</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/malo" class="table-row-name text-bold">Malo</a>
+					</td>
+					<td>6c+</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mandarina" class="table-row-name text-bold">Mandarina</a>
+					</td>
+					<td>6b</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mandongo" class="table-row-name text-bold">Mandongo</a>
+					</td>
+					<td>6b</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/maniatic" class="table-row-name text-bold">Maniàtic</a>
+					</td>
+					<td>3c</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/masala" class="table-row-name text-bold">Masala</a>
+					</td>
+					<td>6c</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mdt" class="table-row-name text-bold">Mdt</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Mct</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mecanica-quantica" class="table-row-name text-bold">Mecànica quàntica</a>
+					</td>
+					<td>7a+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/micro" class="table-row-name text-bold">Micro</a>
+					</td>
+					<td>5a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mikeleta" class="table-row-name text-bold">Mikeleta</a>
+					</td>
+					<td>6c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mister-and-comander" class="table-row-name text-bold">Mister and comander</a>
+					</td>
+					<td>7a</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mojito" class="table-row-name text-bold">Mojito</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/molt-facil" class="table-row-name text-bold">Molt fàcil</a>
+					</td>
+					<td>3a</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/moltagana" class="table-row-name text-bold">Moltagana</a>
+					</td>
+					<td>6c+</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mono" class="table-row-name text-bold">Mono</a>
+					</td>
+					<td>6b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mono-left" class="table-row-name text-bold">Mono Left</a>
+					</td>
+					<td>Unknown</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mosquits" class="table-row-name text-bold">Mosquits</a>
+					</td>
+					<td>6a</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/moviment-actiu" class="table-row-name text-bold">Moviment Actiu</a>
+					</td>
+					<td>7a+ altough we believe that the actual grade is 7b+ and the guide is mistaken.</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/mr-pink" class="table-row-name text-bold">Mr. Pink</a>
+					</td>
+					<td>7b</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/multipreses" class="table-row-name text-bold">Multipreses</a>
+					</td>
+					<td>5c</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/muntada" class="table-row-name text-bold">Muntada</a>
+					</td>
+					<td>3c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/muricec" class="table-row-name text-bold">Muricec</a>
+					</td>
+					<td>6b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/nenuco" class="table-row-name text-bold">Nenuco</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/no-feelings-variant" class="table-row-name text-bold">No feelings Variant</a>
+					</td>
+					<td>7b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/noche-y-alcohol" class="table-row-name text-bold">Noche y alcohol</a>
+					</td>
+					<td>4c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/nosferatu" class="table-row-name text-bold">Nosferatu</a>
+					</td>
+					<td>7b</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ocb" class="table-row-name text-bold">OCB</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/oa" class="table-row-name text-bold">Oa</a>
+					</td>
+					<td>6c</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/obliqua" class="table-row-name text-bold">Obliqua</a>
+					</td>
+					<td>6a</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/omega" class="table-row-name text-bold">Omega</a>
+					</td>
+					<td>6c+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/orinal" class="table-row-name text-bold">Orinal</a>
+					</td>
+					<td>6a+</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/osmosis-inversa" class="table-row-name text-bold">Osmosis inversa</a>
+					</td>
+					<td>7a</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/outlet" class="table-row-name text-bold">Outlet</a>
+					</td>
+					<td>6b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ovella" class="table-row-name text-bold">Ovella</a>
+					</td>
+					<td>6a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/pala" class="table-row-name text-bold">Pala</a>
+					</td>
+					<td>6c+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/pallasso" class="table-row-name text-bold">Pallasso</a>
+					</td>
+					<td>6b</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/palpin" class="table-row-name text-bold">Palpin</a>
+					</td>
+					<td>6a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/panellet" class="table-row-name text-bold">Panellet</a>
+					</td>
+					<td>6b</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/passadis" class="table-row-name text-bold">Passadís</a>
+					</td>
+					<td>5a</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/pastanaga" class="table-row-name text-bold">Pastanaga</a>
+					</td>
+					<td>4a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/patinar" class="table-row-name text-bold">Patinar</a>
+					</td>
+					<td>6a</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/peatge" class="table-row-name text-bold">Peatge</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/perdedors" class="table-row-name text-bold">Perdedors</a>
+					</td>
+					<td>6a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/perduts" class="table-row-name text-bold">Perduts</a>
+					</td>
+					<td>6b+</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/perurena" class="table-row-name text-bold">Perurena</a>
+					</td>
+					<td>6c+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/petita-puca" class="table-row-name text-bold">Petita puça</a>
+					</td>
+					<td>5c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/pink" class="table-row-name text-bold">Pink</a>
+					</td>
+					<td>7a+</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/piramideta" class="table-row-name text-bold">Piramideta</a>
+					</td>
+					<td> 5a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/piramideta" class="table-row-name text-bold">Piramideta</a>
+					</td>
+					<td> 5a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/placa-del-prat" class="table-row-name text-bold">Placa del Prat</a>
+					</td>
+					<td>6b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/planificacio-linguistica" class="table-row-name text-bold">Planificació lingüística</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/plaqueta" class="table-row-name text-bold">Plaqueta</a>
+					</td>
+					<td>5a</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/plaqueta" class="table-row-name text-bold">Plaqueta</a>
+					</td>
+					<td>6c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/plorar" class="table-row-name text-bold">Plorar</a>
+					</td>
+					<td>4a</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/plastic" class="table-row-name text-bold">Plàstic</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/poli" class="table-row-name text-bold">Poli</a>
+					</td>
+					<td>6a</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/presoner" class="table-row-name text-bold">Presoner</a>
+					</td>
+					<td>4c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/primera" class="table-row-name text-bold">Primera</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/primera-hora" class="table-row-name text-bold">Primera hora</a>
+					</td>
+					<td>4c</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/puntera" class="table-row-name text-bold">Puntera</a>
+					</td>
+					<td>7a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/retransmissio" class="table-row-name text-bold">Retransmissió</a>
+					</td>
+					<td>6a+</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/romossoma" class="table-row-name text-bold">Romossoma</a>
+					</td>
+					<td>7b</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/romantica" class="table-row-name text-bold">Romàntica</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/roquera" class="table-row-name text-bold">Roquera</a>
+					</td>
+					<td>5c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/rovalla" class="table-row-name text-bold">Rovalla</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/requiem-per-un-somni" class="table-row-name text-bold">Rèquiem per un somni</a>
+					</td>
+					<td>7b</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/sabates-d-home-mort" class="table-row-name text-bold">Sabates d'home mort</a>
+					</td>
+					<td>6c+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/salsa-de-romesco" class="table-row-name text-bold">Salsa de romesco</a>
+					</td>
+					<td>6c+</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/saltet" class="table-row-name text-bold">Saltet</a>
+					</td>
+					<td>6a</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/seixantes" class="table-row-name text-bold">Seixantes</a>
+					</td>
+					<td>5c</td>
+					<td>La Llosa</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/shanti-shanti" class="table-row-name text-bold">Shanti, shanti</a>
+					</td>
+					<td>6b</td>
+					<td>Hampi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/simple" class="table-row-name text-bold">Simple</a>
+					</td>
+					<td>4a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/singlot" class="table-row-name text-bold">Singlot</a>
+					</td>
+					<td>3a</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/socios" class="table-row-name text-bold">Socios</a>
+					</td>
+					<td>6c</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/solfa" class="table-row-name text-bold">Solfa</a>
+					</td>
+					<td>6b</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/somriure" class="table-row-name text-bold">Somriure</a>
+					</td>
+					<td>6c</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/super-sonic" class="table-row-name text-bold">Super sonic</a>
+					</td>
+					<td>6a+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/superficie" class="table-row-name text-bold">Superfície</a>
+					</td>
+					<td>6a</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/surfista" class="table-row-name text-bold">Surfista</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/symbian" class="table-row-name text-bold">Symbian</a>
+					</td>
+					<td>3a</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/talone-t" class="table-row-name text-bold">Talone't</a>
+					</td>
+					<td>6c</td>
+					<td>La Fissura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/taronja" class="table-row-name text-bold">Taronja</a>
+					</td>
+					<td>6b+</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/taula-plegable" class="table-row-name text-bold">Taula plegable</a>
+					</td>
+					<td>5c</td>
+					<td>Pikenike</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tauro" class="table-row-name text-bold">Tauró</a>
+					</td>
+					<td>5c</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/test" class="table-row-name text-bold">Test</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tonadeta" class="table-row-name text-bold">Tonadeta</a>
+					</td>
+					<td>5c</td>
+					<td>La Ferradura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tor" class="table-row-name text-bold">Tor</a>
+					</td>
+					<td>7a</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tornavis" class="table-row-name text-bold">Tornavís</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/toro-sentado" class="table-row-name text-bold">Toro sentado</a>
+					</td>
+					<td>6a+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tossut" class="table-row-name text-bold">Tossut</a>
+					</td>
+					<td>6b+</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tota" class="table-row-name text-bold">Tota</a>
+					</td>
+					<td>5a</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tovallola" class="table-row-name text-bold">Tovallola</a>
+					</td>
+					<td>6c+</td>
+					<td>Bosc Màgic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tractament" class="table-row-name text-bold">Tractament</a>
+					</td>
+					<td>5a</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tradicional" class="table-row-name text-bold">Tradicional</a>
+					</td>
+					<td>6a+</td>
+					<td>Corbar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tremolor" class="table-row-name text-bold">Tremolor</a>
+					</td>
+					<td>6a+</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/tremolor" class="table-row-name text-bold">Tremolor</a>
+					</td>
+					<td>5c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/trenca-aigues" class="table-row-name text-bold">Trenca aigües</a>
+					</td>
+					<td>6b+</td>
+					<td>Paritori</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/trola-de-trol" class="table-row-name text-bold">Trola de trol</a>
+					</td>
+					<td>6a+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ulls" class="table-row-name text-bold">Ulls</a>
+					</td>
+					<td>6a+</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/unisex" class="table-row-name text-bold">Unisex</a>
+					</td>
+					<td>7b</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/vande" class="table-row-name text-bold">Vande</a>
+					</td>
+					<td>5c</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/victoria" class="table-row-name text-bold">Victòria</a>
+					</td>
+					<td>5c</td>
+					<td>Toirigo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/videoconferencia" class="table-row-name text-bold">Videoconferència</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/violeta" class="table-row-name text-bold">Violeta</a>
+					</td>
+					<td>5c</td>
+					<td>El Prat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/voraelriu" class="table-row-name text-bold">Voraelriu</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Voraelriu</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/voxel" class="table-row-name text-bold">Vòxel</a>
+					</td>
+					<td>6a</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/x-men" class="table-row-name text-bold">X-Men</a>
+					</td>
+					<td>7a+</td>
+					<td>La Pedrera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/xat" class="table-row-name text-bold">Xat</a>
+					</td>
+					<td>6a+</td>
+					<td>Noves Tecnologies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/xic" class="table-row-name text-bold">Xic</a>
+					</td>
+					<td>4a</td>
+					<td>Pj</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/zaldia" class="table-row-name text-bold">Zaldia</a>
+					</td>
+					<td>5c</td>
+					<td>La Residència</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cavallers/ultima-hora" class="table-row-name text-bold">Última hora</a>
+					</td>
+					<td>6b</td>
+					<td>Les Murgues</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

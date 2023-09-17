@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/cresciano">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Cresciano 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="46.2855212117584" />
   <input type="hidden" id="lng" name="lng_val" value="9.007003913631024" />
@@ -168,393 +248,179 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.ticinoboulder.ch/ticino-guides" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Guide
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.ticinoboulder.ch/ticino-guides"
-        target="_blank"
-        >Guide</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/cresciano"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/cresciano"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/cresciano/4-sassi-per">4 sassi per..., 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/anouk">Anouk, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/baila-moreno">Baila Moreno, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/balu-der-bar">Balu der Bär, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/carlo-il-magnifico">Carlo Il Magnifico, 7A+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/dilettantenkante">Dilettantenkante, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/dreamtime">Dreamtime, 8b+/8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/endless-river">Endless river, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/frank-s-wild-years">Frank's wild years, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/gecko">Gecko, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/glauco-crack">Glauco crack, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/great-escape">Great escape, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/hombre-de-mierda">Hombre de mierda, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/icaro-s-step">Icaro's step, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/il-cerchio-celtico">Il cerchio celtico, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/il-partner">Il partner, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/iur">Iur, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/jungle-book">Jungle Book, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/jungle-book">Jungle Book, 7C</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/kirk-windstein">Kirk Windstein, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-proue">La Proue, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-banda-dal-fil-da-fer">La banda dal fil da fer, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-boule">La boule, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-grotte-des-soupirs">La grotte des soupirs, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-pelle">La pelle, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/la-rondeur-des-tes-deins">La rondeur des tes deins, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/les-feux-de-la-vampe">Les feux de la vampe, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/m-illumino-d-immenso">M'illumino d'immenso, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/mad-japer">Mad japer, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/madreperla">Madreperla, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/mithril">Mithril, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/money-for-nothing">Money for nothing, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/mortaccia-tua">Mortaccia tua, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/mozzarella-in-carrozza">Mozzarella in carrozza, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/murphy-s-low">Murphy's low, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/pai-mei">Pai Mei, 8a+/8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/podemos">Podemos, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/pro-clima">Pro clima, 5+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/problem-6-1a-filo-a-sbalzo-5">Problem 6.1A (Filo a sbalzo), 5+, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/problem-6-4-filo-a-sbalzo">Problem 6.4 (Filo a sbalzo), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/problem-9-festival-jazz-letamaio">Problem 9 (Festival Jazz, Letamaio), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/rognoso">Rognoso, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/rol-laden">Rol Laden, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/somnolence">Somnolence, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/stinky-pete">Stinky Pete, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/street-parade">Street parade, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/the-dagger">The Dagger, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/the-north-sail">The north sail, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/the-story-of-two-worlds">The story of two worlds, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/tonno-travs">Tonno Trav’s, 6c/6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/cresciano/william-wallace">William Wallace, 7b+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "cresciano_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/cresciano/artisti-tristi">Artisti tristi</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/brasc-vunc">Brasc vunc</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/champagne">Champagne</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/danilo">Danilo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/dreamtime">Dreamtime</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/extra-jump">Extra jump</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/filo-a-sbalzo">Filo a sbalzo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/filo-s-sbalzo">Filo s sbalzo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/la-boulde">La boulde</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/la-boule">La boule</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/letamaio">Letamaio</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/nuova-tribuna-centrale">Nuova tribuna centrale</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/cresciano/voci-dalla-cantina">Voci dalla cantina</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "cresciano_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/artisti-tristi" class="table-row-name text-bold">Artisti tristi</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/brasc-vunc" class="table-row-name text-bold">Brasc vunc</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/champagne" class="table-row-name text-bold">Champagne</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/danilo" class="table-row-name text-bold">Danilo</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/dreamtime" class="table-row-name text-bold">Dreamtime</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/extra-jump" class="table-row-name text-bold">Extra jump</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/filo-a-sbalzo" class="table-row-name text-bold">Filo a sbalzo</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/filo-s-sbalzo" class="table-row-name text-bold">Filo s sbalzo</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/la-boulde" class="table-row-name text-bold">La boulde</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/la-boule" class="table-row-name text-bold">La boule</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/letamaio" class="table-row-name text-bold">Letamaio</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/nuova-tribuna-centrale" class="table-row-name text-bold">Nuova tribuna centrale</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/cresciano/voci-dalla-cantina" class="table-row-name text-bold">Voci dalla cantina</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -582,7 +448,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Artisti tristi</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -608,7 +474,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Letamaio</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -634,7 +500,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Champagne</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -660,7 +526,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Danilo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -686,7 +552,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La boule</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -712,7 +578,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Brasc vunc</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -738,7 +604,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Dreamtime</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -764,7 +630,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Filo a sbalzo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -787,8 +653,489 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/4-sassi-per" class="table-row-name text-bold">4 sassi per...</a>
+					</td>
+					<td>6a+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/anouk" class="table-row-name text-bold">Anouk</a>
+					</td>
+					<td>6c</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/baila-moreno" class="table-row-name text-bold">Baila Moreno</a>
+					</td>
+					<td>6c</td>
+					<td>Danilo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/balu-der-bar" class="table-row-name text-bold">Balu der Bär</a>
+					</td>
+					<td>7b+</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/carlo-il-magnifico" class="table-row-name text-bold">Carlo Il Magnifico</a>
+					</td>
+					<td>7A+</td>
+					<td>Artisti tristi</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/dilettantenkante" class="table-row-name text-bold">Dilettantenkante</a>
+					</td>
+					<td>6a</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/dreamtime" class="table-row-name text-bold">Dreamtime</a>
+					</td>
+					<td>8b+/8c</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/endless-river" class="table-row-name text-bold">Endless river</a>
+					</td>
+					<td>8b</td>
+					<td>La boulde</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/frank-s-wild-years" class="table-row-name text-bold">Frank's wild years</a>
+					</td>
+					<td>8a</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/gecko" class="table-row-name text-bold">Gecko</a>
+					</td>
+					<td>7c+</td>
+					<td>Voci dalla cantina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/glauco-crack" class="table-row-name text-bold">Glauco crack</a>
+					</td>
+					<td>6b</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/great-escape" class="table-row-name text-bold">Great escape</a>
+					</td>
+					<td>8b</td>
+					<td>Nuova tribuna centrale</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/hombre-de-mierda" class="table-row-name text-bold">Hombre de mierda</a>
+					</td>
+					<td>7a</td>
+					<td>Danilo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/icaro-s-step" class="table-row-name text-bold">Icaro's step</a>
+					</td>
+					<td>6a+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/il-cerchio-celtico" class="table-row-name text-bold">Il cerchio celtico</a>
+					</td>
+					<td>6a+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/il-partner" class="table-row-name text-bold">Il partner</a>
+					</td>
+					<td>7c</td>
+					<td>Voci dalla cantina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/iur" class="table-row-name text-bold">Iur</a>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/jungle-book" class="table-row-name text-bold">Jungle Book</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/jungle-book" class="table-row-name text-bold">Jungle Book</a>
+					</td>
+					<td>7C</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/kirk-windstein" class="table-row-name text-bold">Kirk Windstein</a>
+					</td>
+					<td>8a</td>
+					<td>Danilo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-proue" class="table-row-name text-bold">La Proue</a>
+					</td>
+					<td>8b</td>
+					<td>La boule</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-banda-dal-fil-da-fer" class="table-row-name text-bold">La banda dal fil da fer</a>
+					</td>
+					<td>7a</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-boule" class="table-row-name text-bold">La boule</a>
+					</td>
+					<td>8a</td>
+					<td>La boulde</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-grotte-des-soupirs" class="table-row-name text-bold">La grotte des soupirs</a>
+					</td>
+					<td>7c+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-pelle" class="table-row-name text-bold">La pelle</a>
+					</td>
+					<td>8a</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/la-rondeur-des-tes-deins" class="table-row-name text-bold">La rondeur des tes deins</a>
+					</td>
+					<td>8a+</td>
+					<td>Letamaio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/les-feux-de-la-vampe" class="table-row-name text-bold">Les feux de la vampe</a>
+					</td>
+					<td>8b</td>
+					<td>Brasc vunc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/m-illumino-d-immenso" class="table-row-name text-bold">M'illumino d'immenso</a>
+					</td>
+					<td>8a</td>
+					<td>La boule</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/mad-japer" class="table-row-name text-bold">Mad japer</a>
+					</td>
+					<td>7b+</td>
+					<td>Brasc vunc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/madreperla" class="table-row-name text-bold">Madreperla</a>
+					</td>
+					<td>6c+</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/mithril" class="table-row-name text-bold">Mithril</a>
+					</td>
+					<td>8b</td>
+					<td>La boule</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/money-for-nothing" class="table-row-name text-bold">Money for nothing</a>
+					</td>
+					<td>6c</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/mortaccia-tua" class="table-row-name text-bold">Mortaccia tua</a>
+					</td>
+					<td>7a</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/mozzarella-in-carrozza" class="table-row-name text-bold">Mozzarella in carrozza</a>
+					</td>
+					<td>6c</td>
+					<td>Letamaio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/murphy-s-low" class="table-row-name text-bold">Murphy's low</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/pai-mei" class="table-row-name text-bold">Pai Mei</a>
+					</td>
+					<td>8a+/8b</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/podemos" class="table-row-name text-bold">Podemos</a>
+					</td>
+					<td>8b</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/pro-clima" class="table-row-name text-bold">Pro clima</a>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Filo s sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/problem-6-1a-filo-a-sbalzo-5" class="table-row-name text-bold">Problem 6.1A (Filo a sbalzo), 5+</a>
+					</td>
+					<td>6a+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/problem-6-4-filo-a-sbalzo" class="table-row-name text-bold">Problem 6.4 (Filo a sbalzo)</a>
+					</td>
+					<td>6a</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/problem-9-festival-jazz-letamaio" class="table-row-name text-bold">Problem 9 (Festival Jazz, Letamaio)</a>
+					</td>
+					<td>6a+</td>
+					<td>Letamaio</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/rognoso" class="table-row-name text-bold">Rognoso</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/rol-laden" class="table-row-name text-bold">Rol Laden</a>
+					</td>
+					<td>6a+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/somnolence" class="table-row-name text-bold">Somnolence</a>
+					</td>
+					<td>8b</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/stinky-pete" class="table-row-name text-bold">Stinky Pete</a>
+					</td>
+					<td>7b</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/street-parade" class="table-row-name text-bold">Street parade</a>
+					</td>
+					<td>7a</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/the-dagger" class="table-row-name text-bold">The Dagger</a>
+					</td>
+					<td>8b+</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/the-north-sail" class="table-row-name text-bold">The north sail</a>
+					</td>
+					<td>8a+</td>
+					<td>Champagne</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/the-story-of-two-worlds" class="table-row-name text-bold">The story of two worlds</a>
+					</td>
+					<td>8c</td>
+					<td>Dreamtime</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/tonno-travs" class="table-row-name text-bold">Tonno Trav’s</a>
+					</td>
+					<td>6c/6c+</td>
+					<td>Filo a sbalzo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/cresciano/william-wallace" class="table-row-name text-bold">William Wallace</a>
+					</td>
+					<td>7b+</td>
+					<td>Extra jump</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

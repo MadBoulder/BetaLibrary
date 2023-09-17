@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/savassona">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Savassona 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.9574367" />
   <input type="hidden" id="lng" name="lng_val" value="2.3402503" />
@@ -168,831 +248,126 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/savassona" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://www.instagram.com/savassona_boulder/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Instagram
+		</a>
+	
+		<a id="guide_link"  href="https://www.libreriadesnivel.com/libros/savassona/9788480903981/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Savassona, Guia de boulder i escalada (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/savassona"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.instagram.com/savassona_boulder/"
-        target="_blank"
-        >Instagram</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.libreriadesnivel.com/libros/savassona/9788480903981/"
-        target="_blank"
-        >Savassona, Guia de boulder i escalada (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/savassona"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/savassona"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/savassona/a-ke-parte">A ke parte!, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/amb-la-kalma">Amb la Kalma, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/antipete">Antipete, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/averell-dalton">Averell Dalton, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/bases-metodologiques">Bases metodològiques, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/bigger-mantel">Bigger Mantel, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/boca-de-balenba">Boca de Balenba, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/bowling">Bowling, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/boys-don-t-craks">Boys don't Craks, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/brut">Brut, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/bud">Bud, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cmyk">CMYK, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cali">Cali, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cartonet">Cartonet, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cartonillo">Cartonillo, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/caca-primeres">Caça Primeres, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cop-de-cigala">Cop de Cigala, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/cop-de-canell">Cop de canell, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/de-l-arbre">De l'Arbre, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/deborah-yemas">Deborah Yemas, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/des-de-paris-amb-amor">Des de Paris amb amor, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/dino">Dino, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/doble-pedra">Doble pedra, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/dreta-deborah-yemas">Dreta Deborah Yemas, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/dreta-vaxina">Dreta Vaxina, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-bloc-xevisava">El Bloc Xevisava, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-buda">El Buda, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-camell">El Camell, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-classic">El Clàssic, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-cranc">El Cranc, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-desplom-dels-nens">El Desplom dels Nens, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-directe">El Directe, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-filo">El Filó, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-lepros">El Leprós, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-malalt">El Malalt, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-morro-del-dau">El Morro del Dau, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-penjat">El Penjat, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-sostret">El Sostret, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-tiet-carlos">El Tiet Carlos, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-traficant">El Traficant, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-visionari">El Visionari, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-xavi-tambe-tiba">El Xavi també Tiba, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-moc">El moc, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/el-pla">El pla, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/els-gallecs">Els Gallecs, 6c (sit) </a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/enemic">Enemic, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/enemic-public">Enemic Públic, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/escletxa-negra">Escletxa Negra, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/esperonet">Esperonet, 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/espero-espero">Esperó Esperó, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/espirogira">Espirogira, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/fabre">Fabre, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/fica-hi-la-tranca">Fica-hi la Tranca, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/gollumfissurer">GollumFissurer, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hame">Hame, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/helicopter">Helicopter, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hom">Hom, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hom-mani-petmehom">Hom Mani Petmehom, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hommo-herektus">Hommo Herektus, 7c/+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hommo-sapiens">Hommo Sapiens, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/hommo-sapiens-sapiens">Hommo Sapiens Sapiens, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/iceberg">Iceberg, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/inefc-con-dos">Inefc con Dos, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/jack-dalton">Jack Dalton, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/joe-dalton">Joe Dalton, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/joe-dalton">Joe Dalton, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/jumanji">Jumanji, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/kalma">Kalma, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/khollum">Khollum, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/kiko-s-problem">Kiko's Problem, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/kimpretali">Kimpretali, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/l-aorkat">L'Aorkat, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/l-escaleta">L'Escaleta, 2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-lluna">La Lluna, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-madame">La Madame, 8a+ (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-muller">La Muller, 7c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-muller-del-malalt">La Muller del Malalt, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-perla">La Perla, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-puntilla">La Puntilla, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-trinxera">La Trinxera, 6c </a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-xurrera">La Xurrera, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-figuera">La figuera, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/la-trave-del-lepros">La trave del Leprós, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lance-del-dau">Lance del Dau, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lance-del-fong">Lance del Fong, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lance-del-regletometro">Lance del Regletómetro, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lepra">Lepra, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/llancament-d-en-sabu">Llançament d'en Sabu, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/llancament-del-passadis">Llançament del Passadís, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lucky-luke">Lucky Luke, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lucky-luke-original-version">Lucky Luke (original version), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/lucky-fall">Lucky fall, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/mantega">Mantega, 5+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/mantega">Mantega, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/massagran">Massagran, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/mondongo">Mondongo, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/morfeu">Morfeu, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/morfosintaxis">Morfosintaxis, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/morpheus">Morpheus, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/morpheus">Morpheus, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/mort-subita">Mort Súbita, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/mowgli">Mowgli, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/no-hands">No Hands, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/no-te-l-poleixes-pau">No te'l poleixes Pau, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/operathions">Operathions, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/pikachu">Pikachu, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/piu">Piu, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/piu">Piu, 6a+/b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/piu-piula">Piu Piula, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/placa-de-la-veritat">Placa de la Veritat, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/plans-roses">Plans & Roses, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/plans-roses-extension">Plans & Roses Extension, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problem-1-pedra-fonten">Problem 1 (Pedra Fonten), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problem-13-pedra-del-dau">Problem 13 (Pedra del Dau), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problem-2-deborah-yemas">Problem 2 (Deborah Yemas), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problem-2-la-soterrada">Problem 2 (La Soterrada), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problem-4-l-esperunaku">Problem 4 (L'Esperunaku), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problema-6-passadis">Problema 6 (Passadís), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/problema-7-passadis">Problema 7 (Passadís), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/public">Públic, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/quina-esgarrada">Quina Esgarrada, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/rgb">RGB, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/referencia">Referència, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/regletillas">Regletillas, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/regletometro">Regletómetro, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/regletometro-esquerra">Regletómetro Esquerra, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/requerkitoliky">Requerkitoliky, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/res-es-el-que-sembla">Res és el que sembla, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/reunio-clandestina">Reunió Clandestina, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/sabor">Sabor, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/serrallonga">Serrallonga, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/senor-de-los-anillos">Señor de los Anillos, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/slooper">Slooper, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/suc-d-en-xevisava">Suc D'en XeviSava, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/suc-de-sava">Suc de Sava, 6c (7a+ in the guide)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/sweet-dreams">Sweet Dreams, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/tanga-vermell">Tanga Vermell, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/teresa">Teresa, 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/terapia">Teràpia, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/the-jungle">The Jungle, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/titanic">Titanic, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/titanic">Titanic, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/toca-sons">Toca-sons, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-fissurer">Trave Fissurer, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-fonten">Trave Fonten, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-lucky-luke">Trave Lucky Luke, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-de-la-figuera">Trave de la Figuera, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-de-les-tres-bessones">Trave de les Tres Bessones, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-cup">Trave del Cup, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-dau">Trave del Dau, 5+/6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-gollum-a">Trave del Gollum a, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-gollum-b">Trave del Gollum b, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-mondongo-left">Trave del Mondongo Left, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-del-passadis">Trave del Passadís, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trave-opera">Trave Òpera, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/travessant-scream">Travessant Scream, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trenca-genolls">Trenca Genolls, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/trenca-ombros">Trenca-ombros, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/triple-malta">Triple Malta, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/tsunamiquill">Tsunamiquill, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/topic">Tòpic, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/vaxina">Vaxina, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/vaxineta">Vaxineta, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/welcome-to-sava">Welcome to Sava, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/savassona/opera">Òpera, 6a+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "savassona_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/savassona/bosc">Bosc</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/savassona/dau">Dau</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/savassona/el-bosc">El Bosc</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/savassona/perdut">Perdut</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/savassona/senglar">Senglar</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "savassona_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/savassona/bosc" class="table-row-name text-bold">Bosc</a>
+					</td>
+					<td class="text-center">72</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/savassona/dau" class="table-row-name text-bold">Dau</a>
+					</td>
+					<td class="text-center">56</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/savassona/el-bosc" class="table-row-name text-bold">El Bosc</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/savassona/perdut" class="table-row-name text-bold">Perdut</a>
+					</td>
+					<td class="text-center">24</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/savassona/senglar" class="table-row-name text-bold">Senglar</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1020,7 +395,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Senglar</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1046,7 +421,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Perdut</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1072,7 +447,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>del Bosc</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1098,7 +473,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>del Dau</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1121,8 +496,1515 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/a-ke-parte" class="table-row-name text-bold">A ke parte!</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/amb-la-kalma" class="table-row-name text-bold">Amb la Kalma</a>
+					</td>
+					<td>7a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/antipete" class="table-row-name text-bold">Antipete</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/averell-dalton" class="table-row-name text-bold">Averell Dalton</a>
+					</td>
+					<td>6a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/bases-metodologiques" class="table-row-name text-bold">Bases metodològiques</a>
+					</td>
+					<td>5</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/bigger-mantel" class="table-row-name text-bold">Bigger Mantel</a>
+					</td>
+					<td>6c+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/boca-de-balenba" class="table-row-name text-bold">Boca de Balenba</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/bowling" class="table-row-name text-bold">Bowling</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/boys-don-t-craks" class="table-row-name text-bold">Boys don't Craks</a>
+					</td>
+					<td>6a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/brut" class="table-row-name text-bold">Brut</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/bud" class="table-row-name text-bold">Bud</a>
+					</td>
+					<td>5</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cmyk" class="table-row-name text-bold">CMYK</a>
+					</td>
+					<td>7a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cali" class="table-row-name text-bold">Cali</a>
+					</td>
+					<td>7a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cartonet" class="table-row-name text-bold">Cartonet</a>
+					</td>
+					<td>6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cartonillo" class="table-row-name text-bold">Cartonillo</a>
+					</td>
+					<td>7a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/caca-primeres" class="table-row-name text-bold">Caça Primeres</a>
+					</td>
+					<td>6b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cop-de-cigala" class="table-row-name text-bold">Cop de Cigala</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/cop-de-canell" class="table-row-name text-bold">Cop de canell</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/de-l-arbre" class="table-row-name text-bold">De l'Arbre</a>
+					</td>
+					<td>4</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/deborah-yemas" class="table-row-name text-bold">Deborah Yemas</a>
+					</td>
+					<td>7b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/des-de-paris-amb-amor" class="table-row-name text-bold">Des de Paris amb amor</a>
+					</td>
+					<td>7a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/dino" class="table-row-name text-bold">Dino</a>
+					</td>
+					<td>6b</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/doble-pedra" class="table-row-name text-bold">Doble pedra</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/dreta-deborah-yemas" class="table-row-name text-bold">Dreta Deborah Yemas</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/dreta-vaxina" class="table-row-name text-bold">Dreta Vaxina</a>
+					</td>
+					<td>4</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-bloc-xevisava" class="table-row-name text-bold">El Bloc Xevisava</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-buda" class="table-row-name text-bold">El Buda</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-camell" class="table-row-name text-bold">El Camell</a>
+					</td>
+					<td>6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-classic" class="table-row-name text-bold">El Clàssic</a>
+					</td>
+					<td>6b+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-cranc" class="table-row-name text-bold">El Cranc</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-desplom-dels-nens" class="table-row-name text-bold">El Desplom dels Nens</a>
+					</td>
+					<td>6a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-directe" class="table-row-name text-bold">El Directe</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-filo" class="table-row-name text-bold">El Filó</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-lepros" class="table-row-name text-bold">El Leprós</a>
+					</td>
+					<td>6a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-malalt" class="table-row-name text-bold">El Malalt</a>
+					</td>
+					<td>6c+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-morro-del-dau" class="table-row-name text-bold">El Morro del Dau</a>
+					</td>
+					<td>6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-penjat" class="table-row-name text-bold">El Penjat</a>
+					</td>
+					<td>6a+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-sostret" class="table-row-name text-bold">El Sostret</a>
+					</td>
+					<td>6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-tiet-carlos" class="table-row-name text-bold">El Tiet Carlos</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-traficant" class="table-row-name text-bold">El Traficant</a>
+					</td>
+					<td>5+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-visionari" class="table-row-name text-bold">El Visionari</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-xavi-tambe-tiba" class="table-row-name text-bold">El Xavi també Tiba</a>
+					</td>
+					<td>6b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-moc" class="table-row-name text-bold">El moc</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/el-pla" class="table-row-name text-bold">El pla</a>
+					</td>
+					<td>6b</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/els-gallecs" class="table-row-name text-bold">Els Gallecs</a>
+					</td>
+					<td>6c (sit) </td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/enemic" class="table-row-name text-bold">Enemic</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/enemic-public" class="table-row-name text-bold">Enemic Públic</a>
+					</td>
+					<td>6b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/escletxa-negra" class="table-row-name text-bold">Escletxa Negra</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/esperonet" class="table-row-name text-bold">Esperonet</a>
+					</td>
+					<td>3+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/espero-espero" class="table-row-name text-bold">Esperó Esperó</a>
+					</td>
+					<td>7a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/espirogira" class="table-row-name text-bold">Espirogira</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/fabre" class="table-row-name text-bold">Fabre</a>
+					</td>
+					<td>6b</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/fica-hi-la-tranca" class="table-row-name text-bold">Fica-hi la Tranca</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/gollumfissurer" class="table-row-name text-bold">GollumFissurer</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hame" class="table-row-name text-bold">Hame</a>
+					</td>
+					<td>5+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/helicopter" class="table-row-name text-bold">Helicopter</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hom" class="table-row-name text-bold">Hom</a>
+					</td>
+					<td>5+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hom-mani-petmehom" class="table-row-name text-bold">Hom Mani Petmehom</a>
+					</td>
+					<td>6b+</td>
+					<td>El Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hommo-herektus" class="table-row-name text-bold">Hommo Herektus</a>
+					</td>
+					<td>7c/+ (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hommo-sapiens" class="table-row-name text-bold">Hommo Sapiens</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/hommo-sapiens-sapiens" class="table-row-name text-bold">Hommo Sapiens Sapiens</a>
+					</td>
+					<td>7a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/iceberg" class="table-row-name text-bold">Iceberg</a>
+					</td>
+					<td>5</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/inefc-con-dos" class="table-row-name text-bold">Inefc con Dos</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/jack-dalton" class="table-row-name text-bold">Jack Dalton</a>
+					</td>
+					<td>6a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/joe-dalton" class="table-row-name text-bold">Joe Dalton</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/joe-dalton" class="table-row-name text-bold">Joe Dalton</a>
+					</td>
+					<td>5</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/jumanji" class="table-row-name text-bold">Jumanji</a>
+					</td>
+					<td>6a+</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/kalma" class="table-row-name text-bold">Kalma</a>
+					</td>
+					<td>7a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/khollum" class="table-row-name text-bold">Khollum</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/kiko-s-problem" class="table-row-name text-bold">Kiko's Problem</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/kimpretali" class="table-row-name text-bold">Kimpretali</a>
+					</td>
+					<td>6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/l-aorkat" class="table-row-name text-bold">L'Aorkat</a>
+					</td>
+					<td>6a+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/l-escaleta" class="table-row-name text-bold">L'Escaleta</a>
+					</td>
+					<td>2</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-lluna" class="table-row-name text-bold">La Lluna</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-madame" class="table-row-name text-bold">La Madame</a>
+					</td>
+					<td>8a+ (low)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-muller" class="table-row-name text-bold">La Muller</a>
+					</td>
+					<td>7c+ (sit)</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-muller-del-malalt" class="table-row-name text-bold">La Muller del Malalt</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-perla" class="table-row-name text-bold">La Perla</a>
+					</td>
+					<td>6c</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-puntilla" class="table-row-name text-bold">La Puntilla</a>
+					</td>
+					<td>5+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-trinxera" class="table-row-name text-bold">La Trinxera</a>
+					</td>
+					<td>6c </td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-xurrera" class="table-row-name text-bold">La Xurrera</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-figuera" class="table-row-name text-bold">La figuera</a>
+					</td>
+					<td>6b</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/la-trave-del-lepros" class="table-row-name text-bold">La trave del Leprós</a>
+					</td>
+					<td>6b</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lance-del-dau" class="table-row-name text-bold">Lance del Dau</a>
+					</td>
+					<td>6b</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lance-del-fong" class="table-row-name text-bold">Lance del Fong</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lance-del-regletometro" class="table-row-name text-bold">Lance del Regletómetro</a>
+					</td>
+					<td>5</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lepra" class="table-row-name text-bold">Lepra</a>
+					</td>
+					<td>6c</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/llancament-d-en-sabu" class="table-row-name text-bold">Llançament d'en Sabu</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/llancament-del-passadis" class="table-row-name text-bold">Llançament del Passadís</a>
+					</td>
+					<td>7a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lucky-luke" class="table-row-name text-bold">Lucky Luke</a>
+					</td>
+					<td>6c</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lucky-luke-original-version" class="table-row-name text-bold">Lucky Luke (original version)</a>
+					</td>
+					<td>7a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/lucky-fall" class="table-row-name text-bold">Lucky fall</a>
+					</td>
+					<td>6b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/mantega" class="table-row-name text-bold">Mantega</a>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/mantega" class="table-row-name text-bold">Mantega</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/massagran" class="table-row-name text-bold">Massagran</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/mondongo" class="table-row-name text-bold">Mondongo</a>
+					</td>
+					<td>7b+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/morfeu" class="table-row-name text-bold">Morfeu</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/morfosintaxis" class="table-row-name text-bold">Morfosintaxis</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/morpheus" class="table-row-name text-bold">Morpheus</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/morpheus" class="table-row-name text-bold">Morpheus</a>
+					</td>
+					<td>7a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/mort-subita" class="table-row-name text-bold">Mort Súbita</a>
+					</td>
+					<td>5</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/mowgli" class="table-row-name text-bold">Mowgli</a>
+					</td>
+					<td>Unknown</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/no-hands" class="table-row-name text-bold">No Hands</a>
+					</td>
+					<td>4+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/no-te-l-poleixes-pau" class="table-row-name text-bold">No te'l poleixes Pau</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/operathions" class="table-row-name text-bold">Operathions</a>
+					</td>
+					<td>5</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/pikachu" class="table-row-name text-bold">Pikachu</a>
+					</td>
+					<td>5</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/piu" class="table-row-name text-bold">Piu</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/piu" class="table-row-name text-bold">Piu</a>
+					</td>
+					<td>6a+/b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/piu-piula" class="table-row-name text-bold">Piu Piula</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/placa-de-la-veritat" class="table-row-name text-bold">Placa de la Veritat</a>
+					</td>
+					<td>6b</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/plans-roses" class="table-row-name text-bold">Plans & Roses</a>
+					</td>
+					<td>7b</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/plans-roses-extension" class="table-row-name text-bold">Plans & Roses Extension</a>
+					</td>
+					<td>7b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problem-1-pedra-fonten" class="table-row-name text-bold">Problem 1 (Pedra Fonten)</a>
+					</td>
+					<td>5+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problem-13-pedra-del-dau" class="table-row-name text-bold">Problem 13 (Pedra del Dau)</a>
+					</td>
+					<td>4</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problem-2-deborah-yemas" class="table-row-name text-bold">Problem 2 (Deborah Yemas)</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problem-2-la-soterrada" class="table-row-name text-bold">Problem 2 (La Soterrada)</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problem-4-l-esperunaku" class="table-row-name text-bold">Problem 4 (L'Esperunaku)</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problema-6-passadis" class="table-row-name text-bold">Problema 6 (Passadís)</a>
+					</td>
+					<td>6b</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/problema-7-passadis" class="table-row-name text-bold">Problema 7 (Passadís)</a>
+					</td>
+					<td>6b</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/public" class="table-row-name text-bold">Públic</a>
+					</td>
+					<td>6a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/quina-esgarrada" class="table-row-name text-bold">Quina Esgarrada</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/rgb" class="table-row-name text-bold">RGB</a>
+					</td>
+					<td>7a+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/referencia" class="table-row-name text-bold">Referència</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/regletillas" class="table-row-name text-bold">Regletillas</a>
+					</td>
+					<td>6c+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/regletometro" class="table-row-name text-bold">Regletómetro</a>
+					</td>
+					<td>5</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/regletometro-esquerra" class="table-row-name text-bold">Regletómetro Esquerra</a>
+					</td>
+					<td>4+</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/requerkitoliky" class="table-row-name text-bold">Requerkitoliky</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/res-es-el-que-sembla" class="table-row-name text-bold">Res és el que sembla</a>
+					</td>
+					<td>6a</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/reunio-clandestina" class="table-row-name text-bold">Reunió Clandestina</a>
+					</td>
+					<td>6c</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/sabor" class="table-row-name text-bold">Sabor</a>
+					</td>
+					<td>4</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/serrallonga" class="table-row-name text-bold">Serrallonga</a>
+					</td>
+					<td>6b</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/senor-de-los-anillos" class="table-row-name text-bold">Señor de los Anillos</a>
+					</td>
+					<td>7a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/slooper" class="table-row-name text-bold">Slooper</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/suc-d-en-xevisava" class="table-row-name text-bold">Suc D'en XeviSava</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/suc-de-sava" class="table-row-name text-bold">Suc de Sava</a>
+					</td>
+					<td>6c (7a+ in the guide)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/sweet-dreams" class="table-row-name text-bold">Sweet Dreams</a>
+					</td>
+					<td>7a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/tanga-vermell" class="table-row-name text-bold">Tanga Vermell</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/teresa" class="table-row-name text-bold">Teresa</a>
+					</td>
+					<td>3+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/terapia" class="table-row-name text-bold">Teràpia</a>
+					</td>
+					<td>6b</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/the-jungle" class="table-row-name text-bold">The Jungle</a>
+					</td>
+					<td>5+</td>
+					<td>Senglar</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/titanic" class="table-row-name text-bold">Titanic</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/titanic" class="table-row-name text-bold">Titanic</a>
+					</td>
+					<td>6c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/toca-sons" class="table-row-name text-bold">Toca-sons</a>
+					</td>
+					<td>6b+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-fissurer" class="table-row-name text-bold">Trave Fissurer</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-fonten" class="table-row-name text-bold">Trave Fonten</a>
+					</td>
+					<td>6a</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-lucky-luke" class="table-row-name text-bold">Trave Lucky Luke</a>
+					</td>
+					<td>6c+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-de-la-figuera" class="table-row-name text-bold">Trave de la Figuera</a>
+					</td>
+					<td>6b</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-de-les-tres-bessones" class="table-row-name text-bold">Trave de les Tres Bessones</a>
+					</td>
+					<td>6a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-cup" class="table-row-name text-bold">Trave del Cup</a>
+					</td>
+					<td>6a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-dau" class="table-row-name text-bold">Trave del Dau</a>
+					</td>
+					<td>5+/6a</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-gollum-a" class="table-row-name text-bold">Trave del Gollum a</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-gollum-b" class="table-row-name text-bold">Trave del Gollum b</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-mondongo-left" class="table-row-name text-bold">Trave del Mondongo Left</a>
+					</td>
+					<td>7b+</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-del-passadis" class="table-row-name text-bold">Trave del Passadís</a>
+					</td>
+					<td>5+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trave-opera" class="table-row-name text-bold">Trave Òpera</a>
+					</td>
+					<td>7a</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/travessant-scream" class="table-row-name text-bold">Travessant Scream</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trenca-genolls" class="table-row-name text-bold">Trenca Genolls</a>
+					</td>
+					<td>5+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/trenca-ombros" class="table-row-name text-bold">Trenca-ombros</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/triple-malta" class="table-row-name text-bold">Triple Malta</a>
+					</td>
+					<td>7c</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/tsunamiquill" class="table-row-name text-bold">Tsunamiquill</a>
+					</td>
+					<td>7a+</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/topic" class="table-row-name text-bold">Tòpic</a>
+					</td>
+					<td>6c</td>
+					<td>Perdut</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/vaxina" class="table-row-name text-bold">Vaxina</a>
+					</td>
+					<td>5</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/vaxineta" class="table-row-name text-bold">Vaxineta</a>
+					</td>
+					<td>4</td>
+					<td>Dau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/welcome-to-sava" class="table-row-name text-bold">Welcome to Sava</a>
+					</td>
+					<td>6b+</td>
+					<td>Bosc</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/savassona/opera" class="table-row-name text-bold">Òpera</a>
+					</td>
+					<td>6a+</td>
+					<td>Bosc</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

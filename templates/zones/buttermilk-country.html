@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/buttermilk-country">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Buttermilk Country 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="37.328648" />
   <input type="hidden" id="lng" name="lng_val" value="-118.575664" />
@@ -168,399 +248,161 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.flashpress.net/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Bishop Bouldering
+		</a>
+	
+		<a id="guide_link"  href="https://www.wolverinepublishing.com/store/bishop-bouldering-select/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Bishop Bouldering Select
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/buttermilks" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.flashpress.net/"
-        target="_blank"
-        >Bishop Bouldering</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.wolverinepublishing.com/store/bishop-bouldering-select/"
-        target="_blank"
-        >Bishop Bouldering Select</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/buttermilks"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/buttermilk-country"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/buttermilk-country"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/buttermilk-country/a-scanner-darkly">A Scanner Darkly, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/ambrosia">Ambrosia, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/birthday-direct">Birthday Direct, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/bowling-pin">Bowling Pin, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/bowling-pin">Bowling Pin, V6 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/buttermilk-stem">Buttermilk Stem, V4 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/change-of-heart">Change of Heart, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/checkerboard">Checkerboard, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/cheezy-brit">Cheezy Brit, V7 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/cindy-swank">Cindy Swank, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/cocktail-sauce">Cocktail Sauce, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/cocktail-sauce">Cocktail Sauce, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/croft-problem">Croft Problem, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/devoted">Devoted, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/drone-militia">Drone Militia, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/evilution-to-the-lip">Evilution to the Lip, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/flyboy">Flyboy, V8 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/flyboy-arete">Flyboy Arete, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/get-carter">Get Carter, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/gleaming-the-cube">Gleaming the Cube, V8 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/gleaming-the-cube">Gleaming the Cube, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/gleaming-the-tube">Gleaming the Tube, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/go-granny-go-right-finish">Go Granny Go Right Finish, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/green-wall-center">Green Wall Center, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/green-wall-essential">Green Wall Essential, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/high-plains-drifter">High Plains Drifter, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/iron-man-traverse">Iron Man Traverse, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/jedi-mind-tricks">Jedi Mind Tricks, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/judge-not">Judge Not, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/junior-s-achievement">Junior's Achievement, V7-8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/lululator">Lululator, V8 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/milk-the-milks">Milk the Milks, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/mini-me">Mini Me, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/moonraker">Moonraker, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/pain-grain">Pain Grain, V7 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/perfectly-chicken">Perfectly Chicken, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/problem-3-boy-and-girl-rocks">Problem 3 (Boy and Girl Rocks), V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/robinson-s-rubber-tester">Robinson's Rubber Tester, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/saigon">Saigon, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/seven-spanish-angels-aka-the-ruckus">Seven Spanish Angels (aka The Ruckus), V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/solitaire">Solitaire, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/soul-slinger">Soul Slinger, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/stained-glass">Stained Glass, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/suspended-in-silence">Suspended in Silence, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/swanky">Swanky, V9 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/the-hunk">The Hunk, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/the-mandala">The Mandala, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/the-prow">The Prow, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/this-side-of-paradise">This Side of Paradise, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/unnamed-homeless-slab">Unnamed Homeless Slab, VB</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/xavier-s-roof">Xavier's Roof, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/buttermilk-country/zen-flute">Zen Flute, V10</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "buttermilk-country_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/buttermilk-country/bardini-boulders">Bardini Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/buttermilk-s-main">Buttermilk s Main</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/buttermilks-main">Buttermilks Main</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/dale-s-camp">Dale's Camp</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/get-carter">Get Carter</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/get-carter-boulder">Get Carter Boulder</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/main">Main</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/peabody-boulders">Peabody Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/pollen-grains">Pollen Grains</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/buttermilk-country/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "buttermilk-country_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/bardini-boulders" class="table-row-name text-bold">Bardini Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/buttermilk-s-main" class="table-row-name text-bold">Buttermilk s Main</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/buttermilks-main" class="table-row-name text-bold">Buttermilks Main</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/dale-s-camp" class="table-row-name text-bold">Dale's Camp</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/get-carter" class="table-row-name text-bold">Get Carter</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/get-carter-boulder" class="table-row-name text-bold">Get Carter Boulder</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/main" class="table-row-name text-bold">Main</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/peabody-boulders" class="table-row-name text-bold">Peabody Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/pollen-grains" class="table-row-name text-bold">Pollen Grains</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/buttermilk-country/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -585,8 +427,498 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/a-scanner-darkly" class="table-row-name text-bold">A Scanner Darkly</a>
+					</td>
+					<td>V12</td>
+					<td>Get Carter</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/ambrosia" class="table-row-name text-bold">Ambrosia</a>
+					</td>
+					<td>V11</td>
+					<td>Peabody Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/birthday-direct" class="table-row-name text-bold">Birthday Direct</a>
+					</td>
+					<td>V3</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/bowling-pin" class="table-row-name text-bold">Bowling Pin</a>
+					</td>
+					<td>V4</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/bowling-pin" class="table-row-name text-bold">Bowling Pin</a>
+					</td>
+					<td>V6 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/buttermilk-stem" class="table-row-name text-bold">Buttermilk Stem</a>
+					</td>
+					<td>V4 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/change-of-heart" class="table-row-name text-bold">Change of Heart</a>
+					</td>
+					<td>V6</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/checkerboard" class="table-row-name text-bold">Checkerboard</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/cheezy-brit" class="table-row-name text-bold">Cheezy Brit</a>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/cindy-swank" class="table-row-name text-bold">Cindy Swank</a>
+					</td>
+					<td>V7</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/cocktail-sauce" class="table-row-name text-bold">Cocktail Sauce</a>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/cocktail-sauce" class="table-row-name text-bold">Cocktail Sauce</a>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/croft-problem" class="table-row-name text-bold">Croft Problem</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/devoted" class="table-row-name text-bold">Devoted</a>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/drone-militia" class="table-row-name text-bold">Drone Militia</a>
+					</td>
+					<td>V6</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/evilution-to-the-lip" class="table-row-name text-bold">Evilution to the Lip</a>
+					</td>
+					<td>V10</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/flyboy" class="table-row-name text-bold">Flyboy</a>
+					</td>
+					<td>V8 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/flyboy-arete" class="table-row-name text-bold">Flyboy Arete</a>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/get-carter" class="table-row-name text-bold">Get Carter</a>
+					</td>
+					<td>V7</td>
+					<td>Get Carter</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/gleaming-the-cube" class="table-row-name text-bold">Gleaming the Cube</a>
+					</td>
+					<td>V8 (sit)</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/gleaming-the-cube" class="table-row-name text-bold">Gleaming the Cube</a>
+					</td>
+					<td>V5</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/gleaming-the-tube" class="table-row-name text-bold">Gleaming the Tube</a>
+					</td>
+					<td>V2</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/go-granny-go-right-finish" class="table-row-name text-bold">Go Granny Go Right Finish</a>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/green-wall-center" class="table-row-name text-bold">Green Wall Center</a>
+					</td>
+					<td>V6</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/green-wall-essential" class="table-row-name text-bold">Green Wall Essential</a>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/high-plains-drifter" class="table-row-name text-bold">High Plains Drifter</a>
+					</td>
+					<td>V7</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/iron-man-traverse" class="table-row-name text-bold">Iron Man Traverse</a>
+					</td>
+					<td>V4</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/jedi-mind-tricks" class="table-row-name text-bold">Jedi Mind Tricks</a>
+					</td>
+					<td>V4</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/judge-not" class="table-row-name text-bold">Judge Not</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/junior-s-achievement" class="table-row-name text-bold">Junior's Achievement</a>
+					</td>
+					<td>V7-8</td>
+					<td>Buttermilk s Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/lululator" class="table-row-name text-bold">Lululator</a>
+					</td>
+					<td>V8 (low)</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/milk-the-milks" class="table-row-name text-bold">Milk the Milks</a>
+					</td>
+					<td>V6</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/mini-me" class="table-row-name text-bold">Mini Me</a>
+					</td>
+					<td>V9</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/moonraker" class="table-row-name text-bold">Moonraker</a>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/pain-grain" class="table-row-name text-bold">Pain Grain</a>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/perfectly-chicken" class="table-row-name text-bold">Perfectly Chicken</a>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/problem-3-boy-and-girl-rocks" class="table-row-name text-bold">Problem 3 (Boy and Girl Rocks)</a>
+					</td>
+					<td>V0</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/robinson-s-rubber-tester" class="table-row-name text-bold">Robinson's Rubber Tester</a>
+					</td>
+					<td>V0</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/saigon" class="table-row-name text-bold">Saigon</a>
+					</td>
+					<td>V6</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/seven-spanish-angels-aka-the-ruckus" class="table-row-name text-bold">Seven Spanish Angels (aka The Ruckus)</a>
+					</td>
+					<td>V6</td>
+					<td>Get Carter Boulder</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/solitaire" class="table-row-name text-bold">Solitaire</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/soul-slinger" class="table-row-name text-bold">Soul Slinger</a>
+					</td>
+					<td>V9</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/stained-glass" class="table-row-name text-bold">Stained Glass</a>
+					</td>
+					<td>V10</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/suspended-in-silence" class="table-row-name text-bold">Suspended in Silence</a>
+					</td>
+					<td>V7</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/swanky" class="table-row-name text-bold">Swanky</a>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/the-hunk" class="table-row-name text-bold">The Hunk</a>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/the-mandala" class="table-row-name text-bold">The Mandala</a>
+					</td>
+					<td>V12</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/the-prow" class="table-row-name text-bold">The Prow</a>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/this-side-of-paradise" class="table-row-name text-bold">This Side of Paradise</a>
+					</td>
+					<td>V9</td>
+					<td>Bardini Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/unnamed-homeless-slab" class="table-row-name text-bold">Unnamed Homeless Slab</a>
+					</td>
+					<td>VB</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/xavier-s-roof" class="table-row-name text-bold">Xavier's Roof</a>
+					</td>
+					<td>V11</td>
+					<td>Dale's Camp</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/buttermilk-country/zen-flute" class="table-row-name text-bold">Zen Flute</a>
+					</td>
+					<td>V10</td>
+					<td>Dale's Camp</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

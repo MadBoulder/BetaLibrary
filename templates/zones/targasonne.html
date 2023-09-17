@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/targasonne">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Targasonne 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="42.49482080438096" />
   <input type="hidden" id="lng" name="lng_val" value="1.9793629646301267" />
@@ -168,1913 +248,283 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/targasonne" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://climbingaway.fr/es/viajar/guias-croquis-escalada/le-chaos-de-targasonne-topo-guide" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Le chaos de Targasonne - Topo Guide
+		</a>
+	
+		<a id="guide_link"  href="http://lacommunauteduchaos.blogspot.com/search/label/secteur%20Papa" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			La Communaute du Chaos (Blog)
+		</a>
+	
+		<a id="guide_link"  href="https://www.facebook.com/groups/121550253199/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			La Communaute du Chaos (Facebook group)
+		</a>
+	
+		<a id="guide_link"  href="https://madboulder.org/download/targasonne/targasonne-bouldering-guide.pdf" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Targasonne Boulder pdf 2005
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/targasonne"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://climbingaway.fr/es/viajar/guias-croquis-escalada/le-chaos-de-targasonne-topo-guide"
-        target="_blank"
-        >Le chaos de Targasonne - Topo Guide</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://lacommunauteduchaos.blogspot.com/search/label/secteur%20Papa"
-        target="_blank"
-        >La Communaute du Chaos (Blog)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.facebook.com/groups/121550253199/"
-        target="_blank"
-        >La Communaute du Chaos (Facebook group)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://madboulder.org/download/targasonne/targasonne-bouldering-guide.pdf"
-        target="_blank"
-        >Targasonne Boulder pdf 2005</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/targasonne"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/targasonne"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/targasonne/help-jesus-revient">(Help!) Jesus revient, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/21-grammes">21 Grammes, 8b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/21-grammes">21 Grammes, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/a-poertee-de-nains">A poertée de nains, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/abenduak-21">Abenduak 21, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/abomination">Abomination, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/absinthe">Absinthe, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/absinthe">Absinthe, 8a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/accarian-troubadour">Accarian troubadour, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/acep-table">Acep-Table, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/achille">Achille, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/adehop">Adéhop, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/africa-libre">Africa Libre, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/after-work">After Work, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/agathe-the-poison">Agathe the poison, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/alien-tambe-era-calvo">Alien tambe era calvo, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/american-dream">American Dream, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/amidal">Amidal, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/androgames">Androgames, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/anubis">Anubis, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/apnee-juvenile">Apnée juvénile, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ashes-to-ashes-taragasonne">Ashes to ashes, . Taragasonne, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/aupres-de-mon-arbre">Auprès de mon arbre, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/automatic-overdrive">Automatic Overdrive, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/autopsy">Autopsy, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/basa-yaun">Basa yaun, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/beauty-phal">Beauty phal, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bellestete">Bellestète, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/benchmark">Benchmark, 7b+/c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/big-mac">Big mac, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bino-tinto">Bino tinto, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bob-s-your-uncle-bob-s-you-re-oncle-in-the-guide">Bob's your uncle (Bob's you're oncle in the guide), 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/body-in-decay">Body in decay, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bonheur">Bonheur, 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bottant-bottom">Bottant bottom, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bottant-bottom">Bottant bottom, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bouillon-de-culture">Bouillon de culture, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bourrinator">Bourrinator, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/braguette-magique">Braguette magique, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/breefing">Breefing, 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/brouillon-de-culture">Brouillon de culture, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bo">Bô, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/bo">Bô, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cabale">Cabale, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cabale">Cabale, 7c? (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/caviard-pour-les-autres">Caviard pour les autres, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/champagne-pour-tout-le-monde">Champagne pour tout le monde, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/chauve-qui-peut">Chauve qui Peut, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/chrome-et-formes">Chrome et formes, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/clem-rit">Clem rit, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cobalt-60">Cobalt 60, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cobalt-60">Cobalt 60, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/compression">Compression, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/continental-lockdown">Continental Lockdown, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cool">Cool, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/corazon-partido-left">Corazon Partido Left, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/coup-d-rein-pour-belle-putain">Coup d'rein pour belle putain, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/crucifixion">Crucifixion, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/creatura">Créatura, 8b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/cupula">Cupula, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/dalala">Dalala, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/de-la-toile-a-la-tole">De la toile à la tôle, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/deadness">Deadness, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/derniere-volonte">Dernière Volonté, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/deux-ames-soeurs">Deux Âmes Soeurs, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/devoreur-de-lumiere">Devoreur de lumière, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/dogma-l-oeil-du-voisin">Dogma (L'oeil du voisin), 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/double-jack">Double jack, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/douce-heure">Douce heure, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/dyn-dalle">Dyn dalle, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/dyno-du-le-baron">Dyno du le Baron, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ectahl">Ectahl, 5c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/el-mechero-de-la-sole">El Mechero de la Sole, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/el-hadjiz">El hadjiz, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/el-hadjiz">El hadjiz, 7c+ (ssit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/el-mezcladore">El mezcladore, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/elixir">Elixir, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/embrasse-le">Embrasse le!, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/erbestean">Erbestean, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/erector-stimulus">Erector stimulus, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/eroto-mecanics">Eroto mecanics, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/err-vector-short">Err Vector Short, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/estrombolis">Estrombolis, 6c?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/eternal-flame">Eternal Flame, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/euskara-freestiloak">Euskara FreeStiloak, 7ab</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/evol">Evol, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/facehugger">Facehugger, 8a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/facehugger">Facehugger, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/fiferie">Fiferie, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/fight-fascism">Fight fascism, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/flagellation">Flagellation, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/flagellum-daemonium">Flagellum daemonium, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/foot-oublie">Foot oublié, 7b/+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/foot-oublie">Foot oublié, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/frappe-l-acier">Frappe l'acier, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/free-zone">Free zone, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/fucking-systeme">Fucking système, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gang-bang">Gang bang, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gang-de-requin">Gang de requin, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gitane">Gitane, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gotcha">Gotcha, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gothic">Gothic, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/gout-de-visceres">Goût de viscéres, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/graal-patate">Graal patate, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/grand-petit-d-homme">Grand petit d'homme, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ground-control-to-major-tom">Ground Control to Major Tom, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/genie-populaire">Génie populaire, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/harcellement-sensuel">Harcellement sensuel, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/harmonium">Harmonium, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/hey-yop">Hey yop, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/hugo-frais">Hugo frais, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/hyman">Hyman, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/hypnose">Hypnose, 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/i-shot-sarkonazy">I Shot Sarkonazy, 8b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/i-shot-sarconazy">I shot sarconazy, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/in2-p3">IN2 P3, 7b/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/in-the-shadow">In the Shadow, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/isla-fantasia">Isla Fantasia, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/itxura-faltsua">Itxura Faltsua, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/j-veut-une-yenne">J'veut une yenne, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/jacob-l-a-fait">Jacob l'a fait, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/katalan-psycho">Katalan psycho, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/kebab-traum">Kebab traum, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/kebab-traum">Kebab traum, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/kill-them-all">Kill them all, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/klange">Klange, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/kurama">Kurama, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-amour-sur-le-charnier">L'amour sur le charnier, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-amere-douce">L'amère douce, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-aquarium-envole">L'aquarium envolé, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-effet-de-foehn">L'effet de foehn, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-oeuf-d-alien">L'oeuf d'alien, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-oeuvrette">L'oeuvrette, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-oeuvrette">L'oeuvrette, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/l-ecume-des-lourds">L'écume des lourds, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-baleine">La Baleine, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-theorie-du-chaos">La Théorie du Chaos, 8b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-theorie-du-chaos-stand-version">La Théorie du Chaos (stand version), 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-balance">La balance, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-beaute-de-la-chose">La beauté de la chose, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-carre">La carre, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-chose-au-fond-du-trou">La chose au fond du trou, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-couleuvre">La couleuvre, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-del-shanty">La del Shanty, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-feu-occulte">La feu occulte, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-feu-occulte">La feu occulte, 7c/+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-fee-verte">La fée verte, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-fee-verte">La fée verte, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-levre">La lèvre, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-proue">La proue, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-quinta-sinfonia">La quinta sinfonía, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-quinta-sinfonia">La quinta sinfonía, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-rouste">La rouste, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-taupe">La taupe, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-voie-du-samurai">La voie du samuraï, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lamed-vav">Lamed vav, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/laminak">Laminak, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-coeur-sur-la-main">Le Coeur Sur la main, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-bal-du-plancton">Le bal du plancton, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-baron-du-milieu">Le baron du milieu, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-bonheur-est-dans-le-pres">Le bonheur est dans le pres, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-conte-de-la-neige-noire">Le conte de la neige noire, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-pardon">Le pardon, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-seigneur-des-anales">Le seigneur des anales, 8a (trav)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-seigneur-des-anales">Le seigneur des anales, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-sous-peuple">Le sous peuple, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-squale">Le squale, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-tombeau-de-damme-panc-ashash">Le tombeau de damme panc ashash, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-tombeau-de-damme-panc-ashash-right">Le tombeau de damme panc ashash Right, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-trou-du-culte">Le trou du culte, 8a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-trou-du-culte-right">Le trou du culte Right, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/le-trou-noir">Le trou noir, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/les-3-primes">Les 3 Primes, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/les-saisons-du-doute">Les saisons du doute, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/let-s-crack">Let's crack, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ligne-berhault">Ligne Berhault, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lily-bop">Lily bop, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/little-death">Little Death, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lobotomie">Lobotomie, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/loby-one">Loby one, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/longimalus">Longimalus, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lords-of-acid">Lords of acid, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/love-cold">Love cold, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/love-cold-right">Love cold right, 6c?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/love-is-in-the-air">Love is in the air, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/love-with-a-dog">Love with a dog, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lucky-loser">Lucky loser, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/lumiere-et-melancolie">Lumière et mélancolie, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/la-bas">Là-bas, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/legitime-defonce">Légitime défonce, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/magic-instinct">Magic instinct, 8a (Du fond)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/magic-instinct">Magic instinct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/main-dans-la-main">Main dans la main, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/mange-plat">Mange plat, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/matrix">Matrix, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/michelin">Michelin, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/mirazapata">Mirazapata, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/mobscene">Mobscene, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/moonboard">Moonboard, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/mother-of-dragons">Mother of Dragons, 7b+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/nazgul">Nazgul, 7c+ (trav)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/nazgul">Nazgul, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/nelson-manteladans">Nelson Manteladans, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/nevrotic">Nevrotic, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/new-wave-hooker">New wave hooker, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/nice">Nice, 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/no-more-cookies">No more cookies, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/necropsie">Nécropsie, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/oasis">Oasis, 7b+/c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/oeuf-au-plat">Oeuf au plat, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/orangine">Orangine, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/orgasm-machine">Orgasm machine, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ouverture-sur-le-monde">Ouverture sur le monde, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pareidolia">Pareidolia, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pas-cash">Pas cash, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/petit-prince">Petit prince, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/phantom-lord">Phantom Lord, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/philantrope">Philantrope, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/philosophie-du-chaos">Philosophie du Chaos, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/piano-dos">Piano dos, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/piano-dos">Piano dos, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pince-mince">Pince mince, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/placebo">Placebo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/plaisir">Plaisir, 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/planete-des-songes">Planète des songes, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pleasure-dome">Pleasure dome, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pleasure-dome">Pleasure dome, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/plus-fort-que-la-police">Plus fort que la police, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/poder-de-greyskull">Poder de Greyskull, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ponle-ketchup">Ponle ketchup, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/poppers">Poppers, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pose-un-4">Pose un 4, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pouss-mouss">Pouss mouss, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/premiere-dent">Première dent, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-balcons-bavards">Problem 1 (Balcons Bavards), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-carriere">Problem 1 (Carrière), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-dieux-paiens">Problem 1 (Dieux Païens), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-dimensio-desconeguda">Problem 1 (Dimensió Desconeguda), 5+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-gaia">Problem 1 (Gaia), 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-themis">Problem 1 (Thémis), 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-themis">Problem 1 (Thémis), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-right-bosquet">Problem 1 Right (Bosquet), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-papas">Problem 1' (Papas), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-1-2-dieux-paiens">Problem 1.2 (Dieux Païens), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-10-carriere">Problem 10 (Carrière), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-10-crash-test">Problem 10 (Crash test), 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-10-dimensio-desconeguda">Problem 10 (Dimensió Desconeguda), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-102-chapeau">Problem 102 (Chapeau), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-103-chapeau">Problem 103 (Chapeau), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-105-chapeau">Problem 105 (Chapeau), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-108-chapeau">Problem 108 (Chapeau), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-109-right-chapeau">Problem 109 Right (Chapeau), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-11-balcons-bavards">Problem 11 (Balcons bavards), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-11-carriere">Problem 11 (Carrière), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-111-chapeau">Problem 111 (Chapeau), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-117-chapeau">Problem 117 (Chapeau), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-12-canal">Problem 12 (Canal), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-12-themis">Problem 12 (Thémis), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-14-balcons-bavards">Problem 14 (Balcons Bavards), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-14-carriere">Problem 14 (Carrière,), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-14-dieux-paiens">Problem 14 (Dieux païens), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-14-themis">Problem 14 (Thémis), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-15-carriere">Problem 15 (Carrière), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-15-themis">Problem 15 (Thémis), 5c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-16-aigle">Problem 16 (Aigle), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-16-carriere">Problem 16 (Carrière), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-16-themis">Problem 16 (Thémis), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-17-aigle">Problem 17 (Aigle), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-17-carriere">Problem 17 (Carrière), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-17-themis">Problem 17 (Thémis), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-18-table">Problem 18 (Table), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-19-themis">Problem 19 (Thémis), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-2-bosquet">Problem 2 (Bosquet), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-2-dimensio-desconeguda">Problem 2 (Dimensió Desconeguda), 5+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-2-themis">Problem 2 (Thémis), 3b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-20-carriere">Problem 20 (Carrière), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-20-themis">Problem 20 (Thémis), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-20-2-themis">Problem 20.2 (Thémis), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-21-carriere">Problem 21 (Carrière), 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-21-dieux-paiens">Problem 21 (Dieux païens), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-21-dieux-paiens">Problem 21 (Dieux païens), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-21-table">Problem 21 (Table), 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-22-themis">Problem 22 (Thémis), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-23-carriere">Problem 23 (Carrière), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-23-dolmens">Problem 23 (Dolmens), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-24-baleine">Problem 24 (Baleine), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-25-baleine">Problem 25 (Baleine), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-26-table">Problem 26 (Table), 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-28-arche">Problem 28 (Arche), 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-28-baleine">Problem 28 (Baleine), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-29-baleine">Problem 29 (Baleine), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-29-dieux-paiens">Problem 29 (Dieux païens), 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-29-proue">Problem 29 (Proue), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-3-dolmens">Problem 3 (Dolmens), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-3-taz">Problem 3 (Taz), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-3-themis">Problem 3 (Thémis), 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-30-arche">Problem 30 (Arche), 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-30-table">Problem 30 (Table), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-31-arche">Problem 31 (Arche), 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-31b-baleine">Problem 31b (Baleine), 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-32-balcons-bavards">Problem 32 (Balcons bavards), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-33-themis">Problem 33 (Thémis), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-34-dolmens">Problem 34 (Dolmens), +, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-34-bis-arche">Problem 34 bis (Arche),, 4b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-35-dolmens">Problem 35 (Dolmens), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-36-direct-arche">Problem 36 Direct (Arche), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-38-baleine">Problem 38 (Baleine), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-38-themis">Problem 38 (Thémis), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-39-themis">Problem 39 (Thémis), 5+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-4-balcons-bavards">Problem 4 (Balcons bavards), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-4-bosquet">Problem 4 (Bosquet), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-4-dimensio-desconeguda-6b">Problem 4 (Dimensió Desconeguda), 6b?, 6b? Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-4-themis">Problem 4 (Thémis), 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-40-themis">Problem 40 (Thémis), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-41-dolmens">Problem 41 (Dolmens), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-43-arche">Problem 43 (Arche), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-44-arche">Problem 44 (Arche), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-47-arche">Problem 47 (Arche), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-47-dolmens">Problem 47 (Dolmens), 7c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-47-taz">Problem 47 (Taz), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-48-arche">Problem 48 (Arche), 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-48-taz">Problem 48 (Taz), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-49-arche">Problem 49 (Arche), 4b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-50-arche">Problem 50 (Arche), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-51-themis">Problem 51 (Thémis), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-53-themis">Problem 53 (Thémis), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-54-3-grasses">Problem 54 (3 grasses), 5a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-55-dieux-paiens">Problem 55 (Dieux païens), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-58-themis">Problem 58 (Thémis), 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-59-baleine">Problem 59 (Baleine), 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-balcons-bavards">Problem 6 (Balcons bavards), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-chapeau">Problem 6 (Chapeau), 5+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-dimensio-desconeguda">Problem 6 (Dimensió Desconeguda), 5?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-dolmens">Problem 6 (Dolmens), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-themis">Problem 6 (Thémis), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-6-1-dolmens">Problem 6.1 (Dolmens), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-60-baleine">Problem 60 (Baleine), 4a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-61-aigle">Problem 61 (Aigle), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-61-baleine">Problem 61 (Baleine), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-62-baleine">Problem 62 (Baleine), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-63-baleine">Problem 63 (Baleine), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-7-dolmens">Problem 7 (Dolmens), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-72-taz">Problem 72' (Taz), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-76-themis">Problem 76 (Thémis), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-8-canal">Problem 8 (Canal), 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-8-creatura">Problem 8 (Créatura), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-80-chapeau">Problem 80 (Chapeau), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-80-themis-targassonne">Problem 80 (Thémis), . Targassonne, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-81-aigle">Problem 81 (Aigle), 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-82-themis">Problem 82 (Thémis), 5c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-86-themis">Problem 86 (Thémis), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-86-themis">Problem 86 (Thémis), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-87-aigle">Problem 87 (Aigle), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-87-chapeau">Problem 87 (Chapeau), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-88-aigle">Problem 88 (Aigle), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-9-canal">Problem 9 (Canal), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-9-carriere">Problem 9 (Carrière), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-93-chapeau">Problem 93 (Chapeau), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-94-aigle">Problem 94 (Aigle), 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-95-chapeau">Problem 95 (Chapeau), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/problem-96-chapeau">Problem 96 (Chapeau), 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/psoas-mole">Psoas Mole, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/psoas-pole">Psoas Pole, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/psoas-hole">Psoas hole, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/pute-effraction">Pute éffraction, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/putrefaction-taste">Putrefaction taste, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/queen-of-hearts">Queen of hearts, 8b/8b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/relan-de-leffe">Relan de leffe, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/renaiss">Renaiss, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/rien-de-plus">Rien de plus, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/rebellion">Rébellion, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/reve-errance">Rêve - errance, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/scarification">Scarification, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/scato-no-vice">Scato no vice, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/serrez-stimulez">Serrez stimulez, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/shadow-dancer">Shadow Dancer, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/si-pres-de-l-antre">Si prés de l'antre, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/sikatriste">Sikatriste, 5b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/sing-while-you-may">Sing while you may, 8a (Du fond)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/sing-while-you-may">Sing while you may, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/solitude-amere">Solitude amère, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/solitude-amere">Solitude amère, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/sun-again">Sun Again, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/suspicious-minds">Suspicious Minds, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/t-style">T style, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/talonavirus">Talonavirus, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/tape-a-l-oeil">Tape à l'oeil, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/thanatodrome">Thanatodrome, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ticket-tacc">Ticket tacc, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/tigre-et-dragon">Tigre et Dragon, 7b+ (Proposed 7c by Rackam) </a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/tomagomas">Tomagomas, 6b+?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/traite-de-demonologie">Traité de démonologie, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/traite-de-demonologie-direct">Traité de démonologie direct, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/traverser-l-amourir">Traverser l'amourir, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/trip-a-plat">Trip a plat, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/tunning">Tunning, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/un-soufle">Un soufle, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/uniformicide">Uniformicide, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/unknown-taz">Unknown (Taz), 6c/7a?</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/unknown-opened-by-rackam">Unknown. Opened by Rackam, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/vallee-heureuse">Vallée heureuse, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/verre-brise">Verre brisé, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/vicious-game">Vicious game, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/vicious-game-sit">Vicious game Sit, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/vieille-ecole">Vieille école, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/yen-pox">Yen pox, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/zdabauw">Zdabauw, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/ziza">Ziza, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/zone-d-autonomie-temporaire">Zone d'autonomie temporaire, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/targasonne/zone-rouge">Zone rouge, 6c+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "targasonne_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/targasonne/3-grasses">3 grasses</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/aigle">Aigle</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/arche">Arche</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/balcons-bavards">Balcons bavards</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/balcons-bavards-taz">Balcons bavards, Taz</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/baleine">Baleine</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/bosquet">Bosquet</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/canal">Canal</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/carriere">Carrière</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/chapeau">Chapeau</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/crash-test">Crash test</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/creatura">Creatura</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/dieux-paiens">Dieux païens </a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/dimensio-desconeguda">Dimensió Desconeguda</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/dimensio-desconeguda-aka-du-virage">Dimensió Desconeguda aka Du Virage</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/dimensio-desconeguda-du-virage">Dimensió Desconeguda/Du Virage</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/dolmens">Dolmens</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/du-virage">Du Virage</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/gaia">Gaia</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/la-foret">La foret</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/papas">Papas</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/proue">Proue</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/table">Table</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/taz">Taz</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/themis">Thémis</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/targasonne/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "targasonne_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/3-grasses" class="table-row-name text-bold">3 grasses</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/aigle" class="table-row-name text-bold">Aigle</a>
+					</td>
+					<td class="text-center">24</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/arche" class="table-row-name text-bold">Arche</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/balcons-bavards" class="table-row-name text-bold">Balcons bavards</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/balcons-bavards-taz" class="table-row-name text-bold">Balcons bavards, Taz</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/baleine" class="table-row-name text-bold">Baleine</a>
+					</td>
+					<td class="text-center">41</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/bosquet" class="table-row-name text-bold">Bosquet</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/canal" class="table-row-name text-bold">Canal</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/carriere" class="table-row-name text-bold">Carrière</a>
+					</td>
+					<td class="text-center">21</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/chapeau" class="table-row-name text-bold">Chapeau</a>
+					</td>
+					<td class="text-center">29</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/crash-test" class="table-row-name text-bold">Crash test</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/creatura" class="table-row-name text-bold">Creatura</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/dieux-paiens" class="table-row-name text-bold">Dieux païens </a>
+					</td>
+					<td class="text-center">51</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/dimensio-desconeguda" class="table-row-name text-bold">Dimensió Desconeguda</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/dimensio-desconeguda-aka-du-virage" class="table-row-name text-bold">Dimensió Desconeguda aka Du Virage</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/dimensio-desconeguda-du-virage" class="table-row-name text-bold">Dimensió Desconeguda/Du Virage</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/dolmens" class="table-row-name text-bold">Dolmens</a>
+					</td>
+					<td class="text-center">38</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/du-virage" class="table-row-name text-bold">Du Virage</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/gaia" class="table-row-name text-bold">Gaia</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/la-foret" class="table-row-name text-bold">La foret</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/papas" class="table-row-name text-bold">Papas</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/proue" class="table-row-name text-bold">Proue</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/table" class="table-row-name text-bold">Table</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/taz" class="table-row-name text-bold">Taz</a>
+					</td>
+					<td class="text-center">51</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/themis" class="table-row-name text-bold">Thémis</a>
+					</td>
+					<td class="text-center">38</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/targasonne/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -2102,7 +552,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Bosquet</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2128,7 +578,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Proue</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2154,7 +604,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Canal</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2180,7 +630,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Gaia</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2206,7 +656,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Table</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2232,7 +682,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Proue</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2258,7 +708,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Papas</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2284,7 +734,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Unknown</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2310,7 +760,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Dimensió Desconeguda</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2336,7 +786,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Aigle</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2362,7 +812,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Crash test</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2388,7 +838,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Balcons bavards</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2414,7 +864,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Chapeau</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2440,7 +890,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Créatura</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2466,7 +916,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Arche</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2492,7 +942,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>3 grasses</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2518,7 +968,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Baleine</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2544,7 +994,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Dolmens</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2570,7 +1020,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Dieux Païens</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2596,7 +1046,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Themis</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2622,7 +1072,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Taz</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2648,7 +1098,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Carrière</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -2671,8 +1121,3720 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/help-jesus-revient" class="table-row-name text-bold">(Help!) Jesus revient</a>
+					</td>
+					<td>7a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/21-grammes" class="table-row-name text-bold">21 Grammes</a>
+					</td>
+					<td>8b (sit)</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/21-grammes" class="table-row-name text-bold">21 Grammes</a>
+					</td>
+					<td>7c+</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/a-poertee-de-nains" class="table-row-name text-bold">A poertée de nains</a>
+					</td>
+					<td>6b+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/abenduak-21" class="table-row-name text-bold">Abenduak 21</a>
+					</td>
+					<td>7b</td>
+					<td>Gaia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/abomination" class="table-row-name text-bold">Abomination</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/absinthe" class="table-row-name text-bold">Absinthe</a>
+					</td>
+					<td>7c+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/absinthe" class="table-row-name text-bold">Absinthe</a>
+					</td>
+					<td>8a+ (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/accarian-troubadour" class="table-row-name text-bold">Accarian troubadour</a>
+					</td>
+					<td>7b+</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/acep-table" class="table-row-name text-bold">Acep-Table</a>
+					</td>
+					<td>5c</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/achille" class="table-row-name text-bold">Achille</a>
+					</td>
+					<td>6c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/adehop" class="table-row-name text-bold">Adéhop</a>
+					</td>
+					<td>4+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/africa-libre" class="table-row-name text-bold">Africa Libre</a>
+					</td>
+					<td>7b</td>
+					<td>Themis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/after-work" class="table-row-name text-bold">After Work</a>
+					</td>
+					<td>7b</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/agathe-the-poison" class="table-row-name text-bold">Agathe the poison</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/alien-tambe-era-calvo" class="table-row-name text-bold">Alien tambe era calvo</a>
+					</td>
+					<td>7a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/american-dream" class="table-row-name text-bold">American Dream</a>
+					</td>
+					<td>7b+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/amidal" class="table-row-name text-bold">Amidal</a>
+					</td>
+					<td>6a</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/androgames" class="table-row-name text-bold">Androgames</a>
+					</td>
+					<td>6b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/anubis" class="table-row-name text-bold">Anubis</a>
+					</td>
+					<td>7b</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/apnee-juvenile" class="table-row-name text-bold">Apnée juvénile</a>
+					</td>
+					<td>7a+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ashes-to-ashes-taragasonne" class="table-row-name text-bold">Ashes to ashes, . Taragasonne</a>
+					</td>
+					<td>6b+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/aupres-de-mon-arbre" class="table-row-name text-bold">Auprès de mon arbre</a>
+					</td>
+					<td>7a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/automatic-overdrive" class="table-row-name text-bold">Automatic Overdrive</a>
+					</td>
+					<td>8a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/autopsy" class="table-row-name text-bold">Autopsy</a>
+					</td>
+					<td>7a+</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/basa-yaun" class="table-row-name text-bold">Basa yaun</a>
+					</td>
+					<td>7a+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/beauty-phal" class="table-row-name text-bold">Beauty phal</a>
+					</td>
+					<td>6a</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bellestete" class="table-row-name text-bold">Bellestète</a>
+					</td>
+					<td>5c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/benchmark" class="table-row-name text-bold">Benchmark</a>
+					</td>
+					<td>7b+/c</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/big-mac" class="table-row-name text-bold">Big mac</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bino-tinto" class="table-row-name text-bold">Bino tinto</a>
+					</td>
+					<td>5c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bob-s-your-uncle-bob-s-you-re-oncle-in-the-guide" class="table-row-name text-bold">Bob's your uncle (Bob's you're oncle in the guide)</a>
+					</td>
+					<td>7c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/body-in-decay" class="table-row-name text-bold">Body in decay</a>
+					</td>
+					<td>7a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bonheur" class="table-row-name text-bold">Bonheur</a>
+					</td>
+					<td>5b</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bottant-bottom" class="table-row-name text-bold">Bottant bottom</a>
+					</td>
+					<td>7b</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bottant-bottom" class="table-row-name text-bold">Bottant bottom</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bouillon-de-culture" class="table-row-name text-bold">Bouillon de culture</a>
+					</td>
+					<td>8a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bourrinator" class="table-row-name text-bold">Bourrinator</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/braguette-magique" class="table-row-name text-bold">Braguette magique</a>
+					</td>
+					<td>5c</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/breefing" class="table-row-name text-bold">Breefing</a>
+					</td>
+					<td>5b</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/brouillon-de-culture" class="table-row-name text-bold">Brouillon de culture</a>
+					</td>
+					<td>6b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bo" class="table-row-name text-bold">Bô</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/bo" class="table-row-name text-bold">Bô</a>
+					</td>
+					<td>5a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cabale" class="table-row-name text-bold">Cabale</a>
+					</td>
+					<td>7a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cabale" class="table-row-name text-bold">Cabale</a>
+					</td>
+					<td>7c? (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/caviard-pour-les-autres" class="table-row-name text-bold">Caviard pour les autres</a>
+					</td>
+					<td>4c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/champagne-pour-tout-le-monde" class="table-row-name text-bold">Champagne pour tout le monde</a>
+					</td>
+					<td>6a+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/chauve-qui-peut" class="table-row-name text-bold">Chauve qui Peut</a>
+					</td>
+					<td>7b+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/chrome-et-formes" class="table-row-name text-bold">Chrome et formes</a>
+					</td>
+					<td>6c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/clem-rit" class="table-row-name text-bold">Clem rit</a>
+					</td>
+					<td>7c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cobalt-60" class="table-row-name text-bold">Cobalt 60</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cobalt-60" class="table-row-name text-bold">Cobalt 60</a>
+					</td>
+					<td>7b</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/compression" class="table-row-name text-bold">Compression</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/continental-lockdown" class="table-row-name text-bold">Continental Lockdown</a>
+					</td>
+					<td>7a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cool" class="table-row-name text-bold">Cool</a>
+					</td>
+					<td>6a</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/corazon-partido-left" class="table-row-name text-bold">Corazon Partido Left</a>
+					</td>
+					<td>Unknown</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/coup-d-rein-pour-belle-putain" class="table-row-name text-bold">Coup d'rein pour belle putain</a>
+					</td>
+					<td>7b</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/crucifixion" class="table-row-name text-bold">Crucifixion</a>
+					</td>
+					<td>7b</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/creatura" class="table-row-name text-bold">Créatura</a>
+					</td>
+					<td>8b (sit)</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/cupula" class="table-row-name text-bold">Cupula</a>
+					</td>
+					<td>6c</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/dalala" class="table-row-name text-bold">Dalala</a>
+					</td>
+					<td>4c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/de-la-toile-a-la-tole" class="table-row-name text-bold">De la toile à la tôle</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/deadness" class="table-row-name text-bold">Deadness</a>
+					</td>
+					<td>6c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/derniere-volonte" class="table-row-name text-bold">Dernière Volonté</a>
+					</td>
+					<td>8a</td>
+					<td>Gaia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/deux-ames-soeurs" class="table-row-name text-bold">Deux Âmes Soeurs</a>
+					</td>
+					<td>6a</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/devoreur-de-lumiere" class="table-row-name text-bold">Devoreur de lumière</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/dogma-l-oeil-du-voisin" class="table-row-name text-bold">Dogma (L'oeil du voisin)</a>
+					</td>
+					<td>7c</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/double-jack" class="table-row-name text-bold">Double jack</a>
+					</td>
+					<td>6a+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/douce-heure" class="table-row-name text-bold">Douce heure</a>
+					</td>
+					<td>5c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/dyn-dalle" class="table-row-name text-bold">Dyn dalle</a>
+					</td>
+					<td>6b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/dyno-du-le-baron" class="table-row-name text-bold">Dyno du le Baron</a>
+					</td>
+					<td>7a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ectahl" class="table-row-name text-bold">Ectahl</a>
+					</td>
+					<td>5c (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/el-mechero-de-la-sole" class="table-row-name text-bold">El Mechero de la Sole</a>
+					</td>
+					<td>7a</td>
+					<td>Dimensió Desconeguda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/el-hadjiz" class="table-row-name text-bold">El hadjiz</a>
+					</td>
+					<td>7b+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/el-hadjiz" class="table-row-name text-bold">El hadjiz</a>
+					</td>
+					<td>7c+ (ssit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/el-mezcladore" class="table-row-name text-bold">El mezcladore</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/elixir" class="table-row-name text-bold">Elixir</a>
+					</td>
+					<td>6c</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/embrasse-le" class="table-row-name text-bold">Embrasse le!</a>
+					</td>
+					<td>7a</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/erbestean" class="table-row-name text-bold">Erbestean</a>
+					</td>
+					<td>7b</td>
+					<td>Gaia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/erector-stimulus" class="table-row-name text-bold">Erector stimulus</a>
+					</td>
+					<td>6b</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/eroto-mecanics" class="table-row-name text-bold">Eroto mecanics</a>
+					</td>
+					<td>8a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/err-vector-short" class="table-row-name text-bold">Err Vector Short</a>
+					</td>
+					<td>7a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/estrombolis" class="table-row-name text-bold">Estrombolis</a>
+					</td>
+					<td>6c?</td>
+					<td>Dimensió Desconeguda aka Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/eternal-flame" class="table-row-name text-bold">Eternal Flame</a>
+					</td>
+					<td>7b+</td>
+					<td>Thèmis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/euskara-freestiloak" class="table-row-name text-bold">Euskara FreeStiloak</a>
+					</td>
+					<td>7ab</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/evol" class="table-row-name text-bold">Evol</a>
+					</td>
+					<td>6a+</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/facehugger" class="table-row-name text-bold">Facehugger</a>
+					</td>
+					<td>8a+ (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/facehugger" class="table-row-name text-bold">Facehugger</a>
+					</td>
+					<td>7c</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/fiferie" class="table-row-name text-bold">Fiferie</a>
+					</td>
+					<td>6a+</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/fight-fascism" class="table-row-name text-bold">Fight fascism</a>
+					</td>
+					<td>6b+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/flagellation" class="table-row-name text-bold">Flagellation</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/flagellum-daemonium" class="table-row-name text-bold">Flagellum daemonium</a>
+					</td>
+					<td>7c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/foot-oublie" class="table-row-name text-bold">Foot oublié</a>
+					</td>
+					<td>7b/+ (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/foot-oublie" class="table-row-name text-bold">Foot oublié</a>
+					</td>
+					<td>6c+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/frappe-l-acier" class="table-row-name text-bold">Frappe l'acier</a>
+					</td>
+					<td>6b</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/free-zone" class="table-row-name text-bold">Free zone</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/fucking-systeme" class="table-row-name text-bold">Fucking système</a>
+					</td>
+					<td>7b</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gang-bang" class="table-row-name text-bold">Gang bang</a>
+					</td>
+					<td>6b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gang-de-requin" class="table-row-name text-bold">Gang de requin</a>
+					</td>
+					<td>7b+</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gitane" class="table-row-name text-bold">Gitane</a>
+					</td>
+					<td>6b+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gotcha" class="table-row-name text-bold">Gotcha</a>
+					</td>
+					<td>6c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gothic" class="table-row-name text-bold">Gothic</a>
+					</td>
+					<td>6b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/gout-de-visceres" class="table-row-name text-bold">Goût de viscéres</a>
+					</td>
+					<td>6a+</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/graal-patate" class="table-row-name text-bold">Graal patate</a>
+					</td>
+					<td>6a</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/grand-petit-d-homme" class="table-row-name text-bold">Grand petit d'homme</a>
+					</td>
+					<td>7a+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ground-control-to-major-tom" class="table-row-name text-bold">Ground Control to Major Tom</a>
+					</td>
+					<td>8a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/genie-populaire" class="table-row-name text-bold">Génie populaire</a>
+					</td>
+					<td>6a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/harcellement-sensuel" class="table-row-name text-bold">Harcellement sensuel</a>
+					</td>
+					<td>7a+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/harmonium" class="table-row-name text-bold">Harmonium</a>
+					</td>
+					<td>6c+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/hey-yop" class="table-row-name text-bold">Hey yop</a>
+					</td>
+					<td>5c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/hugo-frais" class="table-row-name text-bold">Hugo frais</a>
+					</td>
+					<td>6a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/hyman" class="table-row-name text-bold">Hyman</a>
+					</td>
+					<td>7c</td>
+					<td>Themis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/hypnose" class="table-row-name text-bold">Hypnose</a>
+					</td>
+					<td>4b</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/i-shot-sarkonazy" class="table-row-name text-bold">I Shot Sarkonazy</a>
+					</td>
+					<td>8b (sit)</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/i-shot-sarconazy" class="table-row-name text-bold">I shot sarconazy</a>
+					</td>
+					<td>7c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/in2-p3" class="table-row-name text-bold">IN2 P3</a>
+					</td>
+					<td>7b/+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/in-the-shadow" class="table-row-name text-bold">In the Shadow</a>
+					</td>
+					<td>8a</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/isla-fantasia" class="table-row-name text-bold">Isla Fantasia</a>
+					</td>
+					<td>7c</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/itxura-faltsua" class="table-row-name text-bold">Itxura Faltsua</a>
+					</td>
+					<td>7a</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/j-veut-une-yenne" class="table-row-name text-bold">J'veut une yenne</a>
+					</td>
+					<td>7b</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/jacob-l-a-fait" class="table-row-name text-bold">Jacob l'a fait</a>
+					</td>
+					<td>5c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/katalan-psycho" class="table-row-name text-bold">Katalan psycho</a>
+					</td>
+					<td>7a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/kebab-traum" class="table-row-name text-bold">Kebab traum</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/kebab-traum" class="table-row-name text-bold">Kebab traum</a>
+					</td>
+					<td>6c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/kill-them-all" class="table-row-name text-bold">Kill them all</a>
+					</td>
+					<td>5c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/klange" class="table-row-name text-bold">Klange</a>
+					</td>
+					<td>4c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/kurama" class="table-row-name text-bold">Kurama</a>
+					</td>
+					<td>7b</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-amour-sur-le-charnier" class="table-row-name text-bold">L'amour sur le charnier</a>
+					</td>
+					<td>7b</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-amere-douce" class="table-row-name text-bold">L'amère douce</a>
+					</td>
+					<td>5c</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-aquarium-envole" class="table-row-name text-bold">L'aquarium envolé</a>
+					</td>
+					<td>7a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-effet-de-foehn" class="table-row-name text-bold">L'effet de foehn</a>
+					</td>
+					<td>7a</td>
+					<td>Creatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-oeuf-d-alien" class="table-row-name text-bold">L'oeuf d'alien</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-oeuvrette" class="table-row-name text-bold">L'oeuvrette</a>
+					</td>
+					<td>7a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-oeuvrette" class="table-row-name text-bold">L'oeuvrette</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/l-ecume-des-lourds" class="table-row-name text-bold">L'écume des lourds</a>
+					</td>
+					<td>7a+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-baleine" class="table-row-name text-bold">La Baleine</a>
+					</td>
+					<td>7a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-theorie-du-chaos" class="table-row-name text-bold">La Théorie du Chaos</a>
+					</td>
+					<td>8b (sit)</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-theorie-du-chaos-stand-version" class="table-row-name text-bold">La Théorie du Chaos (stand version)</a>
+					</td>
+					<td>7c+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-balance" class="table-row-name text-bold">La balance</a>
+					</td>
+					<td>6c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-beaute-de-la-chose" class="table-row-name text-bold">La beauté de la chose</a>
+					</td>
+					<td>7c+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-carre" class="table-row-name text-bold">La carre</a>
+					</td>
+					<td>4c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-chose-au-fond-du-trou" class="table-row-name text-bold">La chose au fond du trou</a>
+					</td>
+					<td>7c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-couleuvre" class="table-row-name text-bold">La couleuvre</a>
+					</td>
+					<td>6b</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-del-shanty" class="table-row-name text-bold">La del Shanty</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-feu-occulte" class="table-row-name text-bold">La feu occulte</a>
+					</td>
+					<td>7b+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-feu-occulte" class="table-row-name text-bold">La feu occulte</a>
+					</td>
+					<td>7c/+ (sit)</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-fee-verte" class="table-row-name text-bold">La fée verte</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-fee-verte" class="table-row-name text-bold">La fée verte</a>
+					</td>
+					<td>7c</td>
+					<td>Balcons bavards, Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-levre" class="table-row-name text-bold">La lèvre</a>
+					</td>
+					<td>6c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-proue" class="table-row-name text-bold">La proue</a>
+					</td>
+					<td>7b+</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-quinta-sinfonia" class="table-row-name text-bold">La quinta sinfonía</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-quinta-sinfonia" class="table-row-name text-bold">La quinta sinfonía</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-rouste" class="table-row-name text-bold">La rouste</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-taupe" class="table-row-name text-bold">La taupe</a>
+					</td>
+					<td>6b+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-voie-du-samurai" class="table-row-name text-bold">La voie du samuraï</a>
+					</td>
+					<td>6c</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lamed-vav" class="table-row-name text-bold">Lamed vav</a>
+					</td>
+					<td>4c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/laminak" class="table-row-name text-bold">Laminak</a>
+					</td>
+					<td>7a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-coeur-sur-la-main" class="table-row-name text-bold">Le Coeur Sur la main</a>
+					</td>
+					<td>7c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-bal-du-plancton" class="table-row-name text-bold">Le bal du plancton</a>
+					</td>
+					<td>6b+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-baron-du-milieu" class="table-row-name text-bold">Le baron du milieu</a>
+					</td>
+					<td>6a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-bonheur-est-dans-le-pres" class="table-row-name text-bold">Le bonheur est dans le pres</a>
+					</td>
+					<td>6b</td>
+					<td>Canal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-conte-de-la-neige-noire" class="table-row-name text-bold">Le conte de la neige noire</a>
+					</td>
+					<td>7a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-pardon" class="table-row-name text-bold">Le pardon</a>
+					</td>
+					<td>8a</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-seigneur-des-anales" class="table-row-name text-bold">Le seigneur des anales</a>
+					</td>
+					<td>8a (trav)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-seigneur-des-anales" class="table-row-name text-bold">Le seigneur des anales</a>
+					</td>
+					<td>7b</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-sous-peuple" class="table-row-name text-bold">Le sous peuple</a>
+					</td>
+					<td>7b+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-squale" class="table-row-name text-bold">Le squale</a>
+					</td>
+					<td>6b+</td>
+					<td>Canal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-tombeau-de-damme-panc-ashash" class="table-row-name text-bold">Le tombeau de damme panc ashash</a>
+					</td>
+					<td>7c+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-tombeau-de-damme-panc-ashash-right" class="table-row-name text-bold">Le tombeau de damme panc ashash Right</a>
+					</td>
+					<td>8a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-trou-du-culte" class="table-row-name text-bold">Le trou du culte</a>
+					</td>
+					<td>8a (sit)</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-trou-du-culte-right" class="table-row-name text-bold">Le trou du culte Right</a>
+					</td>
+					<td>7b+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/le-trou-noir" class="table-row-name text-bold">Le trou noir</a>
+					</td>
+					<td>7b</td>
+					<td>Bosquet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/les-3-primes" class="table-row-name text-bold">Les 3 Primes</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/les-saisons-du-doute" class="table-row-name text-bold">Les saisons du doute</a>
+					</td>
+					<td>5c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/let-s-crack" class="table-row-name text-bold">Let's crack</a>
+					</td>
+					<td>5c</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ligne-berhault" class="table-row-name text-bold">Ligne Berhault</a>
+					</td>
+					<td>6a</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lily-bop" class="table-row-name text-bold">Lily bop</a>
+					</td>
+					<td>7a+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/little-death" class="table-row-name text-bold">Little Death</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lobotomie" class="table-row-name text-bold">Lobotomie</a>
+					</td>
+					<td>7b+</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/loby-one" class="table-row-name text-bold">Loby one</a>
+					</td>
+					<td>7a</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/longimalus" class="table-row-name text-bold">Longimalus</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lords-of-acid" class="table-row-name text-bold">Lords of acid</a>
+					</td>
+					<td>6c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/love-cold" class="table-row-name text-bold">Love cold</a>
+					</td>
+					<td>7a+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/love-cold-right" class="table-row-name text-bold">Love cold right</a>
+					</td>
+					<td>6c?</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/love-is-in-the-air" class="table-row-name text-bold">Love is in the air</a>
+					</td>
+					<td>7a+</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/love-with-a-dog" class="table-row-name text-bold">Love with a dog</a>
+					</td>
+					<td>6a+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lucky-loser" class="table-row-name text-bold">Lucky loser</a>
+					</td>
+					<td>8b</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/lumiere-et-melancolie" class="table-row-name text-bold">Lumière et mélancolie</a>
+					</td>
+					<td>6b</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/la-bas" class="table-row-name text-bold">Là-bas</a>
+					</td>
+					<td>6a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/legitime-defonce" class="table-row-name text-bold">Légitime défonce</a>
+					</td>
+					<td>7a+</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/magic-instinct" class="table-row-name text-bold">Magic instinct</a>
+					</td>
+					<td>8a (Du fond)</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/magic-instinct" class="table-row-name text-bold">Magic instinct</a>
+					</td>
+					<td>7c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/main-dans-la-main" class="table-row-name text-bold">Main dans la main</a>
+					</td>
+					<td>7a+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/mange-plat" class="table-row-name text-bold">Mange plat</a>
+					</td>
+					<td>6a</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/matrix" class="table-row-name text-bold">Matrix</a>
+					</td>
+					<td>7c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/michelin" class="table-row-name text-bold">Michelin</a>
+					</td>
+					<td>8a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/mirazapata" class="table-row-name text-bold">Mirazapata</a>
+					</td>
+					<td>4</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/mobscene" class="table-row-name text-bold">Mobscene</a>
+					</td>
+					<td>8a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/moonboard" class="table-row-name text-bold">Moonboard</a>
+					</td>
+					<td>7c</td>
+					<td>Themis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/mother-of-dragons" class="table-row-name text-bold">Mother of Dragons</a>
+					</td>
+					<td>7b+?</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/nazgul" class="table-row-name text-bold">Nazgul</a>
+					</td>
+					<td>7c+ (trav)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/nazgul" class="table-row-name text-bold">Nazgul</a>
+					</td>
+					<td>7c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/nelson-manteladans" class="table-row-name text-bold">Nelson Manteladans</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/nevrotic" class="table-row-name text-bold">Nevrotic</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/new-wave-hooker" class="table-row-name text-bold">New wave hooker</a>
+					</td>
+					<td>6b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/nice" class="table-row-name text-bold">Nice</a>
+					</td>
+					<td>5b</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/no-more-cookies" class="table-row-name text-bold">No more cookies</a>
+					</td>
+					<td>7c+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/necropsie" class="table-row-name text-bold">Nécropsie</a>
+					</td>
+					<td>6c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/oasis" class="table-row-name text-bold">Oasis</a>
+					</td>
+					<td>7b+/c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/oeuf-au-plat" class="table-row-name text-bold">Oeuf au plat</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/orangine" class="table-row-name text-bold">Orangine</a>
+					</td>
+					<td>5c</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/orgasm-machine" class="table-row-name text-bold">Orgasm machine</a>
+					</td>
+					<td>7c+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ouverture-sur-le-monde" class="table-row-name text-bold">Ouverture sur le monde</a>
+					</td>
+					<td>7a+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pareidolia" class="table-row-name text-bold">Pareidolia</a>
+					</td>
+					<td>7a+</td>
+					<td>Gaia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pas-cash" class="table-row-name text-bold">Pas cash</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/petit-prince" class="table-row-name text-bold">Petit prince</a>
+					</td>
+					<td>3a</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/phantom-lord" class="table-row-name text-bold">Phantom Lord</a>
+					</td>
+					<td>8a+</td>
+					<td>Dimensió Desconeguda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/philantrope" class="table-row-name text-bold">Philantrope</a>
+					</td>
+					<td>7b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/philosophie-du-chaos" class="table-row-name text-bold">Philosophie du Chaos</a>
+					</td>
+					<td>7b+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/piano-dos" class="table-row-name text-bold">Piano dos</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/piano-dos" class="table-row-name text-bold">Piano dos</a>
+					</td>
+					<td>7a+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pince-mince" class="table-row-name text-bold">Pince mince</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/placebo" class="table-row-name text-bold">Placebo</a>
+					</td>
+					<td>7a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/plaisir" class="table-row-name text-bold">Plaisir</a>
+					</td>
+					<td>4b</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/planete-des-songes" class="table-row-name text-bold">Planète des songes</a>
+					</td>
+					<td>7c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pleasure-dome" class="table-row-name text-bold">Pleasure dome</a>
+					</td>
+					<td>7b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pleasure-dome" class="table-row-name text-bold">Pleasure dome</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/plus-fort-que-la-police" class="table-row-name text-bold">Plus fort que la police</a>
+					</td>
+					<td>6c+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/poder-de-greyskull" class="table-row-name text-bold">Poder de Greyskull</a>
+					</td>
+					<td>7a+</td>
+					<td>Themis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ponle-ketchup" class="table-row-name text-bold">Ponle ketchup</a>
+					</td>
+					<td>7c</td>
+					<td>La foret</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/poppers" class="table-row-name text-bold">Poppers</a>
+					</td>
+					<td>7c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pose-un-4" class="table-row-name text-bold">Pose un 4</a>
+					</td>
+					<td>6b+</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pouss-mouss" class="table-row-name text-bold">Pouss mouss</a>
+					</td>
+					<td>6a+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/premiere-dent" class="table-row-name text-bold">Première dent</a>
+					</td>
+					<td>6b+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-balcons-bavards" class="table-row-name text-bold">Problem 1 (Balcons Bavards)</a>
+					</td>
+					<td>5c</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-carriere" class="table-row-name text-bold">Problem 1 (Carrière)</a>
+					</td>
+					<td>5c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-dieux-paiens" class="table-row-name text-bold">Problem 1 (Dieux Païens)</a>
+					</td>
+					<td>4c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-dimensio-desconeguda" class="table-row-name text-bold">Problem 1 (Dimensió Desconeguda)</a>
+					</td>
+					<td>5+?</td>
+					<td>Dimensió Desconeguda aka Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-gaia" class="table-row-name text-bold">Problem 1 (Gaia)</a>
+					</td>
+					<td>7b</td>
+					<td>Gaia</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-themis" class="table-row-name text-bold">Problem 1 (Thémis)</a>
+					</td>
+					<td>3</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-themis" class="table-row-name text-bold">Problem 1 (Thémis)</a>
+					</td>
+					<td>5c</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-right-bosquet" class="table-row-name text-bold">Problem 1 Right (Bosquet)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Bosquet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-papas" class="table-row-name text-bold">Problem 1' (Papas)</a>
+					</td>
+					<td>6c</td>
+					<td>Papas</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-1-2-dieux-paiens" class="table-row-name text-bold">Problem 1.2 (Dieux Païens)</a>
+					</td>
+					<td>5</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-10-carriere" class="table-row-name text-bold">Problem 10 (Carrière)</a>
+					</td>
+					<td>5c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-10-crash-test" class="table-row-name text-bold">Problem 10 (Crash test)</a>
+					</td>
+					<td>7c</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-10-dimensio-desconeguda" class="table-row-name text-bold">Problem 10 (Dimensió Desconeguda)</a>
+					</td>
+					<td>7a</td>
+					<td>Dimensió Desconeguda</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-102-chapeau" class="table-row-name text-bold">Problem 102 (Chapeau)</a>
+					</td>
+					<td>4+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-103-chapeau" class="table-row-name text-bold">Problem 103 (Chapeau)</a>
+					</td>
+					<td>4+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-105-chapeau" class="table-row-name text-bold">Problem 105 (Chapeau)</a>
+					</td>
+					<td>4+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-108-chapeau" class="table-row-name text-bold">Problem 108 (Chapeau)</a>
+					</td>
+					<td>4</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-109-right-chapeau" class="table-row-name text-bold">Problem 109 Right (Chapeau)</a>
+					</td>
+					<td>3+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-11-balcons-bavards" class="table-row-name text-bold">Problem 11 (Balcons bavards)</a>
+					</td>
+					<td>5c</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-11-carriere" class="table-row-name text-bold">Problem 11 (Carrière)</a>
+					</td>
+					<td>4c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-111-chapeau" class="table-row-name text-bold">Problem 111 (Chapeau)</a>
+					</td>
+					<td>6b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-117-chapeau" class="table-row-name text-bold">Problem 117 (Chapeau)</a>
+					</td>
+					<td>4+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-12-canal" class="table-row-name text-bold">Problem 12 (Canal)</a>
+					</td>
+					<td>5c</td>
+					<td>Canal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-12-themis" class="table-row-name text-bold">Problem 12 (Thémis)</a>
+					</td>
+					<td>3+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-14-balcons-bavards" class="table-row-name text-bold">Problem 14 (Balcons Bavards)</a>
+					</td>
+					<td>6b</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-14-carriere" class="table-row-name text-bold">Problem 14 (Carrière,)</a>
+					</td>
+					<td>6a</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-14-dieux-paiens" class="table-row-name text-bold">Problem 14 (Dieux païens)</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-14-themis" class="table-row-name text-bold">Problem 14 (Thémis)</a>
+					</td>
+					<td>5a</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-15-carriere" class="table-row-name text-bold">Problem 15 (Carrière)</a>
+					</td>
+					<td>5a</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-15-themis" class="table-row-name text-bold">Problem 15 (Thémis)</a>
+					</td>
+					<td>5c (sit)</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-16-aigle" class="table-row-name text-bold">Problem 16 (Aigle)</a>
+					</td>
+					<td>6a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-16-carriere" class="table-row-name text-bold">Problem 16 (Carrière)</a>
+					</td>
+					<td>5a</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-16-themis" class="table-row-name text-bold">Problem 16 (Thémis)</a>
+					</td>
+					<td>6b+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-17-aigle" class="table-row-name text-bold">Problem 17 (Aigle)</a>
+					</td>
+					<td>6c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-17-carriere" class="table-row-name text-bold">Problem 17 (Carrière)</a>
+					</td>
+					<td>5c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-17-themis" class="table-row-name text-bold">Problem 17 (Thémis)</a>
+					</td>
+					<td>4</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-18-table" class="table-row-name text-bold">Problem 18 (Table)</a>
+					</td>
+					<td>5c</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-19-themis" class="table-row-name text-bold">Problem 19 (Thémis)</a>
+					</td>
+					<td>6b+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-2-bosquet" class="table-row-name text-bold">Problem 2 (Bosquet)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Bosquet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-2-dimensio-desconeguda" class="table-row-name text-bold">Problem 2 (Dimensió Desconeguda)</a>
+					</td>
+					<td>5+?</td>
+					<td>Dimensió Desconeguda aka Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-2-themis" class="table-row-name text-bold">Problem 2 (Thémis)</a>
+					</td>
+					<td>3b</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-20-carriere" class="table-row-name text-bold">Problem 20 (Carrière)</a>
+					</td>
+					<td>5b</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-20-themis" class="table-row-name text-bold">Problem 20 (Thémis)</a>
+					</td>
+					<td>5c</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-20-2-themis" class="table-row-name text-bold">Problem 20.2 (Thémis)</a>
+					</td>
+					<td>5+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-21-carriere" class="table-row-name text-bold">Problem 21 (Carrière)</a>
+					</td>
+					<td>4a</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-21-dieux-paiens" class="table-row-name text-bold">Problem 21 (Dieux païens)</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-21-dieux-paiens" class="table-row-name text-bold">Problem 21 (Dieux païens)</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-21-table" class="table-row-name text-bold">Problem 21 (Table)</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-22-themis" class="table-row-name text-bold">Problem 22 (Thémis)</a>
+					</td>
+					<td>6b+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-23-carriere" class="table-row-name text-bold">Problem 23 (Carrière)</a>
+					</td>
+					<td>6a+</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-23-dolmens" class="table-row-name text-bold">Problem 23 (Dolmens)</a>
+					</td>
+					<td>6b</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-24-baleine" class="table-row-name text-bold">Problem 24 (Baleine)</a>
+					</td>
+					<td>6a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-25-baleine" class="table-row-name text-bold">Problem 25 (Baleine)</a>
+					</td>
+					<td>5b</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-26-table" class="table-row-name text-bold">Problem 26 (Table)</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-28-arche" class="table-row-name text-bold">Problem 28 (Arche)</a>
+					</td>
+					<td>4b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-28-baleine" class="table-row-name text-bold">Problem 28 (Baleine)</a>
+					</td>
+					<td>5b</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-29-baleine" class="table-row-name text-bold">Problem 29 (Baleine)</a>
+					</td>
+					<td>6a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-29-dieux-paiens" class="table-row-name text-bold">Problem 29 (Dieux païens)</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Dieux païens </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-29-proue" class="table-row-name text-bold">Problem 29 (Proue)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-3-dolmens" class="table-row-name text-bold">Problem 3 (Dolmens)</a>
+					</td>
+					<td>5a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-3-taz" class="table-row-name text-bold">Problem 3 (Taz)</a>
+					</td>
+					<td>5c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-3-themis" class="table-row-name text-bold">Problem 3 (Thémis)</a>
+					</td>
+					<td>4b</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-30-arche" class="table-row-name text-bold">Problem 30 (Arche)</a>
+					</td>
+					<td>4a</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-30-table" class="table-row-name text-bold">Problem 30 (Table)</a>
+					</td>
+					<td>6a</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-31-arche" class="table-row-name text-bold">Problem 31 (Arche)</a>
+					</td>
+					<td>5c</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-31b-baleine" class="table-row-name text-bold">Problem 31b (Baleine)</a>
+					</td>
+					<td>7b+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-32-balcons-bavards" class="table-row-name text-bold">Problem 32 (Balcons bavards)</a>
+					</td>
+					<td>6c</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-33-themis" class="table-row-name text-bold">Problem 33 (Thémis)</a>
+					</td>
+					<td>6a</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-34-dolmens" class="table-row-name text-bold">Problem 34 (Dolmens), +</a>
+					</td>
+					<td>6a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-34-bis-arche" class="table-row-name text-bold">Problem 34 bis (Arche),</a>
+					</td>
+					<td>4b (sit)</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-35-dolmens" class="table-row-name text-bold">Problem 35 (Dolmens)</a>
+					</td>
+					<td>5b</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-36-direct-arche" class="table-row-name text-bold">Problem 36 Direct (Arche)</a>
+					</td>
+					<td>6a</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-38-baleine" class="table-row-name text-bold">Problem 38 (Baleine)</a>
+					</td>
+					<td>7a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-38-themis" class="table-row-name text-bold">Problem 38 (Thémis)</a>
+					</td>
+					<td>5+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-39-themis" class="table-row-name text-bold">Problem 39 (Thémis)</a>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-4-balcons-bavards" class="table-row-name text-bold">Problem 4 (Balcons bavards)</a>
+					</td>
+					<td>6b+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-4-bosquet" class="table-row-name text-bold">Problem 4 (Bosquet)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Bosquet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-4-dimensio-desconeguda-6b" class="table-row-name text-bold">Problem 4 (Dimensió Desconeguda), 6b?</a>
+					</td>
+					<td>6b? Unknown</td>
+					<td>Dimensió Desconeguda/Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-4-themis" class="table-row-name text-bold">Problem 4 (Thémis)</a>
+					</td>
+					<td>4b</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-40-themis" class="table-row-name text-bold">Problem 40 (Thémis)</a>
+					</td>
+					<td>6a+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-41-dolmens" class="table-row-name text-bold">Problem 41 (Dolmens)</a>
+					</td>
+					<td>7a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-43-arche" class="table-row-name text-bold">Problem 43 (Arche)</a>
+					</td>
+					<td>5b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-44-arche" class="table-row-name text-bold">Problem 44 (Arche)</a>
+					</td>
+					<td>5b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-47-arche" class="table-row-name text-bold">Problem 47 (Arche)</a>
+					</td>
+					<td>6a+</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-47-dolmens" class="table-row-name text-bold">Problem 47 (Dolmens)</a>
+					</td>
+					<td>7c+ (sit)</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-47-taz" class="table-row-name text-bold">Problem 47 (Taz)</a>
+					</td>
+					<td>6a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-48-arche" class="table-row-name text-bold">Problem 48 (Arche)</a>
+					</td>
+					<td>4b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-48-taz" class="table-row-name text-bold">Problem 48 (Taz)</a>
+					</td>
+					<td>6a</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-49-arche" class="table-row-name text-bold">Problem 49 (Arche)</a>
+					</td>
+					<td>4b</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-50-arche" class="table-row-name text-bold">Problem 50 (Arche)</a>
+					</td>
+					<td>5a</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-51-themis" class="table-row-name text-bold">Problem 51 (Thémis)</a>
+					</td>
+					<td>4+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-53-themis" class="table-row-name text-bold">Problem 53 (Thémis)</a>
+					</td>
+					<td>4</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-54-3-grasses" class="table-row-name text-bold">Problem 54 (3 grasses)</a>
+					</td>
+					<td>5a (sit)</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-55-dieux-paiens" class="table-row-name text-bold">Problem 55 (Dieux païens)</a>
+					</td>
+					<td>6b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-58-themis" class="table-row-name text-bold">Problem 58 (Thémis)</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-59-baleine" class="table-row-name text-bold">Problem 59 (Baleine)</a>
+					</td>
+					<td>4a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-balcons-bavards" class="table-row-name text-bold">Problem 6 (Balcons bavards)</a>
+					</td>
+					<td>6b+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-chapeau" class="table-row-name text-bold">Problem 6 (Chapeau)</a>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-dimensio-desconeguda" class="table-row-name text-bold">Problem 6 (Dimensió Desconeguda)</a>
+					</td>
+					<td>5?</td>
+					<td>Dimensió Desconeguda aka Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-dolmens" class="table-row-name text-bold">Problem 6 (Dolmens)</a>
+					</td>
+					<td>3+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-themis" class="table-row-name text-bold">Problem 6 (Thémis)</a>
+					</td>
+					<td>4</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-6-1-dolmens" class="table-row-name text-bold">Problem 6.1 (Dolmens)</a>
+					</td>
+					<td>5</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-60-baleine" class="table-row-name text-bold">Problem 60 (Baleine)</a>
+					</td>
+					<td>4a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-61-aigle" class="table-row-name text-bold">Problem 61 (Aigle)</a>
+					</td>
+					<td>6a</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-61-baleine" class="table-row-name text-bold">Problem 61 (Baleine)</a>
+					</td>
+					<td>6a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-62-baleine" class="table-row-name text-bold">Problem 62 (Baleine)</a>
+					</td>
+					<td>4c</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-63-baleine" class="table-row-name text-bold">Problem 63 (Baleine)</a>
+					</td>
+					<td>5a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-7-dolmens" class="table-row-name text-bold">Problem 7 (Dolmens)</a>
+					</td>
+					<td>4</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-72-taz" class="table-row-name text-bold">Problem 72' (Taz)</a>
+					</td>
+					<td>6c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-76-themis" class="table-row-name text-bold">Problem 76 (Thémis)</a>
+					</td>
+					<td>6c</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-8-canal" class="table-row-name text-bold">Problem 8 (Canal)</a>
+					</td>
+					<td>5a</td>
+					<td>Canal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-8-creatura" class="table-row-name text-bold">Problem 8 (Créatura)</a>
+					</td>
+					<td>6b</td>
+					<td>Creatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-80-chapeau" class="table-row-name text-bold">Problem 80 (Chapeau)</a>
+					</td>
+					<td>6b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-80-themis-targassonne" class="table-row-name text-bold">Problem 80 (Thémis), . Targassonne</a>
+					</td>
+					<td>5</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-81-aigle" class="table-row-name text-bold">Problem 81 (Aigle)</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-82-themis" class="table-row-name text-bold">Problem 82 (Thémis)</a>
+					</td>
+					<td>5c (sit)</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-86-themis" class="table-row-name text-bold">Problem 86 (Thémis)</a>
+					</td>
+					<td>5</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-86-themis" class="table-row-name text-bold">Problem 86 (Thémis)</a>
+					</td>
+					<td>6a</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-87-aigle" class="table-row-name text-bold">Problem 87 (Aigle)</a>
+					</td>
+					<td>4c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-87-chapeau" class="table-row-name text-bold">Problem 87 (Chapeau)</a>
+					</td>
+					<td>6b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-88-aigle" class="table-row-name text-bold">Problem 88 (Aigle)</a>
+					</td>
+					<td>4c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-9-canal" class="table-row-name text-bold">Problem 9 (Canal)</a>
+					</td>
+					<td>4c</td>
+					<td>Canal</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-9-carriere" class="table-row-name text-bold">Problem 9 (Carrière)</a>
+					</td>
+					<td>5b</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-93-chapeau" class="table-row-name text-bold">Problem 93 (Chapeau)</a>
+					</td>
+					<td>6a</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-94-aigle" class="table-row-name text-bold">Problem 94 (Aigle)</a>
+					</td>
+					<td>4c</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-95-chapeau" class="table-row-name text-bold">Problem 95 (Chapeau)</a>
+					</td>
+					<td>5b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/problem-96-chapeau" class="table-row-name text-bold">Problem 96 (Chapeau)</a>
+					</td>
+					<td>5b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/psoas-mole" class="table-row-name text-bold">Psoas Mole</a>
+					</td>
+					<td>8a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/psoas-pole" class="table-row-name text-bold">Psoas Pole</a>
+					</td>
+					<td>8a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/psoas-hole" class="table-row-name text-bold">Psoas hole</a>
+					</td>
+					<td>8a+</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/pute-effraction" class="table-row-name text-bold">Pute éffraction</a>
+					</td>
+					<td>7a+</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/putrefaction-taste" class="table-row-name text-bold">Putrefaction taste</a>
+					</td>
+					<td>6a+</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/queen-of-hearts" class="table-row-name text-bold">Queen of hearts</a>
+					</td>
+					<td>8b/8b+ (sit)</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/relan-de-leffe" class="table-row-name text-bold">Relan de leffe</a>
+					</td>
+					<td>6c+</td>
+					<td>Table</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/renaiss" class="table-row-name text-bold">Renaiss</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Créatura</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/rien-de-plus" class="table-row-name text-bold">Rien de plus</a>
+					</td>
+					<td>6b</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/rebellion" class="table-row-name text-bold">Rébellion</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/reve-errance" class="table-row-name text-bold">Rêve - errance</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Arche</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/scarification" class="table-row-name text-bold">Scarification</a>
+					</td>
+					<td>6c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/scato-no-vice" class="table-row-name text-bold">Scato no vice</a>
+					</td>
+					<td>6b+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/serrez-stimulez" class="table-row-name text-bold">Serrez stimulez</a>
+					</td>
+					<td>7b</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/shadow-dancer" class="table-row-name text-bold">Shadow Dancer</a>
+					</td>
+					<td>8a</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/si-pres-de-l-antre" class="table-row-name text-bold">Si prés de l'antre</a>
+					</td>
+					<td>5c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/sikatriste" class="table-row-name text-bold">Sikatriste</a>
+					</td>
+					<td>5b</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/sing-while-you-may" class="table-row-name text-bold">Sing while you may</a>
+					</td>
+					<td>8a (Du fond)</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/sing-while-you-may" class="table-row-name text-bold">Sing while you may</a>
+					</td>
+					<td>7b</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/solitude-amere" class="table-row-name text-bold">Solitude amère</a>
+					</td>
+					<td>5c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/solitude-amere" class="table-row-name text-bold">Solitude amère</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/sun-again" class="table-row-name text-bold">Sun Again</a>
+					</td>
+					<td>6c</td>
+					<td>Crash test</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/suspicious-minds" class="table-row-name text-bold">Suspicious Minds</a>
+					</td>
+					<td>6c</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/t-style" class="table-row-name text-bold">T style</a>
+					</td>
+					<td>4</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/talonavirus" class="table-row-name text-bold">Talonavirus</a>
+					</td>
+					<td>6b+</td>
+					<td>Thémis</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/tape-a-l-oeil" class="table-row-name text-bold">Tape à l'oeil</a>
+					</td>
+					<td>5a</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/thanatodrome" class="table-row-name text-bold">Thanatodrome</a>
+					</td>
+					<td>7c+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ticket-tacc" class="table-row-name text-bold">Ticket tacc</a>
+					</td>
+					<td>6c</td>
+					<td>Carrière</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/tigre-et-dragon" class="table-row-name text-bold">Tigre et Dragon</a>
+					</td>
+					<td>7b+ (Proposed 7c by Rackam) </td>
+					<td>Papas</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/tomagomas" class="table-row-name text-bold">Tomagomas</a>
+					</td>
+					<td>6b+?</td>
+					<td>Dimensió Desconeguda aka Du Virage</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/traite-de-demonologie" class="table-row-name text-bold">Traité de démonologie</a>
+					</td>
+					<td>7b</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/traite-de-demonologie-direct" class="table-row-name text-bold">Traité de démonologie direct</a>
+					</td>
+					<td>7c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/traverser-l-amourir" class="table-row-name text-bold">Traverser l'amourir</a>
+					</td>
+					<td>6b+</td>
+					<td>Proue</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/trip-a-plat" class="table-row-name text-bold">Trip a plat</a>
+					</td>
+					<td>6b+</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/tunning" class="table-row-name text-bold">Tunning</a>
+					</td>
+					<td>6b</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/un-soufle" class="table-row-name text-bold">Un soufle</a>
+					</td>
+					<td>5c</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/uniformicide" class="table-row-name text-bold">Uniformicide</a>
+					</td>
+					<td>8a</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/unknown-taz" class="table-row-name text-bold">Unknown (Taz)</a>
+					</td>
+					<td>6c/7a?</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/unknown-opened-by-rackam" class="table-row-name text-bold">Unknown. Opened by Rackam</a>
+					</td>
+					<td>7c</td>
+					<td>Dolmens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/vallee-heureuse" class="table-row-name text-bold">Vallée heureuse</a>
+					</td>
+					<td>6a+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/verre-brise" class="table-row-name text-bold">Verre brisé</a>
+					</td>
+					<td>5a</td>
+					<td>Dieux païens</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/vicious-game" class="table-row-name text-bold">Vicious game</a>
+					</td>
+					<td>7b+</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/vicious-game-sit" class="table-row-name text-bold">Vicious game Sit</a>
+					</td>
+					<td>Unknown</td>
+					<td>Aigle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/vieille-ecole" class="table-row-name text-bold">Vieille école</a>
+					</td>
+					<td>6b+</td>
+					<td>3 grasses</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/yen-pox" class="table-row-name text-bold">Yen pox</a>
+					</td>
+					<td>6b</td>
+					<td>Chapeau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/zdabauw" class="table-row-name text-bold">Zdabauw</a>
+					</td>
+					<td>8a+</td>
+					<td>Balcons bavards</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/ziza" class="table-row-name text-bold">Ziza</a>
+					</td>
+					<td>6a</td>
+					<td>Baleine</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/zone-d-autonomie-temporaire" class="table-row-name text-bold">Zone d'autonomie temporaire</a>
+					</td>
+					<td>6a+</td>
+					<td>Taz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/targasonne/zone-rouge" class="table-row-name text-bold">Zone rouge</a>
+					</td>
+					<td>6c+</td>
+					<td>Chapeau</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

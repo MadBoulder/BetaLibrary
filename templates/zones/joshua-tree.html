@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/joshua-tree">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Joshua Tree 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="34.018876" />
   <input type="hidden" id="lng" name="lng_val" value="-116.167611" />
@@ -168,419 +248,147 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.wolverinepublishing.com/store/joshua-tree-bouldering/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Joshua Tree Bouldering
+		</a>
+	
+		<a id="guide_link"  href="https://www.mountainproject.com/area/106098051/joshua-tree-bouldering" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Mountain Project
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/areas/joshua-tree" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.wolverinepublishing.com/store/joshua-tree-bouldering/"
-        target="_blank"
-        >Joshua Tree Bouldering</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.mountainproject.com/area/106098051/joshua-tree-bouldering"
-        target="_blank"
-        >Mountain Project</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/areas/joshua-tree"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/joshua-tree"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/joshua-tree"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/joshua-tree/4-star-dyno">4-Star Dyno, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/alexandria">Alexandria, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/any-name-but-sue">Any Name But Sue, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/betty-jo-yablonski">Betty Jo  Yablonski, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/bittersweet">Bittersweet, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/blood-diamond">Blood Diamond, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/body-and-soul">Body and Soul, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/broken-flowers">Broken Flowers, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/broken-flowers">Broken Flowers, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/caveman">Caveman, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/caveman-finish">Caveman Finish, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/chasm-gasm">Chasm Gasm, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/chili-sauce">Chili Sauce, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/claude-funstun">Claude Funstun, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/dab-rig">Dab Rig, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/dark-matter">Dark Matter, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/digital-black">Digital Black, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/dodging-bullets">Dodging Bullets, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/doesn-t-matter">Doesn't Matter, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/dream-sequence">Dream Sequence, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/dreaming-of-the-master">Dreaming of the Master, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/false-hueco-traverse">False Hueco Traverse, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/false-hueco-traverse">False Hueco Traverse, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/false-up-20">False Up 20, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/finger-fetish">Finger Fetish, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/flight-attendant">Flight Attendant, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/igneous-ambiance">Igneous Ambiance, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/k-d-supreme">K.D. Supreme, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/lost-and-found">Lost and Found, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/meadows-direct">Meadows Direct, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/nicole-face">Nicole Face, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/nicole-overhang">Nicole Overhang, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/penguins-in-bondage">Penguins in Bondage, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/planet-x">Planet X, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/poop-emoji">Poop Emoji, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/psyche">Psyche, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/pumping-monzonite">Pumping Monzonite, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/rail-shark">Rail Shark, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/raspberry">Raspberry, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/ryan-s-roof">Ryan's roof, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/saturday-night-live">Saturday Night Live, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/saxwing-on-the-dl">Saxwing on the DL, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/scatterbrain">Scatterbrain, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/scorpion-roof">Scorpion Roof, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/skimbles">Skimbles, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/slashface">Slashface, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/so-high">So High, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/strawberry-contraceptives">Strawberry Contraceptives, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/the-heart">The Heart, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/the-inquisition">The Inquisition, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/the-love-machine">The Love Machine, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/the-yogi">The Yogi, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/thin-lizzie">Thin Lizzie, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/tidal-wave">Tidal Wave, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/up-40">Up 40, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/vicarious">Vicarious, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/white-rastafarian">White Rastafarian, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/yabo-roof-traverse">Yabo Roof Traverse, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/joshua-tree/youth-body-explosion">Youth Body Explosion, V11</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "joshua-tree_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/joshua-tree/central">Central</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/central-lonesome-crowded-west">Central - Lonesome Crowded West</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/central-planet-x">Central - Planet X</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/hidden-valley">Hidden Valley</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/lost-horse">Lost Horse</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/quail-springs">Quail Springs</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/queen-valley">Queen Valley</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/joshua-tree/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "joshua-tree_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/central" class="table-row-name text-bold">Central</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/central-lonesome-crowded-west" class="table-row-name text-bold">Central - Lonesome Crowded West</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/central-planet-x" class="table-row-name text-bold">Central - Planet X</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/hidden-valley" class="table-row-name text-bold">Hidden Valley</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/lost-horse" class="table-row-name text-bold">Lost Horse</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/quail-springs" class="table-row-name text-bold">Quail Springs</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/queen-valley" class="table-row-name text-bold">Queen Valley</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/joshua-tree/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">20</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -605,8 +413,561 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/4-star-dyno" class="table-row-name text-bold">4-Star Dyno</a>
+					</td>
+					<td>V6</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/alexandria" class="table-row-name text-bold">Alexandria</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/any-name-but-sue" class="table-row-name text-bold">Any Name But Sue</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/betty-jo-yablonski" class="table-row-name text-bold">Betty Jo  Yablonski</a>
+					</td>
+					<td>V0</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/bittersweet" class="table-row-name text-bold">Bittersweet</a>
+					</td>
+					<td>V9</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/blood-diamond" class="table-row-name text-bold">Blood Diamond</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/body-and-soul" class="table-row-name text-bold">Body and Soul</a>
+					</td>
+					<td>V5</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/broken-flowers" class="table-row-name text-bold">Broken Flowers</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/broken-flowers" class="table-row-name text-bold">Broken Flowers</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/caveman" class="table-row-name text-bold">Caveman</a>
+					</td>
+					<td>V7</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/caveman-finish" class="table-row-name text-bold">Caveman Finish</a>
+					</td>
+					<td>V3</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/chasm-gasm" class="table-row-name text-bold">Chasm Gasm</a>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/chili-sauce" class="table-row-name text-bold">Chili Sauce</a>
+					</td>
+					<td>V7</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/claude-funstun" class="table-row-name text-bold">Claude Funstun</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/dab-rig" class="table-row-name text-bold">Dab Rig</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/dark-matter" class="table-row-name text-bold">Dark Matter</a>
+					</td>
+					<td>V9</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/digital-black" class="table-row-name text-bold">Digital Black</a>
+					</td>
+					<td>V10</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/dodging-bullets" class="table-row-name text-bold">Dodging Bullets</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/doesn-t-matter" class="table-row-name text-bold">Doesn't Matter</a>
+					</td>
+					<td>V7</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/dream-sequence" class="table-row-name text-bold">Dream Sequence</a>
+					</td>
+					<td>V6</td>
+					<td>Quail Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/dreaming-of-the-master" class="table-row-name text-bold">Dreaming of the Master</a>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/false-hueco-traverse" class="table-row-name text-bold">False Hueco Traverse</a>
+					</td>
+					<td>V2</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/false-hueco-traverse" class="table-row-name text-bold">False Hueco Traverse</a>
+					</td>
+					<td>V2</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/false-up-20" class="table-row-name text-bold">False Up 20</a>
+					</td>
+					<td>V0</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/finger-fetish" class="table-row-name text-bold">Finger Fetish</a>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/flight-attendant" class="table-row-name text-bold">Flight Attendant</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/igneous-ambiance" class="table-row-name text-bold">Igneous Ambiance</a>
+					</td>
+					<td>V7</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/k-d-supreme" class="table-row-name text-bold">K.D. Supreme</a>
+					</td>
+					<td>V4</td>
+					<td>Quail Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/lost-and-found" class="table-row-name text-bold">Lost and Found</a>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/meadows-direct" class="table-row-name text-bold">Meadows Direct</a>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/nicole-face" class="table-row-name text-bold">Nicole Face</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/nicole-overhang" class="table-row-name text-bold">Nicole Overhang</a>
+					</td>
+					<td>V6</td>
+					<td>Central - Planet X</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/penguins-in-bondage" class="table-row-name text-bold">Penguins in Bondage</a>
+					</td>
+					<td>V4</td>
+					<td>Lost Horse</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/planet-x" class="table-row-name text-bold">Planet X</a>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/poop-emoji" class="table-row-name text-bold">Poop Emoji</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/psyche" class="table-row-name text-bold">Psyche</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/pumping-monzonite" class="table-row-name text-bold">Pumping Monzonite</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/rail-shark" class="table-row-name text-bold">Rail Shark</a>
+					</td>
+					<td>V11</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/raspberry" class="table-row-name text-bold">Raspberry</a>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/ryan-s-roof" class="table-row-name text-bold">Ryan's roof</a>
+					</td>
+					<td>V5</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/saturday-night-live" class="table-row-name text-bold">Saturday Night Live</a>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/saxwing-on-the-dl" class="table-row-name text-bold">Saxwing on the DL</a>
+					</td>
+					<td>V5</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/scatterbrain" class="table-row-name text-bold">Scatterbrain</a>
+					</td>
+					<td>V6</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/scorpion-roof" class="table-row-name text-bold">Scorpion Roof</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/skimbles" class="table-row-name text-bold">Skimbles</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/slashface" class="table-row-name text-bold">Slashface</a>
+					</td>
+					<td>V3</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/so-high" class="table-row-name text-bold">So High</a>
+					</td>
+					<td>V5</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/strawberry-contraceptives" class="table-row-name text-bold">Strawberry Contraceptives</a>
+					</td>
+					<td>V7</td>
+					<td>Central - Planet X</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/the-heart" class="table-row-name text-bold">The Heart</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/the-inquisition" class="table-row-name text-bold">The Inquisition</a>
+					</td>
+					<td>V6</td>
+					<td>Central - Lonesome Crowded West</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/the-love-machine" class="table-row-name text-bold">The Love Machine</a>
+					</td>
+					<td>V10</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/the-yogi" class="table-row-name text-bold">The Yogi</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/thin-lizzie" class="table-row-name text-bold">Thin Lizzie</a>
+					</td>
+					<td>V8</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/tidal-wave" class="table-row-name text-bold">Tidal Wave</a>
+					</td>
+					<td>V9</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/up-40" class="table-row-name text-bold">Up 40</a>
+					</td>
+					<td>V3</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/vicarious" class="table-row-name text-bold">Vicarious</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/white-rastafarian" class="table-row-name text-bold">White Rastafarian</a>
+					</td>
+					<td>V2</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/yabo-roof-traverse" class="table-row-name text-bold">Yabo Roof Traverse</a>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/joshua-tree/youth-body-explosion" class="table-row-name text-bold">Youth Body Explosion</a>
+					</td>
+					<td>V11</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/la-jonquera">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              La Jonquera 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="42.4238325110565" />
   <input type="hidden" id="lng" name="lng_val" value="2.90422684163525" />
@@ -168,763 +248,186 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://lajonquerabloquera.blogspot.com/2017/12/boulder-la-jonquera.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			La Jonquera Bloquera (Blog-Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Boulder en España (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://lajonquerabloquera.blogspot.com/2017/12/boulder-la-jonquera.html"
-        target="_blank"
-        >La Jonquera Bloquera (Blog-Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.libreriadesnivel.com/libros/boulder-en-espana/9788498294590/"
-        target="_blank"
-        >Boulder en España (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/la-jonquera"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/la-jonquera"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/la-jonquera/1-d-octubre">1 d'Octubre, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/acuaman">Acuaman, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/amoniac">Amoníac, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/aresta-albera">Aresta Albera, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/balance-l-elixir">Balance l'élixir, 6c+/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/beluga">Beluga, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/beyonsit">Beyonsit, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/black-ball">Black ball, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/boca-de-balena">Boca de balena, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/bulling">Bulling, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/calavera">Calavera, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/californian-s-move">Californian's Move, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/caparrassa">Caparrassa, 6a+/6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/casse-partout">Casse partout, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/cientifico-loco">Cientifico loco, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/decapitat">Decapitat, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/dr-slum">Dr Slum, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/duelo-de-clanes">Duelo de clanes, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/easy-crack">Easy crack, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/effecto-umbrella">Effecto Umbrella, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-dau">El Dau, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-pato-donald">El Pato Donald, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-pato-lucas">El Pato Lucas, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-sangrait">El Sangraït, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-sorrenc">El Sorrenc, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-carnicer-d-argentona">El carnicer d'argentona, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-corazon">El corazon, 6b+ (stand)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-corazon">El corazon, 6a (trav)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-huevo">El huevo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-kiyo">El kiyo, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-mantel-del-barco">El mantel del barco, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-mas-de-la-por">El mas de la por, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-niu-de-l-escorpi">El niu de l'escorpí, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-niu-del-borinot">El niu del borinot, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-refugi-extension">El refugi Extension, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-senyor-de-las-llaves">El senyor de las llaves, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-taco">El taco, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-trenca-closques">El trenca closques, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/el-trenca-closques">El trenca closques, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/escorpion">Escorpion, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/estado-de-alarma">Estado de alarma, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/estado-de-alarma">Estado de alarma, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/estado-de-alarma-dreta">Estado de alarma Dreta, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/et-deixa-tullit">Et deixa tullit, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/fantasia">Fantasia, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/floki">Floki, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/fretarnite">Fretarnite, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/gecko-negre">Gecko negre, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/gecko-negre-trave">Gecko negre Trave, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/ginesta">Ginesta, 7a+/b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/gipsy-aret">Gipsy aret, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/girant-canells">Girant canells, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/girona-s-roof">Girona S roof, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/guarrillas-crack">Guarrillas crack, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/iron-mantel">Iron Mantel, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/jam-session">Jam session, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/jordi-croasan">Jordi croasan, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/junten-morten">Junten Morten, 7a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/kanuma">Kanuma, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-arare">L'Arare, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aresta-del-foc">L'Aresta del foc, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aresta-del-vent">L'Aresta del vent, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-empotrador">L'Empotrador, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aranyamantel">L'aranyamantel, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aresta-del-barco">L'aresta del barco, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aresta-del-bloc-de-la-placa">L'aresta del bloc de la plaça, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/l-aresta-dels-deus">L'aresta dels deus, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-corasa">La Corasa, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-corassa">La Corassa, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-lola">La Lola, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-planxa">La Planxa, 6c+ (Extension Sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-planxa">La Planxa, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-barbeta-lance">La barbeta (Lance), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-berra">La berra, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-cova-infinita">La cova infinita, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-gran-v">La gran V, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-granota">La granota, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-llengua">La llengüa, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-placa">La placa, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-primera-amb-bambes">La primera amb bambes, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-proa">La proa, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-trave-de-lo-imposible">La trave de lo imposible, 7a/+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-trave-del-cucurucho">La trave del cucurucho, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-trave-negre">La trave negre, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-vela">La vela, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-vuelta-al-cole">La vuelta al cole, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/la-vuelta-al-cole">La vuelta al cole, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/le-frontier">Le Frontier, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/lo-imposible">Lo imposible, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/macrame">Macramé, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/mi-pequeno-okuma">Mi pequeño okuma, 7a+ (trave)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/mi-pequeno-okuma">Mi pequeño okuma, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/mini-crak">Mini crak, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/mini-crash">Mini crash, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/miradones">Miradones, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/megaclaque">Mégaclaque, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/no-als-molins">No als molins!!, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/no-veig-una-merda">No veig una merda, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/olor-a-berru">Olor a Berru, 7b (sit extension)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/olor-a-berru">Olor a Berru, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pad-aigues">Pad aigües, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pequeno-rocklands">Pequeño Rocklands, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pequeno-rocklands-directe">Pequeño Rocklands Directe, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pequeno-rocklands-dreta">Pequeño Rocklands Dreta, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pet-amb-cua">Pet amb cua, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pico-de-pato">Pico de Pato, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pico-de-pato">Pico de pato, 6c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/placa-de-santa-llucia">Placa de Santa Llúcia, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/placa-del-camino">Placa del camino, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pluja-de-meteorits">Pluja de meteorits, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/posagots-directe">Posagots directe, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/posagots-esquerra">Posagots esquerra, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/pota-de-senglar">Pota de senglar, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/prehistoric">Prehistòric, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/primero-mantel">Primero mantel, 6c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-2-boulder-111-puig-del-corb">Problem 2 (Boulder 111, Puig del Corb), 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-2-boulder-38-puig-del-corb">Problem 2 (Boulder 38, Puig del Corb), 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-3-boulder-111-puig-del-corb">Problem 3 (Boulder 111, Puig del Corb), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-3-boulder-5-joieria">Problem 3 (Boulder 5, Joieria), 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-4-bloc-97-puig-del-corb">Problem 4 (Bloc 97, Puig del Corb), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/problem-5-boulder-1-carpe-diem">Problem 5 (Boulder 1, Carpe Diem), 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/puzzle-crack-extension">Puzzle crack extension, 7a+/7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/raplapla">Raplapla, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/romoku">Romoku, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/rosas-beach">Rosas beach, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/rotobox">Rotobox, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/salto-al-vacio">Salto al vacio, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/se-me-va-la-pinza">Se me va la pinza, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/se-te-va-la-pinza">Se te va la pinza, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/silence-ca-pousse">Silence, ça pousse!, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/tactum-arete">Tactum Arete, 7a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/tactum-slap">Tactum Slap, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/the-last">The last, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/titanic">Titanic, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/titanium">Titanium, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/titanium-traverse">Titanium traverse, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/tram-final-le-frontier">Tram final le frontier, 5+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/valkiria">Valkiria, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/virus">Virus, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/la-jonquera/wet-arete">Wet arete, 6b</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "la-jonquera_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/la-jonquera/carpe-diem">Carpe Diem</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/joieria">Joieria</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/joieria-1">Joieria 1</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/joieria-2">Joieria 2</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/joieria1">Joieria1</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/joieria2">Joieria2</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/la-joieria">La Joieria</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/la-joieria-1">La Joieria 1</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/la-joieria-2">La Joieria 2</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/le-frontier">Le Frontier</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/mon-amour">Mon amour</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/mont-amour">Mont amour</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/la-jonquera/puig-del-corb">Puig del Corb</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "la-jonquera_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/carpe-diem" class="table-row-name text-bold">Carpe Diem</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/joieria" class="table-row-name text-bold">Joieria</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/joieria-1" class="table-row-name text-bold">Joieria 1</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/joieria-2" class="table-row-name text-bold">Joieria 2</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/joieria1" class="table-row-name text-bold">Joieria1</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/joieria2" class="table-row-name text-bold">Joieria2</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/la-joieria" class="table-row-name text-bold">La Joieria</a>
+					</td>
+					<td class="text-center">10</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/la-joieria-1" class="table-row-name text-bold">La Joieria 1</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/la-joieria-2" class="table-row-name text-bold">La Joieria 2</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/le-frontier" class="table-row-name text-bold">Le Frontier</a>
+					</td>
+					<td class="text-center">20</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/mon-amour" class="table-row-name text-bold">Mon amour</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/mont-amour" class="table-row-name text-bold">Mont amour</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/la-jonquera/puig-del-corb" class="table-row-name text-bold">Puig del Corb</a>
+					</td>
+					<td class="text-center">55</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -952,7 +455,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Le Frontier</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -978,7 +481,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Joieria</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1004,7 +507,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Carpe Diem</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1030,7 +533,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Puig del Corb</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1056,7 +559,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Mont amour</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1079,8 +582,1290 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/1-d-octubre" class="table-row-name text-bold">1 d'Octubre</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/acuaman" class="table-row-name text-bold">Acuaman</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/amoniac" class="table-row-name text-bold">Amoníac</a>
+					</td>
+					<td>Unknown</td>
+					<td>Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/aresta-albera" class="table-row-name text-bold">Aresta Albera</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/balance-l-elixir" class="table-row-name text-bold">Balance l'élixir</a>
+					</td>
+					<td>6c+/7a</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/beluga" class="table-row-name text-bold">Beluga</a>
+					</td>
+					<td>6a</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/beyonsit" class="table-row-name text-bold">Beyonsit</a>
+					</td>
+					<td>6b+</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/black-ball" class="table-row-name text-bold">Black ball</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/boca-de-balena" class="table-row-name text-bold">Boca de balena</a>
+					</td>
+					<td>6c</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/bulling" class="table-row-name text-bold">Bulling</a>
+					</td>
+					<td>7a</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/calavera" class="table-row-name text-bold">Calavera</a>
+					</td>
+					<td>6c+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/californian-s-move" class="table-row-name text-bold">Californian's Move</a>
+					</td>
+					<td>6c+</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/caparrassa" class="table-row-name text-bold">Caparrassa</a>
+					</td>
+					<td>6a+/6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/casse-partout" class="table-row-name text-bold">Casse partout</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/cientifico-loco" class="table-row-name text-bold">Cientifico loco</a>
+					</td>
+					<td>Unknown</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/decapitat" class="table-row-name text-bold">Decapitat</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/dr-slum" class="table-row-name text-bold">Dr Slum</a>
+					</td>
+					<td>5</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/duelo-de-clanes" class="table-row-name text-bold">Duelo de clanes</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/easy-crack" class="table-row-name text-bold">Easy crack</a>
+					</td>
+					<td>5+</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/effecto-umbrella" class="table-row-name text-bold">Effecto Umbrella</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-dau" class="table-row-name text-bold">El Dau</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-pato-donald" class="table-row-name text-bold">El Pato Donald</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-pato-lucas" class="table-row-name text-bold">El Pato Lucas</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-sangrait" class="table-row-name text-bold">El Sangraït</a>
+					</td>
+					<td>6a+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-sorrenc" class="table-row-name text-bold">El Sorrenc</a>
+					</td>
+					<td>4</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-carnicer-d-argentona" class="table-row-name text-bold">El carnicer d'argentona</a>
+					</td>
+					<td>6b+</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-corazon" class="table-row-name text-bold">El corazon</a>
+					</td>
+					<td>6b+ (stand)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-corazon" class="table-row-name text-bold">El corazon</a>
+					</td>
+					<td>6a (trav)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-huevo" class="table-row-name text-bold">El huevo</a>
+					</td>
+					<td>6a+</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-kiyo" class="table-row-name text-bold">El kiyo</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-mantel-del-barco" class="table-row-name text-bold">El mantel del barco</a>
+					</td>
+					<td>6a</td>
+					<td>Mon amour</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-mas-de-la-por" class="table-row-name text-bold">El mas de la por</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-niu-de-l-escorpi" class="table-row-name text-bold">El niu de l'escorpí</a>
+					</td>
+					<td>6b+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-niu-del-borinot" class="table-row-name text-bold">El niu del borinot</a>
+					</td>
+					<td>6c</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-refugi-extension" class="table-row-name text-bold">El refugi Extension</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-senyor-de-las-llaves" class="table-row-name text-bold">El senyor de las llaves</a>
+					</td>
+					<td>5+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-taco" class="table-row-name text-bold">El taco</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-trenca-closques" class="table-row-name text-bold">El trenca closques</a>
+					</td>
+					<td>7a</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/el-trenca-closques" class="table-row-name text-bold">El trenca closques</a>
+					</td>
+					<td>Unknown</td>
+					<td>La Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/escorpion" class="table-row-name text-bold">Escorpion</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/estado-de-alarma" class="table-row-name text-bold">Estado de alarma</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/estado-de-alarma" class="table-row-name text-bold">Estado de alarma</a>
+					</td>
+					<td>6b</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/estado-de-alarma-dreta" class="table-row-name text-bold">Estado de alarma Dreta</a>
+					</td>
+					<td>6b+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/et-deixa-tullit" class="table-row-name text-bold">Et deixa tullit</a>
+					</td>
+					<td>6a+</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/fantasia" class="table-row-name text-bold">Fantasia</a>
+					</td>
+					<td>6c+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/floki" class="table-row-name text-bold">Floki</a>
+					</td>
+					<td>7b</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/fretarnite" class="table-row-name text-bold">Fretarnite</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/gecko-negre" class="table-row-name text-bold">Gecko negre</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/gecko-negre-trave" class="table-row-name text-bold">Gecko negre Trave</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/ginesta" class="table-row-name text-bold">Ginesta</a>
+					</td>
+					<td>7a+/b</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/gipsy-aret" class="table-row-name text-bold">Gipsy aret</a>
+					</td>
+					<td>6a</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/girant-canells" class="table-row-name text-bold">Girant canells</a>
+					</td>
+					<td>6b</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/girona-s-roof" class="table-row-name text-bold">Girona S roof</a>
+					</td>
+					<td>Unknown</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/guarrillas-crack" class="table-row-name text-bold">Guarrillas crack</a>
+					</td>
+					<td>7b+</td>
+					<td>La Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/iron-mantel" class="table-row-name text-bold">Iron Mantel</a>
+					</td>
+					<td>6b+</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/jam-session" class="table-row-name text-bold">Jam session</a>
+					</td>
+					<td>6b</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/jordi-croasan" class="table-row-name text-bold">Jordi croasan</a>
+					</td>
+					<td>Unknown</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/junten-morten" class="table-row-name text-bold">Junten Morten</a>
+					</td>
+					<td>7a/+</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/kanuma" class="table-row-name text-bold">Kanuma</a>
+					</td>
+					<td>6b+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-arare" class="table-row-name text-bold">L'Arare</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aresta-del-foc" class="table-row-name text-bold">L'Aresta del foc</a>
+					</td>
+					<td>6a</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aresta-del-vent" class="table-row-name text-bold">L'Aresta del vent</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-empotrador" class="table-row-name text-bold">L'Empotrador</a>
+					</td>
+					<td>6c+</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aranyamantel" class="table-row-name text-bold">L'aranyamantel</a>
+					</td>
+					<td>6a</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aresta-del-barco" class="table-row-name text-bold">L'aresta del barco</a>
+					</td>
+					<td>Unknown</td>
+					<td>Mont amour</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aresta-del-bloc-de-la-placa" class="table-row-name text-bold">L'aresta del bloc de la plaça</a>
+					</td>
+					<td>5</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/l-aresta-dels-deus" class="table-row-name text-bold">L'aresta dels deus</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-corasa" class="table-row-name text-bold">La Corasa</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-corassa" class="table-row-name text-bold">La Corassa</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-lola" class="table-row-name text-bold">La Lola</a>
+					</td>
+					<td>Unknown</td>
+					<td>Mont amour</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-planxa" class="table-row-name text-bold">La Planxa</a>
+					</td>
+					<td>6c+ (Extension Sit)</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-planxa" class="table-row-name text-bold">La Planxa</a>
+					</td>
+					<td>6a</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-barbeta-lance" class="table-row-name text-bold">La barbeta (Lance)</a>
+					</td>
+					<td>6a+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-berra" class="table-row-name text-bold">La berra</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-cova-infinita" class="table-row-name text-bold">La cova infinita</a>
+					</td>
+					<td>6b</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-gran-v" class="table-row-name text-bold">La gran V</a>
+					</td>
+					<td>Unknown</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-granota" class="table-row-name text-bold">La granota</a>
+					</td>
+					<td>6c</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-llengua" class="table-row-name text-bold">La llengüa</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-placa" class="table-row-name text-bold">La placa</a>
+					</td>
+					<td>6a+</td>
+					<td>Joieria2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-primera-amb-bambes" class="table-row-name text-bold">La primera amb bambes</a>
+					</td>
+					<td>6a</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-proa" class="table-row-name text-bold">La proa</a>
+					</td>
+					<td>Unknown</td>
+					<td>Mont amour</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-trave-de-lo-imposible" class="table-row-name text-bold">La trave de lo imposible</a>
+					</td>
+					<td>7a/+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-trave-del-cucurucho" class="table-row-name text-bold">La trave del cucurucho</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-trave-negre" class="table-row-name text-bold">La trave negre</a>
+					</td>
+					<td>6c</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-vela" class="table-row-name text-bold">La vela</a>
+					</td>
+					<td>6b</td>
+					<td>La Joieria 1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-vuelta-al-cole" class="table-row-name text-bold">La vuelta al cole</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/la-vuelta-al-cole" class="table-row-name text-bold">La vuelta al cole</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/le-frontier" class="table-row-name text-bold">Le Frontier</a>
+					</td>
+					<td>7a</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/lo-imposible" class="table-row-name text-bold">Lo imposible</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/macrame" class="table-row-name text-bold">Macramé</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/mi-pequeno-okuma" class="table-row-name text-bold">Mi pequeño okuma</a>
+					</td>
+					<td>7a+ (trave)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/mi-pequeno-okuma" class="table-row-name text-bold">Mi pequeño okuma</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/mini-crak" class="table-row-name text-bold">Mini crak</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/mini-crash" class="table-row-name text-bold">Mini crash</a>
+					</td>
+					<td>6b</td>
+					<td>Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/miradones" class="table-row-name text-bold">Miradones</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/megaclaque" class="table-row-name text-bold">Mégaclaque</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/no-als-molins" class="table-row-name text-bold">No als molins!!</a>
+					</td>
+					<td>6b</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/no-veig-una-merda" class="table-row-name text-bold">No veig una merda</a>
+					</td>
+					<td>6a</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/olor-a-berru" class="table-row-name text-bold">Olor a Berru</a>
+					</td>
+					<td>7b (sit extension)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/olor-a-berru" class="table-row-name text-bold">Olor a Berru</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pad-aigues" class="table-row-name text-bold">Pad aigües</a>
+					</td>
+					<td>6b+</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pequeno-rocklands" class="table-row-name text-bold">Pequeño Rocklands</a>
+					</td>
+					<td>5+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pequeno-rocklands-directe" class="table-row-name text-bold">Pequeño Rocklands Directe</a>
+					</td>
+					<td>6a+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pequeno-rocklands-dreta" class="table-row-name text-bold">Pequeño Rocklands Dreta</a>
+					</td>
+					<td>6a</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pet-amb-cua" class="table-row-name text-bold">Pet amb cua</a>
+					</td>
+					<td>6a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pico-de-pato" class="table-row-name text-bold">Pico de Pato</a>
+					</td>
+					<td>6c</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pico-de-pato" class="table-row-name text-bold">Pico de pato</a>
+					</td>
+					<td>6c (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/placa-de-santa-llucia" class="table-row-name text-bold">Placa de Santa Llúcia</a>
+					</td>
+					<td>7a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/placa-del-camino" class="table-row-name text-bold">Placa del camino</a>
+					</td>
+					<td>6a+</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pluja-de-meteorits" class="table-row-name text-bold">Pluja de meteorits</a>
+					</td>
+					<td>6a</td>
+					<td>La Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/posagots-directe" class="table-row-name text-bold">Posagots directe</a>
+					</td>
+					<td>6b+</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/posagots-esquerra" class="table-row-name text-bold">Posagots esquerra</a>
+					</td>
+					<td>6a+</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/pota-de-senglar" class="table-row-name text-bold">Pota de senglar</a>
+					</td>
+					<td>6b+</td>
+					<td>La Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/prehistoric" class="table-row-name text-bold">Prehistòric</a>
+					</td>
+					<td>6c</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/primero-mantel" class="table-row-name text-bold">Primero mantel</a>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-2-boulder-111-puig-del-corb" class="table-row-name text-bold">Problem 2 (Boulder 111, Puig del Corb)</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-2-boulder-38-puig-del-corb" class="table-row-name text-bold">Problem 2 (Boulder 38, Puig del Corb)</a>
+					</td>
+					<td>7a+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-3-boulder-111-puig-del-corb" class="table-row-name text-bold">Problem 3 (Boulder 111, Puig del Corb)</a>
+					</td>
+					<td>6b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-3-boulder-5-joieria" class="table-row-name text-bold">Problem 3 (Boulder 5, Joieria)</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-4-bloc-97-puig-del-corb" class="table-row-name text-bold">Problem 4 (Bloc 97, Puig del Corb)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/problem-5-boulder-1-carpe-diem" class="table-row-name text-bold">Problem 5 (Boulder 1, Carpe Diem)</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/puzzle-crack-extension" class="table-row-name text-bold">Puzzle crack extension</a>
+					</td>
+					<td>7a+/7b</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/raplapla" class="table-row-name text-bold">Raplapla</a>
+					</td>
+					<td>6b</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/romoku" class="table-row-name text-bold">Romoku</a>
+					</td>
+					<td>Unknown</td>
+					<td>La Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/rosas-beach" class="table-row-name text-bold">Rosas beach</a>
+					</td>
+					<td>6a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/rotobox" class="table-row-name text-bold">Rotobox</a>
+					</td>
+					<td>6c+</td>
+					<td>Joieria1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/salto-al-vacio" class="table-row-name text-bold">Salto al vacio</a>
+					</td>
+					<td>6b+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/se-me-va-la-pinza" class="table-row-name text-bold">Se me va la pinza</a>
+					</td>
+					<td>Unknown</td>
+					<td>La Joieria 2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/se-te-va-la-pinza" class="table-row-name text-bold">Se te va la pinza</a>
+					</td>
+					<td>6c</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/silence-ca-pousse" class="table-row-name text-bold">Silence, ça pousse!</a>
+					</td>
+					<td>5</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/tactum-arete" class="table-row-name text-bold">Tactum Arete</a>
+					</td>
+					<td>7a+ (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/tactum-slap" class="table-row-name text-bold">Tactum Slap</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/the-last" class="table-row-name text-bold">The last</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/titanic" class="table-row-name text-bold">Titanic</a>
+					</td>
+					<td>6a</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/titanium" class="table-row-name text-bold">Titanium</a>
+					</td>
+					<td>6b+</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/titanium-traverse" class="table-row-name text-bold">Titanium traverse</a>
+					</td>
+					<td>7b</td>
+					<td>Puig del Corb</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/tram-final-le-frontier" class="table-row-name text-bold">Tram final le frontier</a>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/valkiria" class="table-row-name text-bold">Valkiria</a>
+					</td>
+					<td>7a</td>
+					<td>Joieria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/virus" class="table-row-name text-bold">Virus</a>
+					</td>
+					<td>6b+</td>
+					<td>Le Frontier</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/la-jonquera/wet-arete" class="table-row-name text-bold">Wet arete</a>
+					</td>
+					<td>6b</td>
+					<td>Carpe Diem</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

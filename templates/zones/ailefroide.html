@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/ailefroide">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Ailefroide 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="44.89047468001038" />
   <input type="hidden" id="lng" name="lng_val" value="6.447606931109021" />
@@ -168,322 +248,163 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://www.kletterfuehrer.net/Bouldering-Guidebook/France/Topo-des-Blocs-Ailefroide::684.html?language=en" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Topo des Blocs Ailefroide (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://www.grimper.com/site-escalade-ailefroide" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			General Info
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.kletterfuehrer.net/Bouldering-Guidebook/France/Topo-des-Blocs-Ailefroide::684.html?language=en"
-        target="_blank"
-        >Topo des Blocs Ailefroide (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.grimper.com/site-escalade-ailefroide"
-        target="_blank"
-        >General Info</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/ailefroide"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/ailefroide"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/ailefroide/40-12-bis">40.12 bis, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/agent-de-la-paix-ghesquier">Agent de la paix Ghesquier, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/billy-the-kid">Billy the kid, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/cash">Cash, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/chamois-d-or">Chamois d'or, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/fantastique">Fantastique, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/gagne">Gagné, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/igouane">Igouane, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/l-impreza">L'impreza, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/l-enarque">L'énarque, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/la-baleine">La Baleine, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/le-grenouille">Le grenouille, 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/le-pied-de-la-sybille">Le pied de la Sybille, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/les-consommateurs-tout-droit">Les consommateurs (tout droit), 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/les-croises">Les croisés, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/les-trous-scies">Les trous sciés, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/marmotte-armee">Marmotte armée, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/maroual-chamak">Maroual Chamak, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/nuage-noir">Nuage noir, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/papa-bongo">Papa Bongo, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/papillon-noir">Papillon noir, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/problem-25-surprise-du-chef">Problem 25 (Surprise du Chef), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/prouesse">Prouesse, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/prow">Prow, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/roi-minuscule">Roi minuscule, 7c+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/sergei-easy">Sergei easy, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/shoulder-mouvement">Shoulder Mouvement, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/showbiz-extension">Showbiz extension, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/showbiz-integral">Showbiz intégral, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/sicaplaf">Sicaplaf, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/soiree-parisienne-droite">Soirée Parisienne droite, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/stop">Stop, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/virata">Virata, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/ailefroide/wife-of-the-year">Wife of the year, 7a</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "ailefroide_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/ailefroide/glacier-noir">Glacier noir</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/la-pave">La Pavé</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/la-plaque">La Plaque</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/le-pave">Le Pavé</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/les-cahutes">Les Cahutes</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/manu-02">Manu 02</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/philemon">Philémon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/pont">Pont</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/surprise-du-chef">Surprise du Chef</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/sybille">Sybille</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/ailefroide/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "ailefroide_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/glacier-noir" class="table-row-name text-bold">Glacier noir</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/la-pave" class="table-row-name text-bold">La Pavé</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/la-plaque" class="table-row-name text-bold">La Plaque</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/le-pave" class="table-row-name text-bold">Le Pavé</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/les-cahutes" class="table-row-name text-bold">Les Cahutes</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/manu-02" class="table-row-name text-bold">Manu 02</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/philemon" class="table-row-name text-bold">Philémon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/pont" class="table-row-name text-bold">Pont</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/surprise-du-chef" class="table-row-name text-bold">Surprise du Chef</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/sybille" class="table-row-name text-bold">Sybille</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/ailefroide/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -511,7 +432,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Surprise du Chef</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -534,8 +455,336 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/40-12-bis" class="table-row-name text-bold">40.12 bis</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/agent-de-la-paix-ghesquier" class="table-row-name text-bold">Agent de la paix Ghesquier</a>
+					</td>
+					<td>8a</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/billy-the-kid" class="table-row-name text-bold">Billy the kid</a>
+					</td>
+					<td>7a</td>
+					<td>Les Cahutes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/cash" class="table-row-name text-bold">Cash</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>La Pavé</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/chamois-d-or" class="table-row-name text-bold">Chamois d'or</a>
+					</td>
+					<td>6b</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/fantastique" class="table-row-name text-bold">Fantastique</a>
+					</td>
+					<td>6b</td>
+					<td>Les Cahutes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/gagne" class="table-row-name text-bold">Gagné</a>
+					</td>
+					<td>7c</td>
+					<td>Manu 02</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/igouane" class="table-row-name text-bold">Igouane</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/l-impreza" class="table-row-name text-bold">L'impreza</a>
+					</td>
+					<td>7a+</td>
+					<td>Les Cahutes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/l-enarque" class="table-row-name text-bold">L'énarque</a>
+					</td>
+					<td>7b</td>
+					<td>Philémon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/la-baleine" class="table-row-name text-bold">La Baleine</a>
+					</td>
+					<td>7c</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/le-grenouille" class="table-row-name text-bold">Le grenouille</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/le-pied-de-la-sybille" class="table-row-name text-bold">Le pied de la Sybille</a>
+					</td>
+					<td>7c+</td>
+					<td>Sybille</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/les-consommateurs-tout-droit" class="table-row-name text-bold">Les consommateurs (tout droit)</a>
+					</td>
+					<td>7c</td>
+					<td>Les Cahutes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/les-croises" class="table-row-name text-bold">Les croisés</a>
+					</td>
+					<td>8a</td>
+					<td>Manu 02</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/les-trous-scies" class="table-row-name text-bold">Les trous sciés</a>
+					</td>
+					<td>7a+</td>
+					<td>La Pavé</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/marmotte-armee" class="table-row-name text-bold">Marmotte armée</a>
+					</td>
+					<td>7b+</td>
+					<td>Pont</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/maroual-chamak" class="table-row-name text-bold">Maroual Chamak</a>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/nuage-noir" class="table-row-name text-bold">Nuage noir</a>
+					</td>
+					<td>7a+</td>
+					<td>Glacier noir</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/papa-bongo" class="table-row-name text-bold">Papa Bongo</a>
+					</td>
+					<td>6a+</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/papillon-noir" class="table-row-name text-bold">Papillon noir</a>
+					</td>
+					<td>7b+</td>
+					<td>Glacier noir</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/problem-25-surprise-du-chef" class="table-row-name text-bold">Problem 25 (Surprise du Chef)</a>
+					</td>
+					<td>4+</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/prouesse" class="table-row-name text-bold">Prouesse</a>
+					</td>
+					<td>7b</td>
+					<td>La Plaque</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/prow" class="table-row-name text-bold">Prow</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/roi-minuscule" class="table-row-name text-bold">Roi minuscule</a>
+					</td>
+					<td>7c+ (sit)</td>
+					<td>Manu 02</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/sergei-easy" class="table-row-name text-bold">Sergei easy</a>
+					</td>
+					<td>7a</td>
+					<td>Le Pavé</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/shoulder-mouvement" class="table-row-name text-bold">Shoulder Mouvement</a>
+					</td>
+					<td>7b</td>
+					<td>La Pavé</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/showbiz-extension" class="table-row-name text-bold">Showbiz extension</a>
+					</td>
+					<td>7c</td>
+					<td>La Plaque</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/showbiz-integral" class="table-row-name text-bold">Showbiz intégral</a>
+					</td>
+					<td>7c+</td>
+					<td>La Plaque</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/sicaplaf" class="table-row-name text-bold">Sicaplaf</a>
+					</td>
+					<td>7c+</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/soiree-parisienne-droite" class="table-row-name text-bold">Soirée Parisienne droite</a>
+					</td>
+					<td>7a+</td>
+					<td>La Plaque</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/stop" class="table-row-name text-bold">Stop</a>
+					</td>
+					<td>7b</td>
+					<td>Le Pavé</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/virata" class="table-row-name text-bold">Virata</a>
+					</td>
+					<td>8a</td>
+					<td>Surprise du Chef</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/ailefroide/wife-of-the-year" class="table-row-name text-bold">Wife of the year</a>
+					</td>
+					<td>7a</td>
+					<td>Les Cahutes</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

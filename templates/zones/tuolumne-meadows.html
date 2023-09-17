@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/tuolumne-meadows">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Tuolumne Meadows 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="37.87269" />
   <input type="hidden" id="lng" name="lng_val" value="-119.36368" />
@@ -168,264 +248,166 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.mountainproject.com/area/107694496/tuolumne-bouldering" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Mountain Project (Online)
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/tuolumne-meadows" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Online)
+		</a>
+	
+		<a id="guide_link"  href="https://shop.touchstoneclimbing.com/products/tuolumne-meadows-bouldering?variant=31827923861577" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Tuolumne Meadows Bouldering - 2nd Edition
+		</a>
+	
+		<a id="guide_link"  href="http://www.supertopo.com/packs/tuolumne-bouldering.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Tuolumne Bouldering
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.mountainproject.com/area/107694496/tuolumne-bouldering"
-        target="_blank"
-        >Mountain Project (Online)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/tuolumne-meadows"
-        target="_blank"
-        >27 Crags (Online)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://shop.touchstoneclimbing.com/products/tuolumne-meadows-bouldering?variant=31827923861577"
-        target="_blank"
-        >Tuolumne Meadows Bouldering - 2nd Edition</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://www.supertopo.com/packs/tuolumne-bouldering.html"
-        target="_blank"
-        >Tuolumne Bouldering</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/tuolumne-meadows"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/tuolumne-meadows"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/black-matter">Black Matter, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/c85-arete">C85 Arete, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/cellulite-eliminator">Cellulite Eliminator, V7 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/fear-and-loathing-in-tuolumne">Fear and Loathing In Tuolumne, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/four-horsemen">Four Horsemen, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/four-horsemen-right-variation">Four Horsemen Right Variation, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/g23-arete">G23 Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/heavy-artillery">Heavy Artillery, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/ian-s-prow">Ian's Prow, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/jedi-jake">Jedi Jake, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/jedi-monkey">Jedi Monkey, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/lost-but-not-forgotten">Lost But Not Forgotten, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/mean-green">Mean Green, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/pansy-tank">Pansy Tank, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/the-arete">The Arete, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/tuolumne-meadows/yogurt">Yogurt, V7</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "tuolumne-meadows_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/campground">Campground</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/gunks">Gunks</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/medlicott-boulder">Medlicott Boulder</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/medlicott-boulders">Medlicott Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/pywiack-boulder">Pywiack Boulder</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/raisin-creek">Raisin Creek</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/tenaya-lake">Tenaya Lake</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/the-drug-boulders">The Drug Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/the-gunks">The Gunks</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/tuolumne-meadows/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "tuolumne-meadows_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/campground" class="table-row-name text-bold">Campground</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/gunks" class="table-row-name text-bold">Gunks</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/medlicott-boulder" class="table-row-name text-bold">Medlicott Boulder</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/medlicott-boulders" class="table-row-name text-bold">Medlicott Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/pywiack-boulder" class="table-row-name text-bold">Pywiack Boulder</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/raisin-creek" class="table-row-name text-bold">Raisin Creek</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/tenaya-lake" class="table-row-name text-bold">Tenaya Lake</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/the-drug-boulders" class="table-row-name text-bold">The Drug Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/the-gunks" class="table-row-name text-bold">The Gunks</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/tuolumne-meadows/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -450,8 +432,174 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/black-matter" class="table-row-name text-bold">Black Matter</a>
+					</td>
+					<td>V5</td>
+					<td>Tenaya Lake</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/c85-arete" class="table-row-name text-bold">C85 Arete</a>
+					</td>
+					<td>V8</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/cellulite-eliminator" class="table-row-name text-bold">Cellulite Eliminator</a>
+					</td>
+					<td>V7 (sit)</td>
+					<td>The Gunks</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/fear-and-loathing-in-tuolumne" class="table-row-name text-bold">Fear and Loathing In Tuolumne</a>
+					</td>
+					<td>V9</td>
+					<td>Pywiack Boulder</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/four-horsemen" class="table-row-name text-bold">Four Horsemen</a>
+					</td>
+					<td>V6</td>
+					<td>Medlicott Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/four-horsemen-right-variation" class="table-row-name text-bold">Four Horsemen Right Variation</a>
+					</td>
+					<td>V4</td>
+					<td>Medlicott Boulder</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/g23-arete" class="table-row-name text-bold">G23 Arete</a>
+					</td>
+					<td>V6</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/heavy-artillery" class="table-row-name text-bold">Heavy Artillery</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/ian-s-prow" class="table-row-name text-bold">Ian's Prow</a>
+					</td>
+					<td>V6</td>
+					<td>The Drug Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/jedi-jake" class="table-row-name text-bold">Jedi Jake</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/jedi-monkey" class="table-row-name text-bold">Jedi Monkey</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/lost-but-not-forgotten" class="table-row-name text-bold">Lost But Not Forgotten</a>
+					</td>
+					<td>V8</td>
+					<td>Pywiack Boulder</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/mean-green" class="table-row-name text-bold">Mean Green</a>
+					</td>
+					<td>V8</td>
+					<td>Gunks</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/pansy-tank" class="table-row-name text-bold">Pansy Tank</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/the-arete" class="table-row-name text-bold">The Arete</a>
+					</td>
+					<td>V4</td>
+					<td>The Gunks</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/tuolumne-meadows/yogurt" class="table-row-name text-bold">Yogurt</a>
+					</td>
+					<td>V7</td>
+					<td>Raisin Creek</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

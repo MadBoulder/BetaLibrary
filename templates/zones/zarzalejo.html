@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/zarzalejo">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Zarzalejo 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="40.535551" />
   <input type="hidden" id="lng" name="lng_val" value="-4.179463" />
@@ -168,285 +248,133 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://dparapente.com/cosas-que-hacer-en-zarzalejo/escalada-en-zarzalejo/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			DParapente
+		</a>
+	
+		<a id="guide_link"  href="http://sitioboulder.blogspot.com/2012/08/zarzalejo.html" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Sitioboulder
+		</a>
+	
+		<a id="guide_link"  href="https://solobulder.wordpress.com/2008/04/03/zarzalejo-croquis-y-como-llegar/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Soloboulder
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/zarzalejo" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://dparapente.com/cosas-que-hacer-en-zarzalejo/escalada-en-zarzalejo/"
-        target="_blank"
-        >DParapente</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://sitioboulder.blogspot.com/2012/08/zarzalejo.html"
-        target="_blank"
-        >Sitioboulder</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://solobulder.wordpress.com/2008/04/03/zarzalejo-croquis-y-como-llegar/"
-        target="_blank"
-        >Soloboulder</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/zarzalejo"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/zarzalejo"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/zarzalejo"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/zarzalejo/allstars">Allstars, 7A</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/alunecer">Alunecer, 7A</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/apollo-xiii">Apollo XIII, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/be-chop">Be Chop, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/cena-de-mantels">Cena de mantels, 7A+/B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/el-australiano">El Australiano, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/el-corso">El Corso, 7B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/el-mundo-al-reves">El Mundo al Revés, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/equipo-a">Equipo A, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/han-solo">Han Solo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/kco">KCO, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/la-parada">La parada, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/la-trave-de-la-ola">La trave de la Ola, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/las-supernenas">Las supernenas, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/masai-mara">Masái mara, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/misericordia">Misericordia, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/mundo-feliz">Mundo Feliz, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano">No por mucho alunecer amanece mas temprano, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/ovni">Ovni, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/patatas">Patatas, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/romero">Romero, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/tam-tam">Tam tam, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/unos-mecos-bicho">Unos Mecos Bicho, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/vafalungo">Vafalungo, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/zarzalejo/zarzafar">Zarzafar, 8b+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "zarzalejo_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/zarzalejo/alunecer">Alunecer </a>
-    </li>
-    
-    <li>
-      <a href="/sectors/zarzalejo/campo-de-futbol">Campo de Fútbol</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/zarzalejo/pradera">Pradera </a>
-    </li>
-    
-    <li>
-      <a href="/sectors/zarzalejo/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "zarzalejo_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/zarzalejo/alunecer" class="table-row-name text-bold">Alunecer </a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/zarzalejo/campo-de-futbol" class="table-row-name text-bold">Campo de Fútbol</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/zarzalejo/pradera" class="table-row-name text-bold">Pradera </a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/zarzalejo/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -471,8 +399,255 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/allstars" class="table-row-name text-bold">Allstars</a>
+					</td>
+					<td>7A</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/alunecer" class="table-row-name text-bold">Alunecer</a>
+					</td>
+					<td>7A</td>
+					<td>Alunecer </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/apollo-xiii" class="table-row-name text-bold">Apollo XIII</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/be-chop" class="table-row-name text-bold">Be Chop</a>
+					</td>
+					<td>7b+</td>
+					<td>Alunecer</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/cena-de-mantels" class="table-row-name text-bold">Cena de mantels</a>
+					</td>
+					<td>7A+/B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/el-australiano" class="table-row-name text-bold">El Australiano</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/el-corso" class="table-row-name text-bold">El Corso</a>
+					</td>
+					<td>7B</td>
+					<td>Campo de Fútbol</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/el-mundo-al-reves" class="table-row-name text-bold">El Mundo al Revés</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/equipo-a" class="table-row-name text-bold">Equipo A</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/han-solo" class="table-row-name text-bold">Han Solo</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/kco" class="table-row-name text-bold">KCO</a>
+					</td>
+					<td>6c</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/la-parada" class="table-row-name text-bold">La parada</a>
+					</td>
+					<td>7b</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/la-trave-de-la-ola" class="table-row-name text-bold">La trave de la Ola</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/las-supernenas" class="table-row-name text-bold">Las supernenas</a>
+					</td>
+					<td>6b+</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/masai-mara" class="table-row-name text-bold">Masái mara</a>
+					</td>
+					<td>7b</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/misericordia" class="table-row-name text-bold">Misericordia</a>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/mundo-feliz" class="table-row-name text-bold">Mundo Feliz</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano" class="table-row-name text-bold">No por mucho alunecer amanece mas temprano</a>
+					</td>
+					<td>7b+</td>
+					<td>Alunecer </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/ovni" class="table-row-name text-bold">Ovni</a>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/patatas" class="table-row-name text-bold">Patatas</a>
+					</td>
+					<td>7a</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/romero" class="table-row-name text-bold">Romero</a>
+					</td>
+					<td>7a</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/tam-tam" class="table-row-name text-bold">Tam tam</a>
+					</td>
+					<td>7a+</td>
+					<td>Pradera </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/unos-mecos-bicho" class="table-row-name text-bold">Unos Mecos Bicho</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/vafalungo" class="table-row-name text-bold">Vafalungo</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/zarzalejo/zarzafar" class="table-row-name text-bold">Zarzafar</a>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

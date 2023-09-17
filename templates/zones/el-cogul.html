@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/el-cogul">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              El Cogul 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="41.462258261892" />
   <input type="hidden" id="lng" name="lng_val" value="0.7426576769272515" />
@@ -168,743 +248,263 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/el-cogul" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://madboulder.org/download/el-cogul/el-cogul-bouldering-guide.pdf" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			El Cogul Boulder pdf
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/el-cogul"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://madboulder.org/download/el-cogul/el-cogul-bouldering-guide.pdf"
-        target="_blank"
-        >El Cogul Boulder pdf</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/el-cogul"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/el-cogul"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/el-cogul/1890">1890, 6a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/a-llorar-a-la-lloreria">A llorar a la Lloreria, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/a-plorar-al-riu">A plorar al riu, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/alfons-a-l-esquerre">Alfons a l'esquerre, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/alfons-a-la-dreta">Alfons a la dreta, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/alfons-a-la-dreta">Alfons a la dreta, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/altra-mes-el-forat-bong-extension">Altra més el forat (Bong Extension), 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/bad-dream">Bad dream, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/bandulet">Bandulet, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/benvingut-a-l-infern">Benvingut a l'infern, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/bong">Bong, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/charlize-theron">Charlize Theron, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/cluc">Cluc, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/con-bombas">Con bombas, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/cor-petit">Cor Petit, 6c+/7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/cua-de-drac">Cua de drac, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/cuantas-veces-habre-oido-eso">Cuantas veces habre oido eso, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/dominio-del-miedo">Dominio del miedo, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/el-filo-del-comalla">El filo del comallà, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/el-gran-sostre-de-l-albages">El gran sostre de l'Albagés, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/el-mundo-al-reves">El mundo al revés, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/el-perolillo">El perolillo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/elvis-co">Elvis co, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/elvis-conde">Elvis conde, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/filosofia-barata">Filosofia barata, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/graham-boulder">Graham Boulder, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/hidrofobica">Hidrofóbica, 7b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/hidrofobica-extension">Hidrofóbica Extensión, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/jamon-jamon">Jamón, jamón, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/l-iglu">L'Iglú, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/l-entranyable-vidua">L'entranyable vídua, 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-comella">La Comella, 7a (version b)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-comella">La Comella, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-ballena">La ballena, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-lluna">La lluna, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-raja">La raja, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/la-trave-dels-desmanegats">La trave dels desmanegats, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/lasingradov">Lasingradov, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/lloraras">Llorarás, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/lo-cogul">Lo Cogul, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/mrk01">Mrk01, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/metodo-osmin">Método Osmin, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/nos-pegan">Nos pegan, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/pal-pan">Pal Pan, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/pancake">Pancake, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/pas-de-lloba">Pas de Lloba, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/per-la-boca-mor-el-peix">Per la boca mor el peix, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/poder-monguer">Poder monguer, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/por-el-dia-7b-por-la-noche-jb">Por el dia 7B, por la noche JB, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-mestre-mutent">Problem  (Mestre Mutent), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-1-albages-els-camps">Problem 1 (Albagés - Els Camps), 3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-1-boulder-5-universitat">Problem 1 (Boulder 5, Universitat), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-1-boulder-6-mestre-muten">Problem 1 (Boulder 6, Mestre Muten), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-10-el-comalla">Problem 10 (El Comallà), 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-12-universitat">Problem 12 (Universitat), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-13-universitat">Problem 13 (Universitat), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-14-el-turonet">Problem 14 (El Turonet), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-15-universitat">Problem 15 (Universitat), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-15-left-universitat">Problem 15 Left (Universitat), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-16-albages-els-camps">Problem 16 (Albagés - Els Camps), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-18-albages-els-camps">Problem 18 (Albagés - Els Camps), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-18-doctorat">Problem 18 (Doctorat), 7a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-18-universitat">Problem 18 (Universitat), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-19-el-turonet">Problem 19 (El Turonet), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-19-universitat">Problem 19 (Universitat), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-19-left-el-turonet">Problem 19 Left (El Turonet), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-2-albages-el-turonet">Problem 2 (Albagés - El Turonet), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-2-albages-els-camps">Problem 2 (Albagés - Els Camps), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-2-boulder-1-3-universitat">Problem 2 (Boulder 1.3, Universitat), 6a+/b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-2-boulder-2-universitat">Problem 2 (Boulder 2, Universitat), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-20-beer-action">Problem 20 (Beer Action), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-20-el-turonet">Problem 20 (El Turonet), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-21a-el-turonet">Problem 21a (El Turonet), 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-22-beer-action">Problem 22 (Beer Action), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-23-beer-action">Problem 23 (Beer Action), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-23-l-albages-el-turonet">Problem 23 (L'Albagés - El Turonet), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-24-beer-action">Problem 24 (Beer Action), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-24-l-albages-el-turonet">Problem 24 (L'Albagés - El turonet), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-26-beer-action">Problem 26 (Beer Action), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-27-beer-action">Problem 27 (Beer Action), 3+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-28-el-turonet">Problem 28 (El Turonet), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-29-mestre-mutent">Problem 29 (Mestre Mutent), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-albages-els-camps">Problem 3 (Albagés - Els Camps), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-boulder-1-3-universitat">Problem 3 (Boulder 1.3, Universitat), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-boulder-3-universitat">Problem 3 (Boulder 3, Universitat), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-boulder-3-1-mestre-mutent">Problem 3 (Boulder 3.1, Mestre Mutent), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-boulder-3-3-2-mestre-mutent">Problem 3 (Boulder 3.3.2, Mestre Mutent), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-3-boulder-6-universitat">Problem 3 (Boulder 6, Universitat), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-32-albages-els-camps">Problem 32 (Albagés - Els Camps), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-33-albages-els-camps">Problem 33 (Albagés - Els Camps), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-34-albages-els-camps">Problem 34 (Albagés - Els Camps), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-39-beer-action">Problem 39 (Beer Action), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-4-boulder-3-3-1-mestre-mutent">Problem 4 (Boulder 3.3.1, Mestre Mutent), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-4-mestre-mutent">Problem 4 (Mestre Mutent), 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-41-l-albages-el-turonet">Problem 41 (L'Albagés - El Turonet), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-42-l-albages-el-turonet">Problem 42 (L'Albagés - El Turonet), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-5-abellot-negre">Problem 5 (Abellot Negre), 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-5-abellot-negre">Problem 5 (Abellot Negre), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-5-abocador">Problem 5 (Abocador), 6b (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-5-el-turonet">Problem 5 (El Turonet), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-58-el-turonet">Problem 58 (El Turonet), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-6-albages-els-camps">Problem 6 (Albagés - Els Camps), 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-6-l-albages-el-turonet">Problem 6 (L'Albagés - El Turonet), 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-6-l-albages-el-turonet">Problem 6 (L'Albagés - El Turonet), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-60-l-albages-el-turonet">Problem 60 (L'Albagés - El Turonet), 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-7-albages-els-sostres">Problem 7 (Albagés - Els Sostres), 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-7-boulder-3-2-mestre-mutent">Problem 7 (Boulder 3.2, Mestre Mutent), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-7-totxo-mali">Problem 7 (Totxo Mali), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-8-toxto-de-la-vinya">Problem 8 (Toxto de la Vinya), 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-9-albages-1890">Problem 9 (Albagés - 1890), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-9-lo-pallars">Problem 9 (Lo Pallars), Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/problem-unknown-beer-action">Problem unknown (Beer Action), 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/realidad-depresiva">Realidad depresiva, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/roca-mare">Roca mare, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/romocop">Romocop, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/salvatge-oest">Salvatge oest, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/slab-final">Slab final, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/som-de-l-oest">Som de l'oest, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/spargus">Spargus, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/tambe-n-hi-ha-d-haver-de-facils">També n'hi ha d'haver de fàcils, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/test-d-estres">Test d'estrès, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/tots-els-homes-tenen-ous">Tots els homes tenen ous, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/totxo-de-la-vinya">Totxo de la Vinya, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/el-cogul/two-brothers">Two brothers, 6a+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "el-cogul_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/el-cogul/1890">1890</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/abellot-negre">Abellot Negre</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/abocador">Abocador</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/albages-abellot-negre">Albagés - Abellot Negre</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/albages-el-turonet">Albagés - El Turonet</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/albages-els-camps">Albagés - Els Camps</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/albages-els-sostres">Albagés - Els Sostres</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/albages-els-ulls">Albagés - Els ulls</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/aspa-peixera">Aspa - Peixera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/beer-action">Beer Action</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/collat">Collat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/doctorat">Doctorat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/el-turonet">El Turonet</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/els-camps">Els Camps</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/l-albages-el-turonet">L'Albagés - El Turonet</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/lloreria">Lloreria</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/lo-pallars">Lo Pallars</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/mestre-muten">Mestre Muten</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/mestre-mutent">Mestre Mutent</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/roca-del-diable">Roca del Diable</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/totxo-mali">Totxo Mali</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/totxo-de-la-vinya">Totxo de la vinya</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/universitat">Universitat</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/el-cogul/x-tone">X-Tone</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "el-cogul_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/1890" class="table-row-name text-bold">1890</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/abellot-negre" class="table-row-name text-bold">Abellot Negre</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/abocador" class="table-row-name text-bold">Abocador</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/albages-abellot-negre" class="table-row-name text-bold">Albagés - Abellot Negre</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/albages-el-turonet" class="table-row-name text-bold">Albagés - El Turonet</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/albages-els-camps" class="table-row-name text-bold">Albagés - Els Camps</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/albages-els-sostres" class="table-row-name text-bold">Albagés - Els Sostres</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/albages-els-ulls" class="table-row-name text-bold">Albagés - Els ulls</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/aspa-peixera" class="table-row-name text-bold">Aspa - Peixera</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/beer-action" class="table-row-name text-bold">Beer Action</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/collat" class="table-row-name text-bold">Collat</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/doctorat" class="table-row-name text-bold">Doctorat</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/el-turonet" class="table-row-name text-bold">El Turonet</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/els-camps" class="table-row-name text-bold">Els Camps</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/l-albages-el-turonet" class="table-row-name text-bold">L'Albagés - El Turonet</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/lloreria" class="table-row-name text-bold">Lloreria</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/lo-pallars" class="table-row-name text-bold">Lo Pallars</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/mestre-muten" class="table-row-name text-bold">Mestre Muten</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/mestre-mutent" class="table-row-name text-bold">Mestre Mutent</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/roca-del-diable" class="table-row-name text-bold">Roca del Diable</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/totxo-mali" class="table-row-name text-bold">Totxo Mali</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/totxo-de-la-vinya" class="table-row-name text-bold">Totxo de la vinya</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/universitat" class="table-row-name text-bold">Universitat</a>
+					</td>
+					<td class="text-center">21</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/el-cogul/x-tone" class="table-row-name text-bold">X-Tone</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -932,7 +532,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Doctorat</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -958,7 +558,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Totxo de la Vinya</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -984,7 +584,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Lloreria</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1010,7 +610,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Aspa - Peixera</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1036,7 +636,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Collat</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1062,7 +662,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Totxo de la Vinya</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1088,7 +688,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>l'Abocador</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1114,7 +714,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Els ulls</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1140,7 +740,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>X-Tone</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1166,7 +766,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Totxo Mali</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1192,7 +792,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albagés - 1890</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1218,7 +818,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albagés - Els Sostres</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1244,7 +844,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Abellot Negre</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1270,7 +870,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Mestre Mutent</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1296,7 +896,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Beer Action</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1322,7 +922,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Els Camps</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1348,7 +948,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Turonet</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1374,7 +974,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Universitat</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1400,7 +1000,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Lo Pallars</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1423,8 +1023,1146 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/1890" class="table-row-name text-bold">1890</a>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>1890</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/a-llorar-a-la-lloreria" class="table-row-name text-bold">A llorar a la Lloreria</a>
+					</td>
+					<td>7a</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/a-plorar-al-riu" class="table-row-name text-bold">A plorar al riu</a>
+					</td>
+					<td>6c</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/alfons-a-l-esquerre" class="table-row-name text-bold">Alfons a l'esquerre</a>
+					</td>
+					<td>7a+</td>
+					<td>Lo Pallars </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/alfons-a-la-dreta" class="table-row-name text-bold">Alfons a la dreta</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/alfons-a-la-dreta" class="table-row-name text-bold">Alfons a la dreta</a>
+					</td>
+					<td>7a</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/altra-mes-el-forat-bong-extension" class="table-row-name text-bold">Altra més el forat (Bong Extension)</a>
+					</td>
+					<td>6c+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/bad-dream" class="table-row-name text-bold">Bad dream</a>
+					</td>
+					<td>6a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/bandulet" class="table-row-name text-bold">Bandulet</a>
+					</td>
+					<td>7a+</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/benvingut-a-l-infern" class="table-row-name text-bold">Benvingut a l'infern</a>
+					</td>
+					<td>6b+</td>
+					<td>Roca del Diable</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/bong" class="table-row-name text-bold">Bong</a>
+					</td>
+					<td>6b+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/charlize-theron" class="table-row-name text-bold">Charlize Theron</a>
+					</td>
+					<td>6c+</td>
+					<td>Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/cluc" class="table-row-name text-bold">Cluc</a>
+					</td>
+					<td>5</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/con-bombas" class="table-row-name text-bold">Con bombas</a>
+					</td>
+					<td>6b</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/cor-petit" class="table-row-name text-bold">Cor Petit</a>
+					</td>
+					<td>6c+/7a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/cua-de-drac" class="table-row-name text-bold">Cua de drac</a>
+					</td>
+					<td>6c</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/cuantas-veces-habre-oido-eso" class="table-row-name text-bold">Cuantas veces habre oido eso</a>
+					</td>
+					<td>6b</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/dominio-del-miedo" class="table-row-name text-bold">Dominio del miedo</a>
+					</td>
+					<td>6b</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/el-filo-del-comalla" class="table-row-name text-bold">El filo del comallà</a>
+					</td>
+					<td>7a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/el-gran-sostre-de-l-albages" class="table-row-name text-bold">El gran sostre de l'Albagés</a>
+					</td>
+					<td>7b</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/el-mundo-al-reves" class="table-row-name text-bold">El mundo al revés</a>
+					</td>
+					<td>6b</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/el-perolillo" class="table-row-name text-bold">El perolillo</a>
+					</td>
+					<td>7a</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/elvis-co" class="table-row-name text-bold">Elvis co</a>
+					</td>
+					<td>5+</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/elvis-conde" class="table-row-name text-bold">Elvis conde</a>
+					</td>
+					<td>6b</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/filosofia-barata" class="table-row-name text-bold">Filosofia barata</a>
+					</td>
+					<td>6b+</td>
+					<td>Aspa - Peixera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/graham-boulder" class="table-row-name text-bold">Graham Boulder</a>
+					</td>
+					<td>8a</td>
+					<td>Albagés - Els Sostres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/hidrofobica" class="table-row-name text-bold">Hidrofóbica</a>
+					</td>
+					<td>7b (sit)</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/hidrofobica-extension" class="table-row-name text-bold">Hidrofóbica Extensión</a>
+					</td>
+					<td>7c</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/jamon-jamon" class="table-row-name text-bold">Jamón, jamón</a>
+					</td>
+					<td>6a+</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/l-iglu" class="table-row-name text-bold">L'Iglú</a>
+					</td>
+					<td>7b</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/l-entranyable-vidua" class="table-row-name text-bold">L'entranyable vídua</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>1890</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-comella" class="table-row-name text-bold">La Comella</a>
+					</td>
+					<td>7a (version b)</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-comella" class="table-row-name text-bold">La Comella</a>
+					</td>
+					<td>7a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-ballena" class="table-row-name text-bold">La ballena</a>
+					</td>
+					<td>6c</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-lluna" class="table-row-name text-bold">La lluna</a>
+					</td>
+					<td>6c</td>
+					<td>Totxo de la vinya</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-raja" class="table-row-name text-bold">La raja</a>
+					</td>
+					<td>7a</td>
+					<td>Abocador</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/la-trave-dels-desmanegats" class="table-row-name text-bold">La trave dels desmanegats</a>
+					</td>
+					<td>7a</td>
+					<td>Abocador</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/lasingradov" class="table-row-name text-bold">Lasingradov</a>
+					</td>
+					<td>6c</td>
+					<td>Abocador</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/lloraras" class="table-row-name text-bold">Llorarás</a>
+					</td>
+					<td>6c</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/lo-cogul" class="table-row-name text-bold">Lo Cogul</a>
+					</td>
+					<td>6c+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/mrk01" class="table-row-name text-bold">Mrk01</a>
+					</td>
+					<td>6a</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/metodo-osmin" class="table-row-name text-bold">Método Osmin</a>
+					</td>
+					<td>8a+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/nos-pegan" class="table-row-name text-bold">Nos pegan</a>
+					</td>
+					<td>6a</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/pal-pan" class="table-row-name text-bold">Pal Pan</a>
+					</td>
+					<td>8a</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/pancake" class="table-row-name text-bold">Pancake</a>
+					</td>
+					<td>6a+</td>
+					<td>Mestre Muten</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/pas-de-lloba" class="table-row-name text-bold">Pas de Lloba</a>
+					</td>
+					<td>6c</td>
+					<td>Totxo de la Vinya</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/per-la-boca-mor-el-peix" class="table-row-name text-bold">Per la boca mor el peix</a>
+					</td>
+					<td>6a</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/poder-monguer" class="table-row-name text-bold">Poder monguer</a>
+					</td>
+					<td>6c</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/por-el-dia-7b-por-la-noche-jb" class="table-row-name text-bold">Por el dia 7B, por la noche JB</a>
+					</td>
+					<td>7a</td>
+					<td>Abocador</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-mestre-mutent" class="table-row-name text-bold">Problem  (Mestre Mutent)</a>
+					</td>
+					<td>5</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-1-albages-els-camps" class="table-row-name text-bold">Problem 1 (Albagés - Els Camps)</a>
+					</td>
+					<td>3</td>
+					<td>Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-1-boulder-5-universitat" class="table-row-name text-bold">Problem 1 (Boulder 5, Universitat)</a>
+					</td>
+					<td>5+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-1-boulder-6-mestre-muten" class="table-row-name text-bold">Problem 1 (Boulder 6, Mestre Muten)</a>
+					</td>
+					<td>6b+</td>
+					<td>Mestre Muten</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-10-el-comalla" class="table-row-name text-bold">Problem 10 (El Comallà)</a>
+					</td>
+					<td>7c+</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-12-universitat" class="table-row-name text-bold">Problem 12 (Universitat)</a>
+					</td>
+					<td>7a</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-13-universitat" class="table-row-name text-bold">Problem 13 (Universitat)</a>
+					</td>
+					<td>6c</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-14-el-turonet" class="table-row-name text-bold">Problem 14 (El Turonet)</a>
+					</td>
+					<td>6b</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-15-universitat" class="table-row-name text-bold">Problem 15 (Universitat)</a>
+					</td>
+					<td>5+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-15-left-universitat" class="table-row-name text-bold">Problem 15 Left (Universitat)</a>
+					</td>
+					<td>6b</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-16-albages-els-camps" class="table-row-name text-bold">Problem 16 (Albagés - Els Camps)</a>
+					</td>
+					<td>5+</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-18-albages-els-camps" class="table-row-name text-bold">Problem 18 (Albagés - Els Camps)</a>
+					</td>
+					<td>6b+</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-18-doctorat" class="table-row-name text-bold">Problem 18 (Doctorat)</a>
+					</td>
+					<td>7a (sit)</td>
+					<td>Doctorat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-18-universitat" class="table-row-name text-bold">Problem 18 (Universitat)</a>
+					</td>
+					<td>6b+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-19-el-turonet" class="table-row-name text-bold">Problem 19 (El Turonet)</a>
+					</td>
+					<td>6a+</td>
+					<td>Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-19-universitat" class="table-row-name text-bold">Problem 19 (Universitat)</a>
+					</td>
+					<td>5+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-19-left-el-turonet" class="table-row-name text-bold">Problem 19 Left (El Turonet)</a>
+					</td>
+					<td>6a+</td>
+					<td>Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-2-albages-el-turonet" class="table-row-name text-bold">Problem 2 (Albagés - El Turonet)</a>
+					</td>
+					<td>7a</td>
+					<td>Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-2-albages-els-camps" class="table-row-name text-bold">Problem 2 (Albagés - Els Camps)</a>
+					</td>
+					<td>6a</td>
+					<td>Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-2-boulder-1-3-universitat" class="table-row-name text-bold">Problem 2 (Boulder 1.3, Universitat)</a>
+					</td>
+					<td>6a+/b</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-2-boulder-2-universitat" class="table-row-name text-bold">Problem 2 (Boulder 2, Universitat)</a>
+					</td>
+					<td>6a+</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-20-beer-action" class="table-row-name text-bold">Problem 20 (Beer Action)</a>
+					</td>
+					<td>6a+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-20-el-turonet" class="table-row-name text-bold">Problem 20 (El Turonet)</a>
+					</td>
+					<td>6b</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-21a-el-turonet" class="table-row-name text-bold">Problem 21a (El Turonet)</a>
+					</td>
+					<td>7a</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-22-beer-action" class="table-row-name text-bold">Problem 22 (Beer Action)</a>
+					</td>
+					<td>5+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-23-beer-action" class="table-row-name text-bold">Problem 23 (Beer Action)</a>
+					</td>
+					<td>6b+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-23-l-albages-el-turonet" class="table-row-name text-bold">Problem 23 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6b+</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-24-beer-action" class="table-row-name text-bold">Problem 24 (Beer Action)</a>
+					</td>
+					<td>6c</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-24-l-albages-el-turonet" class="table-row-name text-bold">Problem 24 (L'Albagés - El turonet)</a>
+					</td>
+					<td>6b</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-26-beer-action" class="table-row-name text-bold">Problem 26 (Beer Action)</a>
+					</td>
+					<td>5+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-27-beer-action" class="table-row-name text-bold">Problem 27 (Beer Action)</a>
+					</td>
+					<td>3+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-28-el-turonet" class="table-row-name text-bold">Problem 28 (El Turonet)</a>
+					</td>
+					<td>6a</td>
+					<td>Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-29-mestre-mutent" class="table-row-name text-bold">Problem 29 (Mestre Mutent)</a>
+					</td>
+					<td>6a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-albages-els-camps" class="table-row-name text-bold">Problem 3 (Albagés - Els Camps)</a>
+					</td>
+					<td>5</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-boulder-1-3-universitat" class="table-row-name text-bold">Problem 3 (Boulder 1.3, Universitat)</a>
+					</td>
+					<td>6b</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-boulder-3-universitat" class="table-row-name text-bold">Problem 3 (Boulder 3, Universitat)</a>
+					</td>
+					<td>6b</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-boulder-3-1-mestre-mutent" class="table-row-name text-bold">Problem 3 (Boulder 3.1, Mestre Mutent)</a>
+					</td>
+					<td>6a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-boulder-3-3-2-mestre-mutent" class="table-row-name text-bold">Problem 3 (Boulder 3.3.2, Mestre Mutent)</a>
+					</td>
+					<td>5</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-3-boulder-6-universitat" class="table-row-name text-bold">Problem 3 (Boulder 6, Universitat)</a>
+					</td>
+					<td>6a</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-32-albages-els-camps" class="table-row-name text-bold">Problem 32 (Albagés - Els Camps)</a>
+					</td>
+					<td>4+</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-33-albages-els-camps" class="table-row-name text-bold">Problem 33 (Albagés - Els Camps)</a>
+					</td>
+					<td>4+</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-34-albages-els-camps" class="table-row-name text-bold">Problem 34 (Albagés - Els Camps)</a>
+					</td>
+					<td>6a</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-39-beer-action" class="table-row-name text-bold">Problem 39 (Beer Action)</a>
+					</td>
+					<td>6a</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-4-boulder-3-3-1-mestre-mutent" class="table-row-name text-bold">Problem 4 (Boulder 3.3.1, Mestre Mutent)</a>
+					</td>
+					<td>6a+</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-4-mestre-mutent" class="table-row-name text-bold">Problem 4 (Mestre Mutent)</a>
+					</td>
+					<td>4+</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-41-l-albages-el-turonet" class="table-row-name text-bold">Problem 41 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6a</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-42-l-albages-el-turonet" class="table-row-name text-bold">Problem 42 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6a+</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-5-abellot-negre" class="table-row-name text-bold">Problem 5 (Abellot Negre)</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Abellot Negre</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-5-abellot-negre" class="table-row-name text-bold">Problem 5 (Abellot Negre)</a>
+					</td>
+					<td>6a</td>
+					<td>Abellot Negre</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-5-abocador" class="table-row-name text-bold">Problem 5 (Abocador)</a>
+					</td>
+					<td>6b (sit)</td>
+					<td>Abocador</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-5-el-turonet" class="table-row-name text-bold">Problem 5 (El Turonet)</a>
+					</td>
+					<td>6b+</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-58-el-turonet" class="table-row-name text-bold">Problem 58 (El Turonet)</a>
+					</td>
+					<td>6a+</td>
+					<td>El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-6-albages-els-camps" class="table-row-name text-bold">Problem 6 (Albagés - Els Camps)</a>
+					</td>
+					<td>5+</td>
+					<td>Albagés - Els Camps</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-6-l-albages-el-turonet" class="table-row-name text-bold">Problem 6 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-6-l-albages-el-turonet" class="table-row-name text-bold">Problem 6 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6b</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-60-l-albages-el-turonet" class="table-row-name text-bold">Problem 60 (L'Albagés - El Turonet)</a>
+					</td>
+					<td>6b</td>
+					<td>L'Albagés - El Turonet</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-7-albages-els-sostres" class="table-row-name text-bold">Problem 7 (Albagés - Els Sostres)</a>
+					</td>
+					<td>7b+</td>
+					<td>Albagés - Els Sostres</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-7-boulder-3-2-mestre-mutent" class="table-row-name text-bold">Problem 7 (Boulder 3.2, Mestre Mutent)</a>
+					</td>
+					<td>6a</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-7-totxo-mali" class="table-row-name text-bold">Problem 7 (Totxo Mali)</a>
+					</td>
+					<td>6c</td>
+					<td>Totxo Mali</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-8-toxto-de-la-vinya" class="table-row-name text-bold">Problem 8 (Toxto de la Vinya)</a>
+					</td>
+					<td>6b+</td>
+					<td>Totxo de la Vinya</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-9-albages-1890" class="table-row-name text-bold">Problem 9 (Albagés - 1890)</a>
+					</td>
+					<td>6a</td>
+					<td>1890</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-9-lo-pallars" class="table-row-name text-bold">Problem 9 (Lo Pallars)</a>
+					</td>
+					<td>Unknown</td>
+					<td>Lo Pallars</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/problem-unknown-beer-action" class="table-row-name text-bold">Problem unknown (Beer Action)</a>
+					</td>
+					<td>6a+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/realidad-depresiva" class="table-row-name text-bold">Realidad depresiva</a>
+					</td>
+					<td>6a</td>
+					<td>Universitat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/roca-mare" class="table-row-name text-bold">Roca mare</a>
+					</td>
+					<td>7c</td>
+					<td>Albagés - Els ulls</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/romocop" class="table-row-name text-bold">Romocop</a>
+					</td>
+					<td>6c</td>
+					<td>Lloreria</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/salvatge-oest" class="table-row-name text-bold">Salvatge oest</a>
+					</td>
+					<td>7a+</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/slab-final" class="table-row-name text-bold">Slab final</a>
+					</td>
+					<td>7a+</td>
+					<td>X-Tone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/som-de-l-oest" class="table-row-name text-bold">Som de l'oest</a>
+					</td>
+					<td>6a</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/spargus" class="table-row-name text-bold">Spargus</a>
+					</td>
+					<td>6b</td>
+					<td>Mestre Mutent</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/tambe-n-hi-ha-d-haver-de-facils" class="table-row-name text-bold">També n'hi ha d'haver de fàcils</a>
+					</td>
+					<td>5+</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/test-d-estres" class="table-row-name text-bold">Test d'estrès</a>
+					</td>
+					<td>6b</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/tots-els-homes-tenen-ous" class="table-row-name text-bold">Tots els homes tenen ous</a>
+					</td>
+					<td>6b+</td>
+					<td>Collat</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/totxo-de-la-vinya" class="table-row-name text-bold">Totxo de la Vinya</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Beer Action</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/el-cogul/two-brothers" class="table-row-name text-bold">Two brothers</a>
+					</td>
+					<td>6a+</td>
+					<td>Albagés - Abellot Negre</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

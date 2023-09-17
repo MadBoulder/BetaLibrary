@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/villanueva-del-rosario">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Villanueva del Rosario 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="36.98752" />
   <input type="hidden" id="lng" name="lng_val" value="-4.3154" />
@@ -168,264 +248,83 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/villanueva-del-rosario"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/villanueva-del-rosario"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/al-andalus">Al-Andalus, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/asterix">Asterix, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/boomerang">Boomerang, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/canguelix">Canguelix, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/efedra">Efedra, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/el-colmillo">El Colmillo, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/esquina-amazonias">Esquina Amazonias, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/fisura-pequena">Fisura pequeña, 6a (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/harmel-la-hongos">Harmel (La Hongos), 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/iboga">Iboga, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/izquierda-asterix">Izquierda Asterix, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/jazmina">Jazmina, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/la-esquina">La Esquina, 4c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/la-mandragora">La Mandrágora, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/la-piramide">La Pirámide, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/la-rampa">La Rampa, 3a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/lebrijano">Lebrijano, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/marihuana-para-tontos">Marihuana para tontos, 6c (Right Exit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/marihuana-para-tontos">Marihuana para tontos, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/metodo-henry">Método Henry, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/paraiso-perdido">Paraíso Perdido, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/pequeno-sultan">Pequeño Sultán, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-150">Problem 150, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-170">Problem 170, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-190">Problem 190, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-232">Problem 232, 5c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-233">Problem 233, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-436">Problem 436, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-71">Problem 71, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-72">Problem 72, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-77">Problem 77, 5a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/problem-78">Problem 78, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/super-coco">Super Coco, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/villanueva-del-rosario/toloache">Toloache, 4a</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "villanueva-del-rosario_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/villanueva-del-rosario/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "villanueva-del-rosario_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/villanueva-del-rosario/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">34</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -450,8 +349,336 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/al-andalus" class="table-row-name text-bold">Al-Andalus</a>
+					</td>
+					<td>8a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/asterix" class="table-row-name text-bold">Asterix</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/boomerang" class="table-row-name text-bold">Boomerang</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/canguelix" class="table-row-name text-bold">Canguelix</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/efedra" class="table-row-name text-bold">Efedra</a>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/el-colmillo" class="table-row-name text-bold">El Colmillo</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/esquina-amazonias" class="table-row-name text-bold">Esquina Amazonias</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/fisura-pequena" class="table-row-name text-bold">Fisura pequeña</a>
+					</td>
+					<td>6a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/harmel-la-hongos" class="table-row-name text-bold">Harmel (La Hongos)</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/iboga" class="table-row-name text-bold">Iboga</a>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/izquierda-asterix" class="table-row-name text-bold">Izquierda Asterix</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/jazmina" class="table-row-name text-bold">Jazmina</a>
+					</td>
+					<td>3a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/la-esquina" class="table-row-name text-bold">La Esquina</a>
+					</td>
+					<td>4c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/la-mandragora" class="table-row-name text-bold">La Mandrágora</a>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/la-piramide" class="table-row-name text-bold">La Pirámide</a>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/la-rampa" class="table-row-name text-bold">La Rampa</a>
+					</td>
+					<td>3a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/lebrijano" class="table-row-name text-bold">Lebrijano</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/marihuana-para-tontos" class="table-row-name text-bold">Marihuana para tontos</a>
+					</td>
+					<td>6c (Right Exit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/marihuana-para-tontos" class="table-row-name text-bold">Marihuana para tontos</a>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/metodo-henry" class="table-row-name text-bold">Método Henry</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/paraiso-perdido" class="table-row-name text-bold">Paraíso Perdido</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/pequeno-sultan" class="table-row-name text-bold">Pequeño Sultán</a>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-150" class="table-row-name text-bold">Problem 150</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-170" class="table-row-name text-bold">Problem 170</a>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-190" class="table-row-name text-bold">Problem 190</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-232" class="table-row-name text-bold">Problem 232</a>
+					</td>
+					<td>5c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-233" class="table-row-name text-bold">Problem 233</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-436" class="table-row-name text-bold">Problem 436</a>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-71" class="table-row-name text-bold">Problem 71</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-72" class="table-row-name text-bold">Problem 72</a>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-77" class="table-row-name text-bold">Problem 77</a>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/problem-78" class="table-row-name text-bold">Problem 78</a>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/super-coco" class="table-row-name text-bold">Super Coco</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/villanueva-del-rosario/toloache" class="table-row-name text-bold">Toloache</a>
+					</td>
+					<td>4a</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

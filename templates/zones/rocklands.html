@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/rocklands">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Rocklands 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="-32.14524" />
   <input type="hidden" id="lng" name="lng_val" value="19.033785" />
@@ -168,889 +248,389 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/areas/rocklands" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/areas/rocklands"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/rocklands"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/rocklands"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/rocklands/a-question-of-balance">A Question of Balance, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/a-splash-of-red">A Splash of Red, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/a-tea-with-elmarie">A tea with Elmarie, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/air-star">Air Star, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/amandla">Amandla, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/an-amal-roof">An Amal Roof, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/antidote">Antidote, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/armed-response">Armed Response, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/barracuda">Barracuda, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/battle-of-the-skink">Battle of the skink, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/big-little-lies">Big little lies, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/black-eagle">Black Eagle, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/black-shadow">Black Shadow, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/black-slab">Black Slab, Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/black-velvet">Black Velvet, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/bols-island">Bols Island, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/bone-appetit">Bone-Appetit, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/born-into-struggle">Born Into Struggle, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/bushwhacker">Bushwhacker, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/campari">Campari, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/caroline">Caroline, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/cedar-spine">Cedar Spine, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/cinquieme-soleil">Cinquieme Soleil, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/clingon">Clingon, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/coal-chamber">Coal Chamber, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/creaking-heights">Creaking Heights, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/dj-danger">DJ Danger, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/director-s-cunt">Director's Cunt, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/distance">Distance, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/dove-tongue-degresser">Dove Tongue Degresser, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/el-corazon">El corazon, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/electric-copper">Electric Copper, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/esoterrorist">Esoterrorist, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/eye-of-sauron">Eye of Sauron, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/flying-guitar-thief">Flying Guitar Thief, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/fragile-steps">Fragile Steps, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/free-hugs">Free Hugs, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/fruchtzwerg">Fruchtzwerg, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/gamelan">Gamelan, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/gecko-walk">Gecko Walk, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/get-railed">Get Railed, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/ghost-in-the-darkness">Ghost in the Darkness, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/gliding-through-the-waves-like-dolphins">Gliding through the waves like dolphins, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/gogoan">Gogoan, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/golden-shadow">Golden Shadow, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/golden-virginia">Golden Virginia, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/good-hope">Good Hope, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/green-mamba">Green Mamba, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/hellfire">Hellfire, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/herbie">Herbie, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/hole-in-one">Hole in One, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/in-between-dreams">In Between Dreams, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/in-the-middle-of-the-ass">In the middle of the ass, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/industry-of-cool">Industry of Cool, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/john-denver">John Denver, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/kasteelpoort">Kasteelpoort, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/king-of-limbs">King of Limbs, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/kingdom-in-the-sky">Kingdom in the Sky, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/kings-of-convenience">Kings of Convenience, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/l-arete">L'Arête, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/l-arche-the-arch">L'arche (The Arch), 8a+/8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/last-day-in-paradise">Last Day in Paradise, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/law-and-order">Law and Order, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/light-saber">Light Saber, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/lolita">Lolita, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/maniac">Maniac, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/mask-off">Mask Off, 7v+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/maties">Maties, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/minki">Minki, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/molly-percocet">Molly Percocet, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/monkey-wedding">Monkey Wedding, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/monkey-business">Monkey business, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/mooiste-meisie">Mooiste Meisie, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/moon-shadow">Moon Shadow, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/menage-a-trois">Ménage à trois, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/night-sesh">Night Sesh, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/nutsa">Nutsa, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/olifants-dawn">Olifants dawn, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/on-the-road-again">On the road again, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/oral-office">Oral Office, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/orange-heart">Orange Heart, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/osteophyte">Osteophyte, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/out-of-balance">Out of Balance, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/overshadowed">Overshadowed, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/paula-abdul">Paula Abdul, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/pendragon">Pendragon, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/perfect">Perfect, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/petrichor">Petrichor, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/pinotage">Pinotage, 7c (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/poison-dwarf">Poison Dwarf, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/purple-nipple-clan">Purple Nipple Clan, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/ron-ron-et-caramel">Ron Ron et Caramel, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/royksopp">Røyksopp, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sassy-squash">Sassy Squash, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sex-etiquette">Sex Etiquette, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/shaky-warrior">Shaky warrior, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/shark-attack">Shark Attack, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/short-and-stout">Short and Stout, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/shosholoza">Shosholoza, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/silky-natural">Silky Natural, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/skink">Skink, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sky">Sky, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/slash-and-burn">Slash and Burn, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/soggy-teabag">Soggy Teabag, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/solar-power">Solar Power, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/springbok">Springbok, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/stalker-on-the-horizon">Stalker On the Horizon, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/strategic-balance">Strategic Balance, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/stretched-and-pressed">Stretched and pressed, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sublime">Sublime, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sunset-arete">Sunset Arete, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/sunset-traverse">Sunset Traverse, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/swallow-cave">Swallow Cave, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/tea-arch">Tea-arch, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/tea-arch-high">Tea-arch high, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/teagardenroof">Teagardenroof, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/teatime">Teatime, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/tennis-biscuit">Tennis Biscuit, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-amphitheatre">The Amphitheatre, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-book-club">The Book Club, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-bridge">The Bridge, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-escapist">The Escapist, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-fin">The Fin, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-finnish-line">The Finnish Line, 8c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-girlfriend-s-problem">The Girlfriend's Problem, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-good-seed">The Good Seed, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-guest-list">The Guest List, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-hatchling">The Hatchling, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-quintessential">The Quintessential, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-rhino">The Rhino, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-shark">The Shark, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-worm-hole">The Worm Hole, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-prow">The prow, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/the-vice">The vice, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/throw-yourself-away">Throw yourself away, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/timeout">Timeout, 8a+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/tomorrow-i-will-be-gone">Tomorrow I Will Be Gone, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/tu-seras-un-homme-mon-fils">Tu seras un homme mon fils, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/txiki">Txiki, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/ubuntu">Ubuntu, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/umbuli">Umbuli, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/weichei">Weichei, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/when-the-day-breaks">When the Day Breaks, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/witness-the-sickness">Witness the sickness, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/rocklands/zanzibar">Zanzibar, 7a+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "rocklands_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/rocklands/8-day-rain">8 Day Rain</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/8-rain-day">8 Rain Day</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/arch-valley">Arch Valley</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/area-15">Area 15</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/bonus-boulders">Bonus Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/campground">Campground</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/cedar-rouge">Cedar Rouge</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/champsite">Champsite</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/close-plateau">Close Plateau</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/danger-zone">Danger Zone</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/dihedral-boulders">Dihedral Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/eland">Eland</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/far-plateau">Far Plateau</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/fields-of-joy">Fields of Joy</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/fortress">Fortress</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/kleinfonein">Kleinfonein</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/kleinfontein">Kleinfontein</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/last-day-in-paradise">Last Day in Paradise</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/nachorizma">Nachorizma</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/outback">Outback</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/plateau">Plateau</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/powerlines">Powerlines</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/rhino">Rhino</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/rhino-boulders">Rhino Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/riverside">Riverside</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/roadcrew">Roadcrew</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/roadkill-cafe">Roadkill Cafe</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/roadside">Roadside</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/sassies">Sassies</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/tea-garden">Tea Garden</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-aquaduct">The Aquaduct</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-coop">The Coop</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-french-side">The French Side</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-gallery">The Gallery</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-otherside">The Otherside</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-realm">The Realm</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-saddle">The Saddle</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-sassies">The Sassies</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/the-section">The Section</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/twin-boulders">Twin Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/waterfall-boulders">Waterfall Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/wave-rock-and-big-grey-slab">Wave Rock and Big Grey Slab</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/rocklands/witness-valley">Witness Valley</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "rocklands_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/8-day-rain" class="table-row-name text-bold">8 Day Rain</a>
+					</td>
+					<td class="text-center">10</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/8-rain-day" class="table-row-name text-bold">8 Rain Day</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/arch-valley" class="table-row-name text-bold">Arch Valley</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/area-15" class="table-row-name text-bold">Area 15</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/bonus-boulders" class="table-row-name text-bold">Bonus Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/campground" class="table-row-name text-bold">Campground</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/cedar-rouge" class="table-row-name text-bold">Cedar Rouge</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/champsite" class="table-row-name text-bold">Champsite</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/close-plateau" class="table-row-name text-bold">Close Plateau</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/danger-zone" class="table-row-name text-bold">Danger Zone</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/dihedral-boulders" class="table-row-name text-bold">Dihedral Boulders</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/eland" class="table-row-name text-bold">Eland</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/far-plateau" class="table-row-name text-bold">Far Plateau</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/fields-of-joy" class="table-row-name text-bold">Fields of Joy</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/fortress" class="table-row-name text-bold">Fortress</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/kleinfonein" class="table-row-name text-bold">Kleinfonein</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/kleinfontein" class="table-row-name text-bold">Kleinfontein</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/last-day-in-paradise" class="table-row-name text-bold">Last Day in Paradise</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/nachorizma" class="table-row-name text-bold">Nachorizma</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/outback" class="table-row-name text-bold">Outback</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/plateau" class="table-row-name text-bold">Plateau</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/powerlines" class="table-row-name text-bold">Powerlines</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/rhino" class="table-row-name text-bold">Rhino</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/rhino-boulders" class="table-row-name text-bold">Rhino Boulders</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/riverside" class="table-row-name text-bold">Riverside</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/roadcrew" class="table-row-name text-bold">Roadcrew</a>
+					</td>
+					<td class="text-center">14</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/roadkill-cafe" class="table-row-name text-bold">Roadkill Cafe</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/roadside" class="table-row-name text-bold">Roadside</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/sassies" class="table-row-name text-bold">Sassies</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/tea-garden" class="table-row-name text-bold">Tea Garden</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-aquaduct" class="table-row-name text-bold">The Aquaduct</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-coop" class="table-row-name text-bold">The Coop</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-french-side" class="table-row-name text-bold">The French Side</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-gallery" class="table-row-name text-bold">The Gallery</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-otherside" class="table-row-name text-bold">The Otherside</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-realm" class="table-row-name text-bold">The Realm</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-saddle" class="table-row-name text-bold">The Saddle</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-sassies" class="table-row-name text-bold">The Sassies</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/the-section" class="table-row-name text-bold">The Section</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/twin-boulders" class="table-row-name text-bold">Twin Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/waterfall-boulders" class="table-row-name text-bold">Waterfall Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/wave-rock-and-big-grey-slab" class="table-row-name text-bold">Wave Rock and Big Grey Slab</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/rocklands/witness-valley" class="table-row-name text-bold">Witness Valley</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -1078,7 +658,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Powerlines</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1104,7 +684,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Kleinfontein</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1130,7 +710,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Arch Valley</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1156,7 +736,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Tea Garden</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1182,7 +762,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Roadcrew</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1208,7 +788,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Fortress</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1234,7 +814,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Campground</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1260,7 +840,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Plateau</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1286,7 +866,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>8 Rain Day</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1312,7 +892,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Roadkill Cafe</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1338,7 +918,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Roadside</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1364,7 +944,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>The Sassies</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1387,8 +967,1335 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/a-question-of-balance" class="table-row-name text-bold">A Question of Balance</a>
+					</td>
+					<td>7b</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/a-splash-of-red" class="table-row-name text-bold">A Splash of Red</a>
+					</td>
+					<td>7c</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/a-tea-with-elmarie" class="table-row-name text-bold">A tea with Elmarie</a>
+					</td>
+					<td>8a</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/air-star" class="table-row-name text-bold">Air Star</a>
+					</td>
+					<td>8b</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/amandla" class="table-row-name text-bold">Amandla</a>
+					</td>
+					<td>8b+</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/an-amal-roof" class="table-row-name text-bold">An Amal Roof</a>
+					</td>
+					<td>7b+</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/antidote" class="table-row-name text-bold">Antidote</a>
+					</td>
+					<td>8b</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/armed-response" class="table-row-name text-bold">Armed Response</a>
+					</td>
+					<td>8a+</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/barracuda" class="table-row-name text-bold">Barracuda</a>
+					</td>
+					<td>8a</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/battle-of-the-skink" class="table-row-name text-bold">Battle of the skink</a>
+					</td>
+					<td>7b+</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/big-little-lies" class="table-row-name text-bold">Big little lies</a>
+					</td>
+					<td>8a</td>
+					<td>Danger Zone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/black-eagle" class="table-row-name text-bold">Black Eagle</a>
+					</td>
+					<td>8b+</td>
+					<td>Cedar Rouge</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/black-shadow" class="table-row-name text-bold">Black Shadow</a>
+					</td>
+					<td>8a+</td>
+					<td>Tea Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/black-slab" class="table-row-name text-bold">Black Slab</a>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/black-velvet" class="table-row-name text-bold">Black Velvet</a>
+					</td>
+					<td>8a</td>
+					<td>Far Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/bols-island" class="table-row-name text-bold">Bols Island</a>
+					</td>
+					<td>7a</td>
+					<td>Rhino</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/bone-appetit" class="table-row-name text-bold">Bone-Appetit</a>
+					</td>
+					<td>7a</td>
+					<td>Outback</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/born-into-struggle" class="table-row-name text-bold">Born Into Struggle</a>
+					</td>
+					<td>7b+</td>
+					<td>Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/bushwhacker" class="table-row-name text-bold">Bushwhacker</a>
+					</td>
+					<td>6c+</td>
+					<td>8 Rain Day</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/campari" class="table-row-name text-bold">Campari</a>
+					</td>
+					<td>6b</td>
+					<td>Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/caroline" class="table-row-name text-bold">Caroline</a>
+					</td>
+					<td>7c+</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/cedar-spine" class="table-row-name text-bold">Cedar Spine</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/cinquieme-soleil" class="table-row-name text-bold">Cinquieme Soleil</a>
+					</td>
+					<td>8a</td>
+					<td>Waterfall Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/clingon" class="table-row-name text-bold">Clingon</a>
+					</td>
+					<td>8a</td>
+					<td>The Aquaduct</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/coal-chamber" class="table-row-name text-bold">Coal Chamber</a>
+					</td>
+					<td>6b+</td>
+					<td>Close Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/creaking-heights" class="table-row-name text-bold">Creaking Heights</a>
+					</td>
+					<td>6c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/dj-danger" class="table-row-name text-bold">DJ Danger</a>
+					</td>
+					<td>7a+</td>
+					<td>Danger Zone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/director-s-cunt" class="table-row-name text-bold">Director's Cunt</a>
+					</td>
+					<td>7a+</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/distance" class="table-row-name text-bold">Distance</a>
+					</td>
+					<td>7c</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/dove-tongue-degresser" class="table-row-name text-bold">Dove Tongue Degresser</a>
+					</td>
+					<td>8a</td>
+					<td>Eland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/el-corazon" class="table-row-name text-bold">El corazon</a>
+					</td>
+					<td>8a+</td>
+					<td>Dihedral Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/electric-copper" class="table-row-name text-bold">Electric Copper</a>
+					</td>
+					<td>7c+</td>
+					<td>Bonus Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/esoterrorist" class="table-row-name text-bold">Esoterrorist</a>
+					</td>
+					<td>6c+</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/eye-of-sauron" class="table-row-name text-bold">Eye of Sauron</a>
+					</td>
+					<td>7c+</td>
+					<td>The Realm</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/flying-guitar-thief" class="table-row-name text-bold">Flying Guitar Thief</a>
+					</td>
+					<td>8a</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/fragile-steps" class="table-row-name text-bold">Fragile Steps</a>
+					</td>
+					<td>8b</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/free-hugs" class="table-row-name text-bold">Free Hugs</a>
+					</td>
+					<td>7a+</td>
+					<td>Roadkill Cafe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/fruchtzwerg" class="table-row-name text-bold">Fruchtzwerg</a>
+					</td>
+					<td>7c</td>
+					<td>Close Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/gamelan" class="table-row-name text-bold">Gamelan</a>
+					</td>
+					<td>6c</td>
+					<td>Close Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/gecko-walk" class="table-row-name text-bold">Gecko Walk</a>
+					</td>
+					<td>6c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/get-railed" class="table-row-name text-bold">Get Railed</a>
+					</td>
+					<td>8b+</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/ghost-in-the-darkness" class="table-row-name text-bold">Ghost in the Darkness</a>
+					</td>
+					<td>7c+</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/gliding-through-the-waves-like-dolphins" class="table-row-name text-bold">Gliding through the waves like dolphins</a>
+					</td>
+					<td>8a</td>
+					<td>Dihedral Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/gogoan" class="table-row-name text-bold">Gogoan</a>
+					</td>
+					<td>8b</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/golden-shadow" class="table-row-name text-bold">Golden Shadow</a>
+					</td>
+					<td>8b</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/golden-virginia" class="table-row-name text-bold">Golden Virginia</a>
+					</td>
+					<td>7c+</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/good-hope" class="table-row-name text-bold">Good Hope</a>
+					</td>
+					<td>8b</td>
+					<td>The Saddle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/green-mamba" class="table-row-name text-bold">Green Mamba</a>
+					</td>
+					<td>8a</td>
+					<td>Cedar Rouge</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/hellfire" class="table-row-name text-bold">Hellfire</a>
+					</td>
+					<td>8a</td>
+					<td>Roadkill Cafe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/herbie" class="table-row-name text-bold">Herbie</a>
+					</td>
+					<td>7c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/hole-in-one" class="table-row-name text-bold">Hole in One</a>
+					</td>
+					<td>7c+</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/in-between-dreams" class="table-row-name text-bold">In Between Dreams</a>
+					</td>
+					<td>8a+</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/in-the-middle-of-the-ass" class="table-row-name text-bold">In the middle of the ass</a>
+					</td>
+					<td>8a</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/industry-of-cool" class="table-row-name text-bold">Industry of Cool</a>
+					</td>
+					<td>8a+</td>
+					<td>8 Rain Day</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/john-denver" class="table-row-name text-bold">John Denver</a>
+					</td>
+					<td>7a</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/kasteelpoort" class="table-row-name text-bold">Kasteelpoort</a>
+					</td>
+					<td>7c</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/king-of-limbs" class="table-row-name text-bold">King of Limbs</a>
+					</td>
+					<td>8b</td>
+					<td>Cedar Rouge</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/kingdom-in-the-sky" class="table-row-name text-bold">Kingdom in the Sky</a>
+					</td>
+					<td>7c</td>
+					<td>Champsite</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/kings-of-convenience" class="table-row-name text-bold">Kings of Convenience</a>
+					</td>
+					<td>7c+</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/l-arete" class="table-row-name text-bold">L'Arête</a>
+					</td>
+					<td>7a+</td>
+					<td>Powerlines</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/l-arche-the-arch" class="table-row-name text-bold">L'arche (The Arch)</a>
+					</td>
+					<td>8a+/8b</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/last-day-in-paradise" class="table-row-name text-bold">Last Day in Paradise</a>
+					</td>
+					<td>7c</td>
+					<td>Last Day in Paradise</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/law-and-order" class="table-row-name text-bold">Law and Order</a>
+					</td>
+					<td>8a+</td>
+					<td>Danger Zone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/light-saber" class="table-row-name text-bold">Light Saber</a>
+					</td>
+					<td>8a+</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/lolita" class="table-row-name text-bold">Lolita</a>
+					</td>
+					<td>7b</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/maniac" class="table-row-name text-bold">Maniac</a>
+					</td>
+					<td>7b</td>
+					<td>Fields of Joy</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/mask-off" class="table-row-name text-bold">Mask Off</a>
+					</td>
+					<td>7v+</td>
+					<td>The Realm</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/maties" class="table-row-name text-bold">Maties</a>
+					</td>
+					<td>7a</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/minki" class="table-row-name text-bold">Minki</a>
+					</td>
+					<td>7b</td>
+					<td>Far Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/molly-percocet" class="table-row-name text-bold">Molly Percocet</a>
+					</td>
+					<td>8a</td>
+					<td>The Realm</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/monkey-wedding" class="table-row-name text-bold">Monkey Wedding</a>
+					</td>
+					<td>8c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/monkey-business" class="table-row-name text-bold">Monkey business</a>
+					</td>
+					<td>8a+</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/mooiste-meisie" class="table-row-name text-bold">Mooiste Meisie</a>
+					</td>
+					<td>8b</td>
+					<td>Riverside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/moon-shadow" class="table-row-name text-bold">Moon Shadow</a>
+					</td>
+					<td>8b</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/menage-a-trois" class="table-row-name text-bold">Ménage à trois</a>
+					</td>
+					<td>8b+</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/night-sesh" class="table-row-name text-bold">Night Sesh</a>
+					</td>
+					<td>7a+</td>
+					<td>Roadkill Cafe</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/nutsa" class="table-row-name text-bold">Nutsa</a>
+					</td>
+					<td>8a</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/olifants-dawn" class="table-row-name text-bold">Olifants dawn</a>
+					</td>
+					<td>8b+</td>
+					<td>Riverside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/on-the-road-again" class="table-row-name text-bold">On the road again</a>
+					</td>
+					<td>7c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/oral-office" class="table-row-name text-bold">Oral Office</a>
+					</td>
+					<td>8a+</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/orange-heart" class="table-row-name text-bold">Orange Heart</a>
+					</td>
+					<td>6c</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/osteophyte" class="table-row-name text-bold">Osteophyte</a>
+					</td>
+					<td>7a+</td>
+					<td>The Gallery</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/out-of-balance" class="table-row-name text-bold">Out of Balance</a>
+					</td>
+					<td>8a</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/overshadowed" class="table-row-name text-bold">Overshadowed</a>
+					</td>
+					<td>7c+</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/paula-abdul" class="table-row-name text-bold">Paula Abdul</a>
+					</td>
+					<td>7c+</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/pendragon" class="table-row-name text-bold">Pendragon</a>
+					</td>
+					<td>8a</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/perfect" class="table-row-name text-bold">Perfect</a>
+					</td>
+					<td>6c+</td>
+					<td>Powerlines</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/petrichor" class="table-row-name text-bold">Petrichor</a>
+					</td>
+					<td>8c</td>
+					<td>Area 15</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/pinotage" class="table-row-name text-bold">Pinotage</a>
+					</td>
+					<td>7c (sit)</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/poison-dwarf" class="table-row-name text-bold">Poison Dwarf</a>
+					</td>
+					<td>7b</td>
+					<td>Close Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/purple-nipple-clan" class="table-row-name text-bold">Purple Nipple Clan</a>
+					</td>
+					<td>8a</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/ron-ron-et-caramel" class="table-row-name text-bold">Ron Ron et Caramel</a>
+					</td>
+					<td>7c+</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/royksopp" class="table-row-name text-bold">Røyksopp</a>
+					</td>
+					<td>7c+</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sassy-squash" class="table-row-name text-bold">Sassy Squash</a>
+					</td>
+					<td>8a</td>
+					<td>Eland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sex-etiquette" class="table-row-name text-bold">Sex Etiquette</a>
+					</td>
+					<td>6c</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/shaky-warrior" class="table-row-name text-bold">Shaky warrior</a>
+					</td>
+					<td>8b+</td>
+					<td>The Section</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/shark-attack" class="table-row-name text-bold">Shark Attack</a>
+					</td>
+					<td>7b</td>
+					<td>Danger Zone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/short-and-stout" class="table-row-name text-bold">Short and Stout</a>
+					</td>
+					<td>7a+</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/shosholoza" class="table-row-name text-bold">Shosholoza</a>
+					</td>
+					<td>8a+</td>
+					<td>Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/silky-natural" class="table-row-name text-bold">Silky Natural</a>
+					</td>
+					<td>7a</td>
+					<td>8 Rain Day</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/skink" class="table-row-name text-bold">Skink</a>
+					</td>
+					<td>7b</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sky" class="table-row-name text-bold">Sky</a>
+					</td>
+					<td>8b</td>
+					<td>Kleinfontein</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/slash-and-burn" class="table-row-name text-bold">Slash and Burn</a>
+					</td>
+					<td>7b</td>
+					<td>Twin Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/soggy-teabag" class="table-row-name text-bold">Soggy Teabag</a>
+					</td>
+					<td>7a+</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/solar-power" class="table-row-name text-bold">Solar Power</a>
+					</td>
+					<td>7c+</td>
+					<td>Fields of Joy</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/springbok" class="table-row-name text-bold">Springbok</a>
+					</td>
+					<td>7a+</td>
+					<td>The Sassies</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/stalker-on-the-horizon" class="table-row-name text-bold">Stalker On the Horizon</a>
+					</td>
+					<td>7b+</td>
+					<td>Rhino Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/strategic-balance" class="table-row-name text-bold">Strategic Balance</a>
+					</td>
+					<td>8a</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/stretched-and-pressed" class="table-row-name text-bold">Stretched and pressed</a>
+					</td>
+					<td>7c</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sublime" class="table-row-name text-bold">Sublime</a>
+					</td>
+					<td>6c+</td>
+					<td>Powerlines</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sunset-arete" class="table-row-name text-bold">Sunset Arete</a>
+					</td>
+					<td>7c</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/sunset-traverse" class="table-row-name text-bold">Sunset Traverse</a>
+					</td>
+					<td>7a</td>
+					<td>Roadside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/swallow-cave" class="table-row-name text-bold">Swallow Cave</a>
+					</td>
+					<td>8a</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/tea-arch" class="table-row-name text-bold">Tea-arch</a>
+					</td>
+					<td>7a+</td>
+					<td>Tea Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/tea-arch-high" class="table-row-name text-bold">Tea-arch high</a>
+					</td>
+					<td>7c</td>
+					<td>Tea Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/teagardenroof" class="table-row-name text-bold">Teagardenroof</a>
+					</td>
+					<td>7b+</td>
+					<td>Tea Garden</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/teatime" class="table-row-name text-bold">Teatime</a>
+					</td>
+					<td>7c</td>
+					<td>Campground</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/tennis-biscuit" class="table-row-name text-bold">Tennis Biscuit</a>
+					</td>
+					<td>7b+</td>
+					<td>8 Rain Day</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-amphitheatre" class="table-row-name text-bold">The Amphitheatre</a>
+					</td>
+					<td>8a</td>
+					<td>The Otherside</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-book-club" class="table-row-name text-bold">The Book Club</a>
+					</td>
+					<td>8b+</td>
+					<td>Nachorizma</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-bridge" class="table-row-name text-bold">The Bridge</a>
+					</td>
+					<td>7c</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-escapist" class="table-row-name text-bold">The Escapist</a>
+					</td>
+					<td>8b</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-fin" class="table-row-name text-bold">The Fin</a>
+					</td>
+					<td>7a</td>
+					<td>Kleinfonein</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-finnish-line" class="table-row-name text-bold">The Finnish Line</a>
+					</td>
+					<td>8c</td>
+					<td>The Coop</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-girlfriend-s-problem" class="table-row-name text-bold">The Girlfriend's Problem</a>
+					</td>
+					<td>7a</td>
+					<td>Kleinfontein</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-good-seed" class="table-row-name text-bold">The Good Seed</a>
+					</td>
+					<td>7b+</td>
+					<td>Arch Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-guest-list" class="table-row-name text-bold">The Guest List</a>
+					</td>
+					<td>8b</td>
+					<td>Eland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-hatchling" class="table-row-name text-bold">The Hatchling</a>
+					</td>
+					<td>8a</td>
+					<td>Kleinfontein</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-quintessential" class="table-row-name text-bold">The Quintessential</a>
+					</td>
+					<td>8b</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-rhino" class="table-row-name text-bold">The Rhino</a>
+					</td>
+					<td>7b+</td>
+					<td>Rhino Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-shark" class="table-row-name text-bold">The Shark</a>
+					</td>
+					<td>7c+</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-worm-hole" class="table-row-name text-bold">The Worm Hole</a>
+					</td>
+					<td>7b</td>
+					<td>Danger Zone</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-prow" class="table-row-name text-bold">The prow</a>
+					</td>
+					<td>7a+</td>
+					<td>Powerlines</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/the-vice" class="table-row-name text-bold">The vice</a>
+					</td>
+					<td>8b</td>
+					<td>Fortress</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/throw-yourself-away" class="table-row-name text-bold">Throw yourself away</a>
+					</td>
+					<td>7c</td>
+					<td>Far Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/timeout" class="table-row-name text-bold">Timeout</a>
+					</td>
+					<td>8a+ (sit)</td>
+					<td>8 Day Rain</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/tomorrow-i-will-be-gone" class="table-row-name text-bold">Tomorrow I Will Be Gone</a>
+					</td>
+					<td>7c</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/tu-seras-un-homme-mon-fils" class="table-row-name text-bold">Tu seras un homme mon fils</a>
+					</td>
+					<td>6b</td>
+					<td>The French Side</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/txiki" class="table-row-name text-bold">Txiki</a>
+					</td>
+					<td>8a+</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/ubuntu" class="table-row-name text-bold">Ubuntu</a>
+					</td>
+					<td>8b</td>
+					<td>Wave Rock and Big Grey Slab</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/umbuli" class="table-row-name text-bold">Umbuli</a>
+					</td>
+					<td>8a</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/weichei" class="table-row-name text-bold">Weichei</a>
+					</td>
+					<td>7c</td>
+					<td>Plateau</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/when-the-day-breaks" class="table-row-name text-bold">When the Day Breaks</a>
+					</td>
+					<td>7b</td>
+					<td>Roadcrew</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/witness-the-sickness" class="table-row-name text-bold">Witness the sickness</a>
+					</td>
+					<td>8a</td>
+					<td>Witness Valley</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/rocklands/zanzibar" class="table-row-name text-bold">Zanzibar</a>
+					</td>
+					<td>7a+</td>
+					<td>Plateau</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

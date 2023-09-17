@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/red-rocks">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Red Rocks 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="36.13129" />
   <input type="hidden" id="lng" name="lng_val" value="-115.42453" />
@@ -168,555 +248,210 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.snellpress.com/snbii" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Southern Nevada Bouldering II (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://www.amazon.com/Vegas-Bouldering-2008-Seth-Robinson/dp/0979264448" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Vegas Bouldering 2008 Edition (Guide)
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/areas/red-rocks" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.snellpress.com/snbii"
-        target="_blank"
-        >Southern Nevada Bouldering II (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.amazon.com/Vegas-Bouldering-2008-Seth-Robinson/dp/0979264448"
-        target="_blank"
-        >Vegas Bouldering 2008 Edition (Guide)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/areas/red-rocks"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/red-rocks"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/red-rocks"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/red-rocks/adder-stone">Adder Stone, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/alexisizer">Alexisizer, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/angel-dyno">Angel Dyno, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/anthem">Anthem, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/astronomy">Astronomy, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/b-ch-slap-5">B**ch Slap 5, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/b-ch-slap-left">B**ch Slap Left, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/book-of-nightmares">Book of Nightmares, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/bubble-butt">Bubble Butt, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/buried-alive">Buried Alive, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/campus-problem">Campus problem, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/carapace">Carapace, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/cocaine-biceps">Cocaine Biceps, V4-5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/cutters">Cutters, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/divergent-spectrum">Divergent Spectrum, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/down-the-line">Down the Line, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/drunken-monkey">Drunken Monkey, V8 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/drunken-monkey">Drunken Monkey, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/elaine">Elaine, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/family-feud">Family Feud, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/fear-of-a-black-hat">Fear of a Black Hat, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/freedom-fighter">Freedom Fighter, V7 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/george">George, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/heat">Heat, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/in-our-time">In Our Time, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/innocent-exile">Innocent Exile, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/jabberwockey">Jabberwockey, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/jerry">Jerry, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/king-troll">King Troll, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/kraft-dinner-right">Kraft Dinner Right, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/margin-of-error">Margin of Error, V10/11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/meadowlark-lemon-stand">Meadowlark Lemon Stand, V13</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/memento-vitae">Memento Vitae, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-bar-direct">Monkey Bar Direct, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-bar-right">Monkey Bar Right, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-bar-traverse">Monkey Bar Traverse, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-trench">Monkey Trench, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-trench">Monkey Trench, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-wrench">Monkey Wrench, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/monkey-s-uncle">Monkey's Uncle, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/mr-moran">Mr Moran, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/mr-smiley">Mr. Smiley, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/natasha-s-highball">Natasha's Highball, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/nut-dragger">Nut Dragger, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/ode-to-the-modern-mayor">Ode to the Modern Mayor, V9-</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/oompa-loompa">Oompa Loompa, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/orange-top-blue-sky">Orange Top Blue Sky, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/peruvian-flake">Peruvian Flake, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/picasso">Picasso, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/potato-chips">Potato Chips, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/pounding-sand">Pounding Sand, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/purple-haze">Purple Haze, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/red-wave">Red Wave, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/right-face">Right Face, V6-7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/sad-robot">Sad Robot, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/salt-is-salty">Salt is Salty, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/scare-tactics-direct">Scare Tactics Direct, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/scare-tactics-right">Scare Tactics Right, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/sorange">Sorange, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/spittin-venom">Spittin Venom, V8-9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/sponge-worthy">Sponge Worthy, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/spring-loaded">Spring Loaded, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/square-arete">Square Arete, V6-7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/stake-your-claim">Stake Your Claim, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-abstraction">The Abstraction, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-burro">The Burro, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-dirty-rail">The Dirty Rail, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-fountainhead">The Fountainhead, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-harp">The Harp, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-high-road">The High Road, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-pearl">The Pearl, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-prowler">The Prowler, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-red-dragon">The Red Dragon, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-shining-path">The Shining Path, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/the-wave">The Wave, V63</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/thot-provoking">Thot Provoking, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/thuggish-ruggish">Thuggish Ruggish, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/tickle-pickle">Tickle Pickle, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/tilt-shift">Tilt Shift, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/tornado">Tornado, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/urban-fervor">Urban Fervor, V8 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/vino-rojo">Vino Rojo, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/wasted-ape">Wasted Ape, V10-</a>
-    </li>
-    
-    <li>
-      <a href="/problems/red-rocks/welcome-to-detroit">Welcome to Detroit, V5-</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "red-rocks_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/red-rocks/black-velvet-canyon">Black Velvet Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/calico-basin">Calico Basin</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/calico-basin-boulders">Calico Basin Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/first-creek-canyon">First Creek Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/first-pullout">First Pullout</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/gateway-canyon">Gateway Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/kraft-boulders">Kraft Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/mustang-canyon">Mustang Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/oak-creek">Oak Creek</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/oak-creek-canyon">Oak Creek Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/oak-tree-canyon">Oak Tree Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/oak-creeck-canyon">Oak creeck Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/pine-creek-canyon">Pine Creek Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/red-spring">Red Spring</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/white-rock-spring">White Rock Spring</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/red-rocks/willow-springs">Willow Springs</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "red-rocks_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/black-velvet-canyon" class="table-row-name text-bold">Black Velvet Canyon</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/calico-basin" class="table-row-name text-bold">Calico Basin</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/calico-basin-boulders" class="table-row-name text-bold">Calico Basin Boulders</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/first-creek-canyon" class="table-row-name text-bold">First Creek Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/first-pullout" class="table-row-name text-bold">First Pullout</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/gateway-canyon" class="table-row-name text-bold">Gateway Canyon</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/kraft-boulders" class="table-row-name text-bold">Kraft Boulders</a>
+					</td>
+					<td class="text-center">27</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/mustang-canyon" class="table-row-name text-bold">Mustang Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/oak-creek" class="table-row-name text-bold">Oak Creek</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/oak-creek-canyon" class="table-row-name text-bold">Oak Creek Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/oak-tree-canyon" class="table-row-name text-bold">Oak Tree Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/oak-creeck-canyon" class="table-row-name text-bold">Oak creeck Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/pine-creek-canyon" class="table-row-name text-bold">Pine Creek Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/red-spring" class="table-row-name text-bold">Red Spring</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/white-rock-spring" class="table-row-name text-bold">White Rock Spring</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/red-rocks/willow-springs" class="table-row-name text-bold">Willow Springs</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -744,7 +479,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>White Rock Spring</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -770,7 +505,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Gateway Canyon</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -796,7 +531,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Red Spring</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -822,7 +557,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Kraft Boulders</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -848,7 +583,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>First Pullout</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -874,7 +609,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Calico basin</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -900,7 +635,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Black Velvet Canyon</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -923,8 +658,786 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/adder-stone" class="table-row-name text-bold">Adder Stone</a>
+					</td>
+					<td>V10</td>
+					<td>Calico Basin Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/alexisizer" class="table-row-name text-bold">Alexisizer</a>
+					</td>
+					<td>V6</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/angel-dyno" class="table-row-name text-bold">Angel Dyno</a>
+					</td>
+					<td>V7</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/anthem" class="table-row-name text-bold">Anthem</a>
+					</td>
+					<td>V8</td>
+					<td>Mustang Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/astronomy" class="table-row-name text-bold">Astronomy</a>
+					</td>
+					<td>V6</td>
+					<td>Oak Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/b-ch-slap-5" class="table-row-name text-bold">B**ch Slap 5</a>
+					</td>
+					<td>V9</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/b-ch-slap-left" class="table-row-name text-bold">B**ch Slap Left</a>
+					</td>
+					<td>V8</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/book-of-nightmares" class="table-row-name text-bold">Book of Nightmares</a>
+					</td>
+					<td>V11</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/bubble-butt" class="table-row-name text-bold">Bubble Butt</a>
+					</td>
+					<td>V7</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/buried-alive" class="table-row-name text-bold">Buried Alive</a>
+					</td>
+					<td>V7</td>
+					<td>First Pullout</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/campus-problem" class="table-row-name text-bold">Campus problem</a>
+					</td>
+					<td>V5</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/carapace" class="table-row-name text-bold">Carapace</a>
+					</td>
+					<td>V7</td>
+					<td>Oak creeck Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/cocaine-biceps" class="table-row-name text-bold">Cocaine Biceps</a>
+					</td>
+					<td>V4-5</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/cutters" class="table-row-name text-bold">Cutters</a>
+					</td>
+					<td>V9</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/divergent-spectrum" class="table-row-name text-bold">Divergent Spectrum</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/down-the-line" class="table-row-name text-bold">Down the Line</a>
+					</td>
+					<td>V8</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/drunken-monkey" class="table-row-name text-bold">Drunken Monkey</a>
+					</td>
+					<td>V8 (low)</td>
+					<td>Oak Creek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/drunken-monkey" class="table-row-name text-bold">Drunken Monkey</a>
+					</td>
+					<td>V7</td>
+					<td>Oak Creek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/elaine" class="table-row-name text-bold">Elaine</a>
+					</td>
+					<td>V8</td>
+					<td>White Rock Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/family-feud" class="table-row-name text-bold">Family Feud</a>
+					</td>
+					<td>V10</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/fear-of-a-black-hat" class="table-row-name text-bold">Fear of a Black Hat</a>
+					</td>
+					<td>V9</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/freedom-fighter" class="table-row-name text-bold">Freedom Fighter</a>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/george" class="table-row-name text-bold">George</a>
+					</td>
+					<td>V6</td>
+					<td>White Rock Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/heat" class="table-row-name text-bold">Heat</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/in-our-time" class="table-row-name text-bold">In Our Time</a>
+					</td>
+					<td>V8</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/innocent-exile" class="table-row-name text-bold">Innocent Exile</a>
+					</td>
+					<td>V12</td>
+					<td>Calico Basin Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/jabberwockey" class="table-row-name text-bold">Jabberwockey</a>
+					</td>
+					<td>V9</td>
+					<td>Pine Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/jerry" class="table-row-name text-bold">Jerry</a>
+					</td>
+					<td>V6</td>
+					<td>White Rock Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/king-troll" class="table-row-name text-bold">King Troll</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/kraft-dinner-right" class="table-row-name text-bold">Kraft Dinner Right</a>
+					</td>
+					<td>V7</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/margin-of-error" class="table-row-name text-bold">Margin of Error</a>
+					</td>
+					<td>V10/11</td>
+					<td>First Pullout </td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/meadowlark-lemon-stand" class="table-row-name text-bold">Meadowlark Lemon Stand</a>
+					</td>
+					<td>V13</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/memento-vitae" class="table-row-name text-bold">Memento Vitae</a>
+					</td>
+					<td>V6</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-bar-direct" class="table-row-name text-bold">Monkey Bar Direct</a>
+					</td>
+					<td>V8</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-bar-right" class="table-row-name text-bold">Monkey Bar Right</a>
+					</td>
+					<td>V6</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-bar-traverse" class="table-row-name text-bold">Monkey Bar Traverse</a>
+					</td>
+					<td>V6</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-trench" class="table-row-name text-bold">Monkey Trench</a>
+					</td>
+					<td>V9</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-trench" class="table-row-name text-bold">Monkey Trench</a>
+					</td>
+					<td>V9</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-wrench" class="table-row-name text-bold">Monkey Wrench</a>
+					</td>
+					<td>V7</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/monkey-s-uncle" class="table-row-name text-bold">Monkey's Uncle</a>
+					</td>
+					<td>V8</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/mr-moran" class="table-row-name text-bold">Mr Moran</a>
+					</td>
+					<td>V7</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/mr-smiley" class="table-row-name text-bold">Mr. Smiley</a>
+					</td>
+					<td>V6</td>
+					<td>Calico Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/natasha-s-highball" class="table-row-name text-bold">Natasha's Highball</a>
+					</td>
+					<td>V2</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/nut-dragger" class="table-row-name text-bold">Nut Dragger</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/ode-to-the-modern-mayor" class="table-row-name text-bold">Ode to the Modern Mayor</a>
+					</td>
+					<td>V9-</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/oompa-loompa" class="table-row-name text-bold">Oompa Loompa</a>
+					</td>
+					<td>V5</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/orange-top-blue-sky" class="table-row-name text-bold">Orange Top Blue Sky</a>
+					</td>
+					<td>V8</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/peruvian-flake" class="table-row-name text-bold">Peruvian Flake</a>
+					</td>
+					<td>V2</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/picasso" class="table-row-name text-bold">Picasso</a>
+					</td>
+					<td>V6</td>
+					<td>Calico Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/potato-chips" class="table-row-name text-bold">Potato Chips</a>
+					</td>
+					<td>V2</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/pounding-sand" class="table-row-name text-bold">Pounding Sand</a>
+					</td>
+					<td>V8</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/purple-haze" class="table-row-name text-bold">Purple Haze</a>
+					</td>
+					<td>V8</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/red-wave" class="table-row-name text-bold">Red Wave</a>
+					</td>
+					<td>V10</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/right-face" class="table-row-name text-bold">Right Face</a>
+					</td>
+					<td>V6-7</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/sad-robot" class="table-row-name text-bold">Sad Robot</a>
+					</td>
+					<td>V9</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/salt-is-salty" class="table-row-name text-bold">Salt is Salty</a>
+					</td>
+					<td>V10</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/scare-tactics-direct" class="table-row-name text-bold">Scare Tactics Direct</a>
+					</td>
+					<td>V10</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/scare-tactics-right" class="table-row-name text-bold">Scare Tactics Right</a>
+					</td>
+					<td>V9</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/sorange" class="table-row-name text-bold">Sorange</a>
+					</td>
+					<td>V3</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/spittin-venom" class="table-row-name text-bold">Spittin Venom</a>
+					</td>
+					<td>V8-9</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/sponge-worthy" class="table-row-name text-bold">Sponge Worthy</a>
+					</td>
+					<td>V10</td>
+					<td>Calico Basin Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/spring-loaded" class="table-row-name text-bold">Spring Loaded</a>
+					</td>
+					<td>V8</td>
+					<td>Calico Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/square-arete" class="table-row-name text-bold">Square Arete</a>
+					</td>
+					<td>V6-7</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/stake-your-claim" class="table-row-name text-bold">Stake Your Claim</a>
+					</td>
+					<td>V10</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-abstraction" class="table-row-name text-bold">The Abstraction</a>
+					</td>
+					<td>V8</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-burro" class="table-row-name text-bold">The Burro</a>
+					</td>
+					<td>V7</td>
+					<td>Willow Springs</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-dirty-rail" class="table-row-name text-bold">The Dirty Rail</a>
+					</td>
+					<td>V7</td>
+					<td>Calico Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-fountainhead" class="table-row-name text-bold">The Fountainhead</a>
+					</td>
+					<td>V9</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-harp" class="table-row-name text-bold">The Harp</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-high-road" class="table-row-name text-bold">The High Road</a>
+					</td>
+					<td>V7</td>
+					<td>Red Spring</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-pearl" class="table-row-name text-bold">The Pearl</a>
+					</td>
+					<td>V5</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-prowler" class="table-row-name text-bold">The Prowler</a>
+					</td>
+					<td>V5</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-red-dragon" class="table-row-name text-bold">The Red Dragon</a>
+					</td>
+					<td>V7</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-shining-path" class="table-row-name text-bold">The Shining Path</a>
+					</td>
+					<td>V12</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/the-wave" class="table-row-name text-bold">The Wave</a>
+					</td>
+					<td>V63</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/thot-provoking" class="table-row-name text-bold">Thot Provoking</a>
+					</td>
+					<td>V5</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/thuggish-ruggish" class="table-row-name text-bold">Thuggish Ruggish</a>
+					</td>
+					<td>V11</td>
+					<td>Black Velvet Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/tickle-pickle" class="table-row-name text-bold">Tickle Pickle</a>
+					</td>
+					<td>V4</td>
+					<td>Calico Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/tilt-shift" class="table-row-name text-bold">Tilt Shift</a>
+					</td>
+					<td>V9</td>
+					<td>Oak Tree Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/tornado" class="table-row-name text-bold">Tornado</a>
+					</td>
+					<td>V6</td>
+					<td>Gateway Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/urban-fervor" class="table-row-name text-bold">Urban Fervor</a>
+					</td>
+					<td>V8 (low)</td>
+					<td>First Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/vino-rojo" class="table-row-name text-bold">Vino Rojo</a>
+					</td>
+					<td>V6</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/wasted-ape" class="table-row-name text-bold">Wasted Ape</a>
+					</td>
+					<td>V10-</td>
+					<td>Oak Creek</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/red-rocks/welcome-to-detroit" class="table-row-name text-bold">Welcome to Detroit</a>
+					</td>
+					<td>V5-</td>
+					<td>Kraft Boulders</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

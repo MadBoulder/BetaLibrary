@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/leavenworth">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Leavenworth 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="47.56472" />
   <input type="hidden" id="lng" name="lng_val" value="-120.719373" />
@@ -168,477 +248,172 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="http://westernwashingtonbouldering.com/guidebook" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Western Washington Bouldering
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="http://westernwashingtonbouldering.com/guidebook"
-        target="_blank"
-        >Western Washington Bouldering</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/leavenworth"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/leavenworth"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/leavenworth/alfalfa">Alfalfa, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/arrested-development">Arrested Development, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/band-of-gypsies">Band of Gypsies, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/beach-arete">Beach Arete, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/breadline">Breadline, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/busted">Busted, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/busted">Busted, V7-8 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/cube-crack">Cube Crack, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/dark-hollow">Dark Hollow, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/drugstore-cowboy">Drugstore Cowboy, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/emperor-s-lightning">Emperor's Lightning, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/fiend-it-like-a-crack">Fiend it Like a Crack, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/fight-like-a-farmer">Fight Like a Farmer, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/footless-traverse">Footless Traverse, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/full-house">Full House, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/god-is-in-the-details">God is in the Details, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/hanta-man">Hanta Man, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/heeler">Heeler, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/hell-in-a-bucket">Hell in a Bucket, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/hollywoo">Hollywoo, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/hormonal-monkey">Hormonal Monkey, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/hueco-crimper-low">Hueco Crimper Low, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/immortal-techniques">Immortal Techniques, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/johnny-s-bulge">Johnny's Bulge, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/kobra-kon">Kobra Kon, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/little-one">Little One, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/mr-leftist">Mr. Leftist, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/musashi">Musashi, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/no-pain-no-grain">No Pain No Grain, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/nosebleed">Nosebleed, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/ouchies">Ouchies, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/pimpsqueak">Pimpsqueak, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/pretty-crimpy">Pretty Crimpy, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/pretty-girl">Pretty Girl, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/raging-bull">Raging Bull, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/real-imagination">Real Imagination, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/resurrection">Resurrection, V10 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/schist-cave">Schist Cave, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/schist-cave-right">Schist Cave Right, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/schist-cave-tour">Schist Cave Tour, V6-7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/schist-seam">Schist Seam, V7+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/slice-of-cake">Slice of Cake, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/splash">Splash, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/splash">Splash, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/spongebob-squarepad">Spongebob Squarepad, V6 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/starfox">Starfox, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/terminal-gravity">Terminal Gravity, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-coffee-cup">The Coffee Cup, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-crack">The Crack, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-ferret">The Ferret, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-flake">The Flake, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-fridge-center">The Fridge Center, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-gaze-of-the-grasshopper">The Gaze of the Grasshopper, V5 (low</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-hueco-crimper">The Hueco Crimper, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-hueco-route">The Hueco Route, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-lamb">The Lamb, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-moudra">The Moudra, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-nine-iron">The Nine Iron, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-pocket">The Pocket, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-pony-ride">The Pony Ride, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-practitioner">The Practitioner, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-prism">The Prism, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-rail">The Rail, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-real-thing">The Real Thing, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-scoop">The Scoop, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/the-teacup">The Teacup, V13</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/toto">Toto, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/turbulence">Turbulence, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/twisted-stone">Twisted Stone, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/twister">Twister, V7+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/was">WAS, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/white-arete">White Arete, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/leavenworth/yosemite-highball">Yosemite Highball, V4</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "leavenworth_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon">Icicle Creek Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-bulletin-boulders">Icicle Creek Canyon - Bulletin Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-carnival">Icicle Creek Canyon - Carnival</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-clamshell-cave">Icicle Creek Canyon - Clamshell Cave</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-forestland">Icicle Creek Canyon - Forestland</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-mad-meadows">Icicle Creek Canyon - Mad Meadows</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-pretty-boulders">Icicle Creek Canyon - Pretty Boulders</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/icicle-creek-canyon-twisted-tree">Icicle Creek Canyon - Twisted Tree</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/mountain-home-road">Mountain Home Road</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/tumwater-canyon">Tumwater Canyon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/tumwater-canyon-beach-forest">Tumwater Canyon - Beach & Forest</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/tumwater-canyon-pitless-avocado">Tumwater Canyon - PItless Avocado</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/leavenworth/tumwater-canyon-swiftwater-picnic">Tumwater Canyon - Swiftwater Picnic</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "leavenworth_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon" class="table-row-name text-bold">Icicle Creek Canyon</a>
+					</td>
+					<td class="text-center">31</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-bulletin-boulders" class="table-row-name text-bold">Icicle Creek Canyon - Bulletin Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-carnival" class="table-row-name text-bold">Icicle Creek Canyon - Carnival</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-clamshell-cave" class="table-row-name text-bold">Icicle Creek Canyon - Clamshell Cave</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-forestland" class="table-row-name text-bold">Icicle Creek Canyon - Forestland</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-mad-meadows" class="table-row-name text-bold">Icicle Creek Canyon - Mad Meadows</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-pretty-boulders" class="table-row-name text-bold">Icicle Creek Canyon - Pretty Boulders</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/icicle-creek-canyon-twisted-tree" class="table-row-name text-bold">Icicle Creek Canyon - Twisted Tree</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/mountain-home-road" class="table-row-name text-bold">Mountain Home Road</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/tumwater-canyon" class="table-row-name text-bold">Tumwater Canyon</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/tumwater-canyon-beach-forest" class="table-row-name text-bold">Tumwater Canyon - Beach & Forest</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/tumwater-canyon-pitless-avocado" class="table-row-name text-bold">Tumwater Canyon - PItless Avocado</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/leavenworth/tumwater-canyon-swiftwater-picnic" class="table-row-name text-bold">Tumwater Canyon - Swiftwater Picnic</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -666,7 +441,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Mountain Home Road</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -692,7 +467,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Icicle Creek Canyon</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -718,7 +493,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Tumwater Canyon</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -741,8 +516,687 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/alfalfa" class="table-row-name text-bold">Alfalfa</a>
+					</td>
+					<td>V5</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/arrested-development" class="table-row-name text-bold">Arrested Development</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/band-of-gypsies" class="table-row-name text-bold">Band of Gypsies</a>
+					</td>
+					<td>V1</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/beach-arete" class="table-row-name text-bold">Beach Arete</a>
+					</td>
+					<td>V2</td>
+					<td>Tumwater Canyon - Beach & Forest</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/breadline" class="table-row-name text-bold">Breadline</a>
+					</td>
+					<td>V0</td>
+					<td>Icicle Creek Canyon - Forestland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/busted" class="table-row-name text-bold">Busted</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/busted" class="table-row-name text-bold">Busted</a>
+					</td>
+					<td>V7-8 (sit)</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/cube-crack" class="table-row-name text-bold">Cube Crack</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon - Clamshell Cave</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/dark-hollow" class="table-row-name text-bold">Dark Hollow</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/drugstore-cowboy" class="table-row-name text-bold">Drugstore Cowboy</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/emperor-s-lightning" class="table-row-name text-bold">Emperor's Lightning</a>
+					</td>
+					<td>V7</td>
+					<td>Mountain Home Road</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/fiend-it-like-a-crack" class="table-row-name text-bold">Fiend it Like a Crack</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/fight-like-a-farmer" class="table-row-name text-bold">Fight Like a Farmer</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/footless-traverse" class="table-row-name text-bold">Footless Traverse</a>
+					</td>
+					<td>V5</td>
+					<td>Tumwater Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/full-house" class="table-row-name text-bold">Full House</a>
+					</td>
+					<td>V10</td>
+					<td>Tumwater Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/god-is-in-the-details" class="table-row-name text-bold">God is in the Details</a>
+					</td>
+					<td>V11</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/hanta-man" class="table-row-name text-bold">Hanta Man</a>
+					</td>
+					<td>V8</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/heeler" class="table-row-name text-bold">Heeler</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon - Carnival</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/hell-in-a-bucket" class="table-row-name text-bold">Hell in a Bucket</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/hollywoo" class="table-row-name text-bold">Hollywoo</a>
+					</td>
+					<td>V10</td>
+					<td>Tumwater Canyon - PItless Avocado</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/hormonal-monkey" class="table-row-name text-bold">Hormonal Monkey</a>
+					</td>
+					<td>V9</td>
+					<td>Tumwater Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/hueco-crimper-low" class="table-row-name text-bold">Hueco Crimper Low</a>
+					</td>
+					<td>V8</td>
+					<td>Tumwater Canyon - Pitless Avocado</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/immortal-techniques" class="table-row-name text-bold">Immortal Techniques</a>
+					</td>
+					<td>V10</td>
+					<td>Tumwater Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/johnny-s-bulge" class="table-row-name text-bold">Johnny's Bulge</a>
+					</td>
+					<td>V7</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/kobra-kon" class="table-row-name text-bold">Kobra Kon</a>
+					</td>
+					<td>V9</td>
+					<td>Icicle Creek Canyon - Forestland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/little-one" class="table-row-name text-bold">Little One</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon - Twisted Tree</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/mr-leftist" class="table-row-name text-bold">Mr. Leftist</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon - Twisted Tree</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/musashi" class="table-row-name text-bold">Musashi</a>
+					</td>
+					<td>V9</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/no-pain-no-grain" class="table-row-name text-bold">No Pain No Grain</a>
+					</td>
+					<td>V5</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/nosebleed" class="table-row-name text-bold">Nosebleed</a>
+					</td>
+					<td>V7</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/ouchies" class="table-row-name text-bold">Ouchies</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/pimpsqueak" class="table-row-name text-bold">Pimpsqueak</a>
+					</td>
+					<td>V8</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/pretty-crimpy" class="table-row-name text-bold">Pretty Crimpy</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon - Pretty Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/pretty-girl" class="table-row-name text-bold">Pretty Girl</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon - Pretty Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/raging-bull" class="table-row-name text-bold">Raging Bull</a>
+					</td>
+					<td>V7</td>
+					<td>Tumwater Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/real-imagination" class="table-row-name text-bold">Real Imagination</a>
+					</td>
+					<td>V9</td>
+					<td>Tumwater Canyon - Pitless Avocado</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/resurrection" class="table-row-name text-bold">Resurrection</a>
+					</td>
+					<td>V10 (low)</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/schist-cave" class="table-row-name text-bold">Schist Cave</a>
+					</td>
+					<td>V10</td>
+					<td>Tumwater Canyon - Swiftwater Picnic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/schist-cave-right" class="table-row-name text-bold">Schist Cave Right</a>
+					</td>
+					<td>V5</td>
+					<td>Tumwater Canyon - Swiftwater Picnic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/schist-cave-tour" class="table-row-name text-bold">Schist Cave Tour</a>
+					</td>
+					<td>V6-7</td>
+					<td>Tumwater Canyon - Swiftwater Picnic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/schist-seam" class="table-row-name text-bold">Schist Seam</a>
+					</td>
+					<td>V7+</td>
+					<td>Tumwater Canyon - Swiftwater Picnic</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/slice-of-cake" class="table-row-name text-bold">Slice of Cake</a>
+					</td>
+					<td>V7</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/splash" class="table-row-name text-bold">Splash</a>
+					</td>
+					<td>V8</td>
+					<td>Mountain Home Road</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/splash" class="table-row-name text-bold">Splash</a>
+					</td>
+					<td>V8</td>
+					<td>Mountain Home Road</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/spongebob-squarepad" class="table-row-name text-bold">Spongebob Squarepad</a>
+					</td>
+					<td>V6 (sit)</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/starfox" class="table-row-name text-bold">Starfox</a>
+					</td>
+					<td>V6</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/terminal-gravity" class="table-row-name text-bold">Terminal Gravity</a>
+					</td>
+					<td>V10</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-coffee-cup" class="table-row-name text-bold">The Coffee Cup</a>
+					</td>
+					<td>V9</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-crack" class="table-row-name text-bold">The Crack</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-ferret" class="table-row-name text-bold">The Ferret</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon - Carnival</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-flake" class="table-row-name text-bold">The Flake</a>
+					</td>
+					<td>V5</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-fridge-center" class="table-row-name text-bold">The Fridge Center</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-gaze-of-the-grasshopper" class="table-row-name text-bold">The Gaze of the Grasshopper</a>
+					</td>
+					<td>V5 (low</td>
+					<td>Tumwater Canyon - Beach & Forest</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-hueco-crimper" class="table-row-name text-bold">The Hueco Crimper</a>
+					</td>
+					<td>V6</td>
+					<td>Tumwater Canyon - Pitless Avocado</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-hueco-route" class="table-row-name text-bold">The Hueco Route</a>
+					</td>
+					<td>V1</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-lamb" class="table-row-name text-bold">The Lamb</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-moudra" class="table-row-name text-bold">The Moudra</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon - Bulletin Boulders</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-nine-iron" class="table-row-name text-bold">The Nine Iron</a>
+					</td>
+					<td>V10</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-pocket" class="table-row-name text-bold">The Pocket</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-pony-ride" class="table-row-name text-bold">The Pony Ride</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-practitioner" class="table-row-name text-bold">The Practitioner</a>
+					</td>
+					<td>V11</td>
+					<td>Icicle Creek Canyon - Forestland</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-prism" class="table-row-name text-bold">The Prism</a>
+					</td>
+					<td>V9</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-rail" class="table-row-name text-bold">The Rail</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-real-thing" class="table-row-name text-bold">The Real Thing</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-scoop" class="table-row-name text-bold">The Scoop</a>
+					</td>
+					<td>V2</td>
+					<td>Icicle Creek Canyon - Mad Meadows</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/the-teacup" class="table-row-name text-bold">The Teacup</a>
+					</td>
+					<td>V13</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/toto" class="table-row-name text-bold">Toto</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/turbulence" class="table-row-name text-bold">Turbulence</a>
+					</td>
+					<td>V12</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/twisted-stone" class="table-row-name text-bold">Twisted Stone</a>
+					</td>
+					<td>V3</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/twister" class="table-row-name text-bold">Twister</a>
+					</td>
+					<td>V7+</td>
+					<td>Icicle Creek Canyon - Twisted Tree</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/was" class="table-row-name text-bold">WAS</a>
+					</td>
+					<td>V8</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/white-arete" class="table-row-name text-bold">White Arete</a>
+					</td>
+					<td>V5</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/leavenworth/yosemite-highball" class="table-row-name text-bold">Yosemite Highball</a>
+					</td>
+					<td>V4</td>
+					<td>Icicle Creek Canyon</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/hoyamoros">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Hoyamoros 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="40.31768983630327" />
   <input type="hidden" id="lng" name="lng_val" value="-5.731344223022461" />
@@ -168,331 +248,165 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.nodogmaclimbing.com/producto/hoyamoros-boulder-guide/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Hoyamoros Boulder Guide (No Dogma Climbing)
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/hoyamoros" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (Guide)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=8498294592&linkId=f08f37f4f552e9598776589a8f955734">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.nodogmaclimbing.com/producto/hoyamoros-boulder-guide/"
-        target="_blank"
-        >Hoyamoros Boulder Guide (No Dogma Climbing)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/hoyamoros"
-        target="_blank"
-        >27 Crags (Guide)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/hoyamoros"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/hoyamoros"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/hoyamoros/anomalia">Anomalía, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/bloque-del-buho">Bloque del búho, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/camping-fisura">Camping fisura, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/comidos-por-la-droga">Comidos por la droga, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/confusion">Confusion, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/cuerpo-de-hombre">Cuerpo de Hombre, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/el-choten">El Chotén, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/el-mantel">El Mantel, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/el-nido-del-cuco">El nido del Cuco, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/escabrosamente">Escabrosamente, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/fisura-hutus">Fisura hutus, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/harry-costras">Harry costras, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/juego-de-tronos">Juego de Tronos, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/julius-cesar">Julius Cesar, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/katanita">Katanita, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/kinkal-crack">Kinkal Crack, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/la-uve">La Uve, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/lance-portugues">Lance portugués, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/liquid-sun">Liquid Sun, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/mistic-river">Mistic River, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/nimeacuerdo">Nimeacuerdo, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/perrera">Perrera, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/piornimans">Piornimans, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/portucuco">Portucuco, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/sed-del-mal">Sed del Mal, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/sed-del-mal">Sed del Mal, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/sin-salida">Sin Salida, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/sinaloa">Sinaloa, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/sol-de-oro">Sol de Oro, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/topless">Topless, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/total-brutal">Total Brutal, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/treparriscos">Treparriscos, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/tribal">Tribal, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/urandrea">Urandrea, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/hoyamoros/urandrea-corto">Urandrea corto, 7c+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "hoyamoros_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/hoyamoros/choten">Choten</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/cimata">Cimata</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/contrafuertes">Contrafuertes</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/corral-de-la-pacheca">Corral de la Pacheca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/pacheca">Pacheca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/pahari">Pahari</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/pradera">Pradera</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/trampales">Trampales</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/hoyamoros/vivac-de-la-pradera">Vivac de la pradera</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "hoyamoros_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/choten" class="table-row-name text-bold">Choten</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/cimata" class="table-row-name text-bold">Cimata</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/contrafuertes" class="table-row-name text-bold">Contrafuertes</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/corral-de-la-pacheca" class="table-row-name text-bold">Corral de la Pacheca</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/pacheca" class="table-row-name text-bold">Pacheca</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/pahari" class="table-row-name text-bold">Pahari</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/pradera" class="table-row-name text-bold">Pradera</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/trampales" class="table-row-name text-bold">Trampales</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/hoyamoros/vivac-de-la-pradera" class="table-row-name text-bold">Vivac de la pradera</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -517,8 +431,345 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/anomalia" class="table-row-name text-bold">Anomalía</a>
+					</td>
+					<td>8a</td>
+					<td>Pacheca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/bloque-del-buho" class="table-row-name text-bold">Bloque del búho</a>
+					</td>
+					<td>7a</td>
+					<td>Vivac de la pradera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/camping-fisura" class="table-row-name text-bold">Camping fisura</a>
+					</td>
+					<td>6c</td>
+					<td>Vivac de la Pradera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/comidos-por-la-droga" class="table-row-name text-bold">Comidos por la droga</a>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/confusion" class="table-row-name text-bold">Confusion</a>
+					</td>
+					<td>7b</td>
+					<td>Contrafuertes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/cuerpo-de-hombre" class="table-row-name text-bold">Cuerpo de Hombre</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/el-choten" class="table-row-name text-bold">El Chotén</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/el-mantel" class="table-row-name text-bold">El Mantel</a>
+					</td>
+					<td>6c</td>
+					<td>Vivac de la Pradera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/el-nido-del-cuco" class="table-row-name text-bold">El nido del Cuco</a>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/escabrosamente" class="table-row-name text-bold">Escabrosamente</a>
+					</td>
+					<td>6b+</td>
+					<td>Cimata</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/fisura-hutus" class="table-row-name text-bold">Fisura hutus</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/harry-costras" class="table-row-name text-bold">Harry costras</a>
+					</td>
+					<td>7a+</td>
+					<td>Pacheca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/juego-de-tronos" class="table-row-name text-bold">Juego de Tronos</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/julius-cesar" class="table-row-name text-bold">Julius Cesar</a>
+					</td>
+					<td>6b</td>
+					<td>Corral de la Pacheca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/katanita" class="table-row-name text-bold">Katanita</a>
+					</td>
+					<td>7c</td>
+					<td>Pradera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/kinkal-crack" class="table-row-name text-bold">Kinkal Crack</a>
+					</td>
+					<td>7a+</td>
+					<td>Vivac de la Pradera</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/la-uve" class="table-row-name text-bold">La Uve</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/lance-portugues" class="table-row-name text-bold">Lance portugués</a>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/liquid-sun" class="table-row-name text-bold">Liquid Sun</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/mistic-river" class="table-row-name text-bold">Mistic River</a>
+					</td>
+					<td>6c</td>
+					<td>Corral de la Pacheca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/nimeacuerdo" class="table-row-name text-bold">Nimeacuerdo</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/perrera" class="table-row-name text-bold">Perrera</a>
+					</td>
+					<td>7a</td>
+					<td>Corral de la Pacheca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/piornimans" class="table-row-name text-bold">Piornimans</a>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/portucuco" class="table-row-name text-bold">Portucuco</a>
+					</td>
+					<td>8a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/sed-del-mal" class="table-row-name text-bold">Sed del Mal</a>
+					</td>
+					<td>7b+</td>
+					<td>Pahari</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/sed-del-mal" class="table-row-name text-bold">Sed del Mal</a>
+					</td>
+					<td>7b+</td>
+					<td>Contrafuertes</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/sin-salida" class="table-row-name text-bold">Sin Salida</a>
+					</td>
+					<td>6c</td>
+					<td>Choten</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/sinaloa" class="table-row-name text-bold">Sinaloa</a>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/sol-de-oro" class="table-row-name text-bold">Sol de Oro</a>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/topless" class="table-row-name text-bold">Topless</a>
+					</td>
+					<td>8a</td>
+					<td>Choten</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/total-brutal" class="table-row-name text-bold">Total Brutal</a>
+					</td>
+					<td>7a</td>
+					<td>Trampales</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/treparriscos" class="table-row-name text-bold">Treparriscos</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/tribal" class="table-row-name text-bold">Tribal</a>
+					</td>
+					<td>6b+</td>
+					<td>Trampales</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/urandrea" class="table-row-name text-bold">Urandrea</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/hoyamoros/urandrea-corto" class="table-row-name text-bold">Urandrea corto</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

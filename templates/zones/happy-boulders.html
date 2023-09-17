@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/happy-boulders">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Happy Boulders 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="37.416502" />
   <input type="hidden" id="lng" name="lng_val" value="-118.449917" />
@@ -168,289 +248,151 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://27crags.com/crags/happy-boulders" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/happy-boulders"
-        target="_blank"
-        >27 Crags</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/happy-boulders"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/happy-boulders"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/happy-boulders/acid-wash">Acid Wash, V9 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/acid-wash-right">Acid Wash Right, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/atari">Atari, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/black-magic">Black Magic, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/extended-mr-happy">Extended Mr. Happy, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/hamtaro">Hamtaro, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/hit-the-high-hard-one">Hit the High Hard One, V9 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/jug-start-to-acid-wash-right">Jug Start to Acid Wash Right, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/ketron-classic">Ketron Classic, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/kill-on-sight">Kill on Sight, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/kling-and-smirk">Kling and Smirk, V2</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/last-dance">Last Dance, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/monkey-hang">Monkey Hang, V3</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/morning-dove-white">Morning Dove White, V7+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/mr-happy">Mr. Happy, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/not-another-brit-in-bishop">Not Another Brit in Bishop, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/redrum">Redrum, V10 (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/redrum">Redrum, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/rene">Rene, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/slave-to-the-grind-grindrite-sit">Slave to the Grind / Grindrite Sit, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/solarium">Solarium, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/son-of-claudius-rufus">Son of Claudius Rufus, V5 (left)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/son-of-claudius-rufus">Son of Claudius Rufus, V5 (direct)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/standing-kill-order">Standing Kill Order, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/stoney-pony">Stoney Pony, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/sucker-punch">Sucker Punch, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/the-hulk">The Hulk, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/the-orb">The Orb, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/happy-boulders/toxic-avenger">Toxic Avenger, V9</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "happy-boulders_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/happy-boulders/cenral-happiness">Cenral Happiness</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/central-happiness">Central Happiness</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/east-rim-area">East Rim Area</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/slow-dance-gleaner">Slow Dance/Gleaner</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/slowdance">SlowDance</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/split-melon">Split Melon</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/tom-peter-s-slab">Tom Peter's Slab</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/west-rim">West Rim</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/happy-boulders/west-rim-area">West Rim Area</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "happy-boulders_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/cenral-happiness" class="table-row-name text-bold">Cenral Happiness</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/central-happiness" class="table-row-name text-bold">Central Happiness</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/east-rim-area" class="table-row-name text-bold">East Rim Area</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/slow-dance-gleaner" class="table-row-name text-bold">Slow Dance/Gleaner</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/slowdance" class="table-row-name text-bold">SlowDance</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/split-melon" class="table-row-name text-bold">Split Melon</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/tom-peter-s-slab" class="table-row-name text-bold">Tom Peter's Slab</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/west-rim" class="table-row-name text-bold">West Rim</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/happy-boulders/west-rim-area" class="table-row-name text-bold">West Rim Area</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -475,8 +417,291 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/acid-wash" class="table-row-name text-bold">Acid Wash</a>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Slow Dance/Gleaner</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/acid-wash-right" class="table-row-name text-bold">Acid Wash Right</a>
+					</td>
+					<td>V9</td>
+					<td>Slow Dance/Gleaner</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/atari" class="table-row-name text-bold">Atari</a>
+					</td>
+					<td>V6</td>
+					<td>East Rim Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/black-magic" class="table-row-name text-bold">Black Magic</a>
+					</td>
+					<td>V3</td>
+					<td>East Rim Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/extended-mr-happy" class="table-row-name text-bold">Extended Mr. Happy</a>
+					</td>
+					<td>V7</td>
+					<td>West Rim</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/hamtaro" class="table-row-name text-bold">Hamtaro</a>
+					</td>
+					<td>V8</td>
+					<td>West Rim</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/hit-the-high-hard-one" class="table-row-name text-bold">Hit the High Hard One</a>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/jug-start-to-acid-wash-right" class="table-row-name text-bold">Jug Start to Acid Wash Right</a>
+					</td>
+					<td>V7</td>
+					<td>Slow Dance/Gleaner</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/ketron-classic" class="table-row-name text-bold">Ketron Classic</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/kill-on-sight" class="table-row-name text-bold">Kill on Sight</a>
+					</td>
+					<td>V11</td>
+					<td>Slow Dance/Gleaner</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/kling-and-smirk" class="table-row-name text-bold">Kling and Smirk</a>
+					</td>
+					<td>V2</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/last-dance" class="table-row-name text-bold">Last Dance</a>
+					</td>
+					<td>V9</td>
+					<td>Slow Dance/Gleaner</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/monkey-hang" class="table-row-name text-bold">Monkey Hang</a>
+					</td>
+					<td>V3</td>
+					<td>SlowDance</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/morning-dove-white" class="table-row-name text-bold">Morning Dove White</a>
+					</td>
+					<td>V7+</td>
+					<td>West Rim</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/mr-happy" class="table-row-name text-bold">Mr. Happy</a>
+					</td>
+					<td>V5</td>
+					<td>West Rim</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/not-another-brit-in-bishop" class="table-row-name text-bold">Not Another Brit in Bishop</a>
+					</td>
+					<td>V7</td>
+					<td>West Rim Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/redrum" class="table-row-name text-bold">Redrum</a>
+					</td>
+					<td>V10 (sit)</td>
+					<td>Central Happiness</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/redrum" class="table-row-name text-bold">Redrum</a>
+					</td>
+					<td>V7</td>
+					<td>Central Happiness</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/rene" class="table-row-name text-bold">Rene</a>
+					</td>
+					<td>V5</td>
+					<td>West Rim Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/slave-to-the-grind-grindrite-sit" class="table-row-name text-bold">Slave to the Grind / Grindrite Sit</a>
+					</td>
+					<td>V9</td>
+					<td>Tom Peter's Slab</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/solarium" class="table-row-name text-bold">Solarium</a>
+					</td>
+					<td>V4</td>
+					<td>Cenral Happiness</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/son-of-claudius-rufus" class="table-row-name text-bold">Son of Claudius Rufus</a>
+					</td>
+					<td>V5 (left)</td>
+					<td>Split Melon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/son-of-claudius-rufus" class="table-row-name text-bold">Son of Claudius Rufus</a>
+					</td>
+					<td>V5 (direct)</td>
+					<td>Split Melon</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/standing-kill-order" class="table-row-name text-bold">Standing Kill Order</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/stoney-pony" class="table-row-name text-bold">Stoney Pony</a>
+					</td>
+					<td>V4</td>
+					<td>East Rim Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/sucker-punch" class="table-row-name text-bold">Sucker Punch</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/the-hulk" class="table-row-name text-bold">The Hulk</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/the-orb" class="table-row-name text-bold">The Orb</a>
+					</td>
+					<td>V7</td>
+					<td>West Rim</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/happy-boulders/toxic-avenger" class="table-row-name text-bold">Toxic Avenger</a>
+					</td>
+					<td>V9</td>
+					<td>West Rim</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

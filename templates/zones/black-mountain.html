@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/black-mountain">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Black Mountain 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="33.82629" />
   <input type="hidden" id="lng" name="lng_val" value="-116.7591" />
@@ -168,449 +248,130 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.blackmountainbouldering.com/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Black Mountain Bouldering
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.blackmountainbouldering.com/"
-        target="_blank"
-        >Black Mountain Bouldering</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/black-mountain"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/black-mountain"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/black-mountain/adamantium">Adamantium, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/all-alone-together">All Alone Together, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/big-greeny">Big Greeny, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/black-moth-super-rainbow">Black Moth Super Rainbow, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/brotherhood">Brotherhood, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/brute-us">Brute Us, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/buttermilk-face-right">Buttermilk Face Right, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/buzzsaw">Buzzsaw, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/can-opener">Can Opener, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/captain-america">Captain America, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/captain-s-junk">Captain's Junk, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/center-visor">Center Visor, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/choss-boss">Choss Boss, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/consumption-junction">Consumption Junction, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/cracker-boy">Cracker Boy, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/crimp-overhang">Crimp Overhang, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/dead-bug">Dead Bug, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/der-kapitan">Der Kapitan, V12 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/derailed">Derailed, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/dihedral">Dihedral, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/dream-tiger">Dream Tiger, V11 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/el-brute">El Brute, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/electric-lady">Electric Lady, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/face-meat-dyno">Face Meat Dyno, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/fallen-arch-arete">Fallen Arch Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/flower-pot-dyno">Flower Pot Dyno, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/four-fifths-face">Four-Fifths Face, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/garden-of-forking-paths">Garden of Forking Paths, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/glow-worm">Glow Worm, V12</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/god-is-dead">God is Dead, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/god-is-dead">God is Dead, V7 (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/happy-hour">Happy Hour, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/i-animal">I Animal, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/lip-service">Lip Service, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/lobo">Lobo, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/loh-roof">Loh Roof, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/los-ojos">Los Ojos, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/love-you-but-youre-bringing-me-down">Love You But You’re Bringing Me Down, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/lower-nra">Lower NRA, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/master-roof">Master Roof, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/meat-face">Meat Face, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/mega-ghost">Mega Ghost, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/megalomania">Megalomania, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/moondrops">Moondrops, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/morning-again">Morning Again, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/moroccan-roll">Moroccan Roll, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/mountain-money">Mountain Money , V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/nra">NRA, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/not-my-trash">Not my trash, V11</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/once-upon-a-time">Once Upon a Time, V1</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/poon-star">Poon Star, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/right-way">Right Way, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/ring-wraith">Ring Wraith, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/ruination">Ruination, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/saddle-traverse">Saddle Traverse, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/scarpetta">Scarpetta, V9</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/shelf-life">Shelf Life, V5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/shoot-the-moon">Shoot The Moon, V10</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/showtime">Showtime, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/sombrero">Sombrero, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/sparerib">SpareRib, V0</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/the-8th-dimension">The 8th Dimension, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/the-a-team">The A-Team, V8</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/the-chief">The Chief, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/the-moth">The Moth, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/tour-de-france">Tour De France, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/town-square-arete">Town Square Arete, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/up-dog">Up Dog, V4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/up-up-and-away">Up Up and Away, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/vegan-shoveler">Vegan Shoveler, V7</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/way-too-high">Way Too High, V6</a>
-    </li>
-    
-    <li>
-      <a href="/problems/black-mountain/wildcat">Wildcat, V8</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "black-mountain_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/black-mountain/boulder-basin">Boulder Basin</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/boulder-basin-central-basin">Boulder Basin, Central Basin</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/groupsites">Groupsites</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/ok-corral">Ok Corral</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/summit">Summit</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/summit-facemat-area">Summit, Facemat Area</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/black-mountain/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "black-mountain_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/boulder-basin" class="table-row-name text-bold">Boulder Basin</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/boulder-basin-central-basin" class="table-row-name text-bold">Boulder Basin, Central Basin</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/groupsites" class="table-row-name text-bold">Groupsites</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/ok-corral" class="table-row-name text-bold">Ok Corral</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/summit" class="table-row-name text-bold">Summit</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/summit-facemat-area" class="table-row-name text-bold">Summit, Facemat Area</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/black-mountain/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">35</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -635,8 +396,678 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/adamantium" class="table-row-name text-bold">Adamantium</a>
+					</td>
+					<td>V10</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/all-alone-together" class="table-row-name text-bold">All Alone Together</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/big-greeny" class="table-row-name text-bold">Big Greeny</a>
+					</td>
+					<td>V1</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/black-moth-super-rainbow" class="table-row-name text-bold">Black Moth Super Rainbow</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/brotherhood" class="table-row-name text-bold">Brotherhood</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/brute-us" class="table-row-name text-bold">Brute Us</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/buttermilk-face-right" class="table-row-name text-bold">Buttermilk Face Right</a>
+					</td>
+					<td>V5</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/buzzsaw" class="table-row-name text-bold">Buzzsaw</a>
+					</td>
+					<td>V10</td>
+					<td>Boulder Basin, Central Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/can-opener" class="table-row-name text-bold">Can Opener</a>
+					</td>
+					<td>V7</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/captain-america" class="table-row-name text-bold">Captain America</a>
+					</td>
+					<td>V8</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/captain-s-junk" class="table-row-name text-bold">Captain's Junk</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/center-visor" class="table-row-name text-bold">Center Visor</a>
+					</td>
+					<td>V6</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/choss-boss" class="table-row-name text-bold">Choss Boss</a>
+					</td>
+					<td>V8</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/consumption-junction" class="table-row-name text-bold">Consumption Junction</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/cracker-boy" class="table-row-name text-bold">Cracker Boy</a>
+					</td>
+					<td>V7</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/crimp-overhang" class="table-row-name text-bold">Crimp Overhang</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/dead-bug" class="table-row-name text-bold">Dead Bug</a>
+					</td>
+					<td>V4</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/der-kapitan" class="table-row-name text-bold">Der Kapitan</a>
+					</td>
+					<td>V12 (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/derailed" class="table-row-name text-bold">Derailed</a>
+					</td>
+					<td>V5</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/dihedral" class="table-row-name text-bold">Dihedral</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/dream-tiger" class="table-row-name text-bold">Dream Tiger</a>
+					</td>
+					<td>V11 (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/el-brute" class="table-row-name text-bold">El Brute</a>
+					</td>
+					<td>V6</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/electric-lady" class="table-row-name text-bold">Electric Lady</a>
+					</td>
+					<td>V5</td>
+					<td>Groupsites</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/face-meat-dyno" class="table-row-name text-bold">Face Meat Dyno</a>
+					</td>
+					<td>V5</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/fallen-arch-arete" class="table-row-name text-bold">Fallen Arch Arete</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/flower-pot-dyno" class="table-row-name text-bold">Flower Pot Dyno</a>
+					</td>
+					<td>V1</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/four-fifths-face" class="table-row-name text-bold">Four-Fifths Face</a>
+					</td>
+					<td>V7</td>
+					<td>Groupsites</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/garden-of-forking-paths" class="table-row-name text-bold">Garden of Forking Paths</a>
+					</td>
+					<td>V12</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/glow-worm" class="table-row-name text-bold">Glow Worm</a>
+					</td>
+					<td>V12</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/god-is-dead" class="table-row-name text-bold">God is Dead</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/god-is-dead" class="table-row-name text-bold">God is Dead</a>
+					</td>
+					<td>V7 (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/happy-hour" class="table-row-name text-bold">Happy Hour</a>
+					</td>
+					<td>V11</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/i-animal" class="table-row-name text-bold">I Animal</a>
+					</td>
+					<td>V10</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/lip-service" class="table-row-name text-bold">Lip Service</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/lobo" class="table-row-name text-bold">Lobo</a>
+					</td>
+					<td>V8</td>
+					<td>OK Corral</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/loh-roof" class="table-row-name text-bold">Loh Roof</a>
+					</td>
+					<td>V8</td>
+					<td>Ok Corral</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/los-ojos" class="table-row-name text-bold">Los Ojos</a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/love-you-but-youre-bringing-me-down" class="table-row-name text-bold">Love You But You’re Bringing Me Down</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/lower-nra" class="table-row-name text-bold">Lower NRA</a>
+					</td>
+					<td>V5</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/master-roof" class="table-row-name text-bold">Master Roof</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/meat-face" class="table-row-name text-bold">Meat Face</a>
+					</td>
+					<td>V4</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/mega-ghost" class="table-row-name text-bold">Mega Ghost</a>
+					</td>
+					<td>V6</td>
+					<td>OK Corral</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/megalomania" class="table-row-name text-bold">Megalomania</a>
+					</td>
+					<td>V8</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/moondrops" class="table-row-name text-bold">Moondrops</a>
+					</td>
+					<td>V6</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/morning-again" class="table-row-name text-bold">Morning Again</a>
+					</td>
+					<td>V8</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/moroccan-roll" class="table-row-name text-bold">Moroccan Roll</a>
+					</td>
+					<td>V5</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/mountain-money" class="table-row-name text-bold">Mountain Money </a>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/nra" class="table-row-name text-bold">NRA</a>
+					</td>
+					<td>V6</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/not-my-trash" class="table-row-name text-bold">Not my trash</a>
+					</td>
+					<td>V11</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/once-upon-a-time" class="table-row-name text-bold">Once Upon a Time</a>
+					</td>
+					<td>V1</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/poon-star" class="table-row-name text-bold">Poon Star</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/right-way" class="table-row-name text-bold">Right Way</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/ring-wraith" class="table-row-name text-bold">Ring Wraith</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/ruination" class="table-row-name text-bold">Ruination</a>
+					</td>
+					<td>V6</td>
+					<td>Summit, Facemat Area</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/saddle-traverse" class="table-row-name text-bold">Saddle Traverse</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/scarpetta" class="table-row-name text-bold">Scarpetta</a>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/shelf-life" class="table-row-name text-bold">Shelf Life</a>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/shoot-the-moon" class="table-row-name text-bold">Shoot The Moon</a>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/showtime" class="table-row-name text-bold">Showtime</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/sombrero" class="table-row-name text-bold">Sombrero</a>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/sparerib" class="table-row-name text-bold">SpareRib</a>
+					</td>
+					<td>V0</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/the-8th-dimension" class="table-row-name text-bold">The 8th Dimension</a>
+					</td>
+					<td>V8</td>
+					<td>Summit</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/the-a-team" class="table-row-name text-bold">The A-Team</a>
+					</td>
+					<td>V8</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/the-chief" class="table-row-name text-bold">The Chief</a>
+					</td>
+					<td>V4</td>
+					<td>Groupsites</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/the-moth" class="table-row-name text-bold">The Moth</a>
+					</td>
+					<td>V6</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/tour-de-france" class="table-row-name text-bold">Tour De France</a>
+					</td>
+					<td>V7</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/town-square-arete" class="table-row-name text-bold">Town Square Arete</a>
+					</td>
+					<td>V6</td>
+					<td>Groupsites</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/up-dog" class="table-row-name text-bold">Up Dog</a>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/up-up-and-away" class="table-row-name text-bold">Up Up and Away</a>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/vegan-shoveler" class="table-row-name text-bold">Vegan Shoveler</a>
+					</td>
+					<td>V7</td>
+					<td>Groupsites</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/way-too-high" class="table-row-name text-bold">Way Too High</a>
+					</td>
+					<td>V6</td>
+					<td>Boulder Basin</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/black-mountain/wildcat" class="table-row-name text-bold">Wildcat</a>
+					</td>
+					<td>V8</td>
+					<td>Summit</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/bezas">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Bezas 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="40.33575" />
   <input type="hidden" id="lng" name="lng_val" value="-1.328895" />
@@ -168,445 +248,151 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.sofaboulder.com/tienda/destacado/albarracin-bouldering-roberto-palmer/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Albarracín Bouldering (New)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.sofaboulder.com/tienda/destacado/albarracin-bouldering-roberto-palmer/"
-        target="_blank"
-        >Albarracín Bouldering (New)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/bezas"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/bezas"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/bezas/500-cacharros">500 cacharros, 7b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/500-cacharros">500 cacharros, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/900">900, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/aqui-huele-a-hierba">Aqui huele a hierba, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/bamba">Bamba, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/bobble-bobble">Bobble Bobble, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/bonobo">Bonobo, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/borracho-de-poder">Borracho de poder, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/cafes-morales">Cafés Morales, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/calabaza-de-verano">Calabaza de verano, 4+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/celtas-cortos">Celtas cortos, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/cereal-high-pressure">Cereal high pressure, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/desproao">Desproao, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/dream-resolution">Dream resolution, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-barco">El Barco, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-flaco">El Flaco, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-gordo">El Gordo, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-bar-y-el-foot">El bar y el foot, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-cono-sur">El cono sur, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-enano-amarillo">El enano amarillo, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-filo-de-bamako">El filo de Bamako, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-funambulista">El funambulista, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-plato">El plato, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-posado">El posado, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-rocodromo">El rocódromo, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-roso">El roso, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/el-xilofono">El xilófono, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/encigalat">Encigalat, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/farina-de-mais">Fariña de mais, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/felacion">Felación, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/flying-join">Flying join, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/futuros-clasicos">Futuros clásicos, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/godfather">Godfather, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/goldman-sachs">Goldman sachs, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/hombro-escombro">Hombro Escombro, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/ivan-s-slab">Ivan's slab, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/la-capucha">La capucha, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/la-txintxeta-galactica">La txintxeta galáctica, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/loco-mundo">Loco mundo, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/lollapalooza">Lollapalooza, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/marionetas-del-sistema">Marionetas del sistema, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/modelitos">Modelitos, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/monkey-life">Monkey life, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/moon-safari">Moon safari, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/nido-de-aranas">Nido de arañas, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/pantera-rosa">Pantera rosa, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/particulas">Partículas, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/pendulum">Pendulum, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/pitxi-direct">Pitxi direct, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/pitxi-metode">Pitxi metode, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/placa-bezana">Placa bezana, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/pole-position">Pole position, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/postureo-del-bueno">Postureo del bueno, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/problem-d-boulder-28-el-valle">Problem D (Boulder 28, El Valle), 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/puta-vida">Puta vida, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/rata-de-rocodromo">Rata de rocódromo, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/rin-rin">Rin rin, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/rompecabezas">Rompecabezas, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/striptease">Striptease, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/tiralineas">Tiralíneas, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/toteham-08">Toteham 08, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/twins-brothers">Twins brothers, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/una-mattina">Una mattina, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/una-noche-en-bezas">Una noche en Bezas, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/utopia">Utopía, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/venecia">Venecia, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/viga-de-bamako">Viga de Bamako, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/bezas/zucchini">Zucchini, 6a+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "bezas_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/bezas/el-atajo">El Atajo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/el-barco">El Barco</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/el-valle">El Valle</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/la-granja">La Granja</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/la-mina">La Mina</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/los-callejones">Los Callejones</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/panea">Panea</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/pozo-celta">Pozo Celta</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/resineros">Resineros</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/bezas/unknown">Unknown</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "bezas_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/el-atajo" class="table-row-name text-bold">El Atajo</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/el-barco" class="table-row-name text-bold">El Barco</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/el-valle" class="table-row-name text-bold">El Valle</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/la-granja" class="table-row-name text-bold">La Granja</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/la-mina" class="table-row-name text-bold">La Mina</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/los-callejones" class="table-row-name text-bold">Los Callejones</a>
+					</td>
+					<td class="text-center">21</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/panea" class="table-row-name text-bold">Panea</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/pozo-celta" class="table-row-name text-bold">Pozo Celta</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/resineros" class="table-row-name text-bold">Resineros</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/bezas/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -634,7 +420,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Valle</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -660,7 +446,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Granja</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -686,7 +472,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Panea</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -712,7 +498,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Barco</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -738,7 +524,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>La Mina</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -764,7 +550,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Resineros</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -790,7 +576,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>El Atajo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -816,7 +602,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pozo Celta</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -842,7 +628,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Los Callejones</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -865,8 +651,642 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/500-cacharros" class="table-row-name text-bold">500 cacharros</a>
+					</td>
+					<td>7b+ (sit)</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/500-cacharros" class="table-row-name text-bold">500 cacharros</a>
+					</td>
+					<td>7b</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/900" class="table-row-name text-bold">900</a>
+					</td>
+					<td>7a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/aqui-huele-a-hierba" class="table-row-name text-bold">Aqui huele a hierba</a>
+					</td>
+					<td>6b</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/bamba" class="table-row-name text-bold">Bamba</a>
+					</td>
+					<td>6b</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/bobble-bobble" class="table-row-name text-bold">Bobble Bobble</a>
+					</td>
+					<td>6c</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/bonobo" class="table-row-name text-bold">Bonobo</a>
+					</td>
+					<td>7b+</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/borracho-de-poder" class="table-row-name text-bold">Borracho de poder</a>
+					</td>
+					<td>7a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/cafes-morales" class="table-row-name text-bold">Cafés Morales</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/calabaza-de-verano" class="table-row-name text-bold">Calabaza de verano</a>
+					</td>
+					<td>4+</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/celtas-cortos" class="table-row-name text-bold">Celtas cortos</a>
+					</td>
+					<td>6b</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/cereal-high-pressure" class="table-row-name text-bold">Cereal high pressure</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/desproao" class="table-row-name text-bold">Desproao</a>
+					</td>
+					<td>7a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/dream-resolution" class="table-row-name text-bold">Dream resolution</a>
+					</td>
+					<td>6b+</td>
+					<td>La Mina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-barco" class="table-row-name text-bold">El Barco</a>
+					</td>
+					<td>7b</td>
+					<td>El barco</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-flaco" class="table-row-name text-bold">El Flaco</a>
+					</td>
+					<td>6c</td>
+					<td>El Barco</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-gordo" class="table-row-name text-bold">El Gordo</a>
+					</td>
+					<td>7a</td>
+					<td>El Barco</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-bar-y-el-foot" class="table-row-name text-bold">El bar y el foot</a>
+					</td>
+					<td>6a+</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-cono-sur" class="table-row-name text-bold">El cono sur</a>
+					</td>
+					<td>6b</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-enano-amarillo" class="table-row-name text-bold">El enano amarillo</a>
+					</td>
+					<td>7a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-filo-de-bamako" class="table-row-name text-bold">El filo de Bamako</a>
+					</td>
+					<td>7a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-funambulista" class="table-row-name text-bold">El funambulista</a>
+					</td>
+					<td>7a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-plato" class="table-row-name text-bold">El plato</a>
+					</td>
+					<td>7a</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-posado" class="table-row-name text-bold">El posado</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-rocodromo" class="table-row-name text-bold">El rocódromo</a>
+					</td>
+					<td>6c</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-roso" class="table-row-name text-bold">El roso</a>
+					</td>
+					<td>6a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/el-xilofono" class="table-row-name text-bold">El xilófono</a>
+					</td>
+					<td>7a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/encigalat" class="table-row-name text-bold">Encigalat</a>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/farina-de-mais" class="table-row-name text-bold">Fariña de mais</a>
+					</td>
+					<td>7a</td>
+					<td>La Mina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/felacion" class="table-row-name text-bold">Felación</a>
+					</td>
+					<td>7a</td>
+					<td>Panea</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/flying-join" class="table-row-name text-bold">Flying join</a>
+					</td>
+					<td>7c</td>
+					<td>Panea</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/futuros-clasicos" class="table-row-name text-bold">Futuros clásicos</a>
+					</td>
+					<td>7c</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/godfather" class="table-row-name text-bold">Godfather</a>
+					</td>
+					<td>6b</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/goldman-sachs" class="table-row-name text-bold">Goldman sachs</a>
+					</td>
+					<td>7a</td>
+					<td>La Mina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/hombro-escombro" class="table-row-name text-bold">Hombro Escombro</a>
+					</td>
+					<td>7a+</td>
+					<td>El Barco</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/ivan-s-slab" class="table-row-name text-bold">Ivan's slab</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/la-capucha" class="table-row-name text-bold">La capucha</a>
+					</td>
+					<td>6b</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/la-txintxeta-galactica" class="table-row-name text-bold">La txintxeta galáctica</a>
+					</td>
+					<td>7a</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/loco-mundo" class="table-row-name text-bold">Loco mundo</a>
+					</td>
+					<td>7a+</td>
+					<td>El Barco</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/lollapalooza" class="table-row-name text-bold">Lollapalooza</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/marionetas-del-sistema" class="table-row-name text-bold">Marionetas del sistema</a>
+					</td>
+					<td>7a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/modelitos" class="table-row-name text-bold">Modelitos</a>
+					</td>
+					<td>6a+</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/monkey-life" class="table-row-name text-bold">Monkey life</a>
+					</td>
+					<td>7a</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/moon-safari" class="table-row-name text-bold">Moon safari</a>
+					</td>
+					<td>7a</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/nido-de-aranas" class="table-row-name text-bold">Nido de arañas</a>
+					</td>
+					<td>6a</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/pantera-rosa" class="table-row-name text-bold">Pantera rosa</a>
+					</td>
+					<td>7b+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/particulas" class="table-row-name text-bold">Partículas</a>
+					</td>
+					<td>6a+</td>
+					<td>La Mina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/pendulum" class="table-row-name text-bold">Pendulum</a>
+					</td>
+					<td>6c+</td>
+					<td>La Mina</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/pitxi-direct" class="table-row-name text-bold">Pitxi direct</a>
+					</td>
+					<td>6c+</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/pitxi-metode" class="table-row-name text-bold">Pitxi metode</a>
+					</td>
+					<td>7a+</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/placa-bezana" class="table-row-name text-bold">Placa bezana</a>
+					</td>
+					<td>7a</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/pole-position" class="table-row-name text-bold">Pole position</a>
+					</td>
+					<td>7b</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/postureo-del-bueno" class="table-row-name text-bold">Postureo del bueno</a>
+					</td>
+					<td>6b</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/problem-d-boulder-28-el-valle" class="table-row-name text-bold">Problem D (Boulder 28, El Valle)</a>
+					</td>
+					<td>4</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/puta-vida" class="table-row-name text-bold">Puta vida</a>
+					</td>
+					<td>7c</td>
+					<td>La Granja</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/rata-de-rocodromo" class="table-row-name text-bold">Rata de rocódromo</a>
+					</td>
+					<td>5+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/rin-rin" class="table-row-name text-bold">Rin rin</a>
+					</td>
+					<td>7a</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/rompecabezas" class="table-row-name text-bold">Rompecabezas</a>
+					</td>
+					<td>6c</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/striptease" class="table-row-name text-bold">Striptease</a>
+					</td>
+					<td>5+</td>
+					<td>El Valle</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/tiralineas" class="table-row-name text-bold">Tiralíneas</a>
+					</td>
+					<td>7a</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/toteham-08" class="table-row-name text-bold">Toteham 08</a>
+					</td>
+					<td>6a+</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/twins-brothers" class="table-row-name text-bold">Twins brothers</a>
+					</td>
+					<td>7a+</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/una-mattina" class="table-row-name text-bold">Una mattina</a>
+					</td>
+					<td>6a</td>
+					<td>Los Callejones</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/una-noche-en-bezas" class="table-row-name text-bold">Una noche en Bezas</a>
+					</td>
+					<td>7a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/utopia" class="table-row-name text-bold">Utopía</a>
+					</td>
+					<td>7a</td>
+					<td>Resineros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/venecia" class="table-row-name text-bold">Venecia</a>
+					</td>
+					<td>6a+</td>
+					<td>El Atajo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/viga-de-bamako" class="table-row-name text-bold">Viga de Bamako</a>
+					</td>
+					<td>7a+</td>
+					<td>Pozo Celta</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/bezas/zucchini" class="table-row-name text-bold">Zucchini</a>
+					</td>
+					<td>6a+</td>
+					<td>El Valle</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}

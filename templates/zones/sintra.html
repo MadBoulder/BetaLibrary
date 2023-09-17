@@ -17,7 +17,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -30,20 +29,97 @@ crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/sintra">
 
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
     <main>
-        <div class="container" id="pageContent">
-          <br />
-          <h1 style="text-align: center;">
+		<div class="zone-header">
+          <h1 class="zone-header-title text-bold">
              Sintra 
           </h1>
-          
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold data-bs-default-tab" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Problems") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-guides-tab" href="#guides" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="true">
+						<i class="fas fa-book"></i>
+						 {{ _("Guides") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						 {{ _("Sectors") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						 {{ _("Playlists") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						 {{ _("Weather") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						 {{ _("Map") }} 
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-bar-chart"></i>
+						 {{ _("Stats") }} 
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+					
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-bs-default-tab]').tab('show');
+						}
+					}
+				});
+
+				// Update the URL hash fragment when a tab is shown
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					$('html, body').animate({ scrollTop: 0 }, 'fast');
+					var hash = $(e.target).attr('href');
+					window.location.hash = hash;
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
      {% for stat in stats_list %}
@@ -64,7 +140,11 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 
-          
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="38.777072" />
   <input type="hidden" id="lng" name="lng_val" value="-9.427819" />
@@ -168,584 +248,247 @@ crossorigin="anonymous"></script>
   });
 </script>
  
-          <br />
-          <p>
-<div class="container">
-  
-  <h4>{{ _("Guides") }}</h4>
-  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="-guides">
+					
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=9893317762&linkId=e2f8dee12dbaffb70e35d08645722838">
+				</iframe>
+			</div>
+		
+	</div>
+
+<div class="list-group">
+	
+		<a id="guide_link"  href="https://www.instagram.com/bouldersintra/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Boulder Sintra Official Instagram (@bouldersintra)
+		</a>
+	
+		<a id="guide_link"  href="https://27crags.com/crags/sintra" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			27 Crags (online)
+		</a>
+	
+		<a id="guide_link"  href="https://www.libreriadesnivel.com/libros/sintra-bouldering/9789893317761/" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			Sintra Bouldering (Guidebook)
+		</a>
+	
 </div>
-<br />
-<div class="container">
-  
-  <div class="row pl-5 mb-3">
-    
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-eu.amazon-adsystem.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=madboulder00-21&language=es_ES&o=30&p=8&l=as4&m=amazon&f=ifr&ref=as_ss_li_til&asins=9893317762&linkId=e2f8dee12dbaffb70e35d08645722838">
-      </iframe>
-    </div>
-   
-  </div>
-  
-  <ul>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.instagram.com/bouldersintra/"
-        target="_blank"
-        >Boulder Sintra Official Instagram (@bouldersintra)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://27crags.com/crags/sintra"
-        target="_blank"
-        >27 Crags (online)</a
-      >
-    </li>
-    
-    <li>
-      <a
-		id="guide_link"
-        href="https://www.libreriadesnivel.com/libros/sintra-bouldering/9789893317761/"
-        target="_blank"
-        >Sintra Bouldering (Guidebook)</a
-      >
-    </li>
-    
-  </ul>
-</div>
-</p>
-          <br />
-          
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
 <!-- Zone Map -->
 <div class="container">
-  
-  <h4>{{ _("Map") }}</h4>
-  
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="maps/sintra"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="maps/sintra"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
-<!--Problem List-->
-<div class="container">
-  
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  
-  <ul id="listProblems" class="list closed">
-    
-    <li>
-      <a href="/problems/sintra/666-o-diabo-vive">666 o Diabo Vive, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/aquecimento-forcado">Aquecimento Forçado, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/areia-preta">Areia Preta, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/arredondado">Arredondado, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/baby-boom">Baby Boom, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/bafo-do-dragao">Bafo do Dragão, 7B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/banana-milkshake">Banana Milkshake, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/beta-filosofal">Beta Filosofal, 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/bife-na-pedra">Bife na Pedra, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/bom-dia-alegria">Bom dia Alegria, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/boomerang">Boomerang, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/bope">Bope, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/bucha-e-estica">Bucha e Estica, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/buenos-aires">Buenos Aires, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/cavalo-consome">Cavalo Consome, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/chronostasis">Chronostasis , 8b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/contra-peso">Contra Peso, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/contrafeito">Contrafeito, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/corta-unhas">Corta Unhas, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/cratera">Cratera, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/crimptonite">Crimptonite, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/cu-pesado">Cu Pesado, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/dinossauros">Dinossauros, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/esforco-transverso">Esforço Transverso, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/espanholada">Espanholada, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/esperanto">Esperanto, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/fauto">Fauto, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/forca-de-artrite">Forca de Artrite, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/galeao">Galeão, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/graciosa">Graciosa, 6B</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/gripless">Gripless, 7c (low)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/high-tone">High Tone, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/ideafix">Ideafix, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/indomavel">Indomavel, 7C+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/joia">Jóia, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/k-o-h-d">K.O.H.D, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/kalashnikov">Kalashnikov, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/karma-da-serra">Karma da Serra, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/labius-cambius">Labius Cambius, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/lapide">Lapide, 7b+/7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/linha-de-corte">Linha de Corte, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/lingua">Língua, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/maga">Maga, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/mano-direita">Mano Direita, 6b+ (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/massa-extensiva">Massa Extensiva, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/mega-grip">Mega-Grip, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/menirzinho">Menirzinho, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/mito">Mito, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/mito-full-sit">Mito full sit, 8b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/mouse-traverse">Mouse Traverse, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/nada-se-parte-tudo-se-transforma">Nada se parte, tudo se transforma, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/ninho-de-cucos">Ninho de Cucos, 6b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/orca">Orca, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/ovo">Ovo, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/ovo-rachado">Ovo Rachado, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/passeio-na-crista">Passeio na Crista, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/pena-perpetua">Pena perpetua, 8B (sit)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/pequenino-voador">Pequenino Voador, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/pica-pau">Pica Pau, 7b+/7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/prison-break">Prison Break, 7C+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/problem-1-boulder-o-malveira-obelix">Problem 1 (Boulder O, Malveira - Obélix), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/problem-4-mega-grip">Problem 4 (Mega-Grip), 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/problem-5-boulder-c-albarrasintra-meca">Problem 5 (Boulder C, Albarrasintra - Meca), 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/quinto-mais-facil">Quinto mais fácil, 5+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/salsa-latina">Salsa Latina, 6b (Right Start)</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/salsa-latina">Salsa Latina, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/solaris">Solaris, 7c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/songamonga">Songamonga, 6c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/strawberry-juice">Strawberry Juice, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/supahiro">Supahiro, 8a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/so-curtir">Só Curtir, 6a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/tnt">TNT, 6a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/talisma">Talismã, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/talochas">Talochas, 7b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/tombado">Tombado, 5</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/transferidor">Transferidor, 7b+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/travesseiro">Travesseiro, 7a</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/tudo-se-parte-nada-se-transforma">Tudo se parte nada se transforma, 6b</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/twilight">Twilight, 7C+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/viagem-astral">Viagem Astral, 6c+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/visao-distorcida">Visão Distorcida, 7a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/xs">XS, 4</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/xuta-cavalo">Xuta Cavalo, 8a+</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/zeitgeist">Zeitgeist, 7c</a>
-    </li>
-    
-    <li>
-      <a href="/problems/sintra/eden-traverse">Éden Traverse, 6c+</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "sintra_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
 
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
-</div>
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
 <!--Sector List-->
 <div class="container">
-  
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  
-  <ul id="listSectors" class="list closed">
-    
-    <li>
-      <a href="/sectors/sintra/albarrasintra-meca">Albarrasintra - Meca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/albarrasintra-meca-surrounds">Albarrasintra - Meca Surrounds</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/albarrasintra-mito">Albarrasintra - Mito</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/albarrasintra-pedra-branca">Albarrasintra - Pedra Branca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/capuchos">Capuchos</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-sata-sata">Malveira -  Satã Satã</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-campo-base">Malveira - Campo Base</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-dinossauros">Malveira - Dinossauros</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-monte-da-cruz">Malveira - Monte da Cruz</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-obelix">Malveira - Obélix</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/malveira-vivendas">Malveira - Vivendas</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/pedra-branca">Pedra Branca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/peninha-kalash">Peninha - Kalash</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/peninha-nova">Peninha - Nova</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/praia-do-cavalo">Praia do Cavalo</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/sao-pedro-s-pedro">São Pedro - S. Pedro</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/tapada">Tapada</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/tapada-prison-fortaleza-terraco">Tapada - Prison, Fortaleza & Terraço</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/tapada-eden-canal-arca">Tapada - Éden, Canal & Arca</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/unknown">Unknown</a>
-    </li>
-    
-    <li>
-      <a href="/sectors/sintra/vale-das-acacias-pico">Vale das Acácias - Pico</a>
-    </li>
-    
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "sintra_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/albarrasintra-meca" class="table-row-name text-bold">Albarrasintra - Meca</a>
+					</td>
+					<td class="text-center">10</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/albarrasintra-meca-surrounds" class="table-row-name text-bold">Albarrasintra - Meca Surrounds</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/albarrasintra-mito" class="table-row-name text-bold">Albarrasintra - Mito</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/albarrasintra-pedra-branca" class="table-row-name text-bold">Albarrasintra - Pedra Branca</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/capuchos" class="table-row-name text-bold">Capuchos</a>
+					</td>
+					<td class="text-center">13</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-sata-sata" class="table-row-name text-bold">Malveira -  Satã Satã</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-campo-base" class="table-row-name text-bold">Malveira - Campo Base</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-dinossauros" class="table-row-name text-bold">Malveira - Dinossauros</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-monte-da-cruz" class="table-row-name text-bold">Malveira - Monte da Cruz</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-obelix" class="table-row-name text-bold">Malveira - Obélix</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/malveira-vivendas" class="table-row-name text-bold">Malveira - Vivendas</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/pedra-branca" class="table-row-name text-bold">Pedra Branca</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/peninha-kalash" class="table-row-name text-bold">Peninha - Kalash</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/peninha-nova" class="table-row-name text-bold">Peninha - Nova</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/praia-do-cavalo" class="table-row-name text-bold">Praia do Cavalo</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/sao-pedro-s-pedro" class="table-row-name text-bold">São Pedro - S. Pedro</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/tapada" class="table-row-name text-bold">Tapada</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/tapada-prison-fortaleza-terraco" class="table-row-name text-bold">Tapada - Prison, Fortaleza & Terraço</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/tapada-eden-canal-arca" class="table-row-name text-bold">Tapada - Éden, Canal & Arca</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<a href="/sectors/sintra/vale-das-acacias-pico" class="table-row-name text-bold">Vale das Acácias - Pico</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
 </div>
- 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
 <!--Playlists-->
 <div class="container">
-  <br />
-  
-  <h4>{{ _("Playlists") }}</h4>
-  
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         
         <b>{{ _("Full") }}</b>
         
@@ -773,7 +516,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Malveira - Vivendas</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -799,7 +542,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>São Pedro - S. Pedro</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -825,7 +568,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albarrasintra - Mito</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -851,7 +594,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albarrasintra - Pedra Branca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -877,7 +620,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albarrasintra - Meca Surrounds</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -903,7 +646,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Monte da Cruz</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -929,7 +672,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Satã Satã</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -955,7 +698,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Vale das Acácias - Pico</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -981,7 +724,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Praia do Cavalo</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1007,7 +750,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Tapada - Éden, Canal & Arca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1033,7 +776,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Albarrasintra - Meca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1059,7 +802,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Malveira - Campo Base</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1085,7 +828,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Malveira - Obélix</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1111,7 +854,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Malveira - Dinossauros</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1137,7 +880,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Capuchos</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1163,7 +906,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Peninha - Nova</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1189,7 +932,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Peninha - Kalash</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1215,7 +958,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Pedra Branca</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1241,7 +984,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Capuchos</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1267,7 +1010,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>Tapada - Prison, Fortaleza & Terraço</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
@@ -1290,8 +1033,795 @@ crossorigin="anonymous"></script>
   </div>
   
 
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/666-o-diabo-vive" class="table-row-name text-bold">666 o Diabo Vive</a>
+					</td>
+					<td>6c+</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/aquecimento-forcado" class="table-row-name text-bold">Aquecimento Forçado</a>
+					</td>
+					<td>6a</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/areia-preta" class="table-row-name text-bold">Areia Preta</a>
+					</td>
+					<td>6b</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/arredondado" class="table-row-name text-bold">Arredondado</a>
+					</td>
+					<td>6a</td>
+					<td>Albarrasintra - Meca Surrounds</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/baby-boom" class="table-row-name text-bold">Baby Boom</a>
+					</td>
+					<td>6a+</td>
+					<td>Malveira - Obélix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/bafo-do-dragao" class="table-row-name text-bold">Bafo do Dragão</a>
+					</td>
+					<td>7B</td>
+					<td>Tapada - Éden, Canal & Arca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/banana-milkshake" class="table-row-name text-bold">Banana Milkshake</a>
+					</td>
+					<td>6c</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/beta-filosofal" class="table-row-name text-bold">Beta Filosofal</a>
+					</td>
+					<td>8b</td>
+					<td>Tapada - Prison, Fortaleza & Terraço</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/bife-na-pedra" class="table-row-name text-bold">Bife na Pedra</a>
+					</td>
+					<td>7b</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/bom-dia-alegria" class="table-row-name text-bold">Bom dia Alegria</a>
+					</td>
+					<td>6a+</td>
+					<td>Albarrasintra - Meca Surrounds</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/boomerang" class="table-row-name text-bold">Boomerang</a>
+					</td>
+					<td>7b</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/bope" class="table-row-name text-bold">Bope</a>
+					</td>
+					<td>7c</td>
+					<td>Tapada - Prison, Fortaleza & Terraço</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/bucha-e-estica" class="table-row-name text-bold">Bucha e Estica</a>
+					</td>
+					<td>6a+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/buenos-aires" class="table-row-name text-bold">Buenos Aires</a>
+					</td>
+					<td>8a</td>
+					<td>Praia do Cavalo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/cavalo-consome" class="table-row-name text-bold">Cavalo Consome</a>
+					</td>
+					<td>7c+</td>
+					<td>Praia do Cavalo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/chronostasis" class="table-row-name text-bold">Chronostasis </a>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/contra-peso" class="table-row-name text-bold">Contra Peso</a>
+					</td>
+					<td>6b</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/contrafeito" class="table-row-name text-bold">Contrafeito</a>
+					</td>
+					<td>5</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/corta-unhas" class="table-row-name text-bold">Corta Unhas</a>
+					</td>
+					<td>6a+</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/cratera" class="table-row-name text-bold">Cratera</a>
+					</td>
+					<td>6c+</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/crimptonite" class="table-row-name text-bold">Crimptonite</a>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/cu-pesado" class="table-row-name text-bold">Cu Pesado</a>
+					</td>
+					<td>6a</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/dinossauros" class="table-row-name text-bold">Dinossauros</a>
+					</td>
+					<td>7c+</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/esforco-transverso" class="table-row-name text-bold">Esforço Transverso</a>
+					</td>
+					<td>6c+</td>
+					<td>Malveira - Obélix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/espanholada" class="table-row-name text-bold">Espanholada</a>
+					</td>
+					<td>7a+</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/esperanto" class="table-row-name text-bold">Esperanto</a>
+					</td>
+					<td>7a+</td>
+					<td>Malveira - Vivendas</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/fauto" class="table-row-name text-bold">Fauto</a>
+					</td>
+					<td>5+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/forca-de-artrite" class="table-row-name text-bold">Forca de Artrite</a>
+					</td>
+					<td>7a+</td>
+					<td>Malveira - Campo Base</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/galeao" class="table-row-name text-bold">Galeão</a>
+					</td>
+					<td>7b</td>
+					<td>Vale das Acácias - Pico</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/graciosa" class="table-row-name text-bold">Graciosa</a>
+					</td>
+					<td>6B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/gripless" class="table-row-name text-bold">Gripless</a>
+					</td>
+					<td>7c (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/high-tone" class="table-row-name text-bold">High Tone</a>
+					</td>
+					<td>6c</td>
+					<td>São Pedro - S. Pedro</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/ideafix" class="table-row-name text-bold">Ideafix</a>
+					</td>
+					<td>7b</td>
+					<td>Malveira - Obélix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/indomavel" class="table-row-name text-bold">Indomavel</a>
+					</td>
+					<td>7C+</td>
+					<td>Malveira - Campo Base</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/joia" class="table-row-name text-bold">Jóia</a>
+					</td>
+					<td>8a</td>
+					<td>Pedra Branca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/k-o-h-d" class="table-row-name text-bold">K.O.H.D</a>
+					</td>
+					<td>8a+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/kalashnikov" class="table-row-name text-bold">Kalashnikov</a>
+					</td>
+					<td>7c</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/karma-da-serra" class="table-row-name text-bold">Karma da Serra</a>
+					</td>
+					<td>7c</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/labius-cambius" class="table-row-name text-bold">Labius Cambius</a>
+					</td>
+					<td>6b+</td>
+					<td>Albarrasintra - Meca Surrounds</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/lapide" class="table-row-name text-bold">Lapide</a>
+					</td>
+					<td>7b+/7c</td>
+					<td>Albarrasintra - Pedra Branca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/linha-de-corte" class="table-row-name text-bold">Linha de Corte</a>
+					</td>
+					<td>6a</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/lingua" class="table-row-name text-bold">Língua</a>
+					</td>
+					<td>6a</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/maga" class="table-row-name text-bold">Maga</a>
+					</td>
+					<td>6b</td>
+					<td>Malveira -  Satã Satã</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/mano-direita" class="table-row-name text-bold">Mano Direita</a>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Malveira -  Satã Satã</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/massa-extensiva" class="table-row-name text-bold">Massa Extensiva</a>
+					</td>
+					<td>7c+</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/mega-grip" class="table-row-name text-bold">Mega-Grip</a>
+					</td>
+					<td>6c+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/menirzinho" class="table-row-name text-bold">Menirzinho</a>
+					</td>
+					<td>5</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/mito" class="table-row-name text-bold">Mito</a>
+					</td>
+					<td>7a+</td>
+					<td>Albarrasintra - Mito</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/mito-full-sit" class="table-row-name text-bold">Mito full sit</a>
+					</td>
+					<td>8b+</td>
+					<td>Albarrasintra - Mito</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/mouse-traverse" class="table-row-name text-bold">Mouse Traverse</a>
+					</td>
+					<td>5</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/nada-se-parte-tudo-se-transforma" class="table-row-name text-bold">Nada se parte, tudo se transforma</a>
+					</td>
+					<td>6a+</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/ninho-de-cucos" class="table-row-name text-bold">Ninho de Cucos</a>
+					</td>
+					<td>6b+</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/orca" class="table-row-name text-bold">Orca</a>
+					</td>
+					<td>6c</td>
+					<td>Albarrasintra - Meca Surrounds</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/ovo" class="table-row-name text-bold">Ovo</a>
+					</td>
+					<td>6a</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/ovo-rachado" class="table-row-name text-bold">Ovo Rachado</a>
+					</td>
+					<td>5+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/passeio-na-crista" class="table-row-name text-bold">Passeio na Crista</a>
+					</td>
+					<td>5</td>
+					<td>Malveira -  Satã Satã</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/pena-perpetua" class="table-row-name text-bold">Pena perpetua</a>
+					</td>
+					<td>8B (sit)</td>
+					<td>Tapada - Prison, Fortaleza & Terraço</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/pequenino-voador" class="table-row-name text-bold">Pequenino Voador</a>
+					</td>
+					<td>7b+</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/pica-pau" class="table-row-name text-bold">Pica Pau</a>
+					</td>
+					<td>7b+/7c</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/prison-break" class="table-row-name text-bold">Prison Break</a>
+					</td>
+					<td>7C+</td>
+					<td>Tapada - Prison, Fortaleza & Terraço</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/problem-1-boulder-o-malveira-obelix" class="table-row-name text-bold">Problem 1 (Boulder O, Malveira - Obélix)</a>
+					</td>
+					<td>5</td>
+					<td>Malveira - Obélix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/problem-4-mega-grip" class="table-row-name text-bold">Problem 4 (Mega-Grip)</a>
+					</td>
+					<td>5</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/problem-5-boulder-c-albarrasintra-meca" class="table-row-name text-bold">Problem 5 (Boulder C, Albarrasintra - Meca)</a>
+					</td>
+					<td>6a</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/quinto-mais-facil" class="table-row-name text-bold">Quinto mais fácil</a>
+					</td>
+					<td>5+</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/salsa-latina" class="table-row-name text-bold">Salsa Latina</a>
+					</td>
+					<td>6b (Right Start)</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/salsa-latina" class="table-row-name text-bold">Salsa Latina</a>
+					</td>
+					<td>6a</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/solaris" class="table-row-name text-bold">Solaris</a>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/songamonga" class="table-row-name text-bold">Songamonga</a>
+					</td>
+					<td>6c</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/strawberry-juice" class="table-row-name text-bold">Strawberry Juice</a>
+					</td>
+					<td>5</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/supahiro" class="table-row-name text-bold">Supahiro</a>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/so-curtir" class="table-row-name text-bold">Só Curtir</a>
+					</td>
+					<td>6a+</td>
+					<td>Malveira - Obélix</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/tnt" class="table-row-name text-bold">TNT</a>
+					</td>
+					<td>6a</td>
+					<td>Peninha - Kalash</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/talisma" class="table-row-name text-bold">Talismã</a>
+					</td>
+					<td>8a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/talochas" class="table-row-name text-bold">Talochas</a>
+					</td>
+					<td>7b</td>
+					<td>Malveira - Monte da Cruz</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/tombado" class="table-row-name text-bold">Tombado</a>
+					</td>
+					<td>5</td>
+					<td>Albarrasintra - Meca Surrounds</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/transferidor" class="table-row-name text-bold">Transferidor</a>
+					</td>
+					<td>7b+</td>
+					<td>Capuchos</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/travesseiro" class="table-row-name text-bold">Travesseiro</a>
+					</td>
+					<td>7a</td>
+					<td>Peninha - Nova</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/tudo-se-parte-nada-se-transforma" class="table-row-name text-bold">Tudo se parte nada se transforma</a>
+					</td>
+					<td>6b</td>
+					<td>Albarrasintra - Meca</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/twilight" class="table-row-name text-bold">Twilight</a>
+					</td>
+					<td>7C+</td>
+					<td>Albarrasintra - Mito</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/viagem-astral" class="table-row-name text-bold">Viagem Astral</a>
+					</td>
+					<td>6c+</td>
+					<td>São Pedro - S. Pedro</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/visao-distorcida" class="table-row-name text-bold">Visão Distorcida</a>
+					</td>
+					<td>7a+</td>
+					<td>Malveira - Vivendas</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/xs" class="table-row-name text-bold">XS</a>
+					</td>
+					<td>4</td>
+					<td>Malveira - Dinossauros</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/xuta-cavalo" class="table-row-name text-bold">Xuta Cavalo</a>
+					</td>
+					<td>8a+</td>
+					<td>Praia do Cavalo</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/zeitgeist" class="table-row-name text-bold">Zeitgeist</a>
+					</td>
+					<td>7c</td>
+					<td>Tapada</td>
+				</tr>
+			
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/sintra/eden-traverse" class="table-row-name text-bold">Éden Traverse</a>
+					</td>
+					<td>6c+</td>
+					<td>Tapada - Éden, Canal & Arca</td>
+				</tr>
+			
+		</tbody>
+	</table>
+</div>
+
         </div>
-        <br />
 	</main>
 	
 	{% include 'elements/footer.html' %}
