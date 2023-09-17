@@ -8,7 +8,6 @@
 <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <meta charset="UTF-8" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
 integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
@@ -24,8 +23,7 @@ crossorigin="anonymous"></script>
 {% block zone_name %} {{ name }} {% endblock %} 
 
 {% block stats %}
-<div class="container" style="margin-bottom: -20px;">
-  <br />
+<div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
     {% raw %} {% for stat in stats_list %}
@@ -46,6 +44,7 @@ crossorigin="anonymous"></script>
   </div>
 </div>
 {% endblock %} 
+
 {% block widget %}
 <div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
   <input type="hidden" id="lat" name="lat_val" value="{{ lat }}" />
@@ -149,148 +148,113 @@ crossorigin="anonymous"></script>
     query: 'onecall' // to get forecast
   });
 </script>
-{% endraw %} {% endblock %}
+{% endraw %} 
+{% endblock %}
+
 {% block topo %}
-<div class="container">
-  {% raw %}
-  <h4>{{ _("Guides") }}</h4>
-  {% endraw %}
+{% if affiliate_guide_list %}
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		{% for affiliate_guide in affiliate_guide_list %}
+			<div class="mr-2" style="margin-right: 1rem;">
+				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="{{ affiliate_guide }}">
+				</iframe>
+			</div>
+		{% endfor %}
+	</div>
+{% endif %}
+<div class="list-group">
+	{% for guide in guide_list %}
+		<a id="guide_link"  href="{{ guide[1] }}" class="list-group-item list-group-item-action list-group-item-light text-bold">
+			<i class="fas fa-book"></i>
+			{{ guide[0] }}
+		</a>
+	{% endfor %}
 </div>
-<br />
-<div class="container">
-  {% if affiliate_guide_list %}
-  <div class="row pl-5 mb-3">
-    {% for affiliate_guide in affiliate_guide_list %}
-    <div class="mr-2">
-      <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="{{ affiliate_guide }}">
-      </iframe>
-    </div>
-   {% endfor %}
-  </div>
-  {% endif %}
-  <ul>
-    {% for guide in guide_list %}
-    <li>
-      <a
-		id="guide_link"
-        href="{{ guide[1] }}"
-        target="_blank"
-        >{{ guide[0] }}</a
-      >
-    </li>
-    {% endfor %}
-  </ul>
-</div>
-{% endblock %} {% block body %}
+{% endblock %} 
+
+{% block map %}
 <!-- Zone Map -->
 <div class="container">
-  {% raw %}
-  <h4>{{ _("Map") }}</h4>
-  {% endraw %}
+	<div class="row">
+	  <div class="col-sm-2 col-md-3"></div>
+	  <div class="col-sm-8 col-md-6">
+		<div style="position: relative; padding-top: 56%;">
+		  <iframe
+			src="{{ map_url }}"
+			frameborder="0"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+		  >
+		  </iframe>
+		</div>
+	  </div>
+	  <div class="col-sm-2 col-md-3"></div>
+	</div>
 </div>
-<br />
-<div class="row">
-  <div class="col-sm-2 col-md-3"></div>
-  <div class="col-sm-8 col-md-6">
-    <div style="position: relative; padding-top: 56%;">
-      <iframe
-        src="{{ map_url }}"
-        frameborder="0"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      >
-      </iframe>
-    </div>
-  </div>
-  <div class="col-sm-2 col-md-3"></div>
-</div>
-<br />
+{% endblock %}
+
+{% block problems %}
 <!--Problem List-->
 <div class="container">
-  {% raw %}
-  <h4 class="listTitle" id="listProblemsTitle">
-	{{ _("List of Problems") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconProblems">
-  </h4>
-  {% endraw %}
-  <ul id="listProblems" class="list closed">
-    {% for problem in problems %}
-    <li>
-      <a href="/problems/{{area_code}}/{{problem['secure']}}">{{ problem["name"] }}, {{ problem["grade_with_info"] }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-  <script >
-	const listProblemsTitle = document.getElementById('listProblemsTitle');
-	const listProblemsId = "{{area_code}}_problemsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const problemsListOpen = localStorage.getItem(listProblemsId) === 'true';
-		if (problemsListOpen) {
-		  listProblemsTitle.click();
-		}
-	});
-	
-	const listProblems = document.getElementById('listProblems');
-	const toggleIconProblems = document.getElementById('toggleIconProblems');
-
-	listProblemsTitle.addEventListener('click', function() {
-	  listProblems.classList.toggle('opened');
-	  const isListOpen = listProblems.classList.contains('opened');
-	  toggleIconProblems.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-	  localStorage.setItem(listProblemsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				{% raw %}
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Grade") }}</th>
+				<th scope="col">{{ _("Sector") }}</th>
+				{% endraw %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for problem in problems %}
+				<tr>
+					<td>
+						<i class="fas fa-video-camera table-row-icon"></i>
+						<a href="/problems/{{area_code}}/{{problem['secure']}}" class="table-row-name text-bold">{{ problem["name"] }}</a>
+					</td>
+					<td>{{ problem["grade_with_info"] }}</td>
+					<td>{{ problem["sector"] }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
+{% endblock %}
+
+{% block sectors %}
 <!--Sector List-->
 <div class="container">
-  {% raw %}
-  <h4 class="listTitle" id="listSectorsTitle">
-	{{ _("List of Sectors") }}
-	<img src="{{url_for('static', filename='images/icons/triangle.png')}}" class="toggleIcon" id="toggleIconSectors">
-  </h4>
-  {% endraw %}
-  <ul id="listSectors" class="list closed">
-    {% for sector in sectors %}
-    <li>
-      <a href="/sectors/{{area_code}}/{{sector[1]}}">{{ sector[0] }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-  <script >
-	const listSectorsTitle = document.getElementById('listSectorsTitle');
-	const listSectorsId = "{{area_code}}_sectorsList";
-	
-	document.addEventListener('DOMContentLoaded', function() {
-		const sectorListOpen = localStorage.getItem(listSectorsId) === 'true';
-		if (sectorListOpen) {
-		  listSectorsTitle.click();
-		}
-	});
-	
-	const listSectors = document.getElementById('listSectors');
-	const toggleIconSectors = document.getElementById('toggleIconSectors');
-
-	listSectorsTitle.addEventListener('click', function() {
-		listSectors.classList.toggle('opened');
-		const isListOpen = listSectors.classList.contains('opened');
-		toggleIconSectors.style.transform = isListOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-		localStorage.setItem(listSectorsId, isListOpen);
-	});
-  </script>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				{% raw %}
+				<th scope="col">{{ _("Name") }}</th>
+				<th scope="col">{{ _("Problems") }}</th>
+				{% endraw %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for sector in sectors %}
+				<tr>
+					<td>
+						<a href="/sectors/{{area_code}}/{{sector[1]}}" class="table-row-name text-bold">{{ sector[0] }}</a>
+					</td>
+					<td class="text-center">{{ sector[2] }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
-{% endblock %}{% block playlists %}
+{% endblock %}
+
+{% block playlists %}
 <!--Playlists-->
 <div class="container">
-  <br />
-  {% raw %}
-  <h4>{{ _("Playlists") }}</h4>
-  {% endraw %}
-  <br />
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         {% raw %}
         <b>{{ _("Full") }}</b>
         {% endraw %}
@@ -318,7 +282,7 @@ crossorigin="anonymous"></script>
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
     <div class="col-sm-6 col-md-6">
-      <p>
+      <p class="text-center">
         <b>{{ sector['name'] }}</b>
       </p>
       <div style="position: relative; padding-top: 56.25%;">
