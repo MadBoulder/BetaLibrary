@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPO_WYe7tgtaY9jeeIuxXIC" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/al-otro-lado-finlandia" class="table-row-name text-bold">Al otro lado Finlandia</a>
@@ -54,7 +54,7 @@
 						<td>5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/el-sorpasso" class="table-row-name text-bold">El sorpasso</a>
@@ -62,7 +62,7 @@
 						<td>6a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/el-viajero-cuantico" class="table-row-name text-bold">El viajero cuántico</a>
@@ -70,7 +70,7 @@
 						<td>6c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/l-escanyolit" class="table-row-name text-bold">L'Escanyolit</a>
@@ -78,7 +78,7 @@
 						<td>7c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/la-esquina" class="table-row-name text-bold">La Esquina</a>
@@ -86,7 +86,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/la-naranja" class="table-row-name text-bold">La naranja</a>
@@ -94,7 +94,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/la-ultima-escapada" class="table-row-name text-bold">La última escapada</a>
@@ -102,7 +102,7 @@
 						<td>6b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/nada-es-lo-que-parece" class="table-row-name text-bold">Nada es lo que parece</a>
@@ -110,7 +110,7 @@
 						<td>6b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/placa-final" class="table-row-name text-bold">Placa Final</a>
@@ -118,7 +118,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/red" class="table-row-name text-bold">Red</a>
@@ -126,7 +126,7 @@
 						<td>7a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/sin-aliento" class="table-row-name text-bold">Sin aliento</a>
@@ -134,7 +134,7 @@
 						<td>6b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/una-escapada-perfecta" class="table-row-name text-bold">Una escapada perfecta</a>
@@ -142,7 +142,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/alcaniz/zimous" class="table-row-name text-bold">Zimous</a>
@@ -152,9 +152,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

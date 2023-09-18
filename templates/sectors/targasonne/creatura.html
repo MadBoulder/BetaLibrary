@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNoWHLgO-kTx8n2nLt6tov7" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/21-grammes" class="table-row-name text-bold">21 Grammes</a>
@@ -54,7 +54,7 @@
 						<td>8b (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/21-grammes" class="table-row-name text-bold">21 Grammes</a>
@@ -62,7 +62,7 @@
 						<td>7c+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/creatura" class="table-row-name text-bold">Créatura</a>
@@ -70,7 +70,7 @@
 						<td>8b (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/cupula" class="table-row-name text-bold">Cupula</a>
@@ -78,7 +78,7 @@
 						<td>6c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/evol" class="table-row-name text-bold">Evol</a>
@@ -86,7 +86,7 @@
 						<td>6a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/gang-de-requin" class="table-row-name text-bold">Gang de requin</a>
@@ -94,7 +94,7 @@
 						<td>7b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/l-effet-de-foehn" class="table-row-name text-bold">L'effet de foehn</a>
@@ -102,7 +102,7 @@
 						<td>7a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/lobotomie" class="table-row-name text-bold">Lobotomie</a>
@@ -110,7 +110,7 @@
 						<td>7b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/mange-plat" class="table-row-name text-bold">Mange plat</a>
@@ -118,7 +118,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/problem-8-creatura" class="table-row-name text-bold">Problem 8 (Créatura)</a>
@@ -126,7 +126,7 @@
 						<td>6b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/targasonne/renaiss" class="table-row-name text-bold">Renaiss</a>
@@ -136,9 +136,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/bmoc" class="table-row-name text-bold">BMOC</a>
@@ -50,7 +50,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/beam-me-up" class="table-row-name text-bold">Beam Me Up</a>
@@ -58,7 +58,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/frequent-flyer" class="table-row-name text-bold">Frequent Flyer</a>
@@ -66,7 +66,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/hagakure" class="table-row-name text-bold">Hagakure</a>
@@ -74,7 +74,7 @@
 						<td>V8</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/metroid-prime" class="table-row-name text-bold">Metroid Prime</a>
@@ -82,7 +82,7 @@
 						<td>V6</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/midnight-lichen" class="table-row-name text-bold">Midnight lichen</a>
@@ -90,7 +90,7 @@
 						<td>V4</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/road-to-zion" class="table-row-name text-bold">Road to Zion</a>
@@ -98,7 +98,7 @@
 						<td>V5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/scotty" class="table-row-name text-bold">Scotty</a>
@@ -106,7 +106,7 @@
 						<td>V1</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/shortstop" class="table-row-name text-bold">Shortstop</a>
@@ -114,7 +114,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/so-it-seams" class="table-row-name text-bold">So It Seams</a>
@@ -122,7 +122,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/stinkin-slopers" class="table-row-name text-bold">Stinkin' Slopers</a>
@@ -130,7 +130,7 @@
 						<td>V5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/stinkin-slopers-variation" class="table-row-name text-bold">Stinkin' Slopers Variation</a>
@@ -138,7 +138,7 @@
 						<td>V4</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/the-button" class="table-row-name text-bold">The Button</a>
@@ -146,7 +146,7 @@
 						<td>V3</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/gold-bar/the-catcher" class="table-row-name text-bold">The Catcher</a>
@@ -156,9 +156,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

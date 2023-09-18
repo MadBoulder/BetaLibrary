@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/decol-tet" class="table-row-name text-bold">Decol-Tet</a>
@@ -50,7 +50,7 @@
 						<td>7b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/euclide" class="table-row-name text-bold">Euclide</a>
@@ -58,7 +58,7 @@
 						<td>7c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/l-arco-del-tetto" class="table-row-name text-bold">L'Arco del Tetto</a>
@@ -66,7 +66,7 @@
 						<td>6c+ (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/problem-d-il-profeta-visido-tetto-di-filorera" class="table-row-name text-bold">Problem D (Il Profeta, Visido - Tetto di Filorera)</a>
@@ -74,7 +74,7 @@
 						<td>5b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/saluto-al-sole" class="table-row-name text-bold">Saluto al Sole</a>
@@ -82,7 +82,7 @@
 						<td>7c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/total-pole" class="table-row-name text-bold">Total Pole</a>
@@ -90,7 +90,7 @@
 						<td>7b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/val-masino/ubi-minor-maior-cessat" class="table-row-name text-bold">Ubi Minor Maior Cessat</a>
@@ -100,9 +100,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

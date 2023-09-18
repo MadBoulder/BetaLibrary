@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO5zz35dXv9SzwbGJ2j4pSd" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/dark-room" class="table-row-name text-bold">Dark Room</a>
@@ -54,7 +54,7 @@
 						<td>7a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/la-coccinelle" class="table-row-name text-bold">La Coccinelle</a>
@@ -62,7 +62,7 @@
 						<td>7c+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/la-fissure-des-minets" class="table-row-name text-bold">La Fissure des Minets</a>
@@ -70,7 +70,7 @@
 						<td>4a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/la-voie-lactee" class="table-row-name text-bold">La Voie Lacteé</a>
@@ -78,7 +78,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/le-pied-de-nez" class="table-row-name text-bold">Le Pied de Nez</a>
@@ -86,7 +86,7 @@
 						<td>5a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/fontainebleau/surplomb-de-l-usi" class="table-row-name text-bold">Surplomb de l'Usi</a>
@@ -96,9 +96,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

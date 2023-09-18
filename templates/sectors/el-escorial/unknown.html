@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/al-pacino" class="table-row-name text-bold">Al Pacino</a>
@@ -50,7 +50,7 @@
 						<td>7B</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/control-machete" class="table-row-name text-bold">Control machete</a>
@@ -58,7 +58,7 @@
 						<td>7C+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/doctor-enanos" class="table-row-name text-bold">Doctor Enanos</a>
@@ -66,7 +66,7 @@
 						<td>7B+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/el-alocao" class="table-row-name text-bold">El Alocao</a>
@@ -74,7 +74,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/el-anticristo" class="table-row-name text-bold">El Anticristo</a>
@@ -82,7 +82,7 @@
 						<td>7C+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/el-conguito" class="table-row-name text-bold">El Conguito</a>
@@ -90,7 +90,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/el-pufo" class="table-row-name text-bold">El Pufo</a>
@@ -98,7 +98,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/el-angulo-perfecto" class="table-row-name text-bold">El Ángulo Perfecto</a>
@@ -106,7 +106,7 @@
 						<td>7B+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/flety-chety" class="table-row-name text-bold">Flety Chety</a>
@@ -114,7 +114,7 @@
 						<td>7B</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/hostia-mortal" class="table-row-name text-bold">Hostia Mortal</a>
@@ -122,7 +122,7 @@
 						<td>6C</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/matinal-tapioca" class="table-row-name text-bold">Matinal Tapioca</a>
@@ -130,7 +130,7 @@
 						<td>7B</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/el-escorial/techo-de-los-pitufos-stand" class="table-row-name text-bold">Techo de los Pitufos Stand</a>
@@ -140,9 +140,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

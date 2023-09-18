@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/aceleradores-punter" class="table-row-name text-bold">Aceleradores Punter</a>
@@ -50,7 +50,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/babalum" class="table-row-name text-bold">Babalum</a>
@@ -58,7 +58,7 @@
 						<td>7B+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/bavaremen" class="table-row-name text-bold">Bavaremen</a>
@@ -66,7 +66,7 @@
 						<td>7a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/chorrohumo" class="table-row-name text-bold">Chorrohumo</a>
@@ -74,7 +74,7 @@
 						<td>8a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/comando-comando" class="table-row-name text-bold">Comando - Comando</a>
@@ -82,7 +82,7 @@
 						<td>7b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/el-alquimista" class="table-row-name text-bold">El Alquimista </a>
@@ -90,7 +90,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/el-dique" class="table-row-name text-bold">El Dique</a>
@@ -98,7 +98,7 @@
 						<td>7A</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/el-viajero" class="table-row-name text-bold">El Viajero</a>
@@ -106,7 +106,7 @@
 						<td>7c+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/el-de-la-rampa" class="table-row-name text-bold">El de la Rampa</a>
@@ -114,7 +114,7 @@
 						<td>6B</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/el-hechicero" class="table-row-name text-bold">El hechicero</a>
@@ -122,7 +122,7 @@
 						<td>7b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/la-cornisa-cantabrica" class="table-row-name text-bold">La Cornisa Cantábrica</a>
@@ -130,7 +130,7 @@
 						<td>7a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/la-directa" class="table-row-name text-bold">La Directa</a>
@@ -138,7 +138,7 @@
 						<td>6A+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/lance-de-la-cornisa" class="table-row-name text-bold">Lance de la Cornisa</a>
@@ -146,7 +146,7 @@
 						<td>6b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/la-pedriza/ronroneo" class="table-row-name text-bold">Ronroneo</a>
@@ -156,9 +156,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

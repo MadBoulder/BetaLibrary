@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOpokEY4T8sSl2lSSur23OC" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/cascada-negre" class="table-row-name text-bold">Cascada negre</a>
@@ -54,7 +54,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/la-cascadeta" class="table-row-name text-bold">La cascadeta</a>
@@ -62,7 +62,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/la-sonrisa" class="table-row-name text-bold">La sonrisa</a>
@@ -70,7 +70,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/luigi" class="table-row-name text-bold">Luigi</a>
@@ -78,7 +78,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/pinza-invertida" class="table-row-name text-bold">Pinza invertida</a>
@@ -86,7 +86,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/super-mario-bros" class="table-row-name text-bold">Super Mario Bros</a>
@@ -94,7 +94,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bartomeu/the-crack" class="table-row-name text-bold">The crack</a>
@@ -104,9 +104,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

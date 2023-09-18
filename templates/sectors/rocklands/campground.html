@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOTXJtCToluchTTB8GJQe7k" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/a-tea-with-elmarie" class="table-row-name text-bold">A tea with Elmarie</a>
@@ -54,7 +54,7 @@
 						<td>8a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/in-the-middle-of-the-ass" class="table-row-name text-bold">In the middle of the ass</a>
@@ -62,7 +62,7 @@
 						<td>8a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/john-denver" class="table-row-name text-bold">John Denver</a>
@@ -70,7 +70,7 @@
 						<td>7a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/l-arche-the-arch" class="table-row-name text-bold">L'arche (The Arch)</a>
@@ -78,7 +78,7 @@
 						<td>8a+/8b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/ron-ron-et-caramel" class="table-row-name text-bold">Ron Ron et Caramel</a>
@@ -86,7 +86,7 @@
 						<td>7c+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/soggy-teabag" class="table-row-name text-bold">Soggy Teabag</a>
@@ -94,7 +94,7 @@
 						<td>7a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/rocklands/teatime" class="table-row-name text-bold">Teatime</a>
@@ -104,9 +104,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

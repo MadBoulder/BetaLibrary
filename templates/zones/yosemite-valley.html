@@ -297,6 +297,7 @@ crossorigin="anonymous"></script>
 					
 <!--Sector List-->
 <div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -308,126 +309,126 @@ crossorigin="anonymous"></script>
 		</thead>
 		<tbody>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/ahwahnee-boulders" class="table-row-name text-bold">Ahwahnee Boulders</a>
 					</td>
 					<td class="text-center">1</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/bridalveil" class="table-row-name text-bold">Bridalveil</a>
 					</td>
 					<td class="text-center">4</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/camp-4" class="table-row-name text-bold">Camp 4</a>
 					</td>
 					<td class="text-center">17</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/candyland" class="table-row-name text-bold">Candyland</a>
 					</td>
 					<td class="text-center">3</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/cathedral-boulders" class="table-row-name text-bold">Cathedral Boulders</a>
 					</td>
 					<td class="text-center">3</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/curry-village" class="table-row-name text-bold">Curry Village</a>
 					</td>
 					<td class="text-center">4</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/happy-isles" class="table-row-name text-bold">Happy Isles</a>
 					</td>
 					<td class="text-center">3</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/hapy-isles" class="table-row-name text-bold">Hapy Isles</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/highway-140-generator-boulders" class="table-row-name text-bold">Highway 140 Generator Boulders</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/housekeeping" class="table-row-name text-bold">Housekeeping</a>
 					</td>
 					<td class="text-center">7</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/intersection" class="table-row-name text-bold">Intersection</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/riverside-block" class="table-row-name text-bold">Riverside Block</a>
 					</td>
 					<td class="text-center">1</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/sentinel-boulders" class="table-row-name text-bold">Sentinel Boulders</a>
 					</td>
 					<td class="text-center">1</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/the-crumbs" class="table-row-name text-bold">The Crumbs</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/the-crystals" class="table-row-name text-bold">The Crystals</a>
 					</td>
 					<td class="text-center">1</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/the-garden" class="table-row-name text-bold">The Garden</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/unknown" class="table-row-name text-bold">Unknown</a>
 					</td>
 					<td class="text-center">18</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/yosemite-valley/woodyard" class="table-row-name text-bold">Woodyard</a>
 					</td>
@@ -436,6 +437,31 @@ crossorigin="anonymous"></script>
 			
 		</tbody>
 	</table>
+	<script>
+		$(document).ready(function () {
+			function filter_sectors_by_query(search_query) {
+				var $sectors = $(".sector-row");
+				if (search_query === "")
+					$sectors.show();
+				else {
+					$sectors.hide();
+					$sectors.each(function() {
+						var rowName = $(this).find(".table-row-name").text().toLowerCase();
+						if (rowName.indexOf(search_query) !== -1) {
+							$(this).show();
+						}
+					});
+				}
+			};
+			
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				filter_sectors_by_query(search_query)
+			});
+		});
+	</script>
 </div>
 
 					<hr class="mt-3 mt-md-5">
@@ -532,6 +558,7 @@ crossorigin="anonymous"></script>
 			
 <!--Problem List-->
 <div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -544,7 +571,7 @@ crossorigin="anonymous"></script>
 		</thead>
 		<tbody>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/180-degree-arete" class="table-row-name text-bold">180 Degree Arete</a>
@@ -553,7 +580,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/a-primates-memoir" class="table-row-name text-bold">A Primate’s Memoir</a>
@@ -562,7 +589,7 @@ crossorigin="anonymous"></script>
 					<td>The Garden</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/across-the-tracks" class="table-row-name text-bold">Across the Tracks</a>
@@ -571,7 +598,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/all-start-movie-mantel" class="table-row-name text-bold">All start movie mantel</a>
@@ -580,7 +607,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/ataturk" class="table-row-name text-bold">Ataturk</a>
@@ -589,7 +616,7 @@ crossorigin="anonymous"></script>
 					<td>Bridalveil</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/atlantis" class="table-row-name text-bold">Atlantis</a>
@@ -598,7 +625,7 @@ crossorigin="anonymous"></script>
 					<td>Intersection</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/atlantis" class="table-row-name text-bold">Atlantis</a>
@@ -607,7 +634,7 @@ crossorigin="anonymous"></script>
 					<td>Intersection</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/balance-of-opposites" class="table-row-name text-bold">Balance of Opposites</a>
@@ -616,7 +643,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/battle-of-the-bulge" class="table-row-name text-bold">Battle of the Bulge</a>
@@ -625,7 +652,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/big-bessey" class="table-row-name text-bold">Big Bessey</a>
@@ -634,7 +661,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/big-present" class="table-row-name text-bold">Big Present</a>
@@ -643,7 +670,7 @@ crossorigin="anonymous"></script>
 					<td>Hapy Isles</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/bipolar" class="table-row-name text-bold">Bipolar</a>
@@ -652,7 +679,7 @@ crossorigin="anonymous"></script>
 					<td>The Crumbs</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/black-widow" class="table-row-name text-bold">Black Widow</a>
@@ -661,7 +688,7 @@ crossorigin="anonymous"></script>
 					<td>The Garden</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/bridalveil-pogo" class="table-row-name text-bold">Bridalveil Pogo</a>
@@ -670,7 +697,7 @@ crossorigin="anonymous"></script>
 					<td>Bridalveil</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/bridge-to-nowhere" class="table-row-name text-bold">Bridge to nowhere</a>
@@ -679,7 +706,7 @@ crossorigin="anonymous"></script>
 					<td>Bridalveil</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/bruce-lee" class="table-row-name text-bold">Bruce Lee</a>
@@ -688,7 +715,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/budokan" class="table-row-name text-bold">Budokan</a>
@@ -697,7 +724,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/chapman-overhang" class="table-row-name text-bold">Chapman overhang</a>
@@ -706,7 +733,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/cocaine-corner" class="table-row-name text-bold">Cocaine Corner</a>
@@ -715,7 +742,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/cookie-monster" class="table-row-name text-bold">Cookie Monster</a>
@@ -724,7 +751,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/cranium-crusher" class="table-row-name text-bold">Cranium crusher</a>
@@ -733,7 +760,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/crossroads-moe" class="table-row-name text-bold">Crossroads Moe</a>
@@ -742,7 +769,7 @@ crossorigin="anonymous"></script>
 					<td>Bridalveil</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/flatline" class="table-row-name text-bold">Flatline</a>
@@ -751,7 +778,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/good-vibrations" class="table-row-name text-bold">Good Vibrations</a>
@@ -760,7 +787,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/greener-pastures" class="table-row-name text-bold">Greener Pastures</a>
@@ -769,7 +796,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/heart-of-darkness" class="table-row-name text-bold">Heart of Darkness</a>
@@ -778,7 +805,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/hit-man" class="table-row-name text-bold">Hit Man</a>
@@ -787,7 +814,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/honor-among-thieves" class="table-row-name text-bold">Honor Among Thieves</a>
@@ -796,7 +823,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/honor-among-thieves" class="table-row-name text-bold">Honor Among Thieves</a>
@@ -805,7 +832,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/hug-a-rock" class="table-row-name text-bold">Hug a rock</a>
@@ -814,7 +841,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/karate" class="table-row-name text-bold">Karate</a>
@@ -823,7 +850,7 @@ crossorigin="anonymous"></script>
 					<td>Riverside Block</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/kor-problem" class="table-row-name text-bold">Kor Problem</a>
@@ -832,7 +859,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/marco-s-traverse" class="table-row-name text-bold">Marco's traverse</a>
@@ -841,7 +868,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/midnight-lightning" class="table-row-name text-bold">Midnight Lightning</a>
@@ -850,7 +877,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/montezuma-s-revenge-right" class="table-row-name text-bold">Montezuma's Revenge Right</a>
@@ -859,7 +886,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/no-holds-bard" class="table-row-name text-bold">No Holds Bard</a>
@@ -868,7 +895,7 @@ crossorigin="anonymous"></script>
 					<td>Sentinel Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/octagon-traverse" class="table-row-name text-bold">Octagon Traverse</a>
@@ -877,7 +904,7 @@ crossorigin="anonymous"></script>
 					<td>Cathedral Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/orange-fever" class="table-row-name text-bold">Orange Fever</a>
@@ -886,7 +913,7 @@ crossorigin="anonymous"></script>
 					<td>Happy Isles</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/orange-fever" class="table-row-name text-bold">Orange Fever</a>
@@ -895,7 +922,7 @@ crossorigin="anonymous"></script>
 					<td>Hapy Isles</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/panic-room" class="table-row-name text-bold">Panic Room</a>
@@ -904,7 +931,7 @@ crossorigin="anonymous"></script>
 					<td>Curry Village</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/pine-box" class="table-row-name text-bold">Pine Box</a>
@@ -913,7 +940,7 @@ crossorigin="anonymous"></script>
 					<td>Happy Isles</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/plenty-of-fish" class="table-row-name text-bold">Plenty of Fish</a>
@@ -922,7 +949,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-11-camp-4" class="table-row-name text-bold">Problem 11 (Camp 4)</a>
@@ -931,7 +958,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-14-housekeeping-v0" class="table-row-name text-bold">Problem 14 (Housekeeping), V0</a>
@@ -940,7 +967,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-20-housekeeping" class="table-row-name text-bold">Problem 20 (Housekeeping)</a>
@@ -949,7 +976,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-35-camp-4" class="table-row-name text-bold">Problem 35 (Camp 4)</a>
@@ -958,7 +985,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-40-camp-4" class="table-row-name text-bold">Problem 40 (Camp 4)</a>
@@ -967,7 +994,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-6-housekeeping" class="table-row-name text-bold">Problem 6 (Housekeeping)</a>
@@ -976,7 +1003,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-9-housekeeping" class="table-row-name text-bold">Problem 9 (Housekeeping)</a>
@@ -985,7 +1012,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/problem-unknown-curry-village" class="table-row-name text-bold">Problem Unknown (Curry village)</a>
@@ -994,7 +1021,7 @@ crossorigin="anonymous"></script>
 					<td>Curry village</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/purple-barrel" class="table-row-name text-bold">Purple Barrel</a>
@@ -1003,7 +1030,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/raven-haired-woman" class="table-row-name text-bold">Raven Haired Woman</a>
@@ -1012,7 +1039,7 @@ crossorigin="anonymous"></script>
 					<td>Happy Isles</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/root-canal" class="table-row-name text-bold">Root Canal</a>
@@ -1021,7 +1048,7 @@ crossorigin="anonymous"></script>
 					<td>Curry Village</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/rubik-s-revenge" class="table-row-name text-bold">Rubik's Revenge</a>
@@ -1030,7 +1057,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/silent-spotter" class="table-row-name text-bold">Silent Spotter</a>
@@ -1039,7 +1066,7 @@ crossorigin="anonymous"></script>
 					<td>Ahwahnee Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/slice-of-life" class="table-row-name text-bold">Slice of life</a>
@@ -1048,7 +1075,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/so-good" class="table-row-name text-bold">So Good</a>
@@ -1057,7 +1084,7 @@ crossorigin="anonymous"></script>
 					<td>Cathedral Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/spock-direct" class="table-row-name text-bold">Spock Direct</a>
@@ -1066,7 +1093,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/stream-of-being" class="table-row-name text-bold">Stream of Being</a>
@@ -1075,7 +1102,7 @@ crossorigin="anonymous"></script>
 					<td>Highway 140 Generator Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/teenage-mutant-ninja-gerbils" class="table-row-name text-bold">Teenage Mutant Ninja Gerbils</a>
@@ -1084,7 +1111,7 @@ crossorigin="anonymous"></script>
 					<td>Woodyard</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-diamond" class="table-row-name text-bold">The Diamond</a>
@@ -1093,7 +1120,7 @@ crossorigin="anonymous"></script>
 					<td>Candyland</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-diamond-direct" class="table-row-name text-bold">The Diamond Direct</a>
@@ -1102,7 +1129,7 @@ crossorigin="anonymous"></script>
 					<td>Candyland</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-force" class="table-row-name text-bold">The Force</a>
@@ -1111,7 +1138,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-happening" class="table-row-name text-bold">The Happening</a>
@@ -1120,7 +1147,7 @@ crossorigin="anonymous"></script>
 					<td>The Crystals</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-james-lucas-memorial-arete-problem" class="table-row-name text-bold">The James Lucas Memorial Arête Problem</a>
@@ -1129,7 +1156,7 @@ crossorigin="anonymous"></script>
 					<td>Candyland</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-rift" class="table-row-name text-bold">The Rift</a>
@@ -1138,7 +1165,7 @@ crossorigin="anonymous"></script>
 					<td>The Crumbs</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/the-squirrel" class="table-row-name text-bold">The Squirrel</a>
@@ -1147,7 +1174,7 @@ crossorigin="anonymous"></script>
 					<td>Cathedral Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/too-big-to-fail" class="table-row-name text-bold">Too Big to Fail</a>
@@ -1156,7 +1183,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/torque" class="table-row-name text-bold">Torque</a>
@@ -1165,7 +1192,7 @@ crossorigin="anonymous"></script>
 					<td>Housekeeping</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/torque-spanner" class="table-row-name text-bold">Torque Spanner</a>
@@ -1174,7 +1201,7 @@ crossorigin="anonymous"></script>
 					<td>Camp 4</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/unknown-arete" class="table-row-name text-bold">Unknown Arete</a>
@@ -1183,7 +1210,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/where-the-sidewalk-ends" class="table-row-name text-bold">Where the sidewalk ends</a>
@@ -1192,7 +1219,7 @@ crossorigin="anonymous"></script>
 					<td>Highway 140 Generator Boulders</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/zodiac" class="table-row-name text-bold">Zodiac</a>
@@ -1201,7 +1228,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/yosemite-valley/zorro" class="table-row-name text-bold">Zorro</a>
@@ -1212,6 +1239,31 @@ crossorigin="anonymous"></script>
 			
 		</tbody>
 	</table>
+	<script>
+		$(document).ready(function () {
+			function filter_problems_by_query(search_query) {
+				var $problems = $(".problem-row");
+				if (search_query === "")
+					$problems.show();
+				else {
+					$problems.hide();
+					$problems.each(function() {
+						var rowName = $(this).find(".table-row-name").text().toLowerCase();
+						if (rowName.indexOf(search_query) !== -1) {
+							$(this).show();
+						}
+					});
+				}
+			};
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				filter_problems_by_query(search_query)
+			});
+		});
+	</script>
 </div>
 
         </div>

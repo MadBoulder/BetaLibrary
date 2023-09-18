@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/derniere-minute" class="table-row-name text-bold">Dernière minute</a>
@@ -50,7 +50,7 @@
 						<td>6a (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/elargo-el-brazo" class="table-row-name text-bold">Elargo el brazo</a>
@@ -58,7 +58,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/kalimoucho" class="table-row-name text-bold">Kalimoucho</a>
@@ -66,7 +66,7 @@
 						<td>4+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/mastoc" class="table-row-name text-bold">Mastoc</a>
@@ -74,7 +74,7 @@
 						<td>6a (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/mirage-de-bab-el-oued" class="table-row-name text-bold">Mirage de bab el oued</a>
@@ -82,7 +82,7 @@
 						<td>7c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/necropole" class="table-row-name text-bold">Necropole</a>
@@ -90,7 +90,7 @@
 						<td>6b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/problem-1-circuit-rouge" class="table-row-name text-bold">Problem 1 (Circuit Rouge)</a>
@@ -98,7 +98,7 @@
 						<td>5b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/problem-2-circuit-rouge" class="table-row-name text-bold">Problem 2 (Circuit Rouge)</a>
@@ -106,7 +106,7 @@
 						<td>5c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/problem-6-circuit-rouge" class="table-row-name text-bold">Problem 6 (Circuit Rouge)</a>
@@ -114,7 +114,7 @@
 						<td>5c</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/orlu/problem-8-circuit-rouge" class="table-row-name text-bold">Problem 8 (Circuit Rouge)</a>
@@ -124,9 +124,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

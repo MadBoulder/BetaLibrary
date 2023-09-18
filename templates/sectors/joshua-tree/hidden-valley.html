@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/betty-jo-yablonski" class="table-row-name text-bold">Betty Jo  Yablonski</a>
@@ -50,7 +50,7 @@
 						<td>V0</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/bittersweet" class="table-row-name text-bold">Bittersweet</a>
@@ -58,7 +58,7 @@
 						<td>V9</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/caveman" class="table-row-name text-bold">Caveman</a>
@@ -66,7 +66,7 @@
 						<td>V7</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/caveman-finish" class="table-row-name text-bold">Caveman Finish</a>
@@ -74,7 +74,7 @@
 						<td>V3</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/false-hueco-traverse" class="table-row-name text-bold">False Hueco Traverse</a>
@@ -82,7 +82,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/false-up-20" class="table-row-name text-bold">False Up 20</a>
@@ -90,7 +90,7 @@
 						<td>V0</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/saturday-night-live" class="table-row-name text-bold">Saturday Night Live</a>
@@ -98,7 +98,7 @@
 						<td>V4</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/scatterbrain" class="table-row-name text-bold">Scatterbrain</a>
@@ -106,7 +106,7 @@
 						<td>V6</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/so-high" class="table-row-name text-bold">So High</a>
@@ -114,7 +114,7 @@
 						<td>V5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/thin-lizzie" class="table-row-name text-bold">Thin Lizzie</a>
@@ -122,7 +122,7 @@
 						<td>V8</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/tidal-wave" class="table-row-name text-bold">Tidal Wave</a>
@@ -130,7 +130,7 @@
 						<td>V9</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/white-rastafarian" class="table-row-name text-bold">White Rastafarian</a>
@@ -138,7 +138,7 @@
 						<td>V2</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/yabo-roof-traverse" class="table-row-name text-bold">Yabo Roof Traverse</a>
@@ -146,7 +146,7 @@
 						<td>V4</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/joshua-tree/youth-body-explosion" class="table-row-name text-bold">Youth Body Explosion</a>
@@ -156,9 +156,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

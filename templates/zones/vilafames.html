@@ -302,6 +302,7 @@ crossorigin="anonymous"></script>
 					
 <!--Sector List-->
 <div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -313,14 +314,14 @@ crossorigin="anonymous"></script>
 		</thead>
 		<tbody>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/vilafames/camino-viejo" class="table-row-name text-bold">Camino viejo</a>
 					</td>
 					<td class="text-center">2</td>
 				</tr>
 			
-				<tr>
+				<tr class="sector-row">
 					<td>
 						<a href="/sectors/vilafames/unknown" class="table-row-name text-bold">Unknown</a>
 					</td>
@@ -329,6 +330,31 @@ crossorigin="anonymous"></script>
 			
 		</tbody>
 	</table>
+	<script>
+		$(document).ready(function () {
+			function filter_sectors_by_query(search_query) {
+				var $sectors = $(".sector-row");
+				if (search_query === "")
+					$sectors.show();
+				else {
+					$sectors.hide();
+					$sectors.each(function() {
+						var rowName = $(this).find(".table-row-name").text().toLowerCase();
+						if (rowName.indexOf(search_query) !== -1) {
+							$(this).show();
+						}
+					});
+				}
+			};
+			
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				filter_sectors_by_query(search_query)
+			});
+		});
+	</script>
 </div>
 
 					<hr class="mt-3 mt-md-5">
@@ -373,6 +399,7 @@ crossorigin="anonymous"></script>
 			
 <!--Problem List-->
 <div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -385,7 +412,7 @@ crossorigin="anonymous"></script>
 		</thead>
 		<tbody>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/el-pollon" class="table-row-name text-bold">El Pollón</a>
@@ -394,7 +421,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/el-torete-en-cohete" class="table-row-name text-bold">El torete en cohete</a>
@@ -403,7 +430,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/houston-tenemos-un-proyecto" class="table-row-name text-bold">Houston tenemos un proyecto</a>
@@ -412,7 +439,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/javi-dynos" class="table-row-name text-bold">Javi Dynos</a>
@@ -421,7 +448,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/lomo-abobao" class="table-row-name text-bold">Lomo abobao</a>
@@ -430,7 +457,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/meteoro" class="table-row-name text-bold">Meteoro</a>
@@ -439,7 +466,7 @@ crossorigin="anonymous"></script>
 					<td>Camino viejo</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/panico-al-7a" class="table-row-name text-bold">Pánico al 7a</a>
@@ -448,7 +475,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/sacaoro" class="table-row-name text-bold">Sacaoro</a>
@@ -457,7 +484,7 @@ crossorigin="anonymous"></script>
 					<td>Camino viejo</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/sardinamutante" class="table-row-name text-bold">Sardinamutante</a>
@@ -466,7 +493,7 @@ crossorigin="anonymous"></script>
 					<td>Unknown</td>
 				</tr>
 			
-				<tr>
+				<tr class="problem-row">
 					<td>
 						<i class="fas fa-video-camera table-row-icon"></i>
 						<a href="/problems/vilafames/sin-petas-no-hay-paraiso" class="table-row-name text-bold">Sin petas no hay paraíso</a>
@@ -477,6 +504,31 @@ crossorigin="anonymous"></script>
 			
 		</tbody>
 	</table>
+	<script>
+		$(document).ready(function () {
+			function filter_problems_by_query(search_query) {
+				var $problems = $(".problem-row");
+				if (search_query === "")
+					$problems.show();
+				else {
+					$problems.hide();
+					$problems.each(function() {
+						var rowName = $(this).find(".table-row-name").text().toLowerCase();
+						if (rowName.indexOf(search_query) !== -1) {
+							$(this).show();
+						}
+					});
+				}
+			};
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				filter_problems_by_query(search_query)
+			});
+		});
+	</script>
 </div>
 
         </div>

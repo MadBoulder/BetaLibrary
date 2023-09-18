@@ -25,12 +25,12 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -42,7 +42,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/la-travesia-de-romos" class="table-row-name text-bold">La travesía de romos</a>
@@ -50,7 +50,7 @@
 						<td>7a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-1-boulder-b-este-el-bosque" class="table-row-name text-bold">Problem 1 (Boulder B.Este - El Bosque)</a>
@@ -58,7 +58,7 @@
 						<td>5+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-1-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 1 (Boulder B.Sur - El Bosque)</a>
@@ -66,7 +66,7 @@
 						<td>3+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-2-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 2 (Boulder B.Sur - El Bosque)</a>
@@ -74,7 +74,7 @@
 						<td>5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-4-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 4 (Boulder B.Sur - El Bosque)</a>
@@ -82,7 +82,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-5-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 5 (Boulder B.Sur - El Bosque)</a>
@@ -90,7 +90,7 @@
 						<td>4+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-6-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 6 (Boulder B.Sur - El Bosque)</a>
@@ -98,7 +98,7 @@
 						<td>5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/pont-de-camps/problem-7-boulder-b-sur-el-bosque" class="table-row-name text-bold">Problem 7 (Boulder B.Sur - El Bosque)</a>
@@ -108,9 +108,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

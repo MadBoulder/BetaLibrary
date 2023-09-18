@@ -25,16 +25,16 @@
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
-			<div class="container" id="pageContent">
-				
+			
 	
 		<div class="video-container" >
 			<iframe src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOJ0GxBpV5wICdAm4L9vEMh" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 		</div>
 	
 	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
-		<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/la-isla-de-pederjil" class="table-row-name text-bold">La isla de Pederjil</a>
@@ -54,7 +54,7 @@
 						<td>6a</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/morralla-china" class="table-row-name text-bold">Morralla China</a>
@@ -62,7 +62,7 @@
 						<td>5</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/muralla-xina" class="table-row-name text-bold">Muralla Xina</a>
@@ -70,7 +70,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/okhet-on-thosoi" class="table-row-name text-bold">Okhêt on thosoï</a>
@@ -78,7 +78,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/problem-15-muralla-xina" class="table-row-name text-bold">Problem 15 (Muralla Xina)</a>
@@ -86,7 +86,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/problem-16-muralla-xina" class="table-row-name text-bold">Problem 16 (Muralla Xina)</a>
@@ -94,7 +94,7 @@
 						<td>Unknown</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/problem-2-muralla-xina" class="table-row-name text-bold">Problem 2 (Muralla Xina)</a>
@@ -102,7 +102,7 @@
 						<td>6a (sit)</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/problem-3-muralla-xina-6a" class="table-row-name text-bold">Problem 3 (Muralla Xina), 6a</a>
@@ -110,7 +110,7 @@
 						<td>6a?</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/rebuenas-prime" class="table-row-name text-bold">Rebuenas Prime</a>
@@ -118,7 +118,7 @@
 						<td>6b+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/sant-velcro" class="table-row-name text-bold">Sant Velcro</a>
@@ -126,7 +126,7 @@
 						<td>7b</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/villa-bugatti" class="table-row-name text-bold">Villa Bugatti</a>
@@ -134,7 +134,7 @@
 						<td>6a+</td>
 					</tr>
 				
-					<tr>
+					<tr class="problem-row">
 						<td>
 							<i class="fas fa-video-camera table-row-icon"></i>
 							<a href="/problems/can-bruguera/vivo-en-un-container" class="table-row-name text-bold">Vivo en un container</a>
@@ -144,9 +144,33 @@
 				
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
 	</div>
 
-			</div>
         </div>
 	</main>
 	

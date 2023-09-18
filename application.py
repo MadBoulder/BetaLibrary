@@ -376,11 +376,13 @@ def render_latest():
 
 
 @app.route('/bouldering-areas-map')
+@app.route('/map')
 def render_map():
     return render_template('bouldering-areas-map.html')
 
 
 @app.route('/about-us', methods=['GET', 'POST'])
+@app.route('/about_us', methods=['GET', 'POST'])
 def render_about_us():
     if request.method == 'POST':
         try:
@@ -402,6 +404,7 @@ def render_about_us():
     return render_template('about-us.html')
     
 @app.route('/join-us', methods=['GET', 'POST'])
+@app.route('/join_us', methods=['GET', 'POST'])
 def join_us():
     if request.method == 'POST':
         try:
