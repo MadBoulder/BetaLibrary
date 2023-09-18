@@ -24,7 +24,7 @@ def main():
         print("generating zone: " + zone['name'])
         zone_code = zone['zone_code']  
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
-        problems_zone = utils.zone_helpers.get_problems_from_zone(zone_code)
+        problems_zone = utils.zone_helpers.get_problems_from_zone_code(zone_code)
 
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])

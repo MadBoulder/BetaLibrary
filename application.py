@@ -12,6 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 import datetime
 import utils.helpers
 import utils.js_helpers
+import utils.zone_helpers
 import dashboard
 import dashboard_videos
 import handle_channel_data
@@ -492,17 +493,21 @@ def custom_statistics():
 @app.route('/<string:page>.html')
 def render_page(page):
     try:
-        video_count = get_zone_video_count(slugify(page))
         data = [
-            #{
-            #    'logo': 'fa fa-map-marked',
-            #    'text': _('Sectors'),
-            #    'data': utils.helpers.count_sectors_in_zone(page)
-            #},
             {
                 'logo': 'fab fa-youtube',
                 'text': _('Videos'),
-                'data': video_count
+                'data': utils.zone_helpers.get_zone_view_count_from_zone_code(slugify(page))
+            },
+            {
+                'logo': 'fas fa-eye',
+                'text': _('Views'),
+                'data': get_zone_video_count(slugify(page))
+            },
+            {
+                'logo': 'fa fa-map-marked',
+                'text': _('Sectors'),
+                'data': utils.helpers.count_sectors_in_zone(page)
             }]
         return render_template('zones/' + slugify(page) + EXTENSION, current_url=page, stats_list=data)
     except:

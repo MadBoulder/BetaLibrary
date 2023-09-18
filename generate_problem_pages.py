@@ -26,7 +26,7 @@ def main():
     template_env = Environment(loader=template_loader)
 
     for zone_code in zones:
-        problems = utils.zone_helpers.get_problems_from_zone(zone_code)
+        problems = utils.zone_helpers.get_problems_from_zone_code(zone_code)
 
         for problem in problems:
             template = template_env.get_template(

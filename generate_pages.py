@@ -37,7 +37,7 @@ def main():
                             for affiliate_guide in area.get(AFFILIATE_GUIDES, [])]
 
         # problems
-        problems = utils.zone_helpers.get_problems_from_zone(area[ZONE_CODE_FIELD])
+        problems = utils.zone_helpers.get_problems_from_zone_code(area[ZONE_CODE_FIELD])
         problems.sort(key= lambda x: x['name'])
         for p in problems:
             p['secure'] = slugify(p['name'])

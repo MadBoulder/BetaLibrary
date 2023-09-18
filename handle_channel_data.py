@@ -11,6 +11,7 @@ from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
 from slugify import slugify
+import utils.zone_helpers
 
 import firebase_admin
 from firebase_admin import credentials
@@ -312,7 +313,12 @@ def process_video_data_local(
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)
     
-    processed_data_search_optimized = [video for video in processed_data if video['name'] != 'Unknown']
+    with open(outfile, 'w', encoding='utf-8') as f:
+        json.dump({'date': str(date.today()),
+                   'items': processed_data}, f, indent=4)
+                   
+    processed_data_search_optimized = processed_data
+    processed_data_search_optimized = [video for video in processed_data_search_optimized if video['name'] != 'Unknown']
     for video in processed_data_search_optimized:
         del video['stats']
         del video['description']
@@ -320,9 +326,6 @@ def process_video_data_local(
         del video['date']
     
     
-    with open(outfile, 'w', encoding='utf-8') as f:
-        json.dump({'date': str(date.today()),
-                   'items': processed_data}, f, indent=4)
     with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                    'items': processed_data_search_optimized}, f, indent=4)
@@ -364,6 +367,7 @@ def process_zone_data_local(
             playlist_json_object['id'] = i['id']
             playlist_json_object['url'] = base_url + i['id']
             playlist_json_object['video_count'] = i['contentDetails']['itemCount']
+            playlist_json_object['views_count'] = utils.zone_helpers.get_zone_view_count(zone_name)
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
                                                     "sector_code": slugify(sector_name), 

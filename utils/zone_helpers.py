@@ -3,31 +3,30 @@ from slugify import slugify
 import handle_channel_data
 
 
-def get_problems_from_zone(zone_code):
-    """
-    Given a zone name, return all problems we have for that area
-    Cache for 24 hours or something like that? - We might have to
-    adjust how this gets computed.
-
-    We can build the list from the processed data file, which will
-    speed things up and avoid using 3rd party service quotas. Problem
-    is that the list has to be kept up to date.
-
-    The second dilemma is about generating the file dinamically or 
-    statically. When it comes to indexation I guess it is better to
-    have the pages statically created?
-    """
-    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    # process data
+def get_problems_from_zone_code(zone_code):
     with open(f'data/zones/{zone_code}/{zone_code}.json', 'r', encoding='utf-8') as z:
         zone_name = json.load(z)['name']
+    return get_problems_from_zone_name(zone_name)
+    
+    
+def get_problems_from_zone_name(zone_name):
+    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
     # filter data by zone and extract problem name
     problems = [p for p in data['items'] if p['zone'] == zone_name]
     for p in problems:
         p['name'] = get_problem_name(p)
     return problems
-
+    
+def get_zone_view_count(zone_name):
+    problems = get_problems_from_zone_name(zone_name)
+    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
+    return total_views
+    
+def get_zone_view_count_from_zone_code(zone_code):
+    problems = get_problems_from_zone_code(zone_code)
+    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
+    return total_views
 
 def get_problem_name(problem_data):
     """
@@ -73,7 +72,7 @@ def get_problems_from_sector(problems_zone, sector_code):
     
     
 def get_sectors_from_zone(zone_code):
-    problems = get_problems_from_zone(zone_code)
+    problems = get_problems_from_zone_code(zone_code)
     sectors = []
     for p in problems:
         alreadyAdded=False
