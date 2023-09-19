@@ -17,6 +17,8 @@ integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpE
 crossorigin="anonymous"></script>
 {% raw %}
 <script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
 {% endraw %}
 <link rel="canonical" href="https://www.madboulder.org/{{area_code}}">
 {% endblock %} 
@@ -197,13 +199,13 @@ crossorigin="anonymous"></script>
 <!--Problem List-->
 <div class="container">
 	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table class="table table-hover">
+	<table id="problems-table" class="table table-hover">
 		<thead>
 			<tr>
 				{% raw %}
-				<th scope="col">{{ _("Name") }}</th>
-				<th scope="col">{{ _("Grade") }}</th>
-				<th scope="col">{{ _("Sector") }}</th>
+				<th scope="col" class="sorting">{{ _("Name") }}</th>
+				<th scope="col" class="sorting">{{ _("Grade") }}</th>
+				<th scope="col" class="sorting">{{ _("Sector") }}</th>
 				{% endraw %}
 			</tr>
 		</thead>
@@ -237,6 +239,11 @@ crossorigin="anonymous"></script>
 				}
 			};
 			
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			
 			$("#search-problem").trigger("keyup");
 				
 			$("#search-problem").keyup(function() {
@@ -252,12 +259,12 @@ crossorigin="anonymous"></script>
 <!--Sector List-->
 <div class="container">
 	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table class="table table-hover">
+	<table id="sectors-table" class="table table-hover">
 		<thead>
 			<tr>
 				{% raw %}
-				<th scope="col">{{ _("Name") }}</th>
-				<th scope="col">{{ _("Problems") }}</th>
+				<th scope="col" class="sorting">{{ _("Name") }}</th>
+				<th scope="col" class="sorting">{{ _("Problems") }}</th>
 				{% endraw %}
 			</tr>
 		</thead>
@@ -289,6 +296,10 @@ crossorigin="anonymous"></script>
 				}
 			};
 			
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
 			$("#search-sector").trigger("keyup");
 				
 			$("#search-sector").keyup(function() {
