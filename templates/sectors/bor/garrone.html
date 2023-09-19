@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sector Sector Garrone at Bor | MadBoulder</title>
+	<meta name="description" content="Bouldering information and videos of sector Garrone at Bor | MadBoulder">
+	
+<link rel="canonical" href="https://www.madboulder.org/sectors/bor/garrone">
+
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	
+    
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+	<main>
+		<div class="zone-header">
+			<h1 class="zone-header-title text-bold">
+				 Sector Garrone, Bor 
+			</h1>
+		</div>
+		<div class="container" id="mainContainer">
+			
+	
+	<!--Problem List-->
+	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
+	<div class="container">
+		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+		<table id="problems-table" class="table table-hover">
+			<thead>
+				<tr>
+					
+					<th scope="col" class="sorting">{{ _("Name") }}</th>
+					<th scope="col" class="sorting">{{ _("Grade") }}</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr class="problem-row">
+						<td>
+							<i class="fas fa-video-camera table-row-icon"></i>
+							<a href="/problems/bor/peroxid-vodiku" class="table-row-name text-bold">Peroxid Vodíku</a>
+						</td>
+						<td>8A</td>
+					</tr>
+				
+			</tbody>
+		</table>
+		<script>
+			$.fn.dataTable.ext.type.order['vgrade-pre'] = function(data) {
+				var regex = /^V(\d+)/;// Regular expression to match V-grades like 'V0', 'V1', etc.
+
+				var match = regex.exec(data);
+				if (match) {
+					var numericValue = parseInt(match[1], 10);
+					return numericValue;
+				} else {
+					return data;
+				}
+			};
+
+			$(document).ready(function () {
+				function filter_problems_by_query(search_query) {
+					var $problems = $(".problem-row");
+					if (search_query === "")
+						$problems.show();
+					else {
+						$problems.hide();
+						$problems.each(function() {
+							var rowName = $(this).find(".table-row-name").text().toLowerCase();
+							if (rowName.indexOf(search_query) !== -1) {
+								$(this).show();
+							}
+						});
+					}
+				};
+			
+				$('#problems-table').DataTable({
+					paging: false,
+					dom: 'tr',
+					columnDefs: [
+						{
+							targets: [1],
+							type: 'vgrade',
+						},
+					]
+				});
+				
+				$("#search-problem").trigger("keyup");
+				
+				$("#search-problem").keyup(function() {
+					var search_query = $.trim($(this).val());
+					filter_problems_by_query(search_query)
+				});
+			});
+		</script>
+	</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

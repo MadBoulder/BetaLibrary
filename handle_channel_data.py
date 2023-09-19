@@ -107,7 +107,7 @@ def retrieve_videos_from_channel(
         print(str(round((len(videos)/video_num)*100, 2))+'%')
 
         get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
-            MAX_ITEMS_API_QUERY, upload_playlist, api_key
+            MAX_ITEMS_API_QUERY, upload_playlist, YOUTUBE_API_KEY
         )
         if page_token:
             get_videos_url += '&pageToken=' + resp['nextPageToken']
