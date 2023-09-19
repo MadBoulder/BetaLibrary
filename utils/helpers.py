@@ -276,23 +276,10 @@ def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', re
     except Exception as e:
         print(f"An error occurred: {e}")
         return []
-    
-
-def load_data(infile):
-    """
-    Load current data stored in the project folder
-    """
-    video_data = []
-    if infile:
-        with open(infile, 'r', encoding='utf-8') as f:
-            try:
-                video_data = json.load(f)['items']
-            except:
-                pass
-    return video_data
 
 
 def get_number_of_videos_for_zone(zone_name):
+    print("get_number_of_videos_for_zone")
     """
     Given a zone name, return the number of betas of the zone
     """
@@ -303,25 +290,6 @@ def get_number_of_videos_for_zone(zone_name):
             return item['video_count']
             
     return 0
-
-
-# TODO: Optimize queries
-def get_number_of_videos_and_views_for_zone(zone_name):
-    """
-    Given a zone name, return the number of betas of the zone
-    """
-    # with open('./data/playlist.json', 'r', encoding=ENCODING) as f:
-    #     data = json.load(f)
-
-    data = utils.zone_helpers.get_playlists_url_from_zone(zone_name)
-
-    query_url = 'https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id={}&key={}'.format(
-        data['playlist'],
-        YOUTUBE_API_KEY
-    )
-    inp = urllib.request.urlopen(query_url)
-    resp = json.load(inp)
-    return resp['items'][0]['contentDetails']['itemCount']
 
 
 def generate_download_url(area, filename):

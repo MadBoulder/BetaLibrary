@@ -111,20 +111,6 @@ def get_playlists_url_from_zone(zone_code):
             break
             
     return playlists
-    
-
-def load_data(infile):
-    """
-    Load current data stored in the project folder
-    """
-    video_data = []
-    if infile:
-        with open(infile, 'r', encoding='utf-8') as f:
-            try:
-                video_data = json.load(f)['items']
-            except:
-                pass
-    return video_data
 
 
 if __name__ == "__main__":
