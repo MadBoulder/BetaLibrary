@@ -496,22 +496,8 @@ def custom_statistics():
 @app.route('/<string:page>.html')
 def render_page(page):
     try:
-        data = [
-            {
-                'logo': 'fab fa-youtube',
-                'text': _('Videos'),
-                'data': utils.zone_helpers.get_zone_view_count_from_zone_code(slugify(page))
-            },
-            {
-                'logo': 'fas fa-eye',
-                'text': _('Views'),
-                'data': get_zone_video_count(slugify(page))
-            },
-            {
-                'logo': 'fa fa-map-marked',
-                'text': _('Sectors'),
-                'data': utils.helpers.count_sectors_in_zone(page)
-            }]
+        data = []
+        print(page)
         return render_template('zones/' + slugify(page) + EXTENSION, current_url=page, stats_list=data)
     except:
         abort(404)
