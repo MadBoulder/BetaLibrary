@@ -8,8 +8,8 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-    <title>Bouldering in  Uintas  | MadBoulder</title>
-	<meta name="description" content="Bouldering information and climbing videos in Uintas | MadBoulder">
+    <title> Uintas  boulder | MadBoulder</title>
+	<meta name="description" content="Uintas bouldering information, boulder problems, sectors, weather forecast, boulder guidebooks, boulder pdf, youtube playlist, boulder beta videos | MadBoulder">
     
 
 <!-- Widget dependencies-->
@@ -26,6 +26,8 @@ integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpE
 crossorigin="anonymous"></script>
 
 <script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/uintas">
 
@@ -307,12 +309,12 @@ crossorigin="anonymous"></script>
 <!--Sector List-->
 <div class="container">
 	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table class="table table-hover">
+	<table id="sectors-table" class="table table-hover">
 		<thead>
 			<tr>
 				
-				<th scope="col">{{ _("Name") }}</th>
-				<th scope="col">{{ _("Problems") }}</th>
+				<th scope="col" class="sorting">{{ _("Name") }}</th>
+				<th scope="col" class="sorting">{{ _("Problems") }}</th>
 				
 			</tr>
 		</thead>
@@ -351,6 +353,10 @@ crossorigin="anonymous"></script>
 				}
 			};
 			
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
 			$("#search-sector").trigger("keyup");
 				
 			$("#search-sector").keyup(function() {
@@ -404,13 +410,13 @@ crossorigin="anonymous"></script>
 <!--Problem List-->
 <div class="container">
 	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table class="table table-hover">
+	<table id="problems-table" class="table table-hover">
 		<thead>
 			<tr>
 				
-				<th scope="col">{{ _("Name") }}</th>
-				<th scope="col">{{ _("Grade") }}</th>
-				<th scope="col">{{ _("Sector") }}</th>
+				<th scope="col" class="sorting">{{ _("Name") }}</th>
+				<th scope="col" class="sorting">{{ _("Grade") }}</th>
+				<th scope="col" class="sorting">{{ _("Sector") }}</th>
 				
 			</tr>
 		</thead>
@@ -482,6 +488,18 @@ crossorigin="anonymous"></script>
 		</tbody>
 	</table>
 	<script>
+		$.fn.dataTable.ext.type.order['vgrade-pre'] = function(data) {
+			var regex = /^V(\d+)/;// Regular expression to match V-grades like 'V0', 'V1', etc.
+
+			var match = regex.exec(data);
+			if (match) {
+				var numericValue = parseInt(match[1], 10);
+				return numericValue;
+			} else {
+				return data;
+			}
+		};
+		
 		$(document).ready(function () {
 			function filter_problems_by_query(search_query) {
 				var $problems = $(".problem-row");
@@ -497,6 +515,17 @@ crossorigin="anonymous"></script>
 					});
 				}
 			};
+			
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'vgrade',
+					},
+				]
+			});
 			
 			$("#search-problem").trigger("keyup");
 				

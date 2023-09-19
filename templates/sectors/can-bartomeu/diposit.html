@@ -11,6 +11,8 @@
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
 	
     
   </head>
@@ -35,12 +37,12 @@
 	<h2 style="clear:both;display:block" class=""> {{ _("List of Problems") }} </h2>
 	<div class="container">
 		<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-		<table class="table table-hover">
+		<table id="problems-table" class="table table-hover">
 			<thead>
 				<tr>
 					
-					<th scope="col">{{ _("Name") }}</th>
-					<th scope="col">{{ _("Grade") }}</th>
+					<th scope="col" class="sorting">{{ _("Name") }}</th>
+					<th scope="col" class="sorting">{{ _("Grade") }}</th>
 					
 				</tr>
 			</thead>
@@ -369,6 +371,18 @@
 			</tbody>
 		</table>
 		<script>
+			$.fn.dataTable.ext.type.order['vgrade-pre'] = function(data) {
+				var regex = /^V(\d+)/;// Regular expression to match V-grades like 'V0', 'V1', etc.
+
+				var match = regex.exec(data);
+				if (match) {
+					var numericValue = parseInt(match[1], 10);
+					return numericValue;
+				} else {
+					return data;
+				}
+			};
+
 			$(document).ready(function () {
 				function filter_problems_by_query(search_query) {
 					var $problems = $(".problem-row");
@@ -384,6 +398,17 @@
 						});
 					}
 				};
+			
+				$('#problems-table').DataTable({
+					paging: false,
+					dom: 'tr',
+					columnDefs: [
+						{
+							targets: [1],
+							type: 'vgrade',
+						},
+					]
+				});
 				
 				$("#search-problem").trigger("keyup");
 				
