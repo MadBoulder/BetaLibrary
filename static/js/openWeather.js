@@ -323,7 +323,7 @@ Licensed under the MIT license
 							weekday_wind.setAttribute('class', 'd-flex justify-content-center');
 							var wind_data = document.createElement("span");
 							var wind_icon = document.createElement("i");
-							wind_icon.setAttribute('class', 'material-icons mt-1 mr-1');
+							wind_icon.setAttribute('class', 'fas fa-wind mt-1 mr-1');
 							wind_icon.setAttribute('style', 'font-size: 18px;');
 							var textNodeWind = document.createTextNode('air');
 							wind_icon.appendChild(textNodeWind);
