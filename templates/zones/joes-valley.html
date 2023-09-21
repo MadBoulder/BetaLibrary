@@ -26,6 +26,7 @@ crossorigin="anonymous"></script>
 <!-- Table Widget dependencies-->
 <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
 
 <link rel="canonical" href="https://www.madboulder.org/joes-valley">
@@ -389,21 +390,6 @@ crossorigin="anonymous"></script>
 	</table>
 	<script>
 		$(document).ready(function () {
-			function filter_sectors_by_query(search_query) {
-				var $sectors = $(".sector-row");
-				if (search_query === "")
-					$sectors.show();
-				else {
-					$sectors.hide();
-					$sectors.each(function() {
-						var rowName = $(this).find(".table-row-name").text().toLowerCase();
-						if (rowName.indexOf(search_query) !== -1) {
-							$(this).show();
-						}
-					});
-				}
-			};
-			
 			$('#sectors-table').DataTable({
 				paging: false,
 				dom: 'tr'
@@ -412,7 +398,8 @@ crossorigin="anonymous"></script>
 				
 			$("#search-sector").keyup(function() {
 				var search_query = $.trim($(this).val());
-				filter_sectors_by_query(search_query)
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
 			});
 		});
 	</script>
@@ -1601,41 +1588,14 @@ crossorigin="anonymous"></script>
 		</tbody>
 	</table>
 	<script>
-		$.fn.dataTable.ext.type.order['vgrade-pre'] = function(data) {
-			var regex = /^V(\d+)/;// Regular expression to match V-grades like 'V0', 'V1', etc.
-
-			var match = regex.exec(data);
-			if (match) {
-				var numericValue = parseInt(match[1], 10);
-				return numericValue;
-			} else {
-				return data;
-			}
-		};
-		
 		$(document).ready(function () {
-			function filter_problems_by_query(search_query) {
-				var $problems = $(".problem-row");
-				if (search_query === "")
-					$problems.show();
-				else {
-					$problems.hide();
-					$problems.each(function() {
-						var rowName = $(this).find(".table-row-name").text().toLowerCase();
-						if (rowName.indexOf(search_query) !== -1) {
-							$(this).show();
-						}
-					});
-				}
-			};
-			
 			$('#problems-table').DataTable({
 				paging: false,
 				dom: 'tr',
 				columnDefs: [
 					{
 						targets: [1],
-						type: 'vgrade',
+						type: 'custom-grade',
 					},
 				]
 			});
@@ -1644,7 +1604,8 @@ crossorigin="anonymous"></script>
 				
 			$("#search-problem").keyup(function() {
 				var search_query = $.trim($(this).val());
-				filter_problems_by_query(search_query)
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
 			});
 		});
 	</script>
