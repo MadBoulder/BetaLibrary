@@ -551,7 +551,6 @@ def render_area(area):
 
 
 @app.route('/download/<string:path>/<string:filename>')
-@app.route('/download/<string:path>/<string:filename>.pdf')
 def download_file(path=None, filename=None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path) + '/' + filename
