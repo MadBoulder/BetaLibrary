@@ -30,8 +30,7 @@ def main():
     for area in areas['items']:
         print("Creating zone map of " + area[NAME_FIELD])
         # get external guide links
-        guides = [(guide[NAME_FIELD], guide[LINK_FIELD])
-                  for guide in area.get(GUIDES_FIELD, []) if guide.get(LINK_FIELD)]
+        guides = [guide for guide in area.get(GUIDES_FIELD, []) if guide.get(LINK_FIELD)]
         # get affiliate guides links
         affiliate_guides = [affiliate_guide[LINK_FIELD]
                             for affiliate_guide in area.get(AFFILIATE_GUIDES, [])]
