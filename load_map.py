@@ -215,10 +215,10 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     generate_ids.reset_seed()
     area_map = folium.Map(
         location=[
-            0.417195,
-            -20.184135
+            15.417195,
+            -15.184135
         ],
-        zoom_start=2
+        zoom_start=3
     )
     area_map._id = generate_ids.next_id()  # reassign id
     for child in area_map._children.values():
