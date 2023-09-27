@@ -368,6 +368,7 @@ def process_zone_data_local(
             playlist_json_object['url'] = base_url + i['id']
             playlist_json_object['video_count'] = i['contentDetails']['itemCount']
             playlist_json_object['views_count'] = utils.zone_helpers.get_zone_view_count(zone_name)
+            playlist_json_object['thumbnail'] = get_playlist_thumbnail(i['snippet']['thumbnails'])
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
                                                     "sector_code": slugify(sector_name), 
@@ -393,7 +394,24 @@ def process_zone_data_local(
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                    'items': zones_processed_data}, f, indent=4)
-                   
+   
+   
+def get_playlist_thumbnail(thumbnails):
+    thumbnailUrl = None
+
+    if 'maxres' in thumbnails:
+        thumbnailUrl = thumbnails['maxres']['url']
+    elif 'standard' in thumbnails:
+        thumbnailUrl = thumbnails['standard']['url']
+    elif 'high' in thumbnails:
+        thumbnailUrl = thumbnails['high']['url']
+    elif 'medium' in thumbnails:
+        thumbnailUrl = thumbnails['medium']['url']
+    elif 'default' in thumbnails:
+        thumbnailUrl = thumbnails['default']['url']
+    
+    return thumbnailUrl
+   
 
 def get_zone_code_from_name(zone_name, path = 'data/zones'):
     file_list = os.listdir(path)
