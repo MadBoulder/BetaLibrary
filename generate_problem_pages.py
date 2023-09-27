@@ -39,6 +39,7 @@ def main():
                 zone=problem[ZONE_FIELD],
                 zone_code=zone_code,
                 sector=problem[SSECTOR_FIELD],
+                sector_code=slugify(problem[SSECTOR_FIELD]),
                 video_url=get_embed_url(problem[LINK_FIELD])
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
