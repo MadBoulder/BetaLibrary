@@ -109,7 +109,7 @@ def get_dashboard(local_data=False):
 
     # html template to place the plots
     desc = Div(
-        text=open(join(dirname(__file__), "templates/stats.html")).read(),
+        text=open(join(dirname(__file__), "templates/templates/stats.html")).read(),
         sizing_mode="stretch_width"
     )
 
