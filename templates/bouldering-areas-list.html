@@ -50,50 +50,50 @@
 	{% include 'elements/main-menu.html' %}
 	<main>
 		<div class="container" id="mainContainer">
-		  <br />
-		  <div class="md-form active-pink active-pink-2 mt-0 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
-			<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-			<button class="btn mb-2" data-bs-toggle="modal" data-bs-target="#country-modal" style="border-color: black; margin-right: 0.5rem; margin-left: 0.5rem;">
-			  <span>{{ _("Add Filter") }}</span>
-			</button>
-			<!-- Sort order -->
-			  <div class="btn-group mb-2 joint-btns">
-				<div style="max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
-				  <select id="sort-criteria" onchange="ReorderZones()">
-					<option value="alph" selected>{{ _("Alphabetically") }}</option>
-					<option value="nvid">{{ _("Number of videos") }}</option>
-				  </select>
-				  <button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
-					<i class="fas fa-angle-up"></i>
-				  </button>
-				  <button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
-					<i class="fas fa-angle-down"></i>
-				  </button>
-				</div>
-			  </div>
-		  </div>
-		  <div class="container" id="selected-countries" style="margin:inherit; padding: inherit; display: flex;">
-		  </div>
-		  </div>
-		  <div class="container" id="pageContent">
-			<div id="zones-list" style="display: flex; flex-wrap: wrap;">
-			  {% for zone in zones %}
-			  <div class="custom-card" id="{{ zone['zone_code'] }}_{{zone['country']}}">
-				<div class="card zone-card" style="width: 12rem;">
-				  <a class="zone-card-link" href="/{{ zone['zone_code'] }}" >
-					<!-- <img class="card-img-top" style="max-width:25%; display: block; margin: auto; padding-top:1rem;" src="/static/images/logo-menu.png" alt="Card image cap"> -->
-					<div class="card-body">
-					  <h5 class="card-title">{{ zone['name'] }}</h5>
-					  <p class="card-text" data-videos="{{ zone['video_count'] }}" style="justify-content: center; display: flex; font-size:10pt;">
-						{{ zone['video_count'] }} {{ _("video") if zone['video_count'] == 1 else _("videos") }} 
-					  </p>
+			<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
+				<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<button class="btn mb-2" data-bs-toggle="modal" data-bs-target="#country-modal" style="border-color: black; margin-right: 0.5rem; margin-left: 0.5rem;">
+				  <span>{{ _("Add Filter") }}</span>
+				</button>
+				<!-- Sort order -->
+				<div class="btn-group mb-2 joint-btns">
+					<div style="max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+						<select id="sort-criteria" onchange="ReorderZones()">
+							<option value="alph" selected>{{ _("Alphabetically") }}</option>
+							<option value="nvid">{{ _("Number of videos") }}</option>
+						</select>
+						<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+							<i class="fas fa-angle-up"></i>
+						</button>
+						<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+							<i class="fas fa-angle-down"></i>
+						</button>
 					</div>
-				  </a>
 				</div>
-			  </div>
-			  {% endfor %}
 			</div>
-		  </div>
+			<div class="container" id="selected-countries" style="margin:inherit; padding: inherit; display: flex;">
+			</div>
+			<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+				{% for zone in zones %}
+					<div class="custom-card" id="{{ zone['zone_code'] }}_{{zone['country']}}">
+						<a href="/{{ zone['zone_code'] }}" style="text-decoration: none;">
+							<div class="card-body">
+								<div class="card-body-image-container">
+									<div class="card-body-image-container-container">
+										<img class="card-body-image" src="{{ zone['thumbnail'] }}">
+									</div>
+								</div>
+								<div class="card-body-title-container">
+									<h5 class="text-bold card-title"">{{ zone['name'] }}</h5>
+									<p class="card-text" data-videos="{{ zone['video_count'] }}">
+										{{ zone['video_count'] }} {{ _("video") if zone['video_count'] == 1 else _("videos") }} 
+									</p>
+								</div>
+							</div>
+						</a>
+					</div>
+				{% endfor %}
+			</div>
 		</div>
 	</main>
 	{% include 'elements/footer.html' %}
