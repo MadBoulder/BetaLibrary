@@ -166,7 +166,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
     zoomed_out_lyr = folium.FeatureGroup(name='Zone Marker')
     zoomed_out_lyr._id = generate_ids.next_id()  # reassign id
     zoomed_out_icon = CustomIcon(
-        'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
+        'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
     zoomed_out_icon._id = generate_ids.next_id()  # reassign id
     sectors_marker = folium.Marker(
         location=[area_data['latitude'], area_data['longitude']],
@@ -237,55 +237,15 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
-    # layers = []
-    sectors_markers = []
-
-    # Sectors layer
-    zoomed_out_lyr = folium.FeatureGroup(name='Sector Markers')
+    # Areas layer
+    zoomed_out_lyr = folium.FeatureGroup(name='Areas Markers')
     zoomed_out_lyr._id = generate_ids.next_id()  # reassign id
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
     for zone in zone_data['items']:
-
-        # sectors = area_data['sectors']
-        # # Create a Folium feature group for this layer, since we will be displaying multiple layers
-        # sector_lyr = folium.FeatureGroup(name='sectors_layer')
-        # for sector in sectors:
-        #     sector_map = folium.GeoJson(
-        #         os.path.dirname(os.path.abspath(areadatafile)) +
-        #         sector['sector_data'],
-        #         name=sector['name'],
-        #         tooltip=sector['name'],
-        #         style_function=lambda x: {
-        #             'color': x['properties']['stroke'],
-        #             'weight': x['properties']['stroke-width'],
-        #             'opacity': SECTOR_OPACITY,
-        #             'fillColor': x['properties']['stroke'],
-        #         }
-        #     )
-        #     sector_html = helpers.generate_sector_html(
-        #         sector['name'], sector['link'])
-        #     sector_map.add_child(folium.Popup(
-        #         sector_html, max_width=POPUP_WIDTH, min_width=POPUP_WIDTH))
-
-        #     sector_lyr.add_child(sector_map)
-
-        # Parking
-        # for parking in area_data['parkings']:
-        #     parking_marker = folium.Marker(
-        #         location=[parking['parking_latitude'],
-        #                   parking['parking_longitude']],
-        #         popup=helpers.generate_parking_html([parking['parking_latitude'],
-        #                                              parking['parking_longitude']]),
-        #         tooltip='Parking',
-        #         icon=folium.Icon(color='red', icon='info-sign')
-        #     )
-
-        #     sector_lyr.add_child(parking_marker)
-
         zoomed_out_icon = CustomIcon(
-            'static/images/marker/marker.png', icon_size=(MARKER_SIZE, MARKER_SIZE))
+            'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
             zone['name'], zone['zone_code'], zone['video_count']), script=True)
@@ -294,21 +254,18 @@ def load_general_map(zone_data, generate_ids, return_html=True):
             popup_html, max_width=max(len(zone['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
 
-        sectors_marker = folium.Marker(
+        area_marker = folium.Marker(
             location=[zone['latitude'], zone['longitude']],
             tooltip=zone['name'],
             icon=zoomed_out_icon,
             popup=zone_popup,
         )
-        sectors_marker._id = generate_ids.next_id()  # reassign id
-        sectors_markers += [sectors_marker]
+        area_marker._id = generate_ids.next_id()  # reassign id
         # Group areas' markers when zoomed out
-        areas_cluster.add_child(sectors_marker)
+        areas_cluster.add_child(area_marker)
         zoomed_out_lyr.add_child(areas_cluster)
 
         area_map.add_child(zoomed_out_lyr)
-        # area_map.add_child(sector_lyr)
-        # layers += [(sector_lyr, zoomed_out_lyr)]
 
     layer_control = folium.LayerControl()
     layer_control._id = generate_ids.next_id()  # reassign id
@@ -317,16 +274,6 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     # Since folium does not support all the functionalities we need
     # we obtain them by injecting or editing JavaScript code in the map html
     map_html = area_map.get_root().render()
-    # for sector_lyr, zoomed_out_lyr in layers:
-    #     # Hide or show layers depending on the zoom level
-    #     map_html = helpers.make_layer_that_hides(
-    #         map_html, area_map.get_name(), sector_lyr.get_name(), DEFAULT_AREA_ZOOM, False, False)
-    #     map_html = helpers.make_layer_that_hides(
-    #         map_html, area_map.get_name(), zoomed_out_lyr.get_name(), DEFAULT_AREA_ZOOM, True, True)
-    #     # Zoom into area when clicking
-    #     for marker in sectors_markers:
-    #         map_html = helpers.zoom_on_click(
-    #             map_html, area_map.get_name(), marker.get_name(), DEFAULT_AREA_ZOOM+1)
     map_html = utils.js_helpers.replace_tag_ids(
         map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
