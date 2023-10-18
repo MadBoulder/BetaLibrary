@@ -267,7 +267,7 @@ def video_uploader_not_working():
 @app.route('/upload', methods=['GET', 'POST'])
 @app.route('/video-uploader', methods=['GET', 'POST'])
 def video_uploader():
-    return render_template('video-uploader-not-working.html')
+    return render_template('video-uploader.html')
     
     
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
