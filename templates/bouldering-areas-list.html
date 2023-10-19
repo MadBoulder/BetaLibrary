@@ -80,19 +80,39 @@
 							<div class="card-body">
 								<div class="card-body-image-container">
 									<div class="card-body-image-container-container">
-										<img class="card-body-image" src="{{ zone['thumbnail'] }}">
+										<img class="card-body-image">
 									</div>
 								</div>
 								<div class="card-body-title-container">
-									<h5 class="text-bold card-title"">{{ zone['name'] }}</h5>
-									<p class="card-text" data-videos="{{ zone['video_count'] }}">
-										{{ zone['video_count'] }} {{ _("video") if zone['video_count'] == 1 else _("videos") }} 
+									<h5 class="text-bold card-title">{{ zone['name'] }}</h5>
+									<p class="card-text">
 									</p>
 								</div>
 							</div>
 						</a>
 					</div>
 				{% endfor %}
+				<script>
+					document.addEventListener("DOMContentLoaded", function() {
+						var zones = {{ zones | tojson | safe }};
+						var playlists = {{ playlists | tojson | safe }};
+						zones.forEach(function(zone) {
+							var zoneCode = zone.zone_code;
+							var foundElement = playlists.find(function(playlist) {
+								return playlist.zone_code === zoneCode;
+							});
+							if (foundElement) {
+								var card = document.getElementById(zoneCode + "_" + zone.country);
+								var cardImage = card.querySelector(".card-body-image");
+								cardImage.src = foundElement.thumbnail;
+								var cardText = card.querySelector(".card-text");
+								var videoCount = foundElement.video_count;
+								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+								cardText.setAttribute("data-videos", videoCount);
+							}
+						});
+					});				
+				</script>
 			</div>
 		</div>
 	</main>

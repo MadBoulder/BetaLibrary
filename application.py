@@ -87,6 +87,8 @@ def get_zone_video_count(page):
 )
 def get_zone_data():
     return handle_channel_data.get_zone_data()
+def get_playlist_data():
+    return handle_channel_data.get_playlist_data()
 
 # Set language
 @app.route('/language/<language>')
@@ -173,9 +175,11 @@ def zones():
     # if request.method == 'POST':
     # each zone has: link, name, num.videos
     zones = get_zone_data()
+    playlists = get_playlist_data()
     return render_template(
         'bouldering-areas-list.html',
         zones=zones['items'],
+        playlists=playlists['items'],
         countries=app.config['COUNTRIES'],
         country_data=country_data)
 

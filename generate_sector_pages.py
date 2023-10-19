@@ -25,17 +25,19 @@ def main():
         zone_code = zone['zone_code']  
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
         problems_zone = utils.zone_helpers.get_problems_from_zone_code(zone_code)
+        playlists = utils.zone_helpers.get_playlists_from_zone(zone_code)
 
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
             for p in problems:
                 p['secure'] = slugify(p['name'])
-            video_url = ""
-            if 'sectors' in zone:
-                for s in zone['sectors']:
-                    if sector[1] == slugify(s['name']):
-                        video_url = s['url']
+               
+            video_id = ""
+            if 'sectors' in playlists:
+                for s in playlists['sectors']:
+                    if slugify(sector[1]) == s['sector_code']:
+                        video_id = s['id']
             template = template_env.get_template(
                 'templates/templates/sector-layout.html')
             output = template.render(
@@ -44,7 +46,7 @@ def main():
                 sector=sector,
                 sector_code=slugify(sector[1]),
                 problems=problems,
-                video_url=video_url
+                video_id=video_id
             )
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')

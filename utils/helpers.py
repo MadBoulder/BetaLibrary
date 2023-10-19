@@ -41,12 +41,12 @@ class bidict(dict):
 
 
 def load_sectors():
-    zone_data = handle_channel_data.get_zone_data()
+    playlist_data = handle_channel_data.get_playlist_data()
     sectors = []
-    for item in zone_data['items']:
+    for item in playlist_data['items']:
         for sector in item.get('sectors', []):
             sector['zone_code'] = item['zone_code']
-            sector['zone_name'] = item['name']
+            sector['zone_name'] = item['title']
             sectors.append(sector)
     return sectors
 
@@ -56,7 +56,7 @@ def count_sectors_in_zone(zone):
     Given a zone name, return the number of sectors based on the
     zone's datafile specified sectors.
     """
-    playlists = utils.zone_helpers.get_playlists_url_from_zone(zone)
+    playlists = utils.zone_helpers.get_playlists_from_zone(zone)
     if playlists:
         return len(playlists.get('sectors', []))
     else:
@@ -283,9 +283,9 @@ def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    zone_data = handle_channel_data.get_zone_data()
+    playlist_data = handle_channel_data.get_playlist_data()
 
-    for item in zone_data['items']:
+    for item in playlist_data['items']:
         if item['zone_code'] == zone_name:
             return item['video_count']
             

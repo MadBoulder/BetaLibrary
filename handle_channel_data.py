@@ -11,7 +11,6 @@ from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
 from slugify import slugify
-import utils.zone_helpers
 
 import firebase_admin
 from firebase_admin import credentials
@@ -261,6 +260,7 @@ def update_local_database(
         retrieve_and_update_video_data_raw_local(is_update=False)
         retrieve_and_update_playlist_data_raw_local()
     process_video_data_local()
+    process_playlist_data_local()
     process_zone_data_local()
     update_countries_list()
 
@@ -325,16 +325,14 @@ def process_video_data_local(
         del video['id']
         del video['date']
     
-    
     with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                    'items': processed_data_search_optimized}, f, indent=4)
-                   
+
          
-def process_zone_data_local(
+def process_playlist_data_local(
     infile='data/channel/raw_playlist_data.json',
-    outfile='data/channel/processed_zone_data.json',
-    base_url = 'https://www.youtube.com/embed/?listType=playlist&list='
+    outfile='data/channel/processed_playlist_data.json'
 ):
     print("Processing local data: Regenerating processed_zone_data.json file")
     
@@ -363,37 +361,39 @@ def process_zone_data_local(
             processed_playlist_data.append(playlist_json_object)
             
         if not is_sector:
-            playlist_json_object['zone_code'] = get_zone_code_from_name(zone_name)
+            playlist_json_object['zone_code'] = slugify(zone_name)
             playlist_json_object['id'] = i['id']
-            playlist_json_object['url'] = base_url + i['id']
             playlist_json_object['video_count'] = i['contentDetails']['itemCount']
-            playlist_json_object['views_count'] = utils.zone_helpers.get_zone_view_count(zone_name)
             playlist_json_object['thumbnail'] = get_playlist_thumbnail(i['snippet']['thumbnails'])
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
                                                     "sector_code": slugify(sector_name), 
-                                                    "id": i['id'], 
-                                                    "url": base_url + i['id'],
+                                                    "id": i['id'],
                                                     "video_count": i['contentDetails']['itemCount']})
-    
-    print("Processing local data: processing zone data")
-    zones = next(os.walk('data/zones/'))[1]
-    zones_processed_data = []
-    for zone_code in zones:
-        datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'  
-        zone_data = {}  
-        with open(datafile, encoding='utf-8') as data:
-            zone_data = json.load(data)
-          
-        for playlist_data in processed_playlist_data:
-            if playlist_data['zone_code'] == zone_code:
-                zone_data.update(playlist_data)
-                break
-        zones_processed_data.append(zone_data)
     
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
-                   'items': zones_processed_data}, f, indent=4)
+                   'items': processed_playlist_data}, f, indent=4)
+                   
+         
+def process_zone_data_local(
+    outfile='data/channel/zone_data.json'
+):
+    print("Processing local data: Generating zone_data.json file")
+    
+    if os.path.exists('data/zones'):
+        zones = next(os.walk('data/zones/'))[1]
+        zones_data = []
+        for zone_code in zones:
+            datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'
+            with open(datafile, encoding='utf-8') as data:
+                zone_data = json.load(data)
+                zone_data['zone_code'] = slugify(zone_data['name'])
+                zones_data.append(zone_data)
+        
+        with open(outfile, 'w', encoding='utf-8') as f:
+            json.dump({'date': str(date.today()),
+                       'items': zones_data}, f, indent=4)
    
    
 def get_playlist_thumbnail(thumbnails):
@@ -437,6 +437,7 @@ def regenerate_firebase_data(is_update=True):
     Load current data from local database and copy it to firebase database
     """
     print('Regenerating Firebase Data')
+    
     with firebase_lock:
         if not firebase_admin._apps:
             cred = credentials.Certificate('madboulder.json')
@@ -446,11 +447,14 @@ def regenerate_firebase_data(is_update=True):
 
     root = db.reference()
     
-    video_data = get_data_local()
+    video_data = get_video_data_local()
     root.child('video_data').set(video_data)
     
-    video_data_search_optimized = get_data_local_search_optimized()
+    video_data_search_optimized = get_video_data_local_search_optimized()
     root.child('video_data_search_optimized').set(video_data_search_optimized)
+    
+    playlist_data = get_playlist_data_local()
+    root.child('playlist_data').set(playlist_data)
     
     zone_data = get_zone_data_local()
     root.child('zone_data').set(zone_data)
@@ -458,24 +462,23 @@ def regenerate_firebase_data(is_update=True):
     num_climbers = len(list({video['climber'] for video in video_data['items']}))
     root.child('contributor_count').set(num_climbers)
 
-def get_video_data():
-    """
-    Get data from firebase
-    """
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
 
-    root = db.reference()
-    return root.child('video_data').get()
+def get_video_data():
+    return get_element_from_firebase('video_data')
     
 def get_video_data_search_optimized():
-    """
-    Get data optimized for searching from firebase
-    """
+    return get_element_from_firebase('video_data_search_optimized')
+
+def get_contributors_count():
+    return get_element_from_firebase('contributor_count')
+
+def get_playlist_data():
+    return get_element_from_firebase('playlist_data')
+
+def get_zone_data():
+    return get_element_from_firebase('zone_data')
+    
+def get_element_from_firebase(element_name):
     with firebase_lock:
         if not firebase_admin._apps:
             cred = credentials.Certificate('madboulder.json')
@@ -484,7 +487,7 @@ def get_video_data_search_optimized():
             })
 
     root = db.reference()
-    return root.child('video_data_search_optimized').get()
+    return root.child(element_name).get()
 
 
 def get_last_update_date():
@@ -500,51 +503,34 @@ def get_last_update_date():
 
     root = db.reference()
     return root.child('video_data/date').get()
+    
 
-
-def get_contributors_count():
-    """
-    Get the number of contributors
-    """
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-    return db.reference().child('contributor_count').get()
-
-
-def get_data_local_search_optimized():
+def get_video_data_local_search_optimized():
     video_data = {}
     with open('data/channel/processed_data_search_optimized.json', 'r', encoding='utf-8') as f:
         video_data = json.load(f)
     return video_data
     
-def get_data_local():
+def get_video_data_local():
     video_data = {}
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
         video_data = json.load(f)
     return video_data
     
 
+def get_playlist_data_local():
+    zone_data = {}
+    with open('data/channel/processed_playlist_data.json', 'r', encoding='utf-8') as f:
+        zone_data = json.load(f)
+    return zone_data
+    
+
 def get_zone_data_local():
     zone_data = {}
-    with open('data/channel/processed_zone_data.json', 'r', encoding='utf-8') as f:
+    with open('data/channel/zone_data.json', 'r', encoding='utf-8') as f:
         zone_data = json.load(f)
     return zone_data
 
-
-def get_zone_data():
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-
-    root = db.reference()
-    return root.child('zone_data').get()
 
 
 def update_countries_list(input_file=CONFIG_FILE):

@@ -44,6 +44,9 @@ def main():
         # sectors
         sectors = utils.zone_helpers.get_sectors_from_zone(area[ZONE_CODE_FIELD])
         sectors.sort(key= lambda x: x)
+        
+        #playlists
+        playlists = utils.zone_helpers.get_playlists_from_zone(area[ZONE_CODE_FIELD])
 
         template = template_env.get_template('templates/templates/area-layout.html')
         output = template.render(
@@ -56,7 +59,7 @@ def main():
             guide_list=guides,
             affiliate_guide_list=affiliate_guides,
             map_url='maps/'+area[ZONE_CODE_FIELD],
-            area_data=area,
+            playlists=playlists,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
             zone=area[NAME_FIELD])

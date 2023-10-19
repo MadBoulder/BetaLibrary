@@ -36,7 +36,6 @@ def get_problem_name(problem_data):
     # remove grade from title?
     name = problem_data['name']
     if name == 'Unknown':
-        print(problem_data['title'])
         name = problem_data['title'].replace(
             problem_data.get('zone', ''), ''
         ).replace(
@@ -58,7 +57,6 @@ def get_problem_name(problem_data):
             name = name[:-1].strip()
         if name[-1] == ',':
             name = name[:-1].strip()
-    print(name)
     return name
     
     
@@ -91,8 +89,7 @@ def get_sectors_from_zone(zone_code):
     
    
 def get_playlist_url_from_sector(zone_code, sector):
-    print("get_playlist_url_from_sector zone_code:" + zone_code + " sector: " + sector)
-    playlists = get_playlists_url_from_zone(zone_code)
+    playlists = get_playlists_from_zone(zone_code)
     if 'sectors' in playlists:
         for playlist in playlists['sectors']:
             if slugify(playlist['name']) == sector:
@@ -100,18 +97,13 @@ def get_playlist_url_from_sector(zone_code, sector):
     return None
     
     
-def get_playlists_url_from_zone(zone_code):
-    print("get playlists of " + zone_code)
-    zone_data = handle_channel_data.get_zone_data()
+def get_playlists_from_zone(zone_code):
+    playlist_data = handle_channel_data.get_playlist_data()
 
     playlists = []
-    for item in zone_data['items']:
+    for item in playlist_data['items']:
         if item['zone_code'] == zone_code:
             playlists = item
             break
             
     return playlists
-
-
-if __name__ == "__main__":
-    get_playlists_url_from_zone("Albarracín")
