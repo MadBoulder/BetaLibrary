@@ -87,6 +87,26 @@ def get_sectors_from_zone(zone_code):
             return None
     return sectors
     
+
+def get_rock_type_str(rock_type_code):
+    rock_type_mapping = {
+        "volc": "Volcanic",
+        "lime": "Limestone",
+        "gran": "Granite",
+        "sand": "Sandstone",
+        "cong": "Conglomerate",
+        "gnei": "Gneiss",
+        "igne": "Igneous",
+        "basa": "Basalt",
+        "slat": "Slate",
+        "schi": "Schist",
+        "quar": "Quartzite",
+        "iron": "Iron Rock",
+        "serp": "Serpentine",
+        "grit": "Gritstone"
+    }
+    return rock_type_mapping.get(rock_type_code.lower(), "Unknown")
+    
    
 def get_playlist_url_from_sector(zone_code, sector):
     playlists = get_playlists_from_zone(zone_code)

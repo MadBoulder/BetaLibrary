@@ -3,10 +3,12 @@ import urllib.request
 import urllib.parse
 import json
 import threading
+import subprocess
 from datetime import date
 import re
 import math
 import os
+import time
 from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
@@ -386,9 +388,11 @@ def process_zone_data_local(
         zones_data = []
         for zone_code in zones:
             datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'
+            print(datafile)
             with open(datafile, encoding='utf-8') as data:
                 zone_data = json.load(data)
                 zone_data['zone_code'] = slugify(zone_data['name'])
+                zone_data['altitude'] = get_altitude_from_coordinates(zone_data['latitude'], zone_data['longitude'])
                 zones_data.append(zone_data)
         
         with open(outfile, 'w', encoding='utf-8') as f:
@@ -411,6 +415,28 @@ def get_playlist_thumbnail(thumbnails):
         thumbnailUrl = thumbnails['default']['url']
     
     return thumbnailUrl
+    
+    
+def get_altitude_from_coordinates(latitude, longitude):
+    url = f"https://api.opentopodata.org/v1/aster30m?locations={latitude},{longitude}"
+    try:
+        result = subprocess.run(["curl", url], stdout=subprocess.PIPE, text=True, check=True)
+        time.sleep(0.7)#in order to not overflow the free API
+        data = json.loads(result.stdout)
+        if "results" in data and len(data["results"]) > 0:
+            elevation = data["results"][0]["elevation"]
+            print(elevation)
+            return elevation
+        else:
+            print("No elevation data found in the response.")
+            return None
+    except subprocess.CalledProcessError as e:
+        print(f"Error while running curl: {e}")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return None
+
    
 
 def get_zone_code_from_name(zone_name, path = 'data/zones'):

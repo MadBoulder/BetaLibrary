@@ -11,9 +11,12 @@ NAME_FIELD = 'name'
 ZONE_CODE_FIELD = 'zone_code'
 LATITUDE_FIELD = 'latitude'
 LONGITUDE_FIELD = 'longitude'
+ALTITUDE_FIELD = 'altitude'
 GUIDES_FIELD = 'guides'
 SECTORS_FIELD = 'sectors'
 AFFILIATE_GUIDES = 'affiliate_guides'
+ROCK_TYPE_FIELD = 'rock_type'
+OVERVIEW_FIELD = 'overview'
 
 
 def main():
@@ -48,12 +51,17 @@ def main():
         #playlists
         playlists = utils.zone_helpers.get_playlists_from_zone(area[ZONE_CODE_FIELD])
 
+        #overview
+        overview = area.get("overview", [""])[0]
+        
         template = template_env.get_template('templates/templates/area-layout.html')
         output = template.render(
             problems=problems,
             sectors=sectors,
             area_code=area[ZONE_CODE_FIELD],
             name=area[NAME_FIELD],
+            rock_type=utils.zone_helpers.get_rock_type_str(area.get(ROCK_TYPE_FIELD, "")),
+            overview=overview,
             file_name=area[ZONE_CODE_FIELD],
             tag_name=area[NAME_FIELD].replace("'", r"\'"),
             guide_list=guides,
@@ -62,6 +70,7 @@ def main():
             playlists=playlists,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
+            alt=int(area[ALTITUDE_FIELD]),
             zone=area[NAME_FIELD])
 
         with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
