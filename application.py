@@ -146,24 +146,7 @@ def zone_cache_key():
 @app.route('/home')
 @app.route('/')
 def home():
-    #channel_info = utils.helpers.get_channel_info()
-    zone_data = handle_channel_data.get_zone_data()
-    stats_list = [
-        {
-            'text': _('Zones'),
-            'data': len(zone_data['items'])
-        },
-        {
-            'text': _('Contributors'),
-            'data': handle_channel_data.get_contributors_count()
-        },
-        {
-            'text': _('Videos'),
-            'data': 7.582
-            #channel_info['items'][0]['statistics']['videoCount']
-        }
-    ]
-    return render_template('home.html', stats_list=stats_list)
+    return render_template('home.html')
 
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
@@ -405,7 +388,24 @@ def render_about_us():
             return render_template('thanks-for-joining.html')
         except:
             abort(404)
-    return render_template('about-us.html')
+            
+    zone_data = handle_channel_data.get_zone_data()
+    stats_list = [
+        {
+            'text': _('Zones'),
+            'data': len(zone_data['items'])
+        },
+        {
+            'text': _('Contributors'),
+            'data': handle_channel_data.get_contributors_count()
+        },
+        {
+            'text': _('Videos'),
+            'data': 7.977
+            #channel_info['items'][0]['statistics']['videoCount']
+        }
+    ]
+    return render_template('about-us.html', stats_list=stats_list)
     
 @app.route('/join-us', methods=['GET', 'POST'])
 @app.route('/join_us', methods=['GET', 'POST'])
