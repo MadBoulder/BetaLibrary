@@ -127,3 +127,52 @@ def get_playlists_from_zone(zone_code):
             break
             
     return playlists
+
+
+def get_areas_from_country(country_code):
+    zone_data = handle_channel_data.get_zone_data()
+
+    areas = []
+    for item in zone_data['items']:
+        if item['country'] == country_code:
+            areas.append(item)
+            
+    return areas
+
+
+def get_areas_from_state(state_code):
+    zone_data = handle_channel_data.get_zone_data()
+
+    areas = []
+    for item in zone_data['items']:
+        if item.get('state','') == state_code:
+            areas.append(item)
+            
+    return areas
+
+
+def get_country_from_code(country_code):
+    country_data = handle_channel_data.get_country_data()
+
+    country = {}
+    for item in country_data['items']:
+        if item['reduced_code'] == country_code:
+            country = item
+            break
+            
+    return country
+
+
+def get_state_from_code(state_code):
+    country_data = handle_channel_data.get_country_data()
+
+    state = {}
+    for item in country_data['items']:
+        states = item.get('states', [])
+        for item2 in states:
+            if item2['code'] == state_code:
+                state = item2
+                break
+            
+    return state
+

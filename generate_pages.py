@@ -15,6 +15,8 @@ ALTITUDE_FIELD = 'altitude'
 GUIDES_FIELD = 'guides'
 SECTORS_FIELD = 'sectors'
 AFFILIATE_GUIDES = 'affiliate_guides'
+COUNTRY_CODE_FIELD = 'country'
+STATE_CODE_FIELD = 'state'
 ROCK_TYPE_FIELD = 'rock_type'
 OVERVIEW_FIELD = 'overview'
 
@@ -51,6 +53,14 @@ def main():
         #playlists
         playlists = utils.zone_helpers.get_playlists_from_zone(area[ZONE_CODE_FIELD])
 
+        #country
+        country = utils.zone_helpers.get_country_from_code(area[COUNTRY_CODE_FIELD])
+        country_name = country.get('name','')[0] if country else ''
+
+        state = utils.zone_helpers.get_state_from_code(area.get(STATE_CODE_FIELD,''))
+        state_code = state.get('code','') if state else ''
+        state_name = state.get('name','')[0] if state else ''
+
         #overview
         overview = area.get("overview", [""])[0]
         
@@ -70,8 +80,13 @@ def main():
             playlists=playlists,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
-            alt=int(area[ALTITUDE_FIELD]),
-            zone=area[NAME_FIELD])
+            alt=int(area.get(ALTITUDE_FIELD,'0')),
+            zone=area[NAME_FIELD],
+            country_code=country.get('code',''),
+            country_name=country_name,
+            state_code=state_code,
+            state_name=state_name
+        )
 
         with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
             template.write(output)

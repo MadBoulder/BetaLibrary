@@ -26,6 +26,14 @@ def main():
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
         problems_zone = utils.zone_helpers.get_problems_from_zone_code(zone_code)
         playlists = utils.zone_helpers.get_playlists_from_zone(zone_code)
+        
+        #country
+        country = utils.zone_helpers.get_country_from_code(zone['country'])
+        country_name = country.get('name','')[0] if country else ''
+
+        state = utils.zone_helpers.get_state_from_code(zone.get('state',''))
+        state_code = state.get('code','') if state else ''
+        state_name = state.get('name','')[0] if state else ''
 
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
@@ -46,7 +54,11 @@ def main():
                 sector=sector,
                 sector_code=slugify(sector[1]),
                 problems=problems,
-                video_id=video_id
+                video_id=video_id,
+                country_code=country.get('code',''),
+                country_name=country_name,
+                state_code=state_code,
+                state_name=state_name
             )
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')

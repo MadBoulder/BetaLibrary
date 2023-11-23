@@ -41,6 +41,8 @@ if __name__ == "__main__":
     create_sitemap("sitemap-zones.xml", get_files(["templates/zones"], True, ".html"))
     create_sitemap("sitemap-sectors.xml", get_files(["templates/sectors"], True, ".html"))
     create_sitemap("sitemap-problems.xml", get_files(["templates/problems"], True, ".html"))
+    create_sitemap("sitemap-countries.xml", get_files(["templates/countries"], True, ".html"))
+    create_sitemap("sitemap-states.xml", get_files(["templates/states"], True, ".html"))
     create_sitemap("sitemap-pdfs.xml", get_files(["data/zones"], True, ".pdf"))
     
     

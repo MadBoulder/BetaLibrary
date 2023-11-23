@@ -485,6 +485,9 @@ def regenerate_firebase_data(is_update=True):
     zone_data = get_zone_data_local()
     root.child('zone_data').set(zone_data)
     
+    country_data = get_country_data_local()
+    root.child('country_data').set(country_data)
+    
     num_climbers = len(list({video['climber'] for video in video_data['items']}))
     root.child('contributor_count').set(num_climbers)
 
@@ -503,6 +506,9 @@ def get_playlist_data():
 
 def get_zone_data():
     return get_element_from_firebase('zone_data')
+
+def get_country_data():
+    return get_element_from_firebase('country_data')
     
 def get_element_from_firebase(element_name):
     with firebase_lock:
@@ -554,6 +560,13 @@ def get_playlist_data_local():
 def get_zone_data_local():
     zone_data = {}
     with open('data/channel/zone_data.json', 'r', encoding='utf-8') as f:
+        zone_data = json.load(f)
+    return zone_data
+    
+
+def get_country_data_local():
+    zone_data = {}
+    with open('data/countries.json', 'r', encoding='utf-8') as f:
         zone_data = json.load(f)
     return zone_data
 

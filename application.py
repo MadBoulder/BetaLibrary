@@ -131,11 +131,6 @@ def favicon():
 @app.route('/robots.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
-    
-# countries
-@app.route('/countries.json')
-def get_countries():
-    return send_from_directory(os.path.join(app.root_path, 'data'), 'countries.json')
 
 # cache keys for zones
 def zone_cache_key():
@@ -151,14 +146,13 @@ def home():
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
 def zones():
-    with open('data/countries.json', 'r') as c_data:
-        country_data = json.load(c_data)
     # TODO: POST and GET methods are handled equally
     # if request.method == 'GET':
     # if request.method == 'POST':
     # each zone has: link, name, num.videos
     zones = get_zone_data()
     playlists = get_playlist_data()
+    country_data = handle_channel_data.get_country_data()
     return render_template(
         'bouldering-areas-list.html',
         zones=zones['items'],
@@ -541,6 +535,18 @@ def load_problem(page, problem_name):
 @app.route('/<string:page>/sector/<string:sector_name>') #deprecated
 def load_sector(page, sector_name):
     return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
+
+
+@app.route('/countries/<string:country_name>')
+@app.route('/templates/countries/<string:country_name>.html')
+def load_country(country_name):
+    return render_template(f'countries/{slugify(country_name)}.html')
+
+
+@app.route('/states/<string:state_name>')
+@app.route('/templates/states/<string:state_name>.html')
+def load_state(state_name):
+    return render_template(f'states/{slugify(state_name)}.html')
 
 
 # this route is used for rendering maps inside an iframe

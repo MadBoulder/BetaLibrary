@@ -1,0 +1,129 @@
+{% extends "templates/templates/country_page_layout.html" %}
+
+{% block title %}{{ state_name }} Boulder{% endblock %} 
+{% block description %}{{ state_name }} Boulder{% endblock%} 
+{% block head %}
+<link rel="canonical" href="https://www.madboulder.org/states/{{state_code}}">
+{% endblock%} 
+
+{% block name %} {{ state_name }} {% endblock %} 
+
+{% block tree %}
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
+	> 
+   <a href="/countries/{{country_code}}" class="zone-header-tree-link">{{ country_name }}</a>
+{% endblock %} 
+
+{% block body %}
+	<h2 style="clear:both;display:block" class="">{% raw %} {{ _("List of Areas") }} {% endraw %}</h2>
+	<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
+		<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+		<!-- Sort order -->
+		<div class="btn-group mb-2 joint-btns">
+			<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+				<select id="sort-criteria" onchange="ReorderZones()">
+					<option value="alph" selected>Alphabetically</option>
+					<option value="nvid">Number of videos</option>
+				</select>
+				<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+					<i class="fas fa-angle-up"></i>
+				</button>
+				<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+					<i class="fas fa-angle-down"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+	<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+		{% for area in areas %}
+			<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
+				<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
+					<div class="card-body">
+						<div class="card-body-image-container">
+							<div class="card-body-image-container-container">
+								<img class="card-body-image">
+							</div>
+						</div>
+						<div class="card-body-title-container">
+							<h5 class="text-bold card-title">{{ area['name'] }}</h5>
+							<p class="card-text">
+							</p>
+						</div>
+					</div>
+				</a>
+			</div>
+		{% endfor %}
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				var areas = {{ areas | tojson | safe }};
+				var playlists = {{ playlists | tojson | safe }};
+				areas.forEach(function(area) {
+					var zoneCode = area.zone_code;
+					var foundElement = playlists.find(function(playlist) {
+						return playlist.zone_code === zoneCode;
+					});
+					if (foundElement) {
+						var card = document.getElementById(zoneCode + "_" + area.country);
+						var cardImage = card.querySelector(".card-body-image");
+						cardImage.src = foundElement.thumbnail;
+						var cardText = card.querySelector(".card-text");
+						var videoCount = foundElement.video_count;
+						cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+						cardText.setAttribute("data-videos", videoCount);
+					}
+				});
+			});				
+		</script>
+		<script>
+			function Sort(asc) {
+			  var criteria = $("#sort-criteria")[0].value;
+			  $(".custom-card").sort(function(a, b) {
+				if (criteria==="nvid") {
+				  var aValue = parseInt($(a).find("p")[0].dataset.videos);
+				  var bValue = parseInt($(b).find("p")[0].dataset.videos);
+				  return (asc ? 1 : -1) * (aValue - bValue);
+				}
+				else if (criteria==="alph") {
+				  return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+				}
+			  }).appendTo('#zones-list');
+			  sessionStorage.setItem("sortCriteria", criteria);
+			  if(asc){
+				  sessionStorage.setItem("sortOrder", "asc");
+				  $("#btn-asc").hide();
+				  $("#btn-desc").show();
+			  } 
+			  else{
+				  sessionStorage.setItem("sortOrder", "des");
+				  $("#btn-asc").show();
+				  $("#btn-desc").hide();
+			  }
+			};
+			
+			function ReorderZones() {
+			  if (sessionStorage.getItem("sortOrder") === "asc")
+				  Sort(asc=true);
+			  else if (sessionStorage.getItem("sortOrder") === "des")
+				  Sort(asc=true);
+			};
+			
+			window.addEventListener('load', function() {
+			  var $cards = $(".custom-card");
+			
+			  $("#search-zone").keyup(function() {
+				  var val = $.trim(this.value).toLowerCase();
+				  if (val === "")
+					  $cards.show();
+				  else {
+					$cards.hide();
+					$cards.each(function(){
+					  if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
+						$(this).show();
+					  }
+					});
+				  }
+			  });
+			});
+		  </script>
+	</div>
+{% endblock %}
