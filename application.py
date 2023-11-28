@@ -158,7 +158,7 @@ def zones():
         zones=zones['items'],
         playlists=playlists['items'],
         countries=app.config['COUNTRIES'],
-        country_data=country_data)
+        country_data=country_data['items'])
 
 
 @app.route('/area-problem-finder', methods=['GET', 'POST'])

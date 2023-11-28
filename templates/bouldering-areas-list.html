@@ -26,10 +26,10 @@
             <div class="form-group">
               <div class="row d-flex justify-content-center mt-100">
                 <div class="col-md-6" id="inactive-countries-list"> 
-                  {% for country in countries %}
-                  <div class="active-filter-selection row" id="{{ country }}">
+                  {% for country in country_data %}
+                  <div class="active-filter-selection row" id="{{ country['reduced_code'] }}" data-country-name="{{ country['name'][0] }}"">
                     <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
-                      {{ country }}
+                      {{ country['name'][0] }}
                     </span>
                     <div class="col-6" style="display: flex; justify-content: flex-end;">
                       <button class="btn" onclick="addElement(this)">
@@ -164,9 +164,10 @@
   };
   
   function removeElement(element) {
-      var text_to_place = $(element).parent()[0].id;
+      var id_to_place = $(element).parent()[0].id;
+      var text_to_place = $(element).parent().data('country-name');
       $("#inactive-countries-list").append(
-        '<div class="active-filter-selection row" id="' + text_to_place + '">' +
+        '<div class="active-filter-selection row" id="' + id_to_place + '">' +
           '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
             text_to_place +
           '</span>' +
@@ -181,16 +182,17 @@
       $(element).parent().remove();
       sortCountryNodesAlphabetically();
       updateListOfZones();
-      sessionStorage.setItem(text_to_place, "inactive");
+      sessionStorage.setItem(id_to_place, "inactive");
       // Reset searchbox
       $("#search-zone")[0].value = "";
   };
   
   function addElement(element) {
       // Add to active selection list:
-      var text_to_place = $(element).parent().parent()[0].id;
+      var id_to_place = $(element).parent().parent()[0].id;
+      var text_to_place = $(element).parent().parent().data('country-name');
       $("#selected-countries").append(
-        '<div class="active-filter-selection" id="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
+        '<div class="active-filter-selection" id="'+ id_to_place +'" data-country-name="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
         text_to_place +
         '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
       );
@@ -199,7 +201,7 @@
       $(element).parent().parent().remove();
       sortCountryNodesAlphabetically();
       updateListOfZones();
-      sessionStorage.setItem(text_to_place, "active");
+      sessionStorage.setItem(id_to_place, "active");
       // close modal if open
       if (($("#country-modal").data('bs.modal') || {})._isShown)
         $('#country-modal').modal('toggle');
