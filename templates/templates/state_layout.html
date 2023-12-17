@@ -37,6 +37,8 @@
 	<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
 		{% for area in areas %}
 			<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
+				{% set found_element = playlists | selectattr('zone_code', 'equalto', area['zone_code']) | first %}
+				{% if found_element %}
 				<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
 					<div class="card-body">
 						<div class="card-body-image-container">
@@ -51,29 +53,20 @@
 						</div>
 					</div>
 				</a>
+				<script>
+					document.addEventListener("DOMContentLoaded", function() {
+                        var card = document.getElementById("{{ area['zone_code'] }}_{{ area['country'] }}");
+                        var cardImage = card.querySelector(".card-body-image");
+                        cardImage.src = "{{ found_element.thumbnail }}";
+                        var cardText = card.querySelector(".card-text");
+                        var videoCount = {{ found_element.video_count }};
+                        cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+                        cardText.setAttribute("data-videos", videoCount);
+                    });		
+				</script>
+				{% endif %}
 			</div>
 		{% endfor %}
-		<script>
-			document.addEventListener("DOMContentLoaded", function() {
-				var areas = {{ areas | tojson | safe }};
-				var playlists = {{ playlists | tojson | safe }};
-				areas.forEach(function(area) {
-					var zoneCode = area.zone_code;
-					var foundElement = playlists.find(function(playlist) {
-						return playlist.zone_code === zoneCode;
-					});
-					if (foundElement) {
-						var card = document.getElementById(zoneCode + "_" + area.country);
-						var cardImage = card.querySelector(".card-body-image");
-						cardImage.src = foundElement.thumbnail;
-						var cardText = card.querySelector(".card-text");
-						var videoCount = foundElement.video_count;
-						cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-						cardText.setAttribute("data-videos", videoCount);
-					}
-				});
-			});				
-		</script>
 		<script>
 			function Sort(asc) {
 			  var criteria = $("#sort-criteria")[0].value;
