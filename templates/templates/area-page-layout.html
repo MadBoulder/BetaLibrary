@@ -72,34 +72,37 @@
 				</li>
 			  </div>
 			  <script>
-				
 				$(document).ready(function () {
 					checkHash();
 					$('.nav-tabs').tabdrop();
 					
 					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
 						checkHash();
 					});
 					
 					function checkHash() {
+						console.log("checkHash");
 						var hash = window.location.hash;
 						if (hash) {
 							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
-						} else {
+							console.log("show tab: ", hash);
+						} 
+						else {
 							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
 						}
 					}
 				});
 				
 				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-					$('html, body').animate({ scrollTop: 0 }, 'fast');
-					var hash = $(e.target).attr('href');
-					window.location.hash = hash;
-				});
+					console.log("Tab shown:", e.target);
 
-				window.onload = function() {
-					$('html, body').animate({ scrollTop: 0 }, 'fast');
-				};
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
 			</script>
 		  </nav>
         </div>

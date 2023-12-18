@@ -97,34 +97,37 @@ crossorigin="anonymous"></script>
 				</li>
 			  </div>
 			  <script>
-				
 				$(document).ready(function () {
 					checkHash();
 					$('.nav-tabs').tabdrop();
 					
 					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
 						checkHash();
 					});
 					
 					function checkHash() {
+						console.log("checkHash");
 						var hash = window.location.hash;
 						if (hash) {
 							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
-						} else {
+							console.log("show tab: ", hash);
+						} 
+						else {
 							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
 						}
 					}
 				});
 				
 				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-					$('html, body').animate({ scrollTop: 0 }, 'fast');
-					var hash = $(e.target).attr('href');
-					window.location.hash = hash;
-				});
+					console.log("Tab shown:", e.target);
 
-				window.onload = function() {
-					$('html, body').animate({ scrollTop: 0 }, 'fast');
-				};
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
 			</script>
 		  </nav>
         </div>
@@ -331,6 +334,7 @@ crossorigin="anonymous"></script>
 		<iframe
 			src="maps/sfu-boulder"
 			frameborder="0"
+		  loading="lazy"
 			allowfullscreen
 			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
 		</iframe>
@@ -396,6 +400,7 @@ crossorigin="anonymous"></script>
         <iframe
           src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMtOnSbrr4x8_xhONq7VNT-"
           frameborder="0"
+          loading="lazy"
           allowfullscreen
           style="
             position: absolute;
@@ -430,7 +435,7 @@ crossorigin="anonymous"></script>
 				
 			</tr>
 		</thead>
-		<tbody>
+		<tbody style="vertical-align: middle;">
 			
 		</tbody>
 	</table>
