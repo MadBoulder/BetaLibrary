@@ -22,6 +22,7 @@ from slugify import slugify
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
+import mailerlite as MailerLite
 
 import google.auth
 from googleapiclient.discovery import build
@@ -34,6 +35,7 @@ EXTENSION = '.html'
 NUM_RESULTS = 4
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
+MAILERLITE_API_KEY = os.environ['MAILERLITE_API_KEY']
 
 # create and configure the application object
 app = Flask(__name__, static_folder='static')
@@ -262,9 +264,16 @@ def upload_file():
     if uploaded_file:
         try:
             upload_to_google_drive(uploaded_file)
+
+            permissionNewsletter = request.form.get('permission-newsletter')
+            if permissionNewsletter:
+                email = request.form['email']
+                if email:
+                    register_new_subscriber(email)
             
-            msg_body = 'Climber: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
+            msg_body = 'Climber: {}\nEmail: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
                 request.form['climber'],
+                request.form['email'],
                 request.form['name'],
                 request.form['grade'],
                 request.form['zone'],
@@ -321,6 +330,39 @@ def upload_to_google_drive(file):
             raise Exception("Upload failed: Couldn't create Drive service")
     except Exception as e:
         raise Exception(e)
+        
+        
+def empty_google_drive():
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
+    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    drive_service = build('drive', 'v3', credentials=credentials)
+    # Get the list of all files in Google Drive
+    file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
+
+    # Delete each file
+    for file in file_list:
+        drive_service.files().delete(fileId=file['id']).execute()
+
+    # Empty the trash
+    drive_service.files().emptyTrash().execute()
+
+
+def register_new_subscriber(email):
+    mailerlite = MailerLite.Client({
+    'api_key': MAILERLITE_API_KEY
+    })
+
+    try:
+        existing_subscriber = mailerlite.subscribers.get_subscriber_by_email(email)
+    except:
+        existing_subscriber = None
+
+    if not existing_subscriber:
+        mailerlite.subscribers.create(email=email)
+        print("new email subscribed")
+
+
 
 
 @app.route('/progress', methods=['GET'])
