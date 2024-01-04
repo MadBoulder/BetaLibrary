@@ -484,6 +484,16 @@ def cookies():
 @app.route('/bouldering')
 def bouldering():
     return render_template('bouldering.html')
+
+
+@app.route('/subscribe')
+def subscribe():
+    return render_template('subscribe.html')
+
+
+@app.route('/subscription-confirmed')
+def subscription_confirmed():
+    return render_template('subscription-confirmed.html')
     
 
 # Cache until
