@@ -17,7 +17,7 @@
 			<div id="searchElement" style="display: block; vertical-align: middle;">
 				<form id="searchForm" class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
 					<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
-					<div class="input-group-append">
+					<div class="input-group-append" style="display: flex;">
 					  <button class="btn" type="submit">
 						<i class="fa fa-search" style="font-size: 1.25rem;"></i>
 					  </button>
@@ -50,15 +50,26 @@
 					<h2 class="text-bold">{{ _("Areas") }}</h2>
 				</div>
 				{% for zone in zones %}
-					<a href="/{{ zone['zone_code'] }}" class="result-item">
+					<a id="{{ zone['zone_code'] }}_{{ zone['country'] }}" href="/{{ zone['zone_code'] }}" class="result-item">
 						<div class="result-item-header">
 							<div class="result-item-title-container">
 								<h4 class="result-item-title text-bold">{{ zone["name"] }}</h4>
 							</div>
-							<div class="result-item-subtitle-container">{{ zone["video_count"] }} {{ _("Problems") }}</div>
+							<div class="result-item-subtitle-container">0 {{ _("Problems") }}</div>
 						</div>
 						<div class="result-item-description-container">{{ zone["country"] }}</div>
 					</a>
+					{% set found_element = playlists | selectattr('zone_code', 'equalto', zone['zone_code']) | first %}
+					{% if found_element %}
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("{{ zone['zone_code'] }}_{{ zone['country'] }}");
+							var cardText = card.querySelector(".result-item-subtitle-container");
+							var videoCount = {{ found_element.video_count }};
+            				cardText.innerHTML = videoCount + " {{ _('Problems') }}";
+						});		
+					</script>
+					{% endif %}
 				{% endfor %}
 				{%- if not zones -%}
 					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
@@ -174,14 +185,14 @@ $(document).ready(function() {
 fetch('/countries.json')
 	.then((response) => response.json())
 	.then((data) => {
-		const countryMappings = data;
+		const countryItems = data.items;
 
 		document.querySelectorAll('.result-item-description-container').forEach((descriptionContainer) => {
 			const countryCode = descriptionContainer.textContent.trim();
-			const country = countryMappings[countryCode];
-			if (country) {
+			const countryItem = countryItems.find((item) => item.reduced_code === countryCode);
+			if (countryItem) {
 				var current_lang = $("#current-language")[0].childNodes[0].nodeValue;
-				const localizedCountryName = country[current_lang]
+				const localizedCountryName = countryItem.name[current_lang === "en" ? 0 : 1];
 				if (localizedCountryName) {
 					descriptionContainer.textContent = localizedCountryName;
 				}

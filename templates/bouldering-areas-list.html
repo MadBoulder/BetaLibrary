@@ -76,43 +76,36 @@
 			<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
 				{% for zone in zones %}
 					<div class="custom-card" id="{{ zone['zone_code'] }}_{{zone['country']}}">
-						<a href="/{{ zone['zone_code'] }}" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">{{ zone['name'] }}</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
+            {% set found_element = playlists | selectattr('zone_code', 'equalto', zone['zone_code']) | first %}
+            {% if found_element %}
+              <a href="/{{ zone['zone_code'] }}" style="text-decoration: none;">
+                <div class="card-body">
+                  <div class="card-body-image-container">
+                    <div class="card-body-image-container-container">
+                      <img loading="lazy" class="card-body-image">
+                    </div>
+                  </div>
+                  <div class="card-body-title-container">
+                    <h5 class="text-bold card-title">{{ zone['name'] }}</h5>
+                    <p class="card-text">
+                    </p>
+                  </div>
+                </div>
+              </a>
+              <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var card = document.getElementById("{{ zone['zone_code'] }}_{{ zone['country'] }}");
+                    var cardImage = card.querySelector(".card-body-image");
+                    cardImage.src = "{{ found_element.thumbnail }}";
+                    var cardText = card.querySelector(".card-text");
+                    var videoCount = {{ found_element.video_count }};
+                    cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+                    cardText.setAttribute("data-videos", videoCount);
+                });		
+              </script>
+            {% endif %}
 					</div>
 				{% endfor %}
-				<script>
-					document.addEventListener("DOMContentLoaded", function() {
-						var zones = {{ zones | tojson | safe }};
-						var playlists = {{ playlists | tojson | safe }};
-						zones.forEach(function(zone) {
-							var zoneCode = zone.zone_code;
-							var foundElement = playlists.find(function(playlist) {
-								return playlist.zone_code === zoneCode;
-							});
-							if (foundElement) {
-								var card = document.getElementById(zoneCode + "_" + zone.country);
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = foundElement.thumbnail;
-								var cardText = card.querySelector(".card-text");
-								var videoCount = foundElement.video_count;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							}
-						});
-					});				
-				</script>
 			</div>
 		</div>
 	</main>

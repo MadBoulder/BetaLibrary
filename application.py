@@ -32,7 +32,6 @@ from google.oauth2 import service_account
 
 
 EXTENSION = '.html'
-NUM_RESULTS = 4
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
 MAILERLITE_API_KEY = os.environ['MAILERLITE_API_KEY']
@@ -180,25 +179,23 @@ def search():
     if query:
         start_time = time.time()
         threads = []
+        max_score = 0.01
 
         def search_zone():
             search_zone_start_time = time.time()
-            search_results['zones'] = utils.helpers.search_zone(
-                query, NUM_RESULTS, exact_match=True)
+            search_results['zones'] = utils.helpers.search_zone( query, max_score=max_score)
             search_zone_elapsed_time = time.time() - search_zone_start_time
             print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
 
         def search_sector():
             search_sector_start_time = time.time()
-            search_results['sectors'] = utils.helpers.search_sector(
-                query, NUM_RESULTS, exact_match=True)
+            search_results['sectors'] = utils.helpers.search_sector( query, max_score=max_score)
             search_sector_elapsed_time = time.time() - search_sector_start_time
             print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
 
         def search_problem():
             search_problem_start_time = time.time()
-            search_results['problems'] = utils.helpers.search_problem(
-                query, NUM_RESULTS, exact_match=True)
+            search_results['problems'] = utils.helpers.search_problem( query, max_score=max_score)
             search_problem_elapsed_time = time.time() - search_problem_start_time
             print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
 
@@ -226,14 +223,17 @@ def search():
 
         total_elapsed_time = time.time() - start_time
         print(f"Search execution time: {total_elapsed_time} seconds")
-        
+
+        playlists=get_playlist_data()
+
         return render_template(
             'area-problem-finder.html',
             zones=search_results.get('zones', []),
             sectors=search_results.get('sectors', []),
             problems=search_results.get('problems', []),
             videos=search_results.get('videos', []),
-            search_term=query
+            search_term=query,
+            playlists=playlists['items']
         )
     return render_template(
         'area-problem-finder.html',
@@ -383,6 +383,12 @@ def sitemap_file(sitemap_name):
         return send_file(sitemap_filename, mimetype='application/xml')
     else:
         return "Invalid sitemap name"
+    
+
+@app.route('/countries.json')
+def countries_json():
+    file_path = os.path.join(app.root_path, 'data') + '/' + 'countries.json'
+    return send_file(file_path)
     
 
 @app.route('/random', methods=['GET', 'POST'])

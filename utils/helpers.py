@@ -152,34 +152,22 @@ def measure_similarity(query, zone):
     return levenshtein, longest_sub
 
 
-def search_zone(query, num_results=4, exact_match=False):
+def search_zone(query, max_score=0):
     zone_data = handle_channel_data.get_zone_data()
-    return search(query, zone_data['items'], num_results, exact_match)
+    return search(query, zone_data['items'], max_score)
 
 
-def search_sector(query, num_results=4, exact_match=False):
+def search_sector(query, max_score=0):
     sectors = load_sectors()
-    return search(query, sectors, num_results, exact_match)
+    return search(query, sectors, max_score)
 
 
-def search_problem(query, num_results=4, exact_match=False):
+def search_problem(query, max_score=0):
     data = handle_channel_data.get_video_data_search_optimized()
-    return search(query, data['items'], num_results, exact_match)
+    return search(query, data['items'], max_score)
 
     
-def simple_search(query, items, num_results=4, exact_match=False):
-    """
-    From an input search query, return at least the 4 best
-    matches from the bouldering zones. A perfect match 
-    (which is achieved when the input query is completely contained
-    in the zone's name) is always returned. If the number of perfect
-    matches is less than 4 then we add partial matches, via a score,
-    until the list of results contains 4 entries.
-
-    The score is computed as:
-        - 0 if perfect match
-        - levenshtein / (longest substring ^ 4 + 1) otherwise
-    """
+def simple_search(query, items, max_score=0):
     results = []
     
     if not query:
@@ -192,8 +180,16 @@ def simple_search(query, items, num_results=4, exact_match=False):
 
     return results
     
-def search(query, items, num_results=4, exact_match=False):
-   
+
+def search(query, items, max_score=0):
+    """
+    From an input search query, return all matches with a score of 0 or lower than max_score.
+
+    The score is computed as:
+        - 0 if perfect match
+        - levenshtein / (longest substring ^ 4 + 1) otherwise
+    """
+
     if not query:
         return []
     
@@ -205,22 +201,12 @@ def search(query, items, num_results=4, exact_match=False):
         # add a score of 0
         if long_sub == len(query):
             item['score'] = 0
-    itemps_to_show = [item for item in items if item['score'] == 0]
+    itemps_to_show = [item for item in items if item['score'] <= max_score]
+    # Sort by score
+    itemps_to_show.sort(key=lambda x: x['score'])
     
-    if exact_match:
-        return itemps_to_show
-
-    # Add items required to reach min number of results if non exact
-    # matches should be included
-    if len(itemps_to_show) < num_results:
-        # First remove already added items
-        no_match_items = [item for item in items if item['score'] != 0]
-        # Sort by score
-        no_match_items.sort(key=lambda x: x['score'])
-        # Add the ones with the lowest score
-        itemps_to_show += no_match_items[0:num_results-len(itemps_to_show)]
-
     return itemps_to_show
+
 
 def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6):
     """
