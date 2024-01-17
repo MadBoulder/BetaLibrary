@@ -85,25 +85,26 @@ def load_map(area, datafile, generate_ids, return_html=True):
     #    sector_lyr.add_child(sector_map)
     #
     # Parking areas
-    for parking in area_data['parkings']:
-        parking_icon = CustomIcon(
-            'static/images/icons/parking.png',
-            icon_size=(ICON_SIZE, ICON_SIZE)
-        )
-        parking_icon._id = generate_ids.next_id()  # reassign id
-        parking_marker = folium.Marker(
-            location=[parking['parking_latitude'],
-                      parking['parking_longitude']],
-            popup=utils.js_helpers.generate_parking_html([parking['parking_latitude'],
-                                                          parking['parking_longitude']]),
-            tooltip='Parking',
-            icon=parking_icon
-        )
-        parking_marker._id = generate_ids.next_id()  # reassign id
-        for child in parking_marker._children.values():
-            child._id = generate_ids.next_id()
+    if 'parkings' in area_data and area_data['parkings']:
+        for parking in area_data['parkings']:
+            parking_icon = CustomIcon(
+                'static/images/icons/parking.png',
+                icon_size=(ICON_SIZE, ICON_SIZE)
+            )
+            parking_icon._id = generate_ids.next_id()  # reassign id
+            parking_marker = folium.Marker(
+                location=[parking['parking_latitude'],
+                        parking['parking_longitude']],
+                popup=utils.js_helpers.generate_parking_html([parking['parking_latitude'],
+                                                            parking['parking_longitude']]),
+                tooltip='Parking',
+                icon=parking_icon
+            )
+            parking_marker._id = generate_ids.next_id()  # reassign id
+            for child in parking_marker._children.values():
+                child._id = generate_ids.next_id()
 
-        sector_lyr.add_child(parking_marker)
+            sector_lyr.add_child(parking_marker)
 
     # Approximation
     if area_data.get('approximation', None) is not None:

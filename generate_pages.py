@@ -14,7 +14,7 @@ LONGITUDE_FIELD = 'longitude'
 ALTITUDE_FIELD = 'altitude'
 GUIDES_FIELD = 'guides'
 SECTORS_FIELD = 'sectors'
-AFFILIATE_GUIDES = 'affiliate_guides'
+LINKS_FIELD = 'links'
 COUNTRY_CODE_FIELD = 'country'
 STATE_CODE_FIELD = 'state'
 ROCK_TYPE_FIELD = 'rock_type'
@@ -34,11 +34,10 @@ def main():
     playlists = {}
     for area in areas['items']:
         print("Creating zone map of " + area[NAME_FIELD])
-        # get external guide links
+        # get external links
+        links = [link for link in area.get(LINKS_FIELD, []) if link.get(LINK_FIELD)]
+        # get external guides
         guides = [guide for guide in area.get(GUIDES_FIELD, []) if guide.get(LINK_FIELD)]
-        # get affiliate guides links
-        affiliate_guides = [affiliate_guide[LINK_FIELD]
-                            for affiliate_guide in area.get(AFFILIATE_GUIDES, [])]
 
         # problems
         problems = utils.zone_helpers.get_problems_from_zone_code(area[ZONE_CODE_FIELD])
@@ -74,8 +73,8 @@ def main():
             overview=overview,
             file_name=area[ZONE_CODE_FIELD],
             tag_name=area[NAME_FIELD].replace("'", r"\'"),
-            guide_list=guides,
-            affiliate_guide_list=affiliate_guides,
+            links_list=links,
+            guides_list=guides,
             map_url='maps/'+area[ZONE_CODE_FIELD],
             playlists=playlists,
             lat=area[LATITUDE_FIELD],

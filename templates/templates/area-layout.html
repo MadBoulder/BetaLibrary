@@ -205,29 +205,41 @@ crossorigin="anonymous"></script>
 		</div>
 	</div>
 </div>
-{% if affiliate_guide_list %}
-	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: center;">
-		{% for affiliate_guide in affiliate_guide_list %}
-			<div class="mr-2" style="margin-right: 1rem;">
-				<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="{{ affiliate_guide }}">
-				</iframe>
-			</div>
+{% if guides_list %}
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		{% for guide in guides_list %}
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="{{ guide["link"] }}" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="{{ guide["thumbnail"] }}" alt="{{ guide["name"] }}">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">{{ guide["name"] }}</h6>
+            </div>
+          </div>
+        </a>
+      </div>
 		{% endfor %}
 	</div>
 {% endif %}
-<div class="list-group">
-	{% for guide in guide_list %}
-		<a id="guide_link"  href="{{ guide["link"] }}" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-			<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-			{{ guide["name"] }}
-			{% if guide["free"] %}
-				<button class="btn-free-madboulder text-bold">
-					{% raw %} {{ _("Free") }} {% endraw %}
-				</button>
-			{% endif %}
-		</a>
-	{% endfor %}
-</div>
+{% if links_list %}
+  <div class="list-group">
+    {% for link in links_list %}
+      <a id="guide_link"  href="{{ link["link"] }}" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        {{ link["name"] }}
+        {% if link["free"] %}
+          <button class="btn-free-madboulder text-bold">
+            {% raw %} {{ _("Free") }} {% endraw %}
+          </button>
+        {% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
 {% endblock %} 
 
 {% block map %}
