@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Buttermilk Country  Boulder | MadBoulder</title>
+	<meta name="description" content="Buttermilk Country bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/buttermilk-country">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/california" class="zone-header-tree-link">California</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Buttermilk Country 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="37.328648" />
+  <input type="hidden" id="lng" name="lng_val" value="-118.575664" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Buttermilk Country
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Buttermilk Country
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/HeLhMD5fgak/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/HeLhMD5fgak/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/HeLhMD5fgak/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/HeLhMD5fgak/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Buttermilk Country</h4>
+								<p>Buttermilk Country, ubicado en California, Estados Unidos, es un destino emblemático de la escalada en bloque. Sus enormes bloques erráticos glaciares ofrecen un parque de juegos con placas inclinadas, cantos y fisuras. Los escaladores acuden aquí durante todo el año, siendo el otoño la temporada ideal, por la atracción de problemas de clase mundial y la belleza escénica.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 56
+								
+									<br>
+									<b>Tipo de Roca</b> Igneous
+								
+								
+									<br>
+									<b>Altitud</b> 1952m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3RS7S6I" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81-IWko9lkL._SL1174_.jpg" alt="Bishop Bouldering Select Guidebook">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Bishop Bouldering Select Guidebook</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/buttermilk-country"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/bardini-boulders" class="table-row-name text-bold">Bardini Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/buttermilks-main" class="table-row-name text-bold">Buttermilks Main</a>
+					</td>
+					<td class="text-center">19</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/dal-es-camp" class="table-row-name text-bold">Dal'es Camp</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/dale-s-camp" class="table-row-name text-bold">Dale's Camp</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/get-carter" class="table-row-name text-bold">Get Carter</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/get-carter-boulder" class="table-row-name text-bold">Get Carter Boulder</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/main" class="table-row-name text-bold">Main</a>
+					</td>
+					<td class="text-center">18</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/peabody-boulders" class="table-row-name text-bold">Peabody Boulders</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/pollen-grains" class="table-row-name text-bold">Pollen Grains</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/buttermilk-country/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO6w9-UYqAzFuG7rcxk_0cs"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="A Scanner Darkly, V12. Buttermilk Country" href="/problems/buttermilk-country/a-scanner-darkly" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: A Scanner Darkly, V12. Buttermilk Country" src="https://img.youtube.com/vi/HeLhMD5fgak/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/a-scanner-darkly" class="table-row-name text-bold">A Scanner Darkly</a>
+            </div>
+					</td>
+					<td>V12</td>
+					<td>Get Carter</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ambrosia, V11. Buttermilk Country" href="/problems/buttermilk-country/ambrosia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ambrosia, V11. Buttermilk Country" src="https://img.youtube.com/vi/iQ7YbgMVgvY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/ambrosia" class="table-row-name text-bold">Ambrosia</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Peabody Boulders</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Birthday Direct, V3. Buttermilk Country" href="/problems/buttermilk-country/birthday-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Birthday Direct, V3. Buttermilk Country" src="https://img.youtube.com/vi/AFSHU7-Weew/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/birthday-direct" class="table-row-name text-bold">Birthday Direct</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bowling Pin, V4. Buttermilk Country" href="/problems/buttermilk-country/bowling-pin" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bowling Pin, V4. Buttermilk Country" src="https://img.youtube.com/vi/tYpcuobnXIA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/bowling-pin" class="table-row-name text-bold">Bowling Pin</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bowling Pin, V6 (sit). Buttermilk Country" href="/problems/buttermilk-country/bowling-pin" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bowling Pin, V6 (sit). Buttermilk Country" src="https://img.youtube.com/vi/5pj95bKnnT0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/bowling-pin" class="table-row-name text-bold">Bowling Pin</a>
+            </div>
+					</td>
+					<td>V6 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buttermilk Stem, V4 (sit). Buttermilk Country" href="/problems/buttermilk-country/buttermilk-stem" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buttermilk Stem, V4 (sit). Buttermilk Country" src="https://img.youtube.com/vi/sV2MErNtCys/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/buttermilk-stem" class="table-row-name text-bold">Buttermilk Stem</a>
+            </div>
+					</td>
+					<td>V4 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Change of Heart, V6. Buttermilk Country" href="/problems/buttermilk-country/change-of-heart" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Change of Heart, V6. Buttermilk Country" src="https://img.youtube.com/vi/7SYxd1S4GUE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/change-of-heart" class="table-row-name text-bold">Change of Heart</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Checkerboard, V8. Buttermilk Country" href="/problems/buttermilk-country/checkerboard" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Checkerboard, V8. Buttermilk Country" src="https://img.youtube.com/vi/H-xeDE4alzY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/checkerboard" class="table-row-name text-bold">Checkerboard</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cheezy Brit, V7 (sit). Buttermilk Country" href="/problems/buttermilk-country/cheezy-brit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cheezy Brit, V7 (sit). Buttermilk Country" src="https://img.youtube.com/vi/qUb2rR9fN-c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/cheezy-brit" class="table-row-name text-bold">Cheezy Brit</a>
+            </div>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cindy Swank, V7. Buttermilk Country" href="/problems/buttermilk-country/cindy-swank" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cindy Swank, V7. Buttermilk Country" src="https://img.youtube.com/vi/pPB5af7serY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/cindy-swank" class="table-row-name text-bold">Cindy Swank</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cocktail Sauce, V8. Buttermilk Country" href="/problems/buttermilk-country/cocktail-sauce" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cocktail Sauce, V8. Buttermilk Country" src="https://img.youtube.com/vi/JpOX1_RN89s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/cocktail-sauce" class="table-row-name text-bold">Cocktail Sauce</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Ramp, 7A. Gallt yr Ogof" href="/problems/buttermilk-country/cocktail-sauce" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Ramp, 7A. Gallt yr Ogof" src="https://img.youtube.com/vi/S2BJeifUlNA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/cocktail-sauce" class="table-row-name text-bold">Cocktail Sauce</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Croft Problem, V8. Buttermilk Country" href="/problems/buttermilk-country/croft-problem" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Croft Problem, V8. Buttermilk Country" src="https://img.youtube.com/vi/xNMtTBWpNz8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/croft-problem" class="table-row-name text-bold">Croft Problem</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Devoted, V8. Buttermilk Country" href="/problems/buttermilk-country/devoted" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Devoted, V8. Buttermilk Country" src="https://img.youtube.com/vi/Ah4TSKXpZQE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/devoted" class="table-row-name text-bold">Devoted</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Drone Militia, V6. Buttermilk Country" href="/problems/buttermilk-country/drone-militia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Drone Militia, V6. Buttermilk Country" src="https://img.youtube.com/vi/ibsnibDHEa4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/drone-militia" class="table-row-name text-bold">Drone Militia</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Evilution to the Lip, V10. Buttermilk Country" href="/problems/buttermilk-country/evilution-to-the-lip" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Evilution to the Lip, V10. Buttermilk Country" src="https://img.youtube.com/vi/oyvam4BP3fw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/evilution-to-the-lip" class="table-row-name text-bold">Evilution to the Lip</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fakir School, V10. Buttermilk Country" href="/problems/buttermilk-country/fakir-school" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fakir School, V10. Buttermilk Country" src="https://img.youtube.com/vi/SRXLSkbGCqk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/fakir-school" class="table-row-name text-bold">Fakir School</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Flyboy, V8 (sit). Buttermilk Country" href="/problems/buttermilk-country/flyboy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Flyboy, V8 (sit). Buttermilk Country" src="https://img.youtube.com/vi/ZfzVJarhtpA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/flyboy" class="table-row-name text-bold">Flyboy</a>
+            </div>
+					</td>
+					<td>V8 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Flyboy Arete, V5. Buttermilk Country" href="/problems/buttermilk-country/flyboy-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Flyboy Arete, V5. Buttermilk Country" src="https://img.youtube.com/vi/4xnQ2NMS4JM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/flyboy-arete" class="table-row-name text-bold">Flyboy Arete</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Get Carter, V7. Buttermilk Country" href="/problems/buttermilk-country/get-carter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Get Carter, V7. Buttermilk Country" src="https://img.youtube.com/vi/vR-mNM29EiA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/get-carter" class="table-row-name text-bold">Get Carter</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Get Carter</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gleaming the Cube, V8 (sit). Buttermilk Country" href="/problems/buttermilk-country/gleaming-the-cube" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gleaming the Cube, V8 (sit). Buttermilk Country" src="https://img.youtube.com/vi/D4QEiys9VbQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/gleaming-the-cube" class="table-row-name text-bold">Gleaming the Cube</a>
+            </div>
+					</td>
+					<td>V8 (sit)</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gleaming the Cube, V5. Buttermilk Country" href="/problems/buttermilk-country/gleaming-the-cube" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gleaming the Cube, V5. Buttermilk Country" src="https://img.youtube.com/vi/Gu1yJWb-Uwk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/gleaming-the-cube" class="table-row-name text-bold">Gleaming the Cube</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gleaming the Tube, V2. Buttermilk Country" href="/problems/buttermilk-country/gleaming-the-tube" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gleaming the Tube, V2. Buttermilk Country" src="https://img.youtube.com/vi/GuCbl5h_cP8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/gleaming-the-tube" class="table-row-name text-bold">Gleaming the Tube</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Go Granny Go Right Finish, V5. Buttermilk Country" href="/problems/buttermilk-country/go-granny-go-right-finish" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Go Granny Go Right Finish, V5. Buttermilk Country" src="https://img.youtube.com/vi/EH8WgGjaEWg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/go-granny-go-right-finish" class="table-row-name text-bold">Go Granny Go Right Finish</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Go Granny Ho, V7. Buttermilk Country" href="/problems/buttermilk-country/go-granny-ho" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Go Granny Ho, V7. Buttermilk Country" src="https://img.youtube.com/vi/Zpodh9L3R_w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/go-granny-ho" class="table-row-name text-bold">Go Granny Ho</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Green Wall Center, V6. Buttermilk Country" href="/problems/buttermilk-country/green-wall-center" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Green Wall Center, V6. Buttermilk Country" src="https://img.youtube.com/vi/kooZa9FGeGw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/green-wall-center" class="table-row-name text-bold">Green Wall Center</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Green Wall Essential, V2. Buttermilk Country" href="/problems/buttermilk-country/green-wall-essential" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Green Wall Essential, V2. Buttermilk Country" src="https://img.youtube.com/vi/Xivin6c-ons/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/green-wall-essential" class="table-row-name text-bold">Green Wall Essential</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="High Plains Drifter, V7. Buttermilk Country" href="/problems/buttermilk-country/high-plains-drifter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: High Plains Drifter, V7. Buttermilk Country" src="https://img.youtube.com/vi/G4ptP20tVb8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/high-plains-drifter" class="table-row-name text-bold">High Plains Drifter</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Iron Man Traverse, V4. Buttermilk Country" href="/problems/buttermilk-country/iron-man-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Iron Man Traverse, V4. Buttermilk Country" src="https://img.youtube.com/vi/RHb2nUdiKJs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/iron-man-traverse" class="table-row-name text-bold">Iron Man Traverse</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jedi Mind Tricks, V4. Buttermilk Country" href="/problems/buttermilk-country/jedi-mind-tricks" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jedi Mind Tricks, V4. Buttermilk Country" src="https://img.youtube.com/vi/ZC509-GfX8o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/jedi-mind-tricks" class="table-row-name text-bold">Jedi Mind Tricks</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Judge Not, V9. Buttermilk Country" href="/problems/buttermilk-country/judge-not" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Judge Not, V9. Buttermilk Country" src="https://img.youtube.com/vi/PiyQWfd-jVk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/judge-not" class="table-row-name text-bold">Judge Not</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Junior's Achievement, V7-8. Buttermilk Country" href="/problems/buttermilk-country/junior-s-achievement" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Junior's Achievement, V7-8. Buttermilk Country" src="https://img.youtube.com/vi/lu-qiUEjGfk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/junior-s-achievement" class="table-row-name text-bold">Junior's Achievement</a>
+            </div>
+					</td>
+					<td>V7-8</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lululator, V8 (low). Buttermilk Country" href="/problems/buttermilk-country/lululator" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lululator, V8 (low). Buttermilk Country" src="https://img.youtube.com/vi/T8HoAH0dcCU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/lululator" class="table-row-name text-bold">Lululator</a>
+            </div>
+					</td>
+					<td>V8 (low)</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Milk the Milks, V6. Buttermilk Country" href="/problems/buttermilk-country/milk-the-milks" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Milk the Milks, V6. Buttermilk Country" src="https://img.youtube.com/vi/6N4ILB97jS0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/milk-the-milks" class="table-row-name text-bold">Milk the Milks</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mini Me, V9. Buttermilk Country" href="/problems/buttermilk-country/mini-me" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mini Me, V9. Buttermilk Country" src="https://img.youtube.com/vi/tDwtYCdtEKA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/mini-me" class="table-row-name text-bold">Mini Me</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Moonraker, V8. Buttermilk Country" href="/problems/buttermilk-country/moonraker" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Moonraker, V8. Buttermilk Country" src="https://img.youtube.com/vi/xOVFAVFDoig/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/moonraker" class="table-row-name text-bold">Moonraker</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pain Grain, V7 (sit). Buttermilk Country" href="/problems/buttermilk-country/pain-grain" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pain Grain, V7 (sit). Buttermilk Country" src="https://img.youtube.com/vi/uMiqVXXFKR8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/pain-grain" class="table-row-name text-bold">Pain Grain</a>
+            </div>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Perfectly Chicken, V5. Buttermilk Country" href="/problems/buttermilk-country/perfectly-chicken" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Perfectly Chicken, V5. Buttermilk Country" src="https://img.youtube.com/vi/efbYNy_z_nQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/perfectly-chicken" class="table-row-name text-bold">Perfectly Chicken</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Boy and Girl Rocks), V0. Buttermilk Country" href="/problems/buttermilk-country/problem-3-boy-and-girl-rocks" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Boy and Girl Rocks), V0. Buttermilk Country" src="https://img.youtube.com/vi/1bVNrf4NsF8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/problem-3-boy-and-girl-rocks" class="table-row-name text-bold">Problem 3 (Boy and Girl Rocks)</a>
+            </div>
+					</td>
+					<td>V0</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Robinson's Rubber Tester, V0. Buttermilk Country" href="/problems/buttermilk-country/robinson-s-rubber-tester" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Robinson's Rubber Tester, V0. Buttermilk Country" src="https://img.youtube.com/vi/bY8GCAvZyqo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/robinson-s-rubber-tester" class="table-row-name text-bold">Robinson's Rubber Tester</a>
+            </div>
+					</td>
+					<td>V0</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Saigon, V6. Buttermilk Country" href="/problems/buttermilk-country/saigon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Saigon, V6. Buttermilk Country" src="https://img.youtube.com/vi/rJTQdPCclBQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/saigon" class="table-row-name text-bold">Saigon</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Seven Spanish Angels (aka The Ruckus), V6. Buttermilk Country" href="/problems/buttermilk-country/seven-spanish-angels-aka-the-ruckus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Seven Spanish Angels (aka The Ruckus), V6. Buttermilk Country" src="https://img.youtube.com/vi/o17mOhIhhbU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/seven-spanish-angels-aka-the-ruckus" class="table-row-name text-bold">Seven Spanish Angels (aka The Ruckus)</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Get Carter Boulder</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Smooth Shrimp, V6. Buttermilk Country" href="/problems/buttermilk-country/smooth-shrimp" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Smooth Shrimp, V6. Buttermilk Country" src="https://img.youtube.com/vi/z--QT-eRYE8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/smooth-shrimp" class="table-row-name text-bold">Smooth Shrimp</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Solitaire, V8. Buttermilk Country" href="/problems/buttermilk-country/solitaire" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Solitaire, V8. Buttermilk Country" src="https://img.youtube.com/vi/MVRV1vaSr9o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/solitaire" class="table-row-name text-bold">Solitaire</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Soul Slinger, V9. Buttermilk Country" href="/problems/buttermilk-country/soul-slinger" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Soul Slinger, V9. Buttermilk Country" src="https://img.youtube.com/vi/NJFdB3c1R9k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/soul-slinger" class="table-row-name text-bold">Soul Slinger</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Southwest Arete. Buttermilk Country" href="/problems/buttermilk-country/southwest-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Southwest Arete. Buttermilk Country" src="https://img.youtube.com/vi/EEeP-1ANIMc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/southwest-arete" class="table-row-name text-bold">Southwest Arete</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stained Glass, V10. Buttermilk Country" href="/problems/buttermilk-country/stained-glass" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stained Glass, V10. Buttermilk Country" src="https://img.youtube.com/vi/GdNsCBHTnXM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/stained-glass" class="table-row-name text-bold">Stained Glass</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Suspended in Silence, V7. Buttermilk Country" href="/problems/buttermilk-country/suspended-in-silence" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Suspended in Silence, V7. Buttermilk Country" src="https://img.youtube.com/vi/rliHsPX8lM0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/suspended-in-silence" class="table-row-name text-bold">Suspended in Silence</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Swanky, V9 (sit). Buttermilk Country" href="/problems/buttermilk-country/swanky" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Swanky, V9 (sit). Buttermilk Country" src="https://img.youtube.com/vi/7bJ6Sa7zkBc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/swanky" class="table-row-name text-bold">Swanky</a>
+            </div>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Pollen Grains</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Flake, V7. Buttermilk Country" href="/problems/buttermilk-country/the-flake" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Flake, V7. Buttermilk Country" src="https://img.youtube.com/vi/h4UeGwpyr1E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/the-flake" class="table-row-name text-bold">The Flake</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Dal'es Camp</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Hunk, V2. Buttermilk Country" href="/problems/buttermilk-country/the-hunk" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Hunk, V2. Buttermilk Country" src="https://img.youtube.com/vi/8jNUlSGy_iU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/the-hunk" class="table-row-name text-bold">The Hunk</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Mandala, V12. Buttermilk Country" href="/problems/buttermilk-country/the-mandala" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Mandala, V12. Buttermilk Country" src="https://img.youtube.com/vi/vYjabgH06-Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/the-mandala" class="table-row-name text-bold">The Mandala</a>
+            </div>
+					</td>
+					<td>V12</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Prow, V2. Buttermilk Country" href="/problems/buttermilk-country/the-prow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Prow, V2. Buttermilk Country" src="https://img.youtube.com/vi/KjW5PlEci24/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/the-prow" class="table-row-name text-bold">The Prow</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Buttermilks Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="This Side of Paradise, V9. Buttermilk Country" href="/problems/buttermilk-country/this-side-of-paradise" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: This Side of Paradise, V9. Buttermilk Country" src="https://img.youtube.com/vi/XoP_ddeSUCI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/this-side-of-paradise" class="table-row-name text-bold">This Side of Paradise</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Bardini Boulders</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Unnamed Homeless Slab, VB. Buttermilk Country" href="/problems/buttermilk-country/unnamed-homeless-slab" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Unnamed Homeless Slab, VB. Buttermilk Country" src="https://img.youtube.com/vi/w5OMbyEWEXM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/unnamed-homeless-slab" class="table-row-name text-bold">Unnamed Homeless Slab</a>
+            </div>
+					</td>
+					<td>VB</td>
+					<td>Main</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Xavier's Roof, V11. Buttermilk Country" href="/problems/buttermilk-country/xavier-s-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Xavier's Roof, V11. Buttermilk Country" src="https://img.youtube.com/vi/MvUkR5be6OM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/xavier-s-roof" class="table-row-name text-bold">Xavier's Roof</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Dale's Camp</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Zen Flute, V10. Buttermilk Country" href="/problems/buttermilk-country/zen-flute" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Zen Flute, V10. Buttermilk Country" src="https://img.youtube.com/vi/7X44s9gP1-4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/buttermilk-country/zen-flute" class="table-row-name text-bold">Zen Flute</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Dale's Camp</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

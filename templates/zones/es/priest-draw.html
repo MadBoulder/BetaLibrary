@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Priest Draw  Boulder | MadBoulder</title>
+	<meta name="description" content="Priest Draw bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/priest-draw">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/arizona" class="zone-header-tree-link">Arizona</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Priest Draw 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="35.081582" />
+  <input type="hidden" id="lng" name="lng_val" value="-111.60979" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Priest Draw
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Priest Draw
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/NKEehmwuh8Q/hqdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/NKEehmwuh8Q/hqdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/NKEehmwuh8Q/hqdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/NKEehmwuh8Q/hqdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Priest Draw</h4>
+								<p>Priest Draw, un lugar de boulder de clase mundial en Arizona, cuenta con una impecable roca de tipo volcánica. Famoso por sus desplomes pronunciados y presas únicas, es un parque de juegos desafiante para los escaladores. La primavera y el otoño son las mejores estaciones para visitar, ofreciendo condiciones ideales y una comunidad de escaladores vibrante.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 20
+								
+									<br>
+									<b>Tipo de Roca</b> Volcanic
+								
+								
+									<br>
+									<b>Altitud</b> 2087m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="/download/priest-draw/priest-draw-bouldering-guide.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        Priest Draw Boulder pdf
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/priest-draw"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/priest-draw/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">20</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMQXLjrsbsV0_Rxn91wQDk3"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Anorexic Nerve Dance, V6. Priest Draw" href="/problems/priest-draw/anorexic-nerve-dance" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Anorexic Nerve Dance, V6. Priest Draw" src="https://img.youtube.com/vi/PXiU1FyShOk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/anorexic-nerve-dance" class="table-row-name text-bold">Anorexic Nerve Dance</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Anorexic Sacrifice, V6. Priest Draw" href="/problems/priest-draw/anorexic-sacrifice" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Anorexic Sacrifice, V6. Priest Draw" src="https://img.youtube.com/vi/6sE4aS5kdOU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/anorexic-sacrifice" class="table-row-name text-bold">Anorexic Sacrifice</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bad Ass, V5. Priest Draw" href="/problems/priest-draw/bad-ass" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bad Ass, V5. Priest Draw" src="https://img.youtube.com/vi/LrFBW-4v7b8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/bad-ass" class="table-row-name text-bold">Bad Ass</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bat Roof, V3. Priest Draw" href="/problems/priest-draw/bat-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bat Roof, V3. Priest Draw" src="https://img.youtube.com/vi/okDQBmbs-mM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/bat-roof" class="table-row-name text-bold">Bat Roof</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Carnivore, V8. Priest Draw" href="/problems/priest-draw/carnivore" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Carnivore, V8. Priest Draw" src="https://img.youtube.com/vi/VD7DTL_s9Ko/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/carnivore" class="table-row-name text-bold">Carnivore</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Carnivore Direct, V9. Priest Draw" href="/problems/priest-draw/carnivore-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Carnivore Direct, V9. Priest Draw" src="https://img.youtube.com/vi/biQySoq_GfU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/carnivore-direct" class="table-row-name text-bold">Carnivore Direct</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cosmic Tricycle, V10. Priest Draw" href="/problems/priest-draw/cosmic-tricycle" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cosmic Tricycle, V10. Priest Draw" src="https://img.youtube.com/vi/NKEehmwuh8Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/cosmic-tricycle" class="table-row-name text-bold">Cosmic Tricycle</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Disco Polly, V6. Priest Draw" href="/problems/priest-draw/disco-polly" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Disco Polly, V6. Priest Draw" src="https://img.youtube.com/vi/Rg__vb4rxQ4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/disco-polly" class="table-row-name text-bold">Disco Polly</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Don’t Peace Me Out, V8. Priest Draw" href="/problems/priest-draw/dont-peace-me-out" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Don’t Peace Me Out, V8. Priest Draw" src="https://img.youtube.com/vi/aJduZWaMPRI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/dont-peace-me-out" class="table-row-name text-bold">Don’t Peace Me Out</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eat Meater, V8. Priest Draw" href="/problems/priest-draw/eat-meater" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eat Meater, V8. Priest Draw" src="https://img.youtube.com/vi/AOd9_5_xC4k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/eat-meater" class="table-row-name text-bold">Eat Meater</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Flexi Flake, V4. Priest Draw" href="/problems/priest-draw/flexi-flake" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Flexi Flake, V4. Priest Draw" src="https://img.youtube.com/vi/UiHPOYtku1o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/flexi-flake" class="table-row-name text-bold">Flexi Flake</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Meat Eater, V7. Priest Draw" href="/problems/priest-draw/meat-eater" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Meat Eater, V7. Priest Draw" src="https://img.youtube.com/vi/xDtnBzsU6So/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/meat-eater" class="table-row-name text-bold">Meat Eater</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Move N’ Groove Barbies, V7. Priest Draw" href="/problems/priest-draw/move-n-groove-barbies" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Move N’ Groove Barbies, V7. Priest Draw" src="https://img.youtube.com/vi/R04fCaROSuc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/move-n-groove-barbies" class="table-row-name text-bold">Move N’ Groove Barbies</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Puffer Fish, V6. Priest Draw" href="/problems/priest-draw/puffer-fish" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Puffer Fish, V6. Priest Draw" src="https://img.youtube.com/vi/FW1sBOzw92w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/puffer-fish" class="table-row-name text-bold">Puffer Fish</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="R God is Neither, V8. Priest Draw" href="/problems/priest-draw/r-god-is-neither" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: R God is Neither, V8. Priest Draw" src="https://img.youtube.com/vi/lJZKwdiPML8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/r-god-is-neither" class="table-row-name text-bold">R God is Neither</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Receptionist, V10. Priest Draw" href="/problems/priest-draw/receptionist" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Receptionist, V10. Priest Draw" src="https://img.youtube.com/vi/av4SGAvm1Vs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/receptionist" class="table-row-name text-bold">Receptionist</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Super Roof, V5. Priest Draw" href="/problems/priest-draw/super-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Super Roof, V5. Priest Draw" src="https://img.youtube.com/vi/UYOZyWOBooA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/super-roof" class="table-row-name text-bold">Super Roof</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Girl, V10. Priest Draw" href="/problems/priest-draw/the-girl" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Girl, V10. Priest Draw" src="https://img.youtube.com/vi/bBscSd4RkNM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/the-girl" class="table-row-name text-bold">The Girl</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Triangle Boulder Traverse, V3. Priest Draw" href="/problems/priest-draw/triangle-boulder-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Triangle Boulder Traverse, V3. Priest Draw" src="https://img.youtube.com/vi/Yl-7vjlAv7Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/triangle-boulder-traverse" class="table-row-name text-bold">Triangle Boulder Traverse</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Twister, V6. Priest Draw" href="/problems/priest-draw/twister" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Twister, V6. Priest Draw" src="https://img.youtube.com/vi/OwpAvVY7Q8U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/priest-draw/twister" class="table-row-name text-bold">Twister</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

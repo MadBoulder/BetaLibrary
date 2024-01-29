@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Moe's Valley  Boulder | MadBoulder</title>
+	<meta name="description" content="Moe's Valley bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/moe-s-valley">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/utah" class="zone-header-tree-link">Utah</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Moe's Valley 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="37.06622" />
+  <input type="hidden" id="lng" name="lng_val" value="-113.629762" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Moe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Moe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Moe's Valley</h4>
+								<p>Situado en el pintoresco entorno de Utah, Moe's Valley es conocido por sus singulares bloques de arenisca y hermosos paisajes desérticos. Los escaladores se sienten atraídos por sus agarres esculpidos y rutas desafiantes, convirtiéndolo en un destino popular. La mejor época para visitarlo es durante los meses más frescos, desde el otoño hasta la primavera, para condiciones óptimas.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 51
+								
+									<br>
+									<b>Tipo de Roca</b> Sandstone
+								
+								
+									<br>
+									<b>Altitud</b> 883m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="http://stores.sharpendbooks.com/st-george-bouldering-includes-2-year-subscription-to-digital-edition-see-the-digital-page-for-complete-details/" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://cdn11.bigcommerce.com/s-48dohlyc/images/stencil/640w/products/180/580/St_George_Bouldering_2022_cover__40775.1646686421.jpg?c=2" alt="St. George Bouldering">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">St. George Bouldering</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/moe-s-valley"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/moe-s-valley/mario-land" class="table-row-name text-bold">Mario Land</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/moe-s-valley/sentinel" class="table-row-name text-bold">Sentinel</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/moe-s-valley/south-end" class="table-row-name text-bold">South End</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/moe-s-valley/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">45</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMfSXCEo2Qg2VqxmtgBa9b8"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="A Word From Our Sponsors, V6. Moe’s Valley" href="/problems/moe-s-valley/a-word-from-our-sponsors" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: A Word From Our Sponsors, V6. Moe’s Valley" src="https://img.youtube.com/vi/P07mRME-Gew/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/a-word-from-our-sponsors" class="table-row-name text-bold">A Word From Our Sponsors</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Athlete’s Foot, V9. Moe’s Valley" href="/problems/moe-s-valley/athletes-foot" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Athlete’s Foot, V9. Moe’s Valley" src="https://img.youtube.com/vi/NI2fmCpnYoE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/athletes-foot" class="table-row-name text-bold">Athlete’s Foot</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Backhoe Left, V4. Moe’s Valley" href="/problems/moe-s-valley/backhoe-left" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Backhoe Left, V4. Moe’s Valley" src="https://img.youtube.com/vi/35IgAdG6mV0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/backhoe-left" class="table-row-name text-bold">Backhoe Left</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Backhoe Middle, V3. Moe’s Valley" href="/problems/moe-s-valley/backhoe-middle" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Backhoe Middle, V3. Moe’s Valley" src="https://img.youtube.com/vi/K9NYN8RxKd8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/backhoe-middle" class="table-row-name text-bold">Backhoe Middle</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Backhoe Right, V5. Moe’s Valley" href="/problems/moe-s-valley/backhoe-right" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Backhoe Right, V5. Moe’s Valley" src="https://img.youtube.com/vi/Rnci6xzqeEE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/backhoe-right" class="table-row-name text-bold">Backhoe Right</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boris, V6. Moe's Valley" href="/problems/moe-s-valley/boris" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boris, V6. Moe's Valley" src="https://img.youtube.com/vi/n5ysGaLNHcE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/boris" class="table-row-name text-bold">Boris</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boris, V9 (low). Moe's Valley" href="/problems/moe-s-valley/boris" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boris, V9 (low). Moe's Valley" src="https://img.youtube.com/vi/gX48r4kZkhc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/boris" class="table-row-name text-bold">Boris</a>
+            </div>
+					</td>
+					<td>V9 (low)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crippler, V6. Moe’s Valley" href="/problems/moe-s-valley/crippler" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crippler, V6. Moe’s Valley" src="https://img.youtube.com/vi/J7k8n4g_BHQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/crippler" class="table-row-name text-bold">Crippler</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Sentinel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dead Rabbit, V10. Moe's Valley" href="/problems/moe-s-valley/dead-rabbit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dead Rabbit, V10. Moe's Valley" src="https://img.youtube.com/vi/9h6b2xeu9Mk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/dead-rabbit" class="table-row-name text-bold">Dead Rabbit</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Device Ignitor Left, V6. Moe’s Valley" href="/problems/moe-s-valley/device-ignitor-left" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Device Ignitor Left, V6. Moe’s Valley" src="https://img.youtube.com/vi/U278lKjdqsI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/device-ignitor-left" class="table-row-name text-bold">Device Ignitor Left</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Device Ignitor Middle, V5. Moe's Valley" href="/problems/moe-s-valley/device-ignitor-middle" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Device Ignitor Middle, V5. Moe's Valley" src="https://img.youtube.com/vi/C4QeKopN73c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/device-ignitor-middle" class="table-row-name text-bold">Device Ignitor Middle</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Full Garage, V8. Moe's Valley" href="/problems/moe-s-valley/full-garage" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Full Garage, V8. Moe's Valley" src="https://img.youtube.com/vi/iY9P-bZXRIc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/full-garage" class="table-row-name text-bold">Full Garage</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gravity Breach, V6. Moe's Valley" href="/problems/moe-s-valley/gravity-breach" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gravity Breach, V6. Moe's Valley" src="https://img.youtube.com/vi/JWda8Xduquw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/gravity-breach" class="table-row-name text-bold">Gravity Breach</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>South End</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gription, V9. Moe's Valley" href="/problems/moe-s-valley/gription" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gription, V9. Moe's Valley" src="https://img.youtube.com/vi/8vvibUobxkU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/gription" class="table-row-name text-bold">Gription</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hesher Was Here, V8. Moe’s Valley" href="/problems/moe-s-valley/hesher-was-here" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hesher Was Here, V8. Moe’s Valley" src="https://img.youtube.com/vi/BiuDmDCdNEQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/hesher-was-here" class="table-row-name text-bold">Hesher Was Here</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="High Value Target, V9. Moe's Valley" href="/problems/moe-s-valley/high-value-target" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: High Value Target, V9. Moe's Valley" src="https://img.youtube.com/vi/B0Co2PDCmvs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/high-value-target" class="table-row-name text-bold">High Value Target</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Huntsman Graffiti, V5. Moe's Valley" href="/problems/moe-s-valley/huntsman-graffiti" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Huntsman Graffiti, V5. Moe's Valley" src="https://img.youtube.com/vi/TyPLIeWH_kE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/huntsman-graffiti" class="table-row-name text-bold">Huntsman Graffiti</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Sentinel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Indolence, V7. Moe’s Valley" href="/problems/moe-s-valley/indolence" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Indolence, V7. Moe’s Valley" src="https://img.youtube.com/vi/gbcRcG_Hu_0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/indolence" class="table-row-name text-bold">Indolence</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Israil, V6. Moe’s Valley" href="/problems/moe-s-valley/israil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Israil, V6. Moe’s Valley" src="https://img.youtube.com/vi/AQHnuM3NJ0U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/israil" class="table-row-name text-bold">Israil</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Israil Direct, V8. Moe's Valley" href="/problems/moe-s-valley/israil-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Israil Direct, V8. Moe's Valley" src="https://img.youtube.com/vi/ZA3NMvmRrOA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/israil-direct" class="table-row-name text-bold">Israil Direct</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jabberwock Arete, V6. Moe’s Valley" href="/problems/moe-s-valley/jabberwock-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jabberwock Arete, V6. Moe’s Valley" src="https://img.youtube.com/vi/x8aEaHs76es/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/jabberwock-arete" class="table-row-name text-bold">Jabberwock Arete</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kung Pao, V6. Moe’s Valley" href="/problems/moe-s-valley/kung-pao" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kung Pao, V6. Moe’s Valley" src="https://img.youtube.com/vi/9cTp77yApX4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/kung-pao" class="table-row-name text-bold">Kung Pao</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Leaping Leptons, V4. Moe’s Valley" href="/problems/moe-s-valley/leaping-leptons" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Leaping Leptons, V4. Moe’s Valley" src="https://img.youtube.com/vi/oviBTNxiaYI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/leaping-leptons" class="table-row-name text-bold">Leaping Leptons</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Linder's Roof, V9. Moe's Valley" href="/problems/moe-s-valley/linder-s-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Linder's Roof, V9. Moe's Valley" src="https://img.youtube.com/vi/4mFoLIrE0Sg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/linder-s-roof" class="table-row-name text-bold">Linder's Roof</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Linder's Roof Variation, V9. Moe’s Valley" href="/problems/moe-s-valley/linder-s-roof-variation" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Linder's Roof Variation, V9. Moe’s Valley" src="https://img.youtube.com/vi/SnTpgUorNDE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/linder-s-roof-variation" class="table-row-name text-bold">Linder's Roof Variation</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Loose Cannon, V9. Moe's Valley" href="/problems/moe-s-valley/loose-cannon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Loose Cannon, V9. Moe's Valley" src="https://img.youtube.com/vi/QlEC_v0vJ1k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/loose-cannon" class="table-row-name text-bold">Loose Cannon</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Paradise Lost, V7. Moe’s Valley" href="/problems/moe-s-valley/paradise-lost" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Paradise Lost, V7. Moe’s Valley" src="https://img.youtube.com/vi/mn4yDJeTI6s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/paradise-lost" class="table-row-name text-bold">Paradise Lost</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pink Lady, V6. Moe’s Valley" href="/problems/moe-s-valley/pink-lady" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pink Lady, V6. Moe’s Valley" src="https://img.youtube.com/vi/LCiZjaaLAYA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/pink-lady" class="table-row-name text-bold">Pink Lady</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Press for Jess, V6+. Moe’s Valley" href="/problems/moe-s-valley/press-for-jess" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Press for Jess, V6+. Moe’s Valley" src="https://img.youtube.com/vi/p55YRXOcsQ8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/press-for-jess" class="table-row-name text-bold">Press for Jess</a>
+            </div>
+					</td>
+					<td>V6+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rex Arete, V10 (sit). Moe's Valley" href="/problems/moe-s-valley/rex-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rex Arete, V10 (sit). Moe's Valley" src="https://img.youtube.com/vi/dhxlvgb0nto/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/rex-arete" class="table-row-name text-bold">Rex Arete</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scavenger Soup, V9-. Moe's Valley" href="/problems/moe-s-valley/scavenger-soup" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scavenger Soup, V9-. Moe's Valley" src="https://img.youtube.com/vi/X2CkwwieUvA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/scavenger-soup" class="table-row-name text-bold">Scavenger Soup</a>
+            </div>
+					</td>
+					<td>V9-</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sentinel, V2. Moe's Valley" href="/problems/moe-s-valley/sentinel" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sentinel, V2. Moe's Valley" src="https://img.youtube.com/vi/ZyvUbxkliJE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/sentinel" class="table-row-name text-bold">Sentinel</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shot Hole, V6. Moe's Valley" href="/problems/moe-s-valley/shot-hole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shot Hole, V6. Moe's Valley" src="https://img.youtube.com/vi/jpejOo8c634/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/shot-hole" class="table-row-name text-bold">Shot Hole</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shoulder Popper, V8. Moe's Valley" href="/problems/moe-s-valley/shoulder-popper" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shoulder Popper, V8. Moe's Valley" src="https://img.youtube.com/vi/6I-W5T3lIqE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/shoulder-popper" class="table-row-name text-bold">Shoulder Popper</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Show of Hands, V10. Moe's Valley" href="/problems/moe-s-valley/show-of-hands" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Show of Hands, V10. Moe's Valley" src="https://img.youtube.com/vi/FDwzSIS5J28/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/show-of-hands" class="table-row-name text-bold">Show of Hands</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Skinny Love, V6. Moe’s Valley" href="/problems/moe-s-valley/skinny-love" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Skinny Love, V6. Moe’s Valley" src="https://img.youtube.com/vi/xMPDiHAiTjw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/skinny-love" class="table-row-name text-bold">Skinny Love</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Mario Land</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Solid Toad, V5. Moe’s Valley" href="/problems/moe-s-valley/solid-toad" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Solid Toad, V5. Moe’s Valley" src="https://img.youtube.com/vi/l6QIJaU7ZQ0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/solid-toad" class="table-row-name text-bold">Solid Toad</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Spectro, V6. Moe’s Valley" href="/problems/moe-s-valley/spectro" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Spectro, V6. Moe’s Valley" src="https://img.youtube.com/vi/nRKEIGYaQsU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/spectro" class="table-row-name text-bold">Spectro</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Spiral Helix, V9-10. Moe’s Valley" href="/problems/moe-s-valley/spiral-helix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Spiral Helix, V9-10. Moe’s Valley" src="https://img.youtube.com/vi/x_s71s2Y1q4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/spiral-helix" class="table-row-name text-bold">Spiral Helix</a>
+            </div>
+					</td>
+					<td>V9-10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Teepee Traverse, V8. Moe's Valley" href="/problems/moe-s-valley/teepee-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Teepee Traverse, V8. Moe's Valley" src="https://img.youtube.com/vi/Lyav4fNdDUE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/teepee-traverse" class="table-row-name text-bold">Teepee Traverse</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Drum, V5. Moe's Valley" href="/problems/moe-s-valley/the-drum" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Drum, V5. Moe's Valley" src="https://img.youtube.com/vi/71sqP9DxQKY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/the-drum" class="table-row-name text-bold">The Drum</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Goose, V4. Moe’s Valley" href="/problems/moe-s-valley/the-goose" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Goose, V4. Moe’s Valley" src="https://img.youtube.com/vi/5hyjffXGmhw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/the-goose" class="table-row-name text-bold">The Goose</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Spider, V3. Moe's Valley" href="/problems/moe-s-valley/the-spider" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Spider, V3. Moe's Valley" src="https://img.youtube.com/vi/PvuxPyjvFHo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/the-spider" class="table-row-name text-bold">The Spider</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Thermal Detonator, V10. Moe's Valley" href="/problems/moe-s-valley/thermal-detonator" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Thermal Detonator, V10. Moe's Valley" src="https://img.youtube.com/vi/R0F5UwGfsXg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/thermal-detonator" class="table-row-name text-bold">Thermal Detonator</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tight Cannon, V5+. Moe’s Valley" href="/problems/moe-s-valley/tight-cannon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tight Cannon, V5+. Moe’s Valley" src="https://img.youtube.com/vi/cskWuZnY0S4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/tight-cannon" class="table-row-name text-bold">Tight Cannon</a>
+            </div>
+					</td>
+					<td>V5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Toadstool Traverse, V5. Moe’s Valley" href="/problems/moe-s-valley/toadstool-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Toadstool Traverse, V5. Moe’s Valley" src="https://img.youtube.com/vi/pARyLzrXUIM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/toadstool-traverse" class="table-row-name text-bold">Toadstool Traverse</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Mario Land</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="UnderWhelmed, V6. Moe's Valley" href="/problems/moe-s-valley/underwhelmed" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: UnderWhelmed, V6. Moe's Valley" src="https://img.youtube.com/vi/Aj7loVkunEY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/underwhelmed" class="table-row-name text-bold">UnderWhelmed</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>South End</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Underachiever, V8. Moe’s Valley" href="/problems/moe-s-valley/underachiever" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Underachiever, V8. Moe’s Valley" src="https://img.youtube.com/vi/r2q3mZIwlgw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/underachiever" class="table-row-name text-bold">Underachiever</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Whelmed, V4. Moe's Valley" href="/problems/moe-s-valley/whelmed" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Whelmed, V4. Moe's Valley" src="https://img.youtube.com/vi/Py-HM25xOI0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/whelmed" class="table-row-name text-bold">Whelmed</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="White Rabbit, V7. Moe’s Valley" href="/problems/moe-s-valley/white-rabbit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: White Rabbit, V7. Moe’s Valley" src="https://img.youtube.com/vi/wfxwtMl6BiU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/white-rabbit" class="table-row-name text-bold">White Rabbit</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Yo Yo Boy, V8. Moe's Valley" href="/problems/moe-s-valley/yo-yo-boy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Yo Yo Boy, V8. Moe's Valley" src="https://img.youtube.com/vi/iXp14pMnAUE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/moe-s-valley/yo-yo-boy" class="table-row-name text-bold">Yo Yo Boy</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

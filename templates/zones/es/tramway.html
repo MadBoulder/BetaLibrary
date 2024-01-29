@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Tramway  Boulder | MadBoulder</title>
+	<meta name="description" content="Tramway bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/tramway">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/california" class="zone-header-tree-link">California</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Tramway 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="33.810196" />
+  <input type="hidden" id="lng" name="lng_val" value="-116.65024" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Tramway
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Tramway
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/04DRJquif9Q/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/04DRJquif9Q/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/04DRJquif9Q/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/04DRJquif9Q/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Tramway</h4>
+								<p>Tramway en California es un destino de boulder de renombre, conocido por sus excepcionales formaciones de roca de granito. Situado en las montañas de San Jacinto, ofrece una mezcla de problemas desafiantes y vistas panorámicas. Su popularidad se debe al clima seco y fresco del desierto alto y las características únicas del granito.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 43
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 2631m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="http://www.myfirstascent.com/app/routes?areaId=19" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        myfirstascent (Online)
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/tramway"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/tramway/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">42</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNogLKTmD3Z3agJwRwsNpDE"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Angry Beaver, V8. Tramway" href="/problems/tramway/angry-beaver" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Angry Beaver, V8. Tramway" src="https://img.youtube.com/vi/avcAXvqUiVU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/angry-beaver" class="table-row-name text-bold">Angry Beaver</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Angus, V9. Tramway" href="/problems/tramway/angus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Angus, V9. Tramway" src="https://img.youtube.com/vi/UEnjg348w3Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/angus" class="table-row-name text-bold">Angus</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Aquaman, V4. Tramway" href="/problems/tramway/aquaman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Aquaman, V4. Tramway" src="https://img.youtube.com/vi/ntAZxdFFT9A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/aquaman" class="table-row-name text-bold">Aquaman</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Barefoot Sharma Arete, V8. Tramway" href="/problems/tramway/barefoot-sharma-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Barefoot Sharma Arete, V8. Tramway" src="https://img.youtube.com/vi/HCSi-_H1-SI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/barefoot-sharma-arete" class="table-row-name text-bold">Barefoot Sharma Arete</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Black Flame, V10. Tramway" href="/problems/tramway/black-flame" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Black Flame, V10. Tramway" src="https://img.youtube.com/vi/1BxPA4UZooU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/black-flame" class="table-row-name text-bold">Black Flame</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blue Flame, V7. Tramway" href="/problems/tramway/blue-flame" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blue Flame, V7. Tramway" src="https://img.youtube.com/vi/HJEGMRJzHvY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/blue-flame" class="table-row-name text-bold">Blue Flame</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buck Rogers, V2. Tramway" href="/problems/tramway/buck-rogers" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buck Rogers, V2. Tramway" src="https://img.youtube.com/vi/2gxjQjqpgXA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/buck-rogers" class="table-row-name text-bold">Buck Rogers</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bush Pilot, V8. Tramway" href="/problems/tramway/bush-pilot" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bush Pilot, V8. Tramway" src="https://img.youtube.com/vi/6pkqPqCyHYc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/bush-pilot" class="table-row-name text-bold">Bush Pilot</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crack-O-Pop, V5. Tramway" href="/problems/tramway/crack-o-pop" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crack-O-Pop, V5. Tramway" src="https://img.youtube.com/vi/-I4SlzBspE0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/crack-o-pop" class="table-row-name text-bold">Crack-O-Pop</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crouching Tiger Hidden Dragon, V7. Tramway" href="/problems/tramway/crouching-tiger-hidden-dragon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crouching Tiger Hidden Dragon, V7. Tramway" src="https://img.youtube.com/vi/e6VMq2Y20go/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/crouching-tiger-hidden-dragon" class="table-row-name text-bold">Crouching Tiger Hidden Dragon</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Don’s Dyno, V5-6. Tramway" href="/problems/tramway/dons-dyno" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Don’s Dyno, V5-6. Tramway" src="https://img.youtube.com/vi/JGmtUf88XOc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/dons-dyno" class="table-row-name text-bold">Don’s Dyno</a>
+            </div>
+					</td>
+					<td>V5-6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ebonic woman, V3. Tramway" href="/problems/tramway/ebonic-woman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ebonic woman, V3. Tramway" src="https://img.youtube.com/vi/gnTPJF3L5FY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/ebonic-woman" class="table-row-name text-bold">Ebonic woman</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Emerald City, V0. Tramway" href="/problems/tramway/emerald-city" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Emerald City, V0. Tramway" src="https://img.youtube.com/vi/2cSjvtGLVKc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/emerald-city" class="table-row-name text-bold">Emerald City</a>
+            </div>
+					</td>
+					<td>V0</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Feels Like a Virgin, V3. Tramway" href="/problems/tramway/feels-like-a-virgin" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Feels Like a Virgin, V3. Tramway" src="https://img.youtube.com/vi/er6vDP3BXuM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/feels-like-a-virgin" class="table-row-name text-bold">Feels Like a Virgin</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Green Hornet, V5. Tramway" href="/problems/tramway/green-hornet" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Green Hornet, V5. Tramway" src="https://img.youtube.com/vi/jpGtbcJfQrw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/green-hornet" class="table-row-name text-bold">Green Hornet</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Green Peace, V10 (sit). Tramway" href="/problems/tramway/green-peace" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Green Peace, V10 (sit). Tramway" src="https://img.youtube.com/vi/rMJqse2tH6Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/green-peace" class="table-row-name text-bold">Green Peace</a>
+            </div>
+					</td>
+					<td>V10 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Green Peace, V8. Tramway" href="/problems/tramway/green-peace" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Green Peace, V8. Tramway" src="https://img.youtube.com/vi/ufnGndw4r0M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/green-peace" class="table-row-name text-bold">Green Peace</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="House Kung Fu, V5-6. Tramway" href="/problems/tramway/house-kung-fu" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: House Kung Fu, V5-6. Tramway" src="https://img.youtube.com/vi/SwGN-irPLxg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/house-kung-fu" class="table-row-name text-bold">House Kung Fu</a>
+            </div>
+					</td>
+					<td>V5-6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jug Roof Left, V3. Tramway" href="/problems/tramway/jug-roof-left" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jug Roof Left, V3. Tramway" src="https://img.youtube.com/vi/rDoOTtHHoxI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/jug-roof-left" class="table-row-name text-bold">Jug Roof Left</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Left gold crack, V3.Tramway" href="/problems/tramway/left-gold-crack" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Left gold crack, V3.Tramway" src="https://img.youtube.com/vi/NWMSLLGrjwM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/left-gold-crack" class="table-row-name text-bold">Left gold crack</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Malcomb, V6. Tramway" href="/problems/tramway/malcomb" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Malcomb, V6. Tramway" src="https://img.youtube.com/vi/-StYI4MPZQA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/malcomb" class="table-row-name text-bold">Malcomb</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Methane, V5. Tramway" href="/problems/tramway/methane" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Methane, V5. Tramway" src="https://img.youtube.com/vi/BzGMI3DfIOY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/methane" class="table-row-name text-bold">Methane</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="My Infested Destiny, V7. Tramway" href="/problems/tramway/my-infested-destiny" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: My Infested Destiny, V7. Tramway" src="https://img.youtube.com/vi/d7lQ_EBB3FA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/my-infested-destiny" class="table-row-name text-bold">My Infested Destiny</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Paper Dragon, V10. Tramway" href="/problems/tramway/paper-dragon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Paper Dragon, V10. Tramway" src="https://img.youtube.com/vi/6VqljnqMjdU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/paper-dragon" class="table-row-name text-bold">Paper Dragon</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Paul Rocks, V4. Tramway" href="/problems/tramway/paul-rocks" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Paul Rocks, V4. Tramway" src="https://img.youtube.com/vi/YuJUuHZaJuI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/paul-rocks" class="table-row-name text-bold">Paul Rocks</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rufus, V5. Tramway" href="/problems/tramway/rufus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rufus, V5. Tramway" src="https://img.youtube.com/vi/wMCS5B4GIZM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/rufus" class="table-row-name text-bold">Rufus</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Science Friction, V10. Tramway" href="/problems/tramway/science-friction" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Science Friction, V10. Tramway" src="https://img.youtube.com/vi/04DRJquif9Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/science-friction" class="table-row-name text-bold">Science Friction</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sea of Tranquility, V1. Tramway" href="/problems/tramway/sea-of-tranquility" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sea of Tranquility, V1. Tramway" src="https://img.youtube.com/vi/xH3mkd1mR-s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/sea-of-tranquility" class="table-row-name text-bold">Sea of Tranquility</a>
+            </div>
+					</td>
+					<td>V1</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shades of Oldschool, V2. Tramway" href="/problems/tramway/shades-of-oldschool" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shades of Oldschool, V2. Tramway" src="https://img.youtube.com/vi/snSF9MyFvoM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/shades-of-oldschool" class="table-row-name text-bold">Shades of Oldschool</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Slot Machine, V6. Tramway" href="/problems/tramway/slot-machine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Slot Machine, V6. Tramway" src="https://img.youtube.com/vi/dVxCA4COmBQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/slot-machine" class="table-row-name text-bold">Slot Machine</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Soul Caliber, V9. Tramway" href="/problems/tramway/soul-caliber" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Soul Caliber, V9. Tramway" src="https://img.youtube.com/vi/DkP-zyVA9U8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/soul-caliber" class="table-row-name text-bold">Soul Caliber</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Soul Shine, V10. Tramway" href="/problems/tramway/soul-shine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Soul Shine, V10. Tramway" src="https://img.youtube.com/vi/0TWnCSVG8qY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/soul-shine" class="table-row-name text-bold">Soul Shine</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Standing on the head of a dragon, V4. Tramway" href="/problems/tramway/standing-on-the-head-of-a-dragon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Standing on the head of a dragon, V4. Tramway" src="https://img.youtube.com/vi/f67o6Lgau84/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/standing-on-the-head-of-a-dragon" class="table-row-name text-bold">Standing on the head of a dragon</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sunshine Daydream, V4. Tramway" href="/problems/tramway/sunshine-daydream" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sunshine Daydream, V4. Tramway" src="https://img.youtube.com/vi/waf0hGpeH8w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/sunshine-daydream" class="table-row-name text-bold">Sunshine Daydream</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Swing Dance, V7. Tramway" href="/problems/tramway/swing-dance" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Swing Dance, V7. Tramway" src="https://img.youtube.com/vi/kbY0_bH06uE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/swing-dance" class="table-row-name text-bold">Swing Dance</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Cube, V5. Tramway" href="/problems/tramway/the-cube" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Cube, V5. Tramway" src="https://img.youtube.com/vi/7wkwo1BZGag/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/the-cube" class="table-row-name text-bold">The Cube</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Singularity, V5. Tramway" href="/problems/tramway/the-singularity" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Singularity, V5. Tramway" src="https://img.youtube.com/vi/zlkytVTTRnw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/the-singularity" class="table-row-name text-bold">The Singularity</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tramslot Traverse, V7. Tramway" href="/problems/tramway/tramslot-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tramslot Traverse, V7. Tramway" src="https://img.youtube.com/vi/OsvqiTeCV1c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/tramslot-traverse" class="table-row-name text-bold">Tramslot Traverse</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tri Nitro Toulumne, V5. Tramway" href="/problems/tramway/tri-nitro-toulumne" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tri Nitro Toulumne, V5. Tramway" src="https://img.youtube.com/vi/RKws9g-SyvU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/tri-nitro-toulumne" class="table-row-name text-bold">Tri Nitro Toulumne</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Unitizing The G, V8. Tramway" href="/problems/tramway/unitizing-the-g" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Unitizing The G, V8. Tramway" src="https://img.youtube.com/vi/UZRPsS4V9sw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/unitizing-the-g" class="table-row-name text-bold">Unitizing The G</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="White Flight, V3. Tramway" href="/problems/tramway/white-flight" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: White Flight, V3. Tramway" src="https://img.youtube.com/vi/2gmYpsTYt_s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/white-flight" class="table-row-name text-bold">White Flight</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Year of The Cat, V9-10. Tramway" href="/problems/tramway/year-of-the-cat" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Year of The Cat, V9-10. Tramway" src="https://img.youtube.com/vi/JajfPpioo8g/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tramway/year-of-the-cat" class="table-row-name text-bold">Year of The Cat</a>
+            </div>
+					</td>
+					<td>V9-10</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

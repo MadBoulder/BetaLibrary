@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> La Comarca  Boulder | MadBoulder</title>
+	<meta name="description" content="La Comarca bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/la-comarca">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+  
+   > 
+  <a href="/states/catalonia" class="zone-header-tree-link">Cataluña</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             La Comarca 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.979547" />
+  <input type="hidden" id="lng" name="lng_val" value="2.343454" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      La Comarca
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      La Comarca
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/8gB9u0amh0o/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/8gB9u0amh0o/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/8gB9u0amh0o/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/8gB9u0amh0o/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en La Comarca</h4>
+								<p>La Comarca, situada en Cataluña, España, es famosa por su compacta arenisca que ofrece experiencias de escalada físicas y técnicas. Con problemas difíciles de hasta 8C, es un lugar ideal tanto para principiantes como para escaladores experimentados. Las mejores estaciones son la primavera y el otoño, caracterizadas por colores vibrantes y un hermoso entorno.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 72
+								
+									<br>
+									<b>Tipo de Roca</b> Sandstone
+								
+								
+									<br>
+									<b>Altitud</b> 503m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3SiGNuV" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81UJX3rkGML._AC_UY218_.jpg" alt="Boulder en España">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Boulder en España</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="https://27crags.com/crags/la-comarca" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        27 Crags (Guide)
+        
+      </a>
+    
+      <a id="guide_link"  href="http://rotpunktholds.blogspot.com/2014/11/la-comarca-resenas-actualizadas.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        rotpunktholds (Guide + Blog)
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/la-comarca"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/la-comarca/bloc-de-la-cova" class="table-row-name text-bold">Bloc de la Cova</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/la-comarca/cova-del-codol" class="table-row-name text-bold">Cova del Còdol</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/la-comarca/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">67</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMyUNe-Fuq9U4JYDxscopcv"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Adictes, 6a. La Comarca" href="/problems/la-comarca/adictes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Adictes, 6a. La Comarca" src="https://img.youtube.com/vi/OYbnX1MEWlc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/adictes" class="table-row-name text-bold">Adictes</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alberto's Boulder, 5+. La Comarca" href="/problems/la-comarca/alberto-s-boulder" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alberto's Boulder, 5+. La Comarca" src="https://img.youtube.com/vi/gflgEwGXA04/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/alberto-s-boulder" class="table-row-name text-bold">Alberto's Boulder</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alberto's Boulder, 6a+. La Comarca" href="/problems/la-comarca/alberto-s-boulder" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alberto's Boulder, 6a+. La Comarca" src="https://img.youtube.com/vi/iy5_URcC-Uw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/alberto-s-boulder" class="table-row-name text-bold">Alberto's Boulder</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Amagatall esquerra, 6b+. La Comarca" href="/problems/la-comarca/amagatall-esquerra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Amagatall esquerra, 6b+. La Comarca" src="https://img.youtube.com/vi/OnEI8exXB2Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/amagatall-esquerra" class="table-row-name text-bold">Amagatall esquerra</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Anis del mono. La Comarca" href="/problems/la-comarca/anis-del-mono" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Anis del mono. La Comarca" src="https://img.youtube.com/vi/68l8WZHb5sQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/anis-del-mono" class="table-row-name text-bold">Anís del mono</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Aqui hi ha manija, 6a. La Comarca" href="/problems/la-comarca/aqui-hi-ha-manija" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Aqui hi ha manija, 6a. La Comarca" src="https://img.youtube.com/vi/iPOdUzusDNI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/aqui-hi-ha-manija" class="table-row-name text-bold">Aqui hi ha manija</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ayurveda, 7b+. La Comarca" href="/problems/la-comarca/ayurveda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ayurveda, 7b+. La Comarca" src="https://img.youtube.com/vi/bEoSE_ITAYA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/ayurveda" class="table-row-name text-bold">Ayurveda</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Azar & Kaos, 7b. La Comarca" href="/problems/la-comarca/azar-kaos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Azar & Kaos, 7b. La Comarca" src="https://img.youtube.com/vi/RtewPuSXRHs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/azar-kaos" class="table-row-name text-bold">Azar & Kaos</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boira. La Comarca" href="/problems/la-comarca/boira" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boira. La Comarca" src="https://img.youtube.com/vi/4xCsUWWjAN0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/boira" class="table-row-name text-bold">Boira</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boira Low. La Comarca" href="/problems/la-comarca/boira-low" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boira Low. La Comarca" src="https://img.youtube.com/vi/VnTGu_Dd_eE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/boira-low" class="table-row-name text-bold">Boira Low</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buda, 7a+. La Comarca" href="/problems/la-comarca/buda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buda, 7a+. La Comarca" src="https://img.youtube.com/vi/2SrXTwAvCQc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/buda" class="table-row-name text-bold">Buda</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bulder del Kueka Direct, 7b. La Comarca" href="/problems/la-comarca/bulder-del-kueka-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bulder del Kueka Direct, 7b. La Comarca" src="https://img.youtube.com/vi/D4tI45Fw9FY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/bulder-del-kueka-direct" class="table-row-name text-bold">Bulder del Kueka Direct</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Computer Love, 7b. La Comarca" href="/problems/la-comarca/computer-love" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Computer Love, 7b. La Comarca" src="https://img.youtube.com/vi/-4KxgQ-ZXxs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/computer-love" class="table-row-name text-bold">Computer Love</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Computer Love Direct, 7c. La Comarca" href="/problems/la-comarca/computer-love-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Computer Love Direct, 7c. La Comarca" src="https://img.youtube.com/vi/DLVzm5266EY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/computer-love-direct" class="table-row-name text-bold">Computer Love Direct</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Confiança Vertical, 6c+. La Comarca" href="/problems/la-comarca/confianca-vertical" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Confiança Vertical, 6c+. La Comarca" src="https://img.youtube.com/vi/40itJXiPshE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/confianca-vertical" class="table-row-name text-bold">Confiança Vertical</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cova dels somnis, 7b. La Comarca" href="/problems/la-comarca/cova-dels-somnis" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cova dels somnis, 7b. La Comarca" src="https://img.youtube.com/vi/P3nrGKSj1sM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/cova-dels-somnis" class="table-row-name text-bold">Cova dels somnis</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Cova del Còdol</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La cova dels somnis, 7a+. La Comarca" href="/problems/la-comarca/cova-dels-somnis" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La cova dels somnis, 7a+. La Comarca" src="https://img.youtube.com/vi/5-ukHbsXd0I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/cova-dels-somnis" class="table-row-name text-bold">Cova dels somnis</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Cova del Còdol</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dharma, 7a+. La Comarca" href="/problems/la-comarca/dharma" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dharma, 7a+. La Comarca" src="https://img.youtube.com/vi/nGTO2Xoaipg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/dharma" class="table-row-name text-bold">Dharma</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Door to the Wild, 8a+. La Comarca" href="/problems/la-comarca/door-to-the-wild" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Door to the Wild, 8a+. La Comarca" src="https://img.youtube.com/vi/jrTxPzc7yog/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/door-to-the-wild" class="table-row-name text-bold">Door to the Wild</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Cova del Còdol</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Double Bobble, 8b+. La Comarca" href="/problems/la-comarca/double-bobble" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Double Bobble, 8b+. La Comarca" src="https://img.youtube.com/vi/8gB9u0amh0o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/double-bobble" class="table-row-name text-bold">Double Bobble</a>
+            </div>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Duggati suggati, 6b+. La Comarca" href="/problems/la-comarca/duggati-suggati" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Duggati suggati, 6b+. La Comarca" src="https://img.youtube.com/vi/rJRBDaRSiDY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/duggati-suggati" class="table-row-name text-bold">Duggati suggati</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Tobogan del Ter, 6c. La Comarca" href="/problems/la-comarca/el-tobogan-del-ter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Tobogan del Ter, 6c. La Comarca" src="https://img.youtube.com/vi/AsUchKMZwpU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-tobogan-del-ter" class="table-row-name text-bold">El Tobogan del Ter</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El bloc de l'Stephan 7b. La Comarca" href="/problems/la-comarca/el-bloc-de-l-stephan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El bloc de l'Stephan 7b. La Comarca" src="https://img.youtube.com/vi/7g1CnFiVWlc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-bloc-de-l-stephan" class="table-row-name text-bold">El bloc de l'Stephan</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El bloc de l'Stephan, 7c (sit). La Comarca" href="/problems/la-comarca/el-bloc-de-l-stephan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El bloc de l'Stephan, 7c (sit). La Comarca" src="https://img.youtube.com/vi/fUFcrhhQHcw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-bloc-de-l-stephan" class="table-row-name text-bold">El bloc de l'Stephan</a>
+            </div>
+					</td>
+					<td>7c (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El club de los poetas muertos, 7c. La Comarca" href="/problems/la-comarca/el-club-de-los-poetas-muertos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El club de los poetas muertos, 7c. La Comarca" src="https://img.youtube.com/vi/j844a7kpKwU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-club-de-los-poetas-muertos" class="table-row-name text-bold">El club de los poetas muertos</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El club de los poetas muertos Extension, 8a?. La Comarca" href="/problems/la-comarca/el-club-de-los-poetas-muertos-extension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El club de los poetas muertos Extension, 8a?. La Comarca" src="https://img.youtube.com/vi/-iGlMeK6oXM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-club-de-los-poetas-muertos-extension" class="table-row-name text-bold">El club de los poetas muertos Extension</a>
+            </div>
+					</td>
+					<td>8a?</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El precio del magnesio II, 6a+. La Comarca" href="/problems/la-comarca/el-precio-del-magnesio-ii" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El precio del magnesio II, 6a+. La Comarca" src="https://img.youtube.com/vi/tCLmhgJF1os/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/el-precio-del-magnesio-ii" class="table-row-name text-bold">El precio del magnesio II</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fisical, 6c. La Comarca" href="/problems/la-comarca/fisical" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fisical, 6c. La Comarca" src="https://img.youtube.com/vi/VoU-kmruvq8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/fisical" class="table-row-name text-bold">Fisical</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Guerilla's crack, 6a+. La Comarca" href="/problems/la-comarca/guerilla-s-crack" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Guerilla's crack, 6a+. La Comarca" src="https://img.youtube.com/vi/ZXaF-4l-B2c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/guerilla-s-crack" class="table-row-name text-bold">Guerilla's crack</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hiperlaxitud, 6b+. La Comarca" href="/problems/la-comarca/hiperlaxitud" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hiperlaxitud, 6b+. La Comarca" src="https://img.youtube.com/vi/ZFZSG_mjuLA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/hiperlaxitud" class="table-row-name text-bold">Hiperlaxitud</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kaos, 7a (sit). La Comarca" href="/problems/la-comarca/kaos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kaos, 7a (sit). La Comarca" src="https://img.youtube.com/vi/2PBVbK6Z0tw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/kaos" class="table-row-name text-bold">Kaos</a>
+            </div>
+					</td>
+					<td>7a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kerala, 8a. La Comarca" href="/problems/la-comarca/kerala" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kerala, 8a. La Comarca" src="https://img.youtube.com/vi/zORyAJsjOX0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/kerala" class="table-row-name text-bold">Kerala</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="King of ganja, 6b+. La Comarca" href="/problems/la-comarca/king-of-ganja" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: King of ganja, 6b+. La Comarca" src="https://img.youtube.com/vi/zdD0iSevZjc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/king-of-ganja" class="table-row-name text-bold">King of ganja</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Bloc de la Cova</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Krishna direct, 7a (sit). La Comarca" href="/problems/la-comarca/krishna-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Krishna direct, 7a (sit). La Comarca" src="https://img.youtube.com/vi/0nBmNWCmJRA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/krishna-direct" class="table-row-name text-bold">Krishna direct</a>
+            </div>
+					</td>
+					<td>7a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'estalquer, 6c+. La Comarca" href="/problems/la-comarca/l-estalquer" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'estalquer, 6c+. La Comarca" src="https://img.youtube.com/vi/T-0M10CR5Cc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/l-estalquer" class="table-row-name text-bold">L'estalquer</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La comarca, 6b+. La Comarca" href="/problems/la-comarca/la-comarca" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La comarca, 6b+. La Comarca" src="https://img.youtube.com/vi/8_YomSchgmQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/la-comarca" class="table-row-name text-bold">La comarca</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La sorpresa del chef, 7a. La Comarca" href="/problems/la-comarca/la-sorpresa-del-chef" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La sorpresa del chef, 7a. La Comarca" src="https://img.youtube.com/vi/M-DLQyw7GYE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/la-sorpresa-del-chef" class="table-row-name text-bold">La sorpresa del chef</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La vida es Krishna, 7a. La Comarca" href="/problems/la-comarca/la-vida-es-krishna" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La vida es Krishna, 7a. La Comarca" src="https://img.youtube.com/vi/nYIhsrrb39w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/la-vida-es-krishna" class="table-row-name text-bold">La vida es Krishna</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La vida es boulder, 7a. La Comarca" href="/problems/la-comarca/la-vida-es-boulder" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La vida es boulder, 7a. La Comarca" src="https://img.youtube.com/vi/aT-VFFt_e2M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/la-vida-es-boulder" class="table-row-name text-bold">La vida es boulder</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Los invasores, 4+. La Comarca" href="/problems/la-comarca/los-invasores" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Los invasores, 4+. La Comarca" src="https://img.youtube.com/vi/l688WckHQtA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/los-invasores" class="table-row-name text-bold">Los invasores</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mentalmente imperfecto, 5. La Comarca" href="/problems/la-comarca/mentalmente-imperfecto" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mentalmente imperfecto, 5. La Comarca" src="https://img.youtube.com/vi/0Z6cHCKvDeg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/mentalmente-imperfecto" class="table-row-name text-bold">Mentalmente imperfecto</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Menú: familia feliz, 6b+. La Comarca" href="/problems/la-comarca/menu-familia-feliz" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Menú: familia feliz, 6b+. La Comarca" src="https://img.youtube.com/vi/PNw9Cbxo9b8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/menu-familia-feliz" class="table-row-name text-bold">Menú: familia feliz</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Modus Operandi, 8b/+. La Comarca" href="/problems/la-comarca/modus-operandi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Modus Operandi, 8b/+. La Comarca" src="https://img.youtube.com/vi/Jy2ikEOf3nY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/modus-operandi" class="table-row-name text-bold">Modus Operandi</a>
+            </div>
+					</td>
+					<td>8b/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Modus Vivendi, 8a. La Comarca" href="/problems/la-comarca/modus-vivendi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Modus Vivendi, 8a. La Comarca" src="https://img.youtube.com/vi/6vNyiarAZuQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/modus-vivendi" class="table-row-name text-bold">Modus Vivendi</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nómadas, 7c+. La Comarca" href="/problems/la-comarca/nomadas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nómadas, 7c+. La Comarca" src="https://img.youtube.com/vi/hkj0rq6eMWc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/nomadas" class="table-row-name text-bold">Nómadas</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Padsamanbhaba, 7b. La Comarca" href="/problems/la-comarca/padsamanbhaba" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Padsamanbhaba, 7b. La Comarca" src="https://img.youtube.com/vi/IrEjc8eW5HA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/padsamanbhaba" class="table-row-name text-bold">Padsamanbhaba</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Bloque del Camino Caído), 5. La Comarca" href="/problems/la-comarca/problem-1-bloque-del-camino-caido" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Bloque del Camino Caído), 5. La Comarca" src="https://img.youtube.com/vi/N7useEWSs-A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-1-bloque-del-camino-caido" class="table-row-name text-bold">Problem 1 (Bloque del Camino Caído)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3, 5+. La Comarca" href="/problems/la-comarca/problem-3" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3, 5+. La Comarca" src="https://img.youtube.com/vi/ATjpPU-VRZw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-3" class="table-row-name text-bold">Problem 3</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (La Tortuga), 7b? (sit). La Comarca" href="/problems/la-comarca/problem-3-la-tortuga" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (La Tortuga), 7b? (sit). La Comarca" src="https://img.youtube.com/vi/aM7MVHa3gYA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-3-la-tortuga" class="table-row-name text-bold">Problem 3 (La Tortuga)</a>
+            </div>
+					</td>
+					<td>7b? (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Bloque del Camino Caído), 4+?. La Comarca" href="/problems/la-comarca/problem-4-bloque-del-camino-caido" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Bloque del Camino Caído), 4+?. La Comarca" src="https://img.youtube.com/vi/hQx21VO-ngI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-4-bloque-del-camino-caido" class="table-row-name text-bold">Problem 4 (Bloque del Camino Caído)</a>
+            </div>
+					</td>
+					<td>4+?</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 8 (La Tortuga). La Comarca" href="/problems/la-comarca/problem-8-la-tortuga" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 8 (La Tortuga). La Comarca" src="https://img.youtube.com/vi/M9x9wMzKMPw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-8-la-tortuga" class="table-row-name text-bold">Problem 8 (La Tortuga)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 8 Low (La Tortuga). La Comarca" href="/problems/la-comarca/problem-8-low-la-tortuga" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 8 Low (La Tortuga). La Comarca" src="https://img.youtube.com/vi/V1nmk-fNBws/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/problem-8-low-la-tortuga" class="table-row-name text-bold">Problem 8 Low (La Tortuga)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Putas F.As, 7b+/c. La Comarca" href="/problems/la-comarca/putas-f-as" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Putas F.As, 7b+/c. La Comarca" src="https://img.youtube.com/vi/IIBiilI4fXE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/putas-f-as" class="table-row-name text-bold">Putas F.As</a>
+            </div>
+					</td>
+					<td>7b+/c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Romeo y regleta sit. La Comarca" href="/problems/la-comarca/romeo-y-regleta-sit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Romeo y regleta sit. La Comarca" src="https://img.youtube.com/vi/gCyuKEX89gk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/romeo-y-regleta-sit" class="table-row-name text-bold">Romeo y regleta sit</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sahasrara, 7c. La Comarca" href="/problems/la-comarca/sahasrara" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sahasrara, 7c. La Comarca" src="https://img.youtube.com/vi/a7kQXqvZ0RM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/sahasrara" class="table-row-name text-bold">Sahasrara</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Salsa roquera, 6b. La Comarca" href="/problems/la-comarca/salsa-roquera" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Salsa roquera, 6b. La Comarca" src="https://img.youtube.com/vi/KIrsu4-0DBw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/salsa-roquera" class="table-row-name text-bold">Salsa roquera</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Samadhi, 7a+. La Comarca" href="/problems/la-comarca/samadhi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Samadhi, 7a+. La Comarca" src="https://img.youtube.com/vi/_ykx0O7NTC0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/samadhi" class="table-row-name text-bold">Samadhi</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Samsara, 6b+ (sit). La Comarca" href="/problems/la-comarca/samsara" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Samsara, 6b+ (sit). La Comarca" src="https://img.youtube.com/vi/n4S_5iweefk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/samsara" class="table-row-name text-bold">Samsara</a>
+            </div>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Samsara, 6b. La Comarca" href="/problems/la-comarca/samsara" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Samsara, 6b. La Comarca" src="https://img.youtube.com/vi/CQ28KDXPPDk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/samsara" class="table-row-name text-bold">Samsara</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Samsara traverse, 7b+. La Comarca" href="/problems/la-comarca/samsara-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Samsara traverse, 7b+. La Comarca" src="https://img.youtube.com/vi/A2eegLpp4Sc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/samsara-traverse" class="table-row-name text-bold">Samsara traverse</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sila, 7c+. La Comarca" href="/problems/la-comarca/sila" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sila, 7c+. La Comarca" src="https://img.youtube.com/vi/56Q5OO3VxlQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/sila" class="table-row-name text-bold">Sila</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Smash the hole, 8b. La Comarca" href="/problems/la-comarca/smash-the-hole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Smash the hole, 8b. La Comarca" src="https://img.youtube.com/vi/WqNJikiB-LE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/smash-the-hole" class="table-row-name text-bold">Smash the hole</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Somnis de Primavera, 6c. La Comarca" href="/problems/la-comarca/somnis-de-primavera" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Somnis de Primavera, 6c. La Comarca" src="https://img.youtube.com/vi/zwT61HM51qM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/somnis-de-primavera" class="table-row-name text-bold">Somnis de Primavera</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Swing, 6b. La Comarca" href="/problems/la-comarca/swing" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Swing, 6b. La Comarca" src="https://img.youtube.com/vi/ZPsQ0dY-mk8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/swing" class="table-row-name text-bold">Swing</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tantra, 6b+. La Comarca" href="/problems/la-comarca/tantra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tantra, 6b+. La Comarca" src="https://img.youtube.com/vi/cGFFvMLJmkI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/tantra" class="table-row-name text-bold">Tantra</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Technical, 6b. La Comarca" href="/problems/la-comarca/technical" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Technical, 6b. La Comarca" src="https://img.youtube.com/vi/29mL_YH66Ic/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/technical" class="table-row-name text-bold">Technical</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Shire, 8b+. La Comarca" href="/problems/la-comarca/the-shire" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Shire, 8b+. La Comarca" src="https://img.youtube.com/vi/pg2HNSqviw4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/the-shire" class="table-row-name text-bold">The Shire</a>
+            </div>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tio caga, 7c. La Comarca" href="/problems/la-comarca/tio-caga" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tio caga, 7c. La Comarca" src="https://img.youtube.com/vi/f0MlQu9nV7E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/tio-caga" class="table-row-name text-bold">Tio caga</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tomux manija, 6b+. La Comarca" href="/problems/la-comarca/tomux-manija" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tomux manija, 6b+. La Comarca" src="https://img.youtube.com/vi/bsvGjN9LtJU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/tomux-manija" class="table-row-name text-bold">Tomux manija</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave traviesa, 6b+. La Comarca" href="/problems/la-comarca/trave-traviesa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave traviesa, 6b+. La Comarca" src="https://img.youtube.com/vi/GA11nUEVx8M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/trave-traviesa" class="table-row-name text-bold">Trave traviesa</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vivis Love, 6c+. La Comarca" href="/problems/la-comarca/vivis-love" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vivis Love, 6c+. La Comarca" src="https://img.youtube.com/vi/dAb_IMs0SYE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/la-comarca/vivis-love" class="table-row-name text-bold">Vivis Love</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

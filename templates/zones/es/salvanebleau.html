@@ -1,0 +1,3994 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Salvanebleau  Boulder | MadBoulder</title>
+	<meta name="description" content="Salvanebleau bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/salvanebleau">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+  
+   > 
+  <a href="/states/catalonia" class="zone-header-tree-link">Cataluña</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Salvanebleau 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.741666649611474" />
+  <input type="hidden" id="lng" name="lng_val" value="1.743307113647461" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Salvanebleau
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Salvanebleau
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/w-uULxDqykg/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/w-uULxDqykg/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/w-uULxDqykg/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/w-uULxDqykg/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Salvanebleau</h4>
+								<p>Salvanebleau, ubicado en Sant Joan de Vilatorrada, es una tranquila área de escalada en conglomerado cerca de Barcelona, España. Con estilos físicos de escalada en techos y desplomes, es popular entre escaladores de todos los niveles</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 168
+								
+									<br>
+									<b>Tipo de Roca</b> Conglomerate
+								
+								
+									<br>
+									<b>Altitud</b> 447m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="https://27crags.com/crags/sant-joan" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        27 Crags (Guide)
+        
+      </a>
+    
+      <a id="guide_link"  href="https://www.instagram.com/salvanebleau/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        Official Instagram
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+      <a id="guide_link"  href="http://boulderinbcn.blogspot.com/2013/10/blocs-sant-joan-de-vilatorrada-sectors.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        boulderinbcn (Blog-Guide)
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+      <a id="guide_link"  href="http://salvanebleau.blogspot.com/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        salvanebleau (Blog)
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/salvanebleau"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/casetes-de-dalt" class="table-row-name text-bold">Casetes de dalt</a>
+					</td>
+					<td class="text-center">8</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic" class="table-row-name text-bold">Clàssic</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-cami" class="table-row-name text-bold">Clàssic - Camí</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-dalt" class="table-row-name text-bold">Clàssic - Dalt</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-diposit" class="table-row-name text-bold">Clàssic - Dipòsit</a>
+					</td>
+					<td class="text-center">26</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-font" class="table-row-name text-bold">Clàssic - Font</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-submari" class="table-row-name text-bold">Clàssic - Submarí</a>
+					</td>
+					<td class="text-center">58</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/classic-tallafocs" class="table-row-name text-bold">Clàssic - Tallafocs</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/cooperativa" class="table-row-name text-bold">Cooperativa</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/cooperativa-de-dalt" class="table-row-name text-bold">Cooperativa de dalt</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/mafrica" class="table-row-name text-bold">Mafrica</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/mallencosa" class="table-row-name text-bold">Mallencosa</a>
+					</td>
+					<td class="text-center">15</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/mirador" class="table-row-name text-bold">Mirador</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/nido-mason" class="table-row-name text-bold">Nido Masón</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/torres-de-fals" class="table-row-name text-bold">Torres de Fals</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/salvanebleau/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOIxbsMUrKYDfF9X1WkcVqk"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Torres de Fals</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMUuoLsUWsQyuYmElfPCNKW"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Les casetes</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMNMVLt1KburstEnLXsmC15"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Font</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNAEeeUxZhEHd_x9IDR-crE"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Dalt</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMHNnSnIre3Ifr8Y-N86gK4"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Tallafocs</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOJxTirgGFXQF809ysl39iZ"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Camí</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMHtjo3d-Lu5I_aDpc3bTgw"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Mirador</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP5TpbqcfS2fFqcimtt8DIg"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Mallencosa</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMnOApclrRGxj1mk0MBnQel"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>de la Font</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPXy2qgKjVBpS6PqM1fIC0c"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Cooperativa</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNFnGN37Ogf84Yh9ijC-xyK"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Mafrica</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPgYWrtuK92m9Z6g-CbinXl"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Submarí</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMLlKi-e6y844XFjwCQL3To"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Clàssic - Dipòsit</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNIGpHLOM3tBEWyIWBL7ByU"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Acció de compressió, 7a+. Salvanebleau" href="/problems/salvanebleau/accio-de-compressio" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Acció de compressió, 7a+. Salvanebleau" src="https://img.youtube.com/vi/IRhUZmqwkMc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/accio-de-compressio" class="table-row-name text-bold">Acció de compressió</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Akelarre, 6c+. Salvanebleau" href="/problems/salvanebleau/akelarre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Akelarre, 6c+. Salvanebleau" src="https://img.youtube.com/vi/YtI5Rs2h4qI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/akelarre" class="table-row-name text-bold">Akelarre</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Cooperativa de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Albaricoque, 6b. Salvanebleau" href="/problems/salvanebleau/albaricoque" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Albaricoque, 6b. Salvanebleau" src="https://img.youtube.com/vi/sk_xeSbyk1A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/albaricoque" class="table-row-name text-bold">Albaricoque</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alpinista empotrador, 6a. Salvanebleau" href="/problems/salvanebleau/alpinista-empotrador" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alpinista empotrador, 6a. Salvanebleau" src="https://img.youtube.com/vi/rXIW5jNIMWk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/alpinista-empotrador" class="table-row-name text-bold">Alpinista empotrador</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Cooperativa de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Aresta Sinistre, 6c. Salvanebleau" href="/problems/salvanebleau/aresta-sinistre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Aresta Sinistre, 6c. Salvanebleau" src="https://img.youtube.com/vi/Yui9VnWoJiU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/aresta-sinistre" class="table-row-name text-bold">Aresta Sinistre</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Arista aristóteles, 5+. Salvanebleau" href="/problems/salvanebleau/arista-aristoteles" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Arista aristóteles, 5+. Salvanebleau" src="https://img.youtube.com/vi/qJE5qeKH_24/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/arista-aristoteles" class="table-row-name text-bold">Arista aristóteles</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ave Félix, 6c. Salvanebleau" href="/problems/salvanebleau/ave-felix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ave Félix, 6c. Salvanebleau" src="https://img.youtube.com/vi/QG7vGXsvplc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/ave-felix" class="table-row-name text-bold">Ave Félix</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Baldrich, 6b. Salvanebleau" href="/problems/salvanebleau/baldrich" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Baldrich, 6b. Salvanebleau" src="https://img.youtube.com/vi/rktOQpXDhME/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/baldrich" class="table-row-name text-bold">Baldrich</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Barraca de Dalt, 7a. Salvanebleau" href="/problems/salvanebleau/barraca-de-dalt" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Barraca de Dalt, 7a. Salvanebleau" src="https://img.youtube.com/vi/NUqVgkayKPU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/barraca-de-dalt" class="table-row-name text-bold">Barraca de Dalt</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Barraca de Dalt Extension, 7b. Salvanebleau" href="/problems/salvanebleau/barraca-de-dalt-extension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Barraca de Dalt Extension, 7b. Salvanebleau" src="https://img.youtube.com/vi/eBcwxh1hbLc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/barraca-de-dalt-extension" class="table-row-name text-bold">Barraca de Dalt Extension</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buke Bus, 7b+. Salvanebleau" href="/problems/salvanebleau/buke-bus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buke Bus, 7b+. Salvanebleau" src="https://img.youtube.com/vi/ZHksWiYem7Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/buke-bus" class="table-row-name text-bold">Buke Bus</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cantonera, 6a. Salvanebleau" href="/problems/salvanebleau/cantonera" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cantonera, 6a. Salvanebleau" src="https://img.youtube.com/vi/Lm-ebOmpGrQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/cantonera" class="table-row-name text-bold">Cantonera</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cap del Drac, 6a. Salvanebleau" href="/problems/salvanebleau/cap-del-drac" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cap del Drac, 6a. Salvanebleau" src="https://img.youtube.com/vi/lpHSWG_4Lmk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/cap-del-drac" class="table-row-name text-bold">Cap del Drac</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Colacao, 7b. Salvanebleau" href="/problems/salvanebleau/colacao" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Colacao, 7b. Salvanebleau" src="https://img.youtube.com/vi/MNVLqhoZw-0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/colacao" class="table-row-name text-bold">Colacao</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="De Pupilo a Pupil, 7b. Salvanebleau" href="/problems/salvanebleau/de-pupilo-a-pupil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: De Pupilo a Pupil, 7b. Salvanebleau" src="https://img.youtube.com/vi/gNFgpohh5jI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/de-pupilo-a-pupil" class="table-row-name text-bold">De Pupilo a Pupil</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="De les bicis, 6b. Salvanebleau" href="/problems/salvanebleau/de-les-bicis" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: De les bicis, 6b. Salvanebleau" src="https://img.youtube.com/vi/DKASPGslQxk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/de-les-bicis" class="table-row-name text-bold">De les bicis</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Del Dani, 8a. Salvanebleau" href="/problems/salvanebleau/del-dani" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Del Dani, 8a. Salvanebleau" src="https://img.youtube.com/vi/w-uULxDqykg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/del-dani" class="table-row-name text-bold">Del Dani</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Clàssic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dels Bidits, 6b. Salvanebleau" href="/problems/salvanebleau/dels-bidits" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dels Bidits, 6b. Salvanebleau" src="https://img.youtube.com/vi/C-lNohYdXT0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/dels-bidits" class="table-row-name text-bold">Dels Bidits</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Mafrica</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El 7a dels Picats, 7a. Salvanebleau" href="/problems/salvanebleau/el-7a-dels-picats" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El 7a dels Picats, 7a. Salvanebleau" src="https://img.youtube.com/vi/uH_rwLOpIXU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-7a-dels-picats" class="table-row-name text-bold">El 7a dels Picats</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El 7b dels Ulls, 7b. Salvanebleau" href="/problems/salvanebleau/el-7b-dels-ulls" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El 7b dels Ulls, 7b. Salvanebleau" src="https://img.youtube.com/vi/Pfr6l350XsI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-7b-dels-ulls" class="table-row-name text-bold">El 7b dels Ulls</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Cocodril, 6a. Salvanebleau" href="/problems/salvanebleau/el-cocodril" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Cocodril, 6a. Salvanebleau" src="https://img.youtube.com/vi/Xv8g0BiKjKM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-cocodril" class="table-row-name text-bold">El Cocodril</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Dorado, 7b+. Salvanebleau" href="/problems/salvanebleau/el-dorado" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Dorado, 7b+. Salvanebleau" src="https://img.youtube.com/vi/MRZSbduxXG0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-dorado" class="table-row-name text-bold">El Dorado</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Fugitiu. Salvanebleau" href="/problems/salvanebleau/el-fugitiu" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Fugitiu. Salvanebleau" src="https://img.youtube.com/vi/jfZbpO71BHw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-fugitiu" class="table-row-name text-bold">El Fugitiu</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Fugitiu sit. Salvanebleau" href="/problems/salvanebleau/el-fugitiu-sit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Fugitiu sit. Salvanebleau" src="https://img.youtube.com/vi/BZste3QUpLI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-fugitiu-sit" class="table-row-name text-bold">El Fugitiu sit</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Missil, 7c. Salvanebleau" href="/problems/salvanebleau/el-missil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Missil, 7c. Salvanebleau" src="https://img.youtube.com/vi/c2hMBCCcaGk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-missil" class="table-row-name text-bold">El Missil</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Projectil. Salvanebleau" href="/problems/salvanebleau/el-projectil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Projectil. Salvanebleau" src="https://img.youtube.com/vi/_90JHc1yGOY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-projectil" class="table-row-name text-bold">El Projectil</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Rallador, 7b. Salvanebleau" href="/problems/salvanebleau/el-rallador" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Rallador, 7b. Salvanebleau" src="https://img.youtube.com/vi/d792RCvdcHA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-rallador" class="table-row-name text-bold">El Rallador</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El bautizado. Salvanebleau" href="/problems/salvanebleau/el-bautizado" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El bautizado. Salvanebleau" src="https://img.youtube.com/vi/G84W36A3QQY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-bautizado" class="table-row-name text-bold">El bautizado</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Cooperativa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El dofí. Salvanebleau" href="/problems/salvanebleau/el-dofi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El dofí. Salvanebleau" src="https://img.youtube.com/vi/yA0XohzOWWE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-dofi" class="table-row-name text-bold">El dofí</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El gat vell, 7a+. Salvanebleau" href="/problems/salvanebleau/el-gat-vell" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El gat vell, 7a+. Salvanebleau" src="https://img.youtube.com/vi/oLKITYdCsPc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-gat-vell" class="table-row-name text-bold">El gat vell</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El ojo de Panoramix, 7a. Salvanebleau" href="/problems/salvanebleau/el-ojo-de-panoramix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El ojo de Panoramix, 7a. Salvanebleau" src="https://img.youtube.com/vi/0YF3OmbBxKQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-ojo-de-panoramix" class="table-row-name text-bold">El ojo de Panoramix</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Mirador</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El submarí (los mundos de Iker), 6c. Salvanebleau" href="/problems/salvanebleau/el-submari-los-mundos-de-iker" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El submarí (los mundos de Iker), 6c. Salvanebleau" src="https://img.youtube.com/vi/JECB6_5u5Sc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-submari-los-mundos-de-iker" class="table-row-name text-bold">El submarí (los mundos de Iker)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El susurro. Salvanebleau" href="/problems/salvanebleau/el-susurro" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El susurro. Salvanebleau" src="https://img.youtube.com/vi/OL1zUkUji60/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/el-susurro" class="table-row-name text-bold">El susurro</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Els Ulls directe, 6a. Salvanebleau" href="/problems/salvanebleau/els-ulls-directe" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Els Ulls directe, 6a. Salvanebleau" src="https://img.youtube.com/vi/vId7UYl_bDk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/els-ulls-directe" class="table-row-name text-bold">Els Ulls directe</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Els petits canvis son poderosos. Salvanebleau" href="/problems/salvanebleau/els-petits-canvis-son-poderosos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Els petits canvis son poderosos. Salvanebleau" src="https://img.youtube.com/vi/TH9UfH14KF4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/els-petits-canvis-son-poderosos" class="table-row-name text-bold">Els petits canvis son poderosos</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Els tres merlets, 6b+. Salvanebleau" href="/problems/salvanebleau/els-tres-merlets" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Els tres merlets, 6b+. Salvanebleau" src="https://img.youtube.com/vi/0pmnZ3wa0mU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/els-tres-merlets" class="table-row-name text-bold">Els tres merlets</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Escurçó Negre, 6a+. Salvanebleau" href="/problems/salvanebleau/escurco-negre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Escurçó Negre, 6a+. Salvanebleau" src="https://img.youtube.com/vi/rD36nSxa6sc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/escurco-negre" class="table-row-name text-bold">Escurçó Negre</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Esperit de Vi, 6c. Salvanebleau" href="/problems/salvanebleau/esperit-de-vi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Esperit de Vi, 6c. Salvanebleau" src="https://img.youtube.com/vi/P3LoLPJ2oaw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/esperit-de-vi" class="table-row-name text-bold">Esperit de Vi</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Esperó Alsina, 6b. Salvanebleau" href="/problems/salvanebleau/espero-alsina" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Esperó Alsina, 6b. Salvanebleau" src="https://img.youtube.com/vi/q13PLAi0kBw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/espero-alsina" class="table-row-name text-bold">Esperó Alsina</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Esperó Willow, 7a+. Salvanebleau" href="/problems/salvanebleau/espero-willow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Esperó Willow, 7a+. Salvanebleau" src="https://img.youtube.com/vi/sdSknbyjC4o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/espero-willow" class="table-row-name text-bold">Esperó Willow</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Essència. Salvanebleau" href="/problems/salvanebleau/essencia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Essència. Salvanebleau" src="https://img.youtube.com/vi/idNd0QJdxaE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/essencia" class="table-row-name text-bold">Essència</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Torres de Fals</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fakir, 7b+. Salvanebleau" href="/problems/salvanebleau/fakir" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fakir, 7b+. Salvanebleau" src="https://img.youtube.com/vi/lqpRsjBXCmE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/fakir" class="table-row-name text-bold">Fakir</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fisurilla curiosilla, 5. Salvanebleau" href="/problems/salvanebleau/fisurilla-curiosilla" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fisurilla curiosilla, 5. Salvanebleau" src="https://img.youtube.com/vi/9Gqa3k_r5jQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/fisurilla-curiosilla" class="table-row-name text-bold">Fisurilla curiosilla</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Guantanamera. Salvanebleau" href="/problems/salvanebleau/guantanamera" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Guantanamera. Salvanebleau" src="https://img.youtube.com/vi/MUL6cP8Aut8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/guantanamera" class="table-row-name text-bold">Guantanamera</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hashtag, 7b. Salvanebleau" href="/problems/salvanebleau/hashtag" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hashtag, 7b. Salvanebleau" src="https://img.youtube.com/vi/vTfigJM3nmI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/hashtag" class="table-row-name text-bold">Hashtag</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Incredul, 6b. Salvanebleau" href="/problems/salvanebleau/incredul" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Incredul, 6b. Salvanebleau" src="https://img.youtube.com/vi/JUEXbChjeUI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/incredul" class="table-row-name text-bold">Incredul</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jumper, 7c. Salvanebleau" href="/problems/salvanebleau/jumper" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jumper, 7c. Salvanebleau" src="https://img.youtube.com/vi/Ckm9QbQHLb4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/jumper" class="table-row-name text-bold">Jumper</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Opositor, 6c. Salvanebleau" href="/problems/salvanebleau/l-opositor" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Opositor, 6c. Salvanebleau" src="https://img.youtube.com/vi/SkklS1wdu7E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/l-opositor" class="table-row-name text-bold">L'Opositor</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Ouresta, 7c. Salvanebleau" href="/problems/salvanebleau/l-ouresta" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Ouresta, 7c. Salvanebleau" src="https://img.youtube.com/vi/Xai_R_V808M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/l-ouresta" class="table-row-name text-bold">L'Ouresta</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Ullal, 5. Salvanebleau" href="/problems/salvanebleau/l-ullal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Ullal, 5. Salvanebleau" src="https://img.youtube.com/vi/TyLO8reUb2k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/l-ullal" class="table-row-name text-bold">L'Ullal</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'ensigalada. Salvanebleau" href="/problems/salvanebleau/l-ensigalada" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'ensigalada. Salvanebleau" src="https://img.youtube.com/vi/AOa7Z1692jk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/l-ensigalada" class="table-row-name text-bold">L'ensigalada</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Baldufa, 6c. Salvanebleau" href="/problems/salvanebleau/la-baldufa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Baldufa, 6c. Salvanebleau" src="https://img.youtube.com/vi/PYINeCS4mxM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-baldufa" class="table-row-name text-bold">La Baldufa</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Incógnita. Salvanebleau" href="/problems/salvanebleau/la-incognita" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Incógnita. Salvanebleau" src="https://img.youtube.com/vi/RjqfM2ivbqE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-incognita" class="table-row-name text-bold">La Incógnita</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Llengua, 6b (sit). Salvanebleau" href="/problems/salvanebleau/la-llengua" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Llengua, 6b (sit). Salvanebleau" src="https://img.youtube.com/vi/zTIKq6EdeVY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-llengua" class="table-row-name text-bold">La Llengua</a>
+            </div>
+					</td>
+					<td>6b (sit)</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Llengua, 5+. Salvanebleau" href="/problems/salvanebleau/la-llengua" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Llengua, 5+. Salvanebleau" src="https://img.youtube.com/vi/ZfFXszJc8rU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-llengua" class="table-row-name text-bold">La Llengua</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Lluna, 6a. Salvanebleau" href="/problems/salvanebleau/la-lluna" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Lluna, 6a. Salvanebleau" src="https://img.youtube.com/vi/L5FiWJI55AM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-lluna" class="table-row-name text-bold">La Lluna</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Ona i la Bora. Salvanebleau" href="/problems/salvanebleau/la-ona-i-la-bora" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Ona i la Bora. Salvanebleau" src="https://img.youtube.com/vi/6TBcsMLg_wY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-ona-i-la-bora" class="table-row-name text-bold">La Ona i la Bora</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Perla Negra. Salvanebleau" href="/problems/salvanebleau/la-perla-negra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Perla Negra. Salvanebleau" src="https://img.youtube.com/vi/grO4epM0Pj8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-perla-negra" class="table-row-name text-bold">La Perla Negra</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Torres de Fals</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Sardana, 7a (sit). Salvanebleau" href="/problems/salvanebleau/la-sardana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Sardana, 7a (sit). Salvanebleau" src="https://img.youtube.com/vi/28oNwXNR7WA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-sardana" class="table-row-name text-bold">La Sardana</a>
+            </div>
+					</td>
+					<td>7a (sit) </td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Sipia (sense mans). 6a+. Salvanebleau" href="/problems/salvanebleau/la-sipia-sense-mans" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Sipia (sense mans). 6a+. Salvanebleau" src="https://img.youtube.com/vi/INXRAGAijz4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-sipia-sense-mans" class="table-row-name text-bold">La Sipia (sense mans)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Sipieta (sense mans), 4. Salvanebleau" href="/problems/salvanebleau/la-sipieta-sense-mans" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Sipieta (sense mans), 4. Salvanebleau" src="https://img.youtube.com/vi/TPFXEzWhZmg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-sipieta-sense-mans" class="table-row-name text-bold">La Sipieta(sense mans)</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Teulada, 6b+. Salvanebleau" href="/problems/salvanebleau/la-teulada" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Teulada, 6b+. Salvanebleau" src="https://img.youtube.com/vi/waKPDI3VNvQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-teulada" class="table-row-name text-bold">La Teulada</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La penya de l'espardenya, 6c. Salvanebleau" href="/problems/salvanebleau/la-penya-de-l-espardenya" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La penya de l'espardenya, 6c. Salvanebleau" src="https://img.youtube.com/vi/LCu1-oMUETI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/la-penya-de-l-espardenya" class="table-row-name text-bold">La penya de l'espardenya</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lance de la Barraca, 6a. Salvanebleau" href="/problems/salvanebleau/lance-de-la-barraca" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lance de la Barraca, 6a. Salvanebleau" src="https://img.youtube.com/vi/hFAxX4JhB4c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/lance-de-la-barraca" class="table-row-name text-bold">Lance de la Barraca</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Llamàntol d'or, 8a (sit). Salvanebleau" href="/problems/salvanebleau/llamantol-d-or" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Llamàntol d'or, 8a (sit). Salvanebleau" src="https://img.youtube.com/vi/_MrwvMAb77M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/llamantol-d-or" class="table-row-name text-bold">Llamàntol d'or</a>
+            </div>
+					</td>
+					<td>8a (sit)</td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mantel del Rallador, 6b. Salvanebleau" href="/problems/salvanebleau/mantel-del-rallador" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mantel del Rallador, 6b. Salvanebleau" src="https://img.youtube.com/vi/IKLWODH3g28/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/mantel-del-rallador" class="table-row-name text-bold">Mantel del Rallador</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Miami Pich, 7a. Salvanebleau" href="/problems/salvanebleau/miami-pich" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Miami Pich, 7a. Salvanebleau" src="https://img.youtube.com/vi/GvA_bQGIvl8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/miami-pich" class="table-row-name text-bold">Miami Pich</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Cooperativa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mortadelo y Guillemón. Salvanebleau" href="/problems/salvanebleau/mortadelo-y-guillemon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mortadelo y Guillemón. Salvanebleau" src="https://img.youtube.com/vi/0q12rLXOmsY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/mortadelo-y-guillemon" class="table-row-name text-bold">Mortadelo y Guillemón</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nebula, 7a. Salvanebleau" href="/problems/salvanebleau/nebula" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nebula, 7a. Salvanebleau" src="https://img.youtube.com/vi/nmU5ONnp8VQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/nebula" class="table-row-name text-bold">Nebula</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ninja, 7a. Salvanebleau" href="/problems/salvanebleau/ninja" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ninja, 7a. Salvanebleau" src="https://img.youtube.com/vi/QntnygyZzLE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/ninja" class="table-row-name text-bold">Ninja</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Noa. Salvanebleau" href="/problems/salvanebleau/noa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Noa. Salvanebleau" src="https://img.youtube.com/vi/KsjUrvkrbV4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/noa" class="table-row-name text-bold">Noa</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ocarina exprés. Salvanebleau" href="/problems/salvanebleau/ocarina-expres" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ocarina exprés. Salvanebleau" src="https://img.youtube.com/vi/jFBRR_nzirc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/ocarina-expres" class="table-row-name text-bold">Ocarina exprés</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Nido Masón</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Oraculo. Salvanebleau" href="/problems/salvanebleau/oraculo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Oraculo. Salvanebleau" src="https://img.youtube.com/vi/i9-GHOIjBuY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/oraculo" class="table-row-name text-bold">Oraculo</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pinzona. Salvanebleau" href="/problems/salvanebleau/pinzona" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pinzona. Salvanebleau" src="https://img.youtube.com/vi/6ydigdU7OdI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/pinzona" class="table-row-name text-bold">Pinzona</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Cooperativa de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pit-Roig, 7b. Salvanebleau" href="/problems/salvanebleau/pit-roig" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pit-Roig, 7b. Salvanebleau" src="https://img.youtube.com/vi/ihaBIM0njUw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/pit-roig" class="table-row-name text-bold">Pit-Roig</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Techillo, 7a. Salvanebleau" href="/problems/salvanebleau/politicament-corruptes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Techillo, 7a. Salvanebleau" src="https://img.youtube.com/vi/LkaB4p49ByM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/politicament-corruptes" class="table-row-name text-bold">Políticament Corruptes</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Políticament corruptes, 6a. Salvanebleau" href="/problems/salvanebleau/politicament-corruptes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Políticament corruptes, 6a. Salvanebleau" src="https://img.youtube.com/vi/wzBKib5lu3k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/politicament-corruptes" class="table-row-name text-bold">Políticament Corruptes</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Políticament Correctes, 6a+. Salvanebleau" href="/problems/salvanebleau/politicament-correctes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Políticament Correctes, 6a+. Salvanebleau" src="https://img.youtube.com/vi/dLpvVKAomqY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/politicament-correctes" class="table-row-name text-bold">Políticament correctes</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (Les Bessones), 5. Salvanebleau" href="/problems/salvanebleau/problem-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (Les Bessones), 5. Salvanebleau" src="https://img.youtube.com/vi/48-8UdAuunw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-les-bessones" class="table-row-name text-bold">Problem  (Les Bessones)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (Totxo Artés), 5. Salvanebleau" href="/problems/salvanebleau/problem-totxo-artes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (Totxo Artés), 5. Salvanebleau" src="https://img.youtube.com/vi/cpJGIUbg8gg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-totxo-artes" class="table-row-name text-bold">Problem  (Totxo Artés)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Bicis), 3. Salvanebleau" href="/problems/salvanebleau/problem-1-bicis-3" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Bicis), 3. Salvanebleau" src="https://img.youtube.com/vi/HabUvClMexU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-bicis-3" class="table-row-name text-bold">Problem 1 (Bicis), 3</a>
+            </div>
+					</td>
+					<td>3+</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Bloc del Rovelló). Salvanebleau" href="/problems/salvanebleau/problem-1-bloc-del-rovello" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Bloc del Rovelló). Salvanebleau" src="https://img.youtube.com/vi/O27O9icUP2M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-bloc-del-rovello" class="table-row-name text-bold">Problem 1 (Bloc del Rovelló)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Bloc sota Bloc del Mestre), 7a. Salvanebleau" href="/problems/salvanebleau/problem-1-bloc-sota-bloc-del-mestre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Bloc sota Bloc del Mestre), 7a. Salvanebleau" src="https://img.youtube.com/vi/ooRcaoka0CU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-bloc-sota-bloc-del-mestre" class="table-row-name text-bold">Problem 1 (Bloc sota Bloc del Mestre)</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Boulder 2, Clàssic - Dalt), 6b+. Salvanebleau" href="/problems/salvanebleau/problem-1-boulder-2-classic-dalt" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Boulder 2, Clàssic - Dalt), 6b+. Salvanebleau" src="https://img.youtube.com/vi/moXAlzpVDU8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-boulder-2-classic-dalt" class="table-row-name text-bold">Problem 1 (Boulder 2, Clàssic - Dalt)</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-1-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/_TEikRZO13c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 1 (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-1-boulder-3-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/q7KYw34KybM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-boulder-3-classic-tallafocs" class="table-row-name text-bold">Problem 1 (Boulder 3, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Casetes), 6b. Salvanebleau" href="/problems/salvanebleau/problem-1-casetes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Casetes), 6b. Salvanebleau" src="https://img.youtube.com/vi/-pSi7J8APaA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-casetes" class="table-row-name text-bold">Problem 1 (Casetes)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (El Dofí), 6c. Salvanebleau" href="/problems/salvanebleau/problem-1-el-dofi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (El Dofí), 6c. Salvanebleau" src="https://img.youtube.com/vi/amoIxonm9RA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-el-dofi" class="table-row-name text-bold">Problem 1 (El Dofí)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (El Piano), 6b. Salvanebleau" href="/problems/salvanebleau/problem-1-el-piano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (El Piano), 6b. Salvanebleau" src="https://img.youtube.com/vi/jfdNKfgSy1w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-el-piano" class="table-row-name text-bold">Problem 1 (El Piano)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (El terrar), 6b+. Salvanebleau" href="/problems/salvanebleau/problem-1-el-terrar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (El terrar), 6b+. Salvanebleau" src="https://img.youtube.com/vi/QnIuSIR13cU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-el-terrar" class="table-row-name text-bold">Problem 1 (El terrar)</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Equilibrista), 6a+. Salvanebleau" href="/problems/salvanebleau/problem-1-equilibrista" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Equilibrista), 6a+. Salvanebleau" src="https://img.youtube.com/vi/-h3SpeJzRpw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-equilibrista" class="table-row-name text-bold">Problem 1 (Equilibrista)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (L'Ullal), 3+. Salvanebleau" href="/problems/salvanebleau/problem-1-l-ullal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (L'Ullal), 3+. Salvanebleau" src="https://img.youtube.com/vi/vVA8CBBsfhE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-l-ullal" class="table-row-name text-bold">Problem 1 (L'Ullal)</a>
+            </div>
+					</td>
+					<td>3+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (La boina), 7a. Salvanebleau" href="/problems/salvanebleau/problem-1-la-boina" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (La boina), 7a. Salvanebleau" src="https://img.youtube.com/vi/l5KKRX54vxY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-la-boina" class="table-row-name text-bold">Problem 1 (La boina)</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Paper de Fumar), 6b+. Salvanebleau" href="/problems/salvanebleau/problem-1-paper-de-fumar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Paper de Fumar), 6b+. Salvanebleau" src="https://img.youtube.com/vi/mc31k2NPTzE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-paper-de-fumar" class="table-row-name text-bold">Problem 1 (Paper de Fumar)</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Portaavions), 6a. Salvanebleau" href="/problems/salvanebleau/problem-1-portaavions" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Portaavions), 6a. Salvanebleau" src="https://img.youtube.com/vi/YSFzY27rZGo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-portaavions" class="table-row-name text-bold">Problem 1 (Portaavions)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Silvestre), 6c. Salvanebleau" href="/problems/salvanebleau/problem-1-silvestre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Silvestre), 6c. Salvanebleau" src="https://img.youtube.com/vi/oAYMwC9IRdk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-silvestre" class="table-row-name text-bold">Problem 1 (Silvestre)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Troglodita), 7a+. Salvanebleau" href="/problems/salvanebleau/problem-1-troglodita" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Troglodita), 7a+. Salvanebleau" src="https://img.youtube.com/vi/Wd_dsDffR68/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-troglodita" class="table-row-name text-bold">Problem 1 (Troglodita)</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 Extension (Barraca de Dalt), 6c. Salvanebleau" href="/problems/salvanebleau/problem-1-extension-barraca-de-dalt" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 Extension (Barraca de Dalt), 6c. Salvanebleau" src="https://img.youtube.com/vi/3E8y99MW4Us/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-extension-barraca-de-dalt" class="table-row-name text-bold">Problem 1 Extension (Barraca de Dalt)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 Extension (El Piano). Salvanebleau" href="/problems/salvanebleau/problem-1-extension-el-piano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 Extension (El Piano). Salvanebleau" src="https://img.youtube.com/vi/JgLHKdlW-xA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-1-extension-el-piano" class="table-row-name text-bold">Problem 1 Extension (El Piano)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 10 (El Dau), 3+. Salvanebleau" href="/problems/salvanebleau/problem-10-el-dau" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 10 (El Dau), 3+. Salvanebleau" src="https://img.youtube.com/vi/1bfc1xgYG9I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-10-el-dau" class="table-row-name text-bold">Problem 10 (El Dau)</a>
+            </div>
+					</td>
+					<td>3+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 10 (La Trinquela), 4+. Salvanebleau" href="/problems/salvanebleau/problem-10-la-trinquela" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 10 (La Trinquela), 4+. Salvanebleau" src="https://img.youtube.com/vi/S3LT3b24v48/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-10-la-trinquela" class="table-row-name text-bold">Problem 10 (La Trinquela)</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 11 (Les Bessones), 4. Salvanebleau" href="/problems/salvanebleau/problem-11-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 11 (Les Bessones), 4. Salvanebleau" src="https://img.youtube.com/vi/EtPxqSttmOw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-11-les-bessones" class="table-row-name text-bold">Problem 11 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 15 (Les Bessones), 7c. Salvanebleau" href="/problems/salvanebleau/problem-15-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 15 (Les Bessones), 7c. Salvanebleau" src="https://img.youtube.com/vi/snD4AKoeCBQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-15-les-bessones" class="table-row-name text-bold">Problem 15 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 17 (Les Bessones), 7b. Salvanebleau" href="/problems/salvanebleau/problem-17-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 17 (Les Bessones), 7b. Salvanebleau" src="https://img.youtube.com/vi/IVNeJ7lSS48/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-17-les-bessones" class="table-row-name text-bold">Problem 17 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 18 (Les Bessones), 7b. Salvanebleau" href="/problems/salvanebleau/problem-18-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 18 (Les Bessones), 7b. Salvanebleau" src="https://img.youtube.com/vi/Hd_NhvYsC14/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-18-les-bessones" class="table-row-name text-bold">Problem 18 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Barraca de baix), 5. Salvanebleau" href="/problems/salvanebleau/problem-2-barraca-de-baix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Barraca de baix), 5. Salvanebleau" src="https://img.youtube.com/vi/4CUbgUqC7is/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-barraca-de-baix" class="table-row-name text-bold">Problem 2 (Barraca de baix)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Bicis), 4+. Salvanebleau" href="/problems/salvanebleau/problem-2-bicis" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Bicis), 4+. Salvanebleau" src="https://img.youtube.com/vi/QJWNdVD0ZW8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-bicis" class="table-row-name text-bold">Problem 2 (Bicis)</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-2-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/zn2b527eHlU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 2 (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Casetes), 7a. Salvanebleau" href="/problems/salvanebleau/problem-2-casetes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Casetes), 7a. Salvanebleau" src="https://img.youtube.com/vi/qQvK_LBN1pw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-casetes" class="table-row-name text-bold">Problem 2 (Casetes)</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (El Missil), 6a+. Salvanebleau" href="/problems/salvanebleau/problem-2-el-missil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (El Missil), 6a+. Salvanebleau" src="https://img.youtube.com/vi/GpU_EYVgrno/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-el-missil" class="table-row-name text-bold">Problem 2 (El Missil)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (El Piano), 6b. Salvanebleau" href="/problems/salvanebleau/problem-2-el-piano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (El Piano), 6b. Salvanebleau" src="https://img.youtube.com/vi/JCfKNQ6pS6I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-el-piano" class="table-row-name text-bold">Problem 2 (El Piano)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (La Baldufa), 6c. Salvanebleau" href="/problems/salvanebleau/problem-2-la-baldufa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (La Baldufa), 6c. Salvanebleau" src="https://img.youtube.com/vi/cXjuohy-GYE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-la-baldufa" class="table-row-name text-bold">Problem 2 (La Baldufa)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (La Pasterada), 6a. Salvanebleau" href="/problems/salvanebleau/problem-2-la-pasterada" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (La Pasterada), 6a. Salvanebleau" src="https://img.youtube.com/vi/3W97G7HC8-o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-la-pasterada" class="table-row-name text-bold">Problem 2 (La Pasterada)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Portaavions), 5. Salvanebleau" href="/problems/salvanebleau/problem-2-portaavions" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Portaavions), 5. Salvanebleau" src="https://img.youtube.com/vi/ORlIOruOmGA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-portaavions" class="table-row-name text-bold">Problem 2 (Portaavions)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Silvestre), 6a. Salvanebleau" href="/problems/salvanebleau/problem-2-silvestre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Silvestre), 6a. Salvanebleau" src="https://img.youtube.com/vi/PqAednedqUY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-silvestre" class="table-row-name text-bold">Problem 2 (Silvestre)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Túnel de la por), 6c. Salvanebleau" href="/problems/salvanebleau/problem-2-tunel-de-la-por" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Túnel de la por), 6c. Salvanebleau" src="https://img.youtube.com/vi/LBGpNTkNwHI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-tunel-de-la-por" class="table-row-name text-bold">Problem 2 (Túnel de la por)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 2 (Ullal), 5+. Salvanebleau" href="/problems/salvanebleau/problem-2-ullal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 2 (Ullal), 5+. Salvanebleau" src="https://img.youtube.com/vi/ZGk9uCLzBT0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-2-ullal" class="table-row-name text-bold">Problem 2 (Ullal)</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Clàssic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-3-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/sbi_ORIW6ps/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 3 (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Casetes), 6b. Salvanebleau" href="/problems/salvanebleau/problem-3-casetes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Casetes), 6b. Salvanebleau" src="https://img.youtube.com/vi/4dVW_tmVbWg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-casetes" class="table-row-name text-bold">Problem 3 (Casetes)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (El Piano), 6b. Salvanebleau" href="/problems/salvanebleau/problem-3-el-piano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (El Piano), 6b. Salvanebleau" src="https://img.youtube.com/vi/i_PvxVsNdmw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-el-piano" class="table-row-name text-bold">Problem 3 (El Piano)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (El Rallador), 7a+. Salvanebleau" href="/problems/salvanebleau/problem-3-el-rallador" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (El Rallador), 7a+. Salvanebleau" src="https://img.youtube.com/vi/B12dPrZ7YOU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-el-rallador" class="table-row-name text-bold">Problem 3 (El Rallador)</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (La Baldufa), 6b. Salvanebleau" href="/problems/salvanebleau/problem-3-la-baldufa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (La Baldufa), 6b. Salvanebleau" src="https://img.youtube.com/vi/_G5Rxh81lHo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-la-baldufa" class="table-row-name text-bold">Problem 3 (La Baldufa)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Portaavions), 4. Salvanebleau" href="/problems/salvanebleau/problem-3-portaavions" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Portaavions), 4. Salvanebleau" src="https://img.youtube.com/vi/NOIoEKp1-OU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-portaavions" class="table-row-name text-bold">Problem 3 (Portaavions)</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Silvestre), 5. Salvanebleau" href="/problems/salvanebleau/problem-3-silvestre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Silvestre), 5. Salvanebleau" src="https://img.youtube.com/vi/K7dKzqBmSDk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-silvestre" class="table-row-name text-bold">Problem 3 (Silvestre)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Sostre del Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-3-sostre-del-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Sostre del Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/LqUKnvKH72Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-3-sostre-del-tallafocs" class="table-row-name text-bold">Problem 3 (Sostre del Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-4-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/X7NQ__n9AlQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 4 (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (El Piano), 6b+. Salvanebleau" href="/problems/salvanebleau/problem-4-el-piano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (El Piano), 6b+. Salvanebleau" src="https://img.youtube.com/vi/4OIjB25kejg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-el-piano" class="table-row-name text-bold">Problem 4 (El Piano)</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Equilibrista), 6a. Salvanebleau" href="/problems/salvanebleau/problem-4-equilibrista" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Equilibrista), 6a. Salvanebleau" src="https://img.youtube.com/vi/FjQk3IQEPNI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-equilibrista" class="table-row-name text-bold">Problem 4 (Equilibrista)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Paper de Fumar), 6c (sit). Salvanebleau" href="/problems/salvanebleau/problem-4-paper-de-fumar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Paper de Fumar), 6c (sit). Salvanebleau" src="https://img.youtube.com/vi/c1a4ILzd4b4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-paper-de-fumar" class="table-row-name text-bold">Problem 4 (Paper de Fumar)</a>
+            </div>
+					</td>
+					<td>6c (sit)</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Paper de Fumar), 6a. Salvanebleau" href="/problems/salvanebleau/problem-4-paper-de-fumar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Paper de Fumar), 6a. Salvanebleau" src="https://img.youtube.com/vi/xjQ-bND_3kk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-paper-de-fumar" class="table-row-name text-bold">Problem 4 (Paper de Fumar)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 4 (Portaavions), 3+. Salvanebleau" href="/problems/salvanebleau/problem-4-portaavions" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 4 (Portaavions), 3+. Salvanebleau" src="https://img.youtube.com/vi/Z0FHdTUm9HQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-4-portaavions" class="table-row-name text-bold">Problem 4 (Portaavions)</a>
+            </div>
+					</td>
+					<td>3+</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-5-boulder-3-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/1AL9OVYPREg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-5-boulder-3-classic-tallafocs" class="table-row-name text-bold">Problem 5 (Boulder 3, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (Cementiri), 6a. Salvanebleau" href="/problems/salvanebleau/problem-5-cementiri" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (Cementiri), 6a. Salvanebleau" src="https://img.youtube.com/vi/cyAAOzXCXGE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-5-cementiri" class="table-row-name text-bold">Problem 5 (Cementiri)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (Equilibrista), 6a. Salvanebleau" href="/problems/salvanebleau/problem-5-equilibrista" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (Equilibrista), 6a. Salvanebleau" src="https://img.youtube.com/vi/jNETrpQPJTc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-5-equilibrista" class="table-row-name text-bold">Problem 5 (Equilibrista)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 5 (La Ruleta), 6b. Salvanebleau" href="/problems/salvanebleau/problem-5-la-ruleta" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 5 (La Ruleta), 6b. Salvanebleau" src="https://img.youtube.com/vi/Y6VK2UoxO8A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-5-la-ruleta" class="table-row-name text-bold">Problem 5 (La Ruleta)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 6 (La Ruleta), 5. Salvanebleau" href="/problems/salvanebleau/problem-6-la-ruleta" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 6 (La Ruleta), 5. Salvanebleau" src="https://img.youtube.com/vi/7X3CLnpuTr4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-6-la-ruleta" class="table-row-name text-bold">Problem 6 (La Ruleta)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 6 (Les Bessones), 6b+. Salvanebleau" href="/problems/salvanebleau/problem-6-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 6 (Les Bessones), 6b+. Salvanebleau" src="https://img.youtube.com/vi/pDWeTWCTzDU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-6-les-bessones" class="table-row-name text-bold">Problem 6 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 6 (Totxo Artés), 5+. Salvanebleau" href="/problems/salvanebleau/problem-6-totxo-artes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 6 (Totxo Artés), 5+. Salvanebleau" src="https://img.youtube.com/vi/LWplU_vFfzw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-6-totxo-artes" class="table-row-name text-bold">Problem 6 (Totxo Artés)</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 6 Sit (Boulder 3, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-6-sit-boulder-3-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 6 Sit (Boulder 3, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/RUBjBj4ZXAI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-6-sit-boulder-3-classic-tallafocs" class="table-row-name text-bold">Problem 6 Sit (Boulder 3, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 7 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-7-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 7 (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/VNFLF9yqfQ8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-7-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 7 (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 7 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-7-boulder-3-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 7 (Boulder 3, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/XWhub7kkEoU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-7-boulder-3-classic-tallafocs" class="table-row-name text-bold">Problem 7 (Boulder 3, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 7 (Les Bessones), 6a+. Salvanebleau" href="/problems/salvanebleau/problem-7-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 7 (Les Bessones), 6a+. Salvanebleau" src="https://img.youtube.com/vi/O1s1O-rj0BA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-7-les-bessones" class="table-row-name text-bold">Problem 7 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 7 Directe (Boulder 2, Clàssic - Tallafocs). Salvanebleau" href="/problems/salvanebleau/problem-7-directe-boulder-2-classic-tallafocs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 7 Directe (Boulder 2, Clàssic - Tallafocs). Salvanebleau" src="https://img.youtube.com/vi/NneQ5S4v8Rs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-7-directe-boulder-2-classic-tallafocs" class="table-row-name text-bold">Problem 7 Directe (Boulder 2, Clàssic - Tallafocs)</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Tallafocs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 8 (Les Bessones), 6a. Salvanebleau" href="/problems/salvanebleau/problem-8-les-bessones" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 8 (Les Bessones), 6a. Salvanebleau" src="https://img.youtube.com/vi/obk-RCyQBxI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-8-les-bessones" class="table-row-name text-bold">Problem 8 (Les Bessones)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 8 (Totxo Rossinyol), 5. Salvanebleau" href="/problems/salvanebleau/problem-8-totxo-rossinyol" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 8 (Totxo Rossinyol), 5. Salvanebleau" src="https://img.youtube.com/vi/rHlhr2lIZtE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-8-totxo-rossinyol" class="table-row-name text-bold">Problem 8 (Totxo Rossinyol)</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 9 (El Dau), 4. Salvanebleau" href="/problems/salvanebleau/problem-9-el-dau" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 9 (El Dau), 4. Salvanebleau" src="https://img.youtube.com/vi/wF8jgyh_hGA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-9-el-dau" class="table-row-name text-bold">Problem 9 (El Dau)</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 9 (La Trinquela), 5+. Salvanebleau" href="/problems/salvanebleau/problem-9-la-trinquela" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 9 (La Trinquela), 5+. Salvanebleau" src="https://img.youtube.com/vi/-1x476YBF3c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problem-9-la-trinquela" class="table-row-name text-bold">Problem 9 (La Trinquela)</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problema 4 (L'Inestable), 6a. Salvanebleau" href="/problems/salvanebleau/problema-4-l-inestable" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problema 4 (L'Inestable), 6a. Salvanebleau" src="https://img.youtube.com/vi/EbvOp7u9O8s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/problema-4-l-inestable" class="table-row-name text-bold">Problema 4 (L'Inestable)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sacabao el pan, 6b+. Salvanebleau" href="/problems/salvanebleau/sacabao-el-pan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sacabao el pan, 6b+. Salvanebleau" src="https://img.youtube.com/vi/i4sH5ufNkCY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/sacabao-el-pan" class="table-row-name text-bold">Sacabao el pan</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Mafrica</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Semilla de la Duda, 7b. Salvanebleau" href="/problems/salvanebleau/semilla-de-la-duda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Semilla de la Duda, 7b. Salvanebleau" src="https://img.youtube.com/vi/yIiD0Ae7_1Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/semilla-de-la-duda" class="table-row-name text-bold">Semilla de la Duda</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Camí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sensei, 7b/+. Salvanebleau" href="/problems/salvanebleau/sensei" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sensei, 7b/+. Salvanebleau" src="https://img.youtube.com/vi/1F1V3jfTAJI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/sensei" class="table-row-name text-bold">Sensei</a>
+            </div>
+					</td>
+					<td>7b/+</td>
+					<td>Casetes de dalt</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Somiatruites. Salvanebleau" href="/problems/salvanebleau/somiatruites" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Somiatruites. Salvanebleau" src="https://img.youtube.com/vi/B41JAnX19pk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/somiatruites" class="table-row-name text-bold">Somiatruites</a>
+            </div>
+					</td>
+					<td>7b/+</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Suprunaman, 6c. Salvanebleau" href="/problems/salvanebleau/suprunaman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Suprunaman, 6c. Salvanebleau" src="https://img.youtube.com/vi/eDyz_UbnUkI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/suprunaman" class="table-row-name text-bold">Suprunaman</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Swing Start, 7b. Salvanebleau" href="/problems/salvanebleau/swing-start" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Swing Start, 7b. Salvanebleau" src="https://img.youtube.com/vi/9LdG-qIm32I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/swing-start" class="table-row-name text-bold">Swing Start</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Talonman, 7a. Salvanebleau" href="/problems/salvanebleau/talonman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Talonman, 7a. Salvanebleau" src="https://img.youtube.com/vi/FiOHd3vh1mU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/talonman" class="table-row-name text-bold">Talonman</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Talón de Aquiles. Salvanebleau" href="/problems/salvanebleau/talon-de-aquiles" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Talón de Aquiles. Salvanebleau" src="https://img.youtube.com/vi/RzZJUbLplkM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/talon-de-aquiles" class="table-row-name text-bold">Talón de Aquiles</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Mallencosa</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Techo Visa, 6c. Salvanebleau" href="/problems/salvanebleau/techo-visa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Techo Visa, 6c. Salvanebleau" src="https://img.youtube.com/vi/2R4C8JH2GNY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/techo-visa" class="table-row-name text-bold">Techo Visa</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Termòmetre, 6c. Salvanebleau" href="/problems/salvanebleau/termometre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Termòmetre, 6c. Salvanebleau" src="https://img.youtube.com/vi/VGu_LeGqfRw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/termometre" class="table-row-name text-bold">Termòmetre</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Test, 6b+. Salvanebleau" href="/problems/salvanebleau/test" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Test, 6b+. Salvanebleau" src="https://img.youtube.com/vi/n2U41Ne6J9Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/test" class="table-row-name text-bold">Test</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave clàssica, 6c. Salvanebleau" href="/problems/salvanebleau/trave-classica" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave clàssica, 6c. Salvanebleau" src="https://img.youtube.com/vi/r3w9zMHazsw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/trave-classica" class="table-row-name text-bold">Trave clàssica</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave de l'equilibrista, 6c. Salvanebleau" href="/problems/salvanebleau/trave-de-l-equilibrista" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave de l'equilibrista, 6c. Salvanebleau" src="https://img.youtube.com/vi/w4L566TEE8g/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/trave-de-l-equilibrista" class="table-row-name text-bold">Trave de l'equilibrista</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Clàssic - Dipòsit</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave de la Barraca, 6b+. Salvanebleau" href="/problems/salvanebleau/trave-de-la-barraca" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave de la Barraca, 6b+. Salvanebleau" src="https://img.youtube.com/vi/45rQ5Zft68A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/trave-de-la-barraca" class="table-row-name text-bold">Trave de la Barraca</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave del Submarí, 7a+  Salvanebleau" href="/problems/salvanebleau/trave-del-submari" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave del Submarí, 7a+  Salvanebleau" src="https://img.youtube.com/vi/YV6DAEaWHL0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/trave-del-submari" class="table-row-name text-bold">Trave del Submarí</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave invertida, 6c. Salvanebleau" href="/problems/salvanebleau/trave-invertida" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave invertida, 6c. Salvanebleau" src="https://img.youtube.com/vi/kUoG7zPDW_M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/trave-invertida" class="table-row-name text-bold">Trave invertida</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Va de Lado, 7b+. Salvanebleau" href="/problems/salvanebleau/va-de-lado" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Va de Lado, 7b+. Salvanebleau" src="https://img.youtube.com/vi/5PajN4sUKOw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/va-de-lado" class="table-row-name text-bold">Va de Lado</a>
+            </div>
+					</td>
+					<td> 7b+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Volta a la Visera, 6a+. Salvanebleau" href="/problems/salvanebleau/volta-a-la-visera" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Volta a la Visera, 6a+. Salvanebleau" src="https://img.youtube.com/vi/XKfRsZFe4Dk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/volta-a-la-visera" class="table-row-name text-bold">Volta a la Visera</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Clàssic - Submarí</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Yang extension, 6c. Salvanebleau" href="/problems/salvanebleau/yang-extension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Yang extension, 6c. Salvanebleau" src="https://img.youtube.com/vi/E5odkm7yMUI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/yang-extension" class="table-row-name text-bold">Yang extension</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Mirador</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Zipi Zape, 7a. Salvanebleau" href="/problems/salvanebleau/zipi-zape" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Zipi Zape, 7a. Salvanebleau" src="https://img.youtube.com/vi/IR9B5eFgRFI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/salvanebleau/zipi-zape" class="table-row-name text-bold">Zipi Zape</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Clàssic - Font</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

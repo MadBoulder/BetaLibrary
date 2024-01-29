@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Mont-roig del Camp  Boulder | MadBoulder</title>
+	<meta name="description" content="Mont-roig del Camp bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/mont-roig-del-camp">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+  
+   > 
+  <a href="/states/catalonia" class="zone-header-tree-link">Cataluña</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Mont-roig del Camp 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.094883" />
+  <input type="hidden" id="lng" name="lng_val" value="0.93576" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Mont-roig del Camp
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Mont-roig del Camp
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/mQrWnhSf6ZM/hqdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/mQrWnhSf6ZM/hqdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/mQrWnhSf6ZM/hqdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/mQrWnhSf6ZM/hqdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Mont-roig del Camp</h4>
+								<p>Mont-roig del Camp presume de techos de arenisca roja y un estilo de escalada física. Es hogar de largos travesías y problemas desafiantes, atrayendo a escaladores durante los meses de invierno cuando las condiciones son óptimas.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 69
+								
+									<br>
+									<b>Tipo de Roca</b> Sandstone
+								
+								
+									<br>
+									<b>Altitud</b> 217m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="https://madboulder.org/download/mont-roig-del-camp/mont-roig-del-camp-bouldering-guide.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        Mont-roig del Camp Boulder pdf
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+      <a id="guide_link"  href="https://27crags.com/crags/mont-roig-12706" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        27 Crags
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/mont-roig-del-camp"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-2-bleau-sea" class="table-row-name text-bold">Areny 2 - Bleau Sea</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-2-rocklands" class="table-row-name text-bold">Areny 2 - Rocklands</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-3-ermitany" class="table-row-name text-bold">Areny 3 - Ermitany</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-3-l-ermitany" class="table-row-name text-bold">Areny 3 - L'Ermitany</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-3-neandertal" class="table-row-name text-bold">Areny 3 - Neandertal</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-3-pedestal" class="table-row-name text-bold">Areny 3 - Pedestal</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-amagat" class="table-row-name text-bold">Areny 4 - Amagat</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-la-chispa-adecuada" class="table-row-name text-bold">Areny 4 - La Chispa Adecuada</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-mistic" class="table-row-name text-bold">Areny 4 - Místic</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-rueda-fortuna" class="table-row-name text-bold">Areny 4 - Rueda Fortuna</a>
+					</td>
+					<td class="text-center">20</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-tekymukings" class="table-row-name text-bold">Areny 4 - Tekymukings</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/areny-4-will-o" class="table-row-name text-bold">Areny 4 - Will'O</a>
+					</td>
+					<td class="text-center">11</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/arenys-4-will-o" class="table-row-name text-bold">Arenys 4 - Will'O</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/mont-roig-del-camp/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOKgnErpS8IOmXsDyy46AQO"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Místic</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMMRbcR6pbvzcuntlYoBVDt"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>La Chispa Adecuada</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNYNcEEKXCvsMGkoCkveIyZ"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Rocklands</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNSAmtO2uL7M4y1rWCDRLtR"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Pedestal</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOKiKCfkUbGaaJSjenrGMJ3"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Neandertal</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNhIt9tAlOUujUx_namz2X1"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Amagat</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMt6hJ9V7kZj-bH4nTE5yX0"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>l'Ermitany</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM7GWiHP6SDXO2W8WXAdKfN"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Bleau Sea</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNOun41IJBlYTy6MNC5hlLb"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Will'O</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMnuIQkeRrD2h9t6vKiECNl"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Rueda Fortuna</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOGJXO0y_jocxKzZk8UGASt"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Atog, 6c. Mont-roig del Camp" href="/problems/mont-roig-del-camp/atog" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Atog, 6c. Mont-roig del Camp" src="https://img.youtube.com/vi/Tv5oRV8dTLA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/atog" class="table-row-name text-bold">Atog</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bollywood, 6b (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/bollywood" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bollywood, 6b (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/LWq4YUGV2Kc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/bollywood" class="table-row-name text-bold">Bollywood</a>
+            </div>
+					</td>
+					<td>6b (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Breaktrhu, 6b. Mont-roig del Camp" href="/problems/mont-roig-del-camp/breaktrhu" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Breaktrhu, 6b. Mont-roig del Camp" src="https://img.youtube.com/vi/M7YHMFm_vyA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/breaktrhu" class="table-row-name text-bold">Breaktrhu</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 3 - Ermitany</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Capitan Araña, 5. Mont-roig del Camp" href="/problems/mont-roig-del-camp/capitan-arana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Capitan Araña, 5. Mont-roig del Camp" src="https://img.youtube.com/vi/A_MeFh1Yssw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/capitan-arana" class="table-row-name text-bold">Capitan Araña</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 3 - L'Ermitany</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Capità Spook, 6c. Mont roig del Camp" href="/problems/mont-roig-del-camp/capita-spook" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Capità Spook, 6c. Mont roig del Camp" src="https://img.youtube.com/vi/KaMlOIteV94/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/capita-spook" class="table-row-name text-bold">Capità Spook</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Chispiritas. Mont-roig del Camp" href="/problems/mont-roig-del-camp/chispiritas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Chispiritas. Mont-roig del Camp" src="https://img.youtube.com/vi/12HEQcaI2AM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/chispiritas" class="table-row-name text-bold">Chispiritas</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Arenys 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="De altura, 6a (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/de-altura" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: De altura, 6a (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/6rfxWgucowA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/de-altura" class="table-row-name text-bold">De altura</a>
+            </div>
+					</td>
+					<td>6a (sit)</td>
+					<td>Areny 4 - Amagat</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Desmai, 5 (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/desmai" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Desmai, 5 (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/OHGYBUmqA48/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/desmai" class="table-row-name text-bold">Desmai</a>
+            </div>
+					</td>
+					<td>5 (sit)</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Días, 5. Mont-roig del Camp" href="/problems/mont-roig-del-camp/dias" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Días, 5. Mont-roig del Camp" src="https://img.youtube.com/vi/Dfo0eWJf6as/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/dias" class="table-row-name text-bold">Días</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Días de borrasca, 6a. Mont roig del Camp" href="/problems/mont-roig-del-camp/dias-de-borrasca" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Días de borrasca, 6a. Mont roig del Camp" src="https://img.youtube.com/vi/ZLXxETwVTA8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/dias-de-borrasca" class="table-row-name text-bold">Días de borrasca</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Pedestal, 6b (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-pedestal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Pedestal, 6b (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/rCdgFPATfiU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-pedestal" class="table-row-name text-bold">El Pedestal</a>
+            </div>
+					</td>
+					<td>6b (sit)</td>
+					<td>Areny 3 - Pedestal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Secreto, 6c+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-secreto" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Secreto, 6c+. Mont-roig del Camp" src="https://img.youtube.com/vi/W23XFx_c3sI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-secreto" class="table-row-name text-bold">El Secreto</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El amor, las mujeres y la vida, 5+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-amor-las-mujeres-y-la-vida" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El amor, las mujeres y la vida, 5+. Mont-roig del Camp" src="https://img.youtube.com/vi/vSXNpYkngi8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-amor-las-mujeres-y-la-vida" class="table-row-name text-bold">El amor, las mujeres y la vida</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Areny 3 - L'Ermitany</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El arte de la guerra, 4+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-arte-de-la-guerra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El arte de la guerra, 4+. Mont-roig del Camp" src="https://img.youtube.com/vi/2Gg9FCli7Vw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-arte-de-la-guerra" class="table-row-name text-bold">El arte de la guerra</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Arenys 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El nombre de la rosa, 6a. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-nombre-de-la-rosa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El nombre de la rosa, 6a. Mont-roig del Camp" src="https://img.youtube.com/vi/PgGv57goyaQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-nombre-de-la-rosa" class="table-row-name text-bold">El nombre de la rosa</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El retrato de Dorian Gray, 6a. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-retrato-de-dorian-gray" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El retrato de Dorian Gray, 6a. Mont-roig del Camp" src="https://img.youtube.com/vi/xJqGEDp2WII/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-retrato-de-dorian-gray" class="table-row-name text-bold">El retrato de Dorian Gray</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El señor de la guerra, 6a. Mont-roig del Camp" href="/problems/mont-roig-del-camp/el-senor-de-la-guerra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El señor de la guerra, 6a. Mont-roig del Camp" src="https://img.youtube.com/vi/HZYiH1tfIaA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/el-senor-de-la-guerra" class="table-row-name text-bold">El señor de la guerra</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Els miserables, 6a+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/els-miserables" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Els miserables, 6a+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/dlbNGNpje1k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/els-miserables" class="table-row-name text-bold">Els miserables</a>
+            </div>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ermitany, 6a+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/ermitany" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ermitany, 6a+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/yoOZ-cR5SOc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/ermitany" class="table-row-name text-bold">Ermitany</a>
+            </div>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Areny 3 - L'Ermitany</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Getaway, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/getaway" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Getaway, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/Ov4H8OXNL_E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/getaway" class="table-row-name text-bold">Getaway</a>
+            </div>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Areny 4 - Amagat</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Groc, 5. Mont-roig del Camp" href="/problems/mont-roig-del-camp/groc" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Groc, 5. Mont-roig del Camp" src="https://img.youtube.com/vi/LTP8PuDLTGU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/groc" class="table-row-name text-bold">Groc</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Heroe de Leyenda, 6c+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/heroe-de-leyenda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Heroe de Leyenda, 6c+. Mont-roig del Camp" src="https://img.youtube.com/vi/5l3mtb0s5SU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/heroe-de-leyenda" class="table-row-name text-bold">Heroe de Leyenda</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Àvia, 6b+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/l-avia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Àvia, 6b+. Mont-roig del Camp" src="https://img.youtube.com/vi/6bWbyssEg2A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/l-avia" class="table-row-name text-bold">L'Àvia</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Comarca, 5. Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-comarca" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Comarca, 5. Mont-roig del Camp" src="https://img.youtube.com/vi/SuqajqxeloY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-comarca" class="table-row-name text-bold">La Comarca</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 4 - Místic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La catedral del mar, 6b+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-catedral-del-mar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La catedral del mar, 6b+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/CWCmphHc4Gs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-catedral-del-mar" class="table-row-name text-bold">La catedral del mar</a>
+            </div>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La divina comedia, 5+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-divina-comedia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La divina comedia, 5+. Mont-roig del Camp" src="https://img.youtube.com/vi/LcoPJMGvU7Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-divina-comedia" class="table-row-name text-bold">La divina comedia</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Arenys 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La primera de la vall, 5+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-primera-de-la-vall" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La primera de la vall, 5+. Mont-roig del Camp" src="https://img.youtube.com/vi/UqTMvNhLA7g/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-primera-de-la-vall" class="table-row-name text-bold">La primera de la vall</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La sombra del viento, 4+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-sombra-del-viento" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La sombra del viento, 4+. Mont-roig del Camp" src="https://img.youtube.com/vi/fCpUANd4QuE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-sombra-del-viento" class="table-row-name text-bold">La sombra del viento</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La tregua, 5 (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/la-tregua" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La tregua, 5 (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/4DXp356RckQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/la-tregua" class="table-row-name text-bold">La tregua</a>
+            </div>
+					</td>
+					<td>5 (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Leviatán, 6c. Mont-roig del Camp" href="/problems/mont-roig-del-camp/leviatan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Leviatán, 6c. Mont-roig del Camp" src="https://img.youtube.com/vi/631MOYNr3oM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/leviatan" class="table-row-name text-bold">Leviatán</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Llebreig, 6c (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/llebreig" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Llebreig, 6c (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/iB23T7666Z0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/llebreig" class="table-row-name text-bold">Llebreig</a>
+            </div>
+					</td>
+					<td>6c (sit)</td>
+					<td>Areny 4 - Místic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Magic, 5 (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/magic" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Magic, 5 (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/tzLQSQFzeUc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/magic" class="table-row-name text-bold">Magic</a>
+            </div>
+					</td>
+					<td>5 (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Magic Right, 5. Mont roig del Camp" href="/problems/mont-roig-del-camp/magic-right" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Magic Right, 5. Mont roig del Camp" src="https://img.youtube.com/vi/6uvW6T0p3Ww/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/magic-right" class="table-row-name text-bold">Magic Right</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Maikelsoncrusoe, 8a+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/maikelsoncrusoe" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Maikelsoncrusoe, 8a+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/_Uud6GNldw0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/maikelsoncrusoe" class="table-row-name text-bold">Maikelsoncrusoe</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Areny 4 - Tekymukings</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Matrix, 6b (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/matrix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Matrix, 6b (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/W1RDTScqc2s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/matrix" class="table-row-name text-bold">Matrix</a>
+            </div>
+					</td>
+					<td>6b (sit)</td>
+					<td>Areny 4 - Amagat</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Menjablanc, 6c+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/menjablanc" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Menjablanc, 6c+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/9hIgOdC7Y94/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/menjablanc" class="table-row-name text-bold">Menjablanc</a>
+            </div>
+					</td>
+					<td>6c+ (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mikelson Prou Extension, 8b. Mont-roig del Camp" href="/problems/mont-roig-del-camp/mikelson-prou-extension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mikelson Prou Extension, 8b. Mont-roig del Camp" src="https://img.youtube.com/vi/mQrWnhSf6ZM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/mikelson-prou-extension" class="table-row-name text-bold">Mikelson Prou Extension</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Areny 4 - Tekymukings</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Monument, 6b+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/monument" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Monument, 6b+. Mont-roig del Camp" src="https://img.youtube.com/vi/uYCDd4xwAVQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/monument" class="table-row-name text-bold">Monument</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 4 - La Chispa Adecuada</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Moonshine, 6b+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/moonshine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Moonshine, 6b+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/cMuUZMFbz6k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/moonshine" class="table-row-name text-bold">Moonshine</a>
+            </div>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Moonshine, 6b. Mont-roig del Camp" href="/problems/mont-roig-del-camp/moonshine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Moonshine, 6b. Mont-roig del Camp" src="https://img.youtube.com/vi/rKhnN6VyQHY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/moonshine" class="table-row-name text-bold">Moonshine</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Musgo Placa, 5. Mont-roig del Camp" href="/problems/mont-roig-del-camp/musgo-placa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Musgo Placa, 5. Mont-roig del Camp" src="https://img.youtube.com/vi/xTlH6to4fZM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/musgo-placa" class="table-row-name text-bold">Musgo Placa</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nazaré, 7a. Mont-roig del Camp" href="/problems/mont-roig-del-camp/nazare" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nazaré, 7a. Mont-roig del Camp" src="https://img.youtube.com/vi/pgKL19j0Y20/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/nazare" class="table-row-name text-bold">Nazaré</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El monstre de colors, 7a (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/neandertal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El monstre de colors, 7a (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/yrde0Tslo7o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/neandertal" class="table-row-name text-bold">Neandertal</a>
+            </div>
+					</td>
+					<td>7a (sit)</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Neandertal, 6c. Mont-roig del Camp" href="/problems/mont-roig-del-camp/neandertal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Neandertal, 6c. Mont-roig del Camp" src="https://img.youtube.com/vi/PhyjHJPkBbk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/neandertal" class="table-row-name text-bold">Neandertal</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Parasiempre, 7a/+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/parasiempre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Parasiempre, 7a/+. Mont-roig del Camp" src="https://img.youtube.com/vi/c2BIvSUfAuE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/parasiempre" class="table-row-name text-bold">Parasiempre</a>
+            </div>
+					</td>
+					<td>7a/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Placa, placa!, 6c (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/placa-placa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Placa, placa!, 6c (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/aO0simyfWEQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/placa-placa" class="table-row-name text-bold">Placa, placa!</a>
+            </div>
+					</td>
+					<td>6c (sit)</td>
+					<td>Areny 3 - Pedestal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Plato chino, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/plato-chino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Plato chino, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/SO0TpjryRwk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/plato-chino" class="table-row-name text-bold">Plato chino</a>
+            </div>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Relato de un náufrago, 6b+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/relato-de-un-naufrago" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Relato de un náufrago, 6b+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/2uxDaoiMiDw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/relato-de-un-naufrago" class="table-row-name text-bold">Relato de un náufrago</a>
+            </div>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Respirar, 4+. Mont roig del Camp" href="/problems/mont-roig-del-camp/respirar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Respirar, 4+. Mont roig del Camp" src="https://img.youtube.com/vi/c8d24-ngEao/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/respirar" class="table-row-name text-bold">Respirar</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Areny 2 - Rocklands</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rompiendo las olas, 4+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/rompiendo-las-olas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rompiendo las olas, 4+. Mont-roig del Camp" src="https://img.youtube.com/vi/QQlU25TgHTY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/rompiendo-las-olas" class="table-row-name text-bold">Rompiendo las olas</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Areny 4 - Místic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rutilo, 6c. Mont-roig del Camp" href="/problems/mont-roig-del-camp/rutilo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rutilo, 6c. Mont-roig del Camp" src="https://img.youtube.com/vi/iUVRGubFT0c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/rutilo" class="table-row-name text-bold">Rutilo</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="See King Ras Tafari, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/see-king-ras-tafari" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: See King Ras Tafari, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/J4LLlfB0CD0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/see-king-ras-tafari" class="table-row-name text-bold">See King Ras Tafari</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Areny 3 - Pedestal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Skatboy, 6c (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/skatboy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Skatboy, 6c (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/SxAbfDzoO4c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/skatboy" class="table-row-name text-bold">Skatboy</a>
+            </div>
+					</td>
+					<td>6c (sit)</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sota el pi, 6a (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/sota-el-pi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sota el pi, 6a (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/GoG4a1xE-Ds/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/sota-el-pi" class="table-row-name text-bold">Sota el pi</a>
+            </div>
+					</td>
+					<td>6a (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Star treking, 6a+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/star-treking" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Star treking, 6a+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/V2aXl7_PKFI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/star-treking" class="table-row-name text-bold">Star treking</a>
+            </div>
+					</td>
+					<td>6a+ (sit)</td>
+					<td>Areny 2 - Bleau Sea</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Super Bass, 5+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/super-bass" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Super Bass, 5+. Mont-roig del Camp" src="https://img.youtube.com/vi/fZF_ARTbHMI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/super-bass" class="table-row-name text-bold">Super Bass</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Areny 4 - Místic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tempus fugit, 6b. Mont-roig del Camp" href="/problems/mont-roig-del-camp/tempus-fugit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tempus fugit, 6b. Mont-roig del Camp" src="https://img.youtube.com/vi/gGPb3-fchdY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/tempus-fugit" class="table-row-name text-bold">Tempus fugit</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Torrons i Neules, 6b+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/torrons-i-neules" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Torrons i Neules, 6b+. Mont-roig del Camp" src="https://img.youtube.com/vi/sSGN6zALoDU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/torrons-i-neules" class="table-row-name text-bold">Torrons i Neules</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Toy story, 6b+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/toy-story" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Toy story, 6b+. Mont-roig del Camp" src="https://img.youtube.com/vi/tWOBd666ty8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/toy-story" class="table-row-name text-bold">Toy story</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 4 - Místic</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Treeking Topic, 6c (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/treeking-topic" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Treeking Topic, 6c (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/2kVIjIEelqk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/treeking-topic" class="table-row-name text-bold">Treeking Topic</a>
+            </div>
+					</td>
+					<td>6c (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Treeking Topic, 6c. Mont-roig del Camp" href="/problems/mont-roig-del-camp/treeking-topic" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Treeking Topic, 6c. Mont-roig del Camp" src="https://img.youtube.com/vi/H2OphIIIjXw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/treeking-topic" class="table-row-name text-bold">Treeking Topic</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Truita d'espàrrecs, 5 (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/truita-d-esparrecs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Truita d'espàrrecs, 5 (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/OCy9nuSCL4s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/truita-d-esparrecs" class="table-row-name text-bold">Truita d'espàrrecs</a>
+            </div>
+					</td>
+					<td>5 (sit)</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Turmalina, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/turmalina" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Turmalina, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/usyfSUXnUqs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/turmalina" class="table-row-name text-bold">Turmalina</a>
+            </div>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Túnel, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/tunel" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Túnel, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/_LJ62lynGQY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/tunel" class="table-row-name text-bold">Túnel</a>
+            </div>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Un grano de arena en mi ojo, 6b+. Mont-roig del Camp" href="/problems/mont-roig-del-camp/un-grano-de-arena-en-mi-ojo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Un grano de arena en mi ojo, 6b+. Mont-roig del Camp" src="https://img.youtube.com/vi/6brl9HFG7Tg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/un-grano-de-arena-en-mi-ojo" class="table-row-name text-bold">Un grano de arena en mi ojo</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Areny 4 - La Chispa Adecuada</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vesubiana, 5+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/vesubiana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vesubiana, 5+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/cGOwczmB02c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/vesubiana" class="table-row-name text-bold">Vesubiana</a>
+            </div>
+					</td>
+					<td>5+ (sit)</td>
+					<td>Areny 3 - Neandertal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Wild horses, 6a. Mont-roig del Camp" href="/problems/mont-roig-del-camp/wild-horses" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Wild horses, 6a. Mont-roig del Camp" src="https://img.youtube.com/vi/K1u9vejta-4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/wild-horses" class="table-row-name text-bold">Wild horses</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Areny 4 - Rueda Fortuna</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Will'O, 6b+ (sit). Mont-roig del Camp" href="/problems/mont-roig-del-camp/will-o" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Will'O, 6b+ (sit). Mont-roig del Camp" src="https://img.youtube.com/vi/bMjtjieFuuE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/will-o" class="table-row-name text-bold">Will'O</a>
+            </div>
+					</td>
+					<td>6b+ (sit)</td>
+					<td>Areny 4 - Will'O</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Yellow Submarine, 6b. Mont-roig del Camp" href="/problems/mont-roig-del-camp/yellow-submarine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Yellow Submarine, 6b. Mont-roig del Camp" src="https://img.youtube.com/vi/rHG6FWvICPo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/mont-roig-del-camp/yellow-submarine" class="table-row-name text-bold">Yellow Submarine</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Areny 3 - L'Ermitany</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

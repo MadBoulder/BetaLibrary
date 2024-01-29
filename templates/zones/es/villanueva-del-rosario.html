@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Villanueva del Rosario  Boulder | MadBoulder</title>
+	<meta name="description" content="Villanueva del Rosario bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/villanueva-del-rosario">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+  
+   > 
+  <a href="/states/andalusia" class="zone-header-tree-link">Andalucía</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Villanueva del Rosario 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="36.98752" />
+  <input type="hidden" id="lng" name="lng_val" value="-4.3154" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Villanueva del Rosario
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Villanueva del Rosario
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/6_FglmW9irI/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/6_FglmW9irI/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/6_FglmW9irI/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/6_FglmW9irI/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Villanueva del Rosario</h4>
+								<p>Villanueva del Rosario, ubicado en España, es famoso por sus bloques de caliza que presentan desafíos técnicos a los escaladores. La reputación de la zona se basa en sus características de escalada únicas y la belleza agreste del paisaje circundante. Mejor visitado durante los meses más frescos, Villanueva del Rosario es una joya escondida para los amantes del boulder.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 34
+								
+									<br>
+									<b>Tipo de Roca</b> Limestone
+								
+								
+									<br>
+									<b>Altitud</b> 1256m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/villanueva-del-rosario"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/villanueva-del-rosario/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">34</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN4G7zcybOPH3b0OM6r4S9w"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Al-Andalus, 8a+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/al-andalus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Al-Andalus, 8a+. Villanueva del Rosario" src="https://img.youtube.com/vi/6_FglmW9irI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/al-andalus" class="table-row-name text-bold">Al-Andalus</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Astèrix, 6b. Villanueva del Rosario" href="/problems/villanueva-del-rosario/asterix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Astèrix, 6b. Villanueva del Rosario" src="https://img.youtube.com/vi/7bU7lMVtbjU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/asterix" class="table-row-name text-bold">Asterix</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boomerang, 8a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/boomerang" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boomerang, 8a. Villanueva del Rosario" src="https://img.youtube.com/vi/9K_kn6jkpFg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/boomerang" class="table-row-name text-bold">Boomerang</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Canguelix, 6a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/canguelix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Canguelix, 6a. Villanueva del Rosario" src="https://img.youtube.com/vi/e7tlZVZS5HI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/canguelix" class="table-row-name text-bold">Canguelix</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Efedra, 5a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/efedra" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Efedra, 5a. Villanueva del Rosario" src="https://img.youtube.com/vi/-rmiEwUvmMw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/efedra" class="table-row-name text-bold">Efedra</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Colmillo, 6c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/el-colmillo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Colmillo, 6c. Villanueva del Rosario" src="https://img.youtube.com/vi/hiyjS9SNYzk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/el-colmillo" class="table-row-name text-bold">El Colmillo</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Esquina Amazonias. Villanueva del Rosario" href="/problems/villanueva-del-rosario/esquina-amazonias" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Esquina Amazonias. Villanueva del Rosario" src="https://img.youtube.com/vi/06eXYGKFH58/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/esquina-amazonias" class="table-row-name text-bold">Esquina Amazonias</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fisura pequeña, 6a (sit). Villanueva del Rosario" href="/problems/villanueva-del-rosario/fisura-pequena" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fisura pequeña, 6a (sit). Villanueva del Rosario" src="https://img.youtube.com/vi/sfmuzh-DnpM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/fisura-pequena" class="table-row-name text-bold">Fisura pequeña</a>
+            </div>
+					</td>
+					<td>6a (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Harmel (La Hongos), 6c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/harmel-la-hongos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Harmel (La Hongos), 6c. Villanueva del Rosario" src="https://img.youtube.com/vi/bXhYnkfYF5c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/harmel-la-hongos" class="table-row-name text-bold">Harmel (La Hongos)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Iboga, 5a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/iboga" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Iboga, 5a. Villanueva del Rosario" src="https://img.youtube.com/vi/yniRZwOZnP0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/iboga" class="table-row-name text-bold">Iboga</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Izquierda Astèrix, 6c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/izquierda-asterix" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Izquierda Astèrix, 6c. Villanueva del Rosario" src="https://img.youtube.com/vi/e12Vz2d10rA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/izquierda-asterix" class="table-row-name text-bold">Izquierda Asterix</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jazmina, 3a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/jazmina" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jazmina, 3a. Villanueva del Rosario" src="https://img.youtube.com/vi/PH8eFCy-QpE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/jazmina" class="table-row-name text-bold">Jazmina</a>
+            </div>
+					</td>
+					<td>3a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Esquina, 4c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/la-esquina" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Esquina, 4c. Villanueva del Rosario" src="https://img.youtube.com/vi/zfE4mpqpVsI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/la-esquina" class="table-row-name text-bold">La Esquina</a>
+            </div>
+					</td>
+					<td>4c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Mandrágora, 6a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/la-mandragora" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Mandrágora, 6a. Villanueva del Rosario" src="https://img.youtube.com/vi/5POmtFnT7ss/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/la-mandragora" class="table-row-name text-bold">La Mandrágora</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Pirámide, 5a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/la-piramide" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Pirámide, 5a. Villanueva del Rosario" src="https://img.youtube.com/vi/MiQu7XfyUVY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/la-piramide" class="table-row-name text-bold">La Pirámide</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Rampa, 3a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/la-rampa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Rampa, 3a. Villanueva del Rosario" src="https://img.youtube.com/vi/SochClgvsfQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/la-rampa" class="table-row-name text-bold">La Rampa</a>
+            </div>
+					</td>
+					<td>3a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lebrijano. Villanueva del Rosario" href="/problems/villanueva-del-rosario/lebrijano" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lebrijano. Villanueva del Rosario" src="https://img.youtube.com/vi/OwMQL6j17es/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/lebrijano" class="table-row-name text-bold">Lebrijano</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Marihuana para tontos, 6c (Right Exit). Villanueva del Rosario" href="/problems/villanueva-del-rosario/marihuana-para-tontos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Marihuana para tontos, 6c (Right Exit). Villanueva del Rosario" src="https://img.youtube.com/vi/JmBfXzx0zuo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/marihuana-para-tontos" class="table-row-name text-bold">Marihuana para tontos</a>
+            </div>
+					</td>
+					<td>6c (Right Exit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Marihuana para tontos, 6c+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/marihuana-para-tontos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Marihuana para tontos, 6c+. Villanueva del Rosario" src="https://img.youtube.com/vi/aNk0J1DYriE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/marihuana-para-tontos" class="table-row-name text-bold">Marihuana para tontos</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Método Henry, 7b. Villanueva del Rosario" href="/problems/villanueva-del-rosario/metodo-henry" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Método Henry, 7b. Villanueva del Rosario" src="https://img.youtube.com/vi/YM62_qaXCjw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/metodo-henry" class="table-row-name text-bold">Método Henry</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Paraíso Perdido, 6c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/paraiso-perdido" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Paraíso Perdido, 6c. Villanueva del Rosario" src="https://img.youtube.com/vi/mkxN0UOI8qo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/paraiso-perdido" class="table-row-name text-bold">Paraíso Perdido</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pequeño Sultán, 6b. Villanueva del Rosario" href="/problems/villanueva-del-rosario/pequeno-sultan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pequeño Sultán, 6b. Villanueva del Rosario" src="https://img.youtube.com/vi/y2KkJHmgqKQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/pequeno-sultan" class="table-row-name text-bold">Pequeño Sultán</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 150, 6b+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-150" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 150, 6b+. Villanueva del Rosario" src="https://img.youtube.com/vi/IlDugTnUmU8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-150" class="table-row-name text-bold">Problem 150</a>
+            </div>
+					</td>
+					<td>6b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 170, 5. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-170" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 170, 5. Villanueva del Rosario" src="https://img.youtube.com/vi/VtnKriWgACo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-170" class="table-row-name text-bold">Problem 170</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 190, 6a+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-190" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 190, 6a+. Villanueva del Rosario" src="https://img.youtube.com/vi/FEn7LgUgJxQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-190" class="table-row-name text-bold">Problem 190</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 232, 5c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-232" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 232, 5c. Villanueva del Rosario" src="https://img.youtube.com/vi/hhfMGq148Js/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-232" class="table-row-name text-bold">Problem 232</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 233. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-233" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 233. Villanueva del Rosario" src="https://img.youtube.com/vi/ReUDAFNw9RI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-233" class="table-row-name text-bold">Problem 233</a>
+            </div>
+					</td>
+					<td>Unknown</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 436, 6c+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-436" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 436, 6c+. Villanueva del Rosario" src="https://img.youtube.com/vi/7Pjrs0e1_o0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-436" class="table-row-name text-bold">Problem 436</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 71, 6a+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-71" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 71, 6a+. Villanueva del Rosario" src="https://img.youtube.com/vi/6V4KZbx7WsU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-71" class="table-row-name text-bold">Problem 71</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 72, 6a+. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-72" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 72, 6a+. Villanueva del Rosario" src="https://img.youtube.com/vi/VzYfpt6DGVc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-72" class="table-row-name text-bold">Problem 72</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 77, 5a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-77" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 77, 5a. Villanueva del Rosario" src="https://img.youtube.com/vi/cVFWuI2Em8U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-77" class="table-row-name text-bold">Problem 77</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 78, 4. Villanueva del Rosario" href="/problems/villanueva-del-rosario/problem-78" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 78, 4. Villanueva del Rosario" src="https://img.youtube.com/vi/Ei9Va_Vqckk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/problem-78" class="table-row-name text-bold">Problem 78</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Super Coco, 6c. Villanueva del Rosario" href="/problems/villanueva-del-rosario/super-coco" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Super Coco, 6c. Villanueva del Rosario" src="https://img.youtube.com/vi/8sbFSsYoJsg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/super-coco" class="table-row-name text-bold">Super Coco</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Toloache, 4a. Villanueva del Rosario" href="/problems/villanueva-del-rosario/toloache" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Toloache, 4a. Villanueva del Rosario" src="https://img.youtube.com/vi/Bl1C_SZmQTA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/villanueva-del-rosario/toloache" class="table-row-name text-bold">Toloache</a>
+            </div>
+					</td>
+					<td>4a</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

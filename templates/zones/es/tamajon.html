@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Tamajón  Boulder | MadBoulder</title>
+	<meta name="description" content="Tamajón bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/tamajon">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+  
+   > 
+  <a href="/states/castilla-leon" class="zone-header-tree-link">Castilla y León</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Tamajón 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="41.013368" />
+  <input type="hidden" id="lng" name="lng_val" value="-3.253778" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Tamajón
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Tamajón
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/SlukSGeEa0A/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/SlukSGeEa0A/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/SlukSGeEa0A/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/SlukSGeEa0A/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Tamajón</h4>
+								<p>Tamajón, escondido en el corazón de España, ofrece excepcionales bloques de caliza. Sus rutas diversas satisfacen a escaladores de diferentes niveles. Famoso por su tranquilidad, es un destino para todo el año, aunque la primavera y el otoño son especialmente agradables.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 38
+								
+									<br>
+									<b>Tipo de Roca</b> Limestone
+								
+								
+									<br>
+									<b>Altitud</b> 1036m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3SiGNuV" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81UJX3rkGML._AC_UY218_.jpg" alt="Boulder en España">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Boulder en España</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="http://tamajonboulder.blogspot.com/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        Boulder en Tamajón
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/tamajon"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/tamajon/carretera" class="table-row-name text-bold">Carretera</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/tamajon/cueva-de-potencia" class="table-row-name text-bold">Cueva de Potencia</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/tamajon/google-earth" class="table-row-name text-bold">Google earth</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/tamajon/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">35</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMRNMZGGMIsfCX47nyyFKel"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alta Tensión, 7C+. Tamajón" href="/problems/tamajon/alta-tension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alta Tensión, 7C+. Tamajón" src="https://img.youtube.com/vi/zTkBkcW8JUc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/alta-tension" class="table-row-name text-bold">Alta Tensión</a>
+            </div>
+					</td>
+					<td>7C</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bastardos Endogámicos, 7B. Tamajón" href="/problems/tamajon/bastardos-endogamicos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bastardos Endogámicos, 7B. Tamajón" src="https://img.youtube.com/vi/TekYDu5Q5dg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/bastardos-endogamicos" class="table-row-name text-bold">Bastardos Endogámicos</a>
+            </div>
+					</td>
+					<td>7B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bastardos Endogámicos Derecha, 7A. Tamajón" href="/problems/tamajon/bastardos-endogamicos-derecha" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bastardos Endogámicos Derecha, 7A. Tamajón" src="https://img.youtube.com/vi/nbAYBIjV0fk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/bastardos-endogamicos-derecha" class="table-row-name text-bold">Bastardos Endogámicos Derecha</a>
+            </div>
+					</td>
+					<td>7A</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Chulito Piscinas, 7c+. Tamajón" href="/problems/tamajon/chulito-piscinas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Chulito Piscinas, 7c+. Tamajón" src="https://img.youtube.com/vi/aU3-lQL9DJs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/chulito-piscinas" class="table-row-name text-bold">Chulito Piscinas</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crazy Love, 6C. Tamajón" href="/problems/tamajon/crazy-love" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crazy Love, 6C. Tamajón" src="https://img.youtube.com/vi/hpvyNIBk9WQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/crazy-love" class="table-row-name text-bold">Crazy Love</a>
+            </div>
+					</td>
+					<td>6C</td>
+					<td>Carretera</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Damien, 8a. Tamajón" href="/problems/tamajon/damien" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Damien, 8a. Tamajón" src="https://img.youtube.com/vi/vVyPDfywB5c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/damien" class="table-row-name text-bold">Damien</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="David Guetto, 8b. Tamajón" href="/problems/tamajon/david-guetto" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: David Guetto, 8b. Tamajón" src="https://img.youtube.com/vi/OGRWFpdsFh0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/david-guetto" class="table-row-name text-bold">David Guetto</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dentro de ti, 7C. Tamajón" href="/problems/tamajon/dentro-de-ti" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dentro de ti, 7C. Tamajón" src="https://img.youtube.com/vi/GVqrT2hLprw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/dentro-de-ti" class="table-row-name text-bold">Dentro de ti</a>
+            </div>
+					</td>
+					<td>7C</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Doom, 7C+. Tamajón" href="/problems/tamajon/doom" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Doom, 7C+. Tamajón" src="https://img.youtube.com/vi/H312vspFoko/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/doom" class="table-row-name text-bold">Doom</a>
+            </div>
+					</td>
+					<td>7C+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ejercito rojo, 8a. Tamajón" href="/problems/tamajon/ejercito-rojo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ejercito rojo, 8a. Tamajón" src="https://img.youtube.com/vi/PgEcmKqZR34/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/ejercito-rojo" class="table-row-name text-bold">Ejercito rojo</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Camaleón, 7A+. Tamajón" href="/problems/tamajon/el-camaleon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Camaleón, 7A+. Tamajón" src="https://img.youtube.com/vi/hpe49nAn4w0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-camaleon" class="table-row-name text-bold">El Camaleón</a>
+            </div>
+					</td>
+					<td>7A+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Método, 7C (sit). Tamajón" href="/problems/tamajon/el-metodo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Método, 7C (sit). Tamajón" src="https://img.youtube.com/vi/oEvT6dRIcL8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-metodo" class="table-row-name text-bold">El Método</a>
+            </div>
+					</td>
+					<td>7C (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Método, 7A. Tamajón" href="/problems/tamajon/el-metodo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Método, 7A. Tamajón" src="https://img.youtube.com/vi/GrEsO497rUA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-metodo" class="table-row-name text-bold">El Método</a>
+            </div>
+					</td>
+					<td>7A</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El cuervo, 7B/+ (sit). Tamajón" href="/problems/tamajon/el-cuervo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El cuervo, 7B/+ (sit). Tamajón" src="https://img.youtube.com/vi/HSogSTr_TrM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-cuervo" class="table-row-name text-bold">El cuervo</a>
+            </div>
+					</td>
+					<td>7B/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El cuervo, 7A. Tamajón" href="/problems/tamajon/el-cuervo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El cuervo, 7A. Tamajón" src="https://img.youtube.com/vi/vuTvOp9AJbw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-cuervo" class="table-row-name text-bold">El cuervo</a>
+            </div>
+					</td>
+					<td>7A</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El floren de la nava, 7A/+. Tamajón" href="/problems/tamajon/el-floren-de-la-nava" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El floren de la nava, 7A/+. Tamajón" src="https://img.youtube.com/vi/QnMMxG0Uih4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/el-floren-de-la-nava" class="table-row-name text-bold">El floren de la nava</a>
+            </div>
+					</td>
+					<td>7A/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Elías Parda, 6C. Tamajón" href="/problems/tamajon/elias-parda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Elías Parda, 6C. Tamajón" src="https://img.youtube.com/vi/q4X87SgaoRc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/elias-parda" class="table-row-name text-bold">Elías Parda</a>
+            </div>
+					</td>
+					<td>6C</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Flamenco Biomecanico, 7C/+. Tamajón" href="/problems/tamajon/flamenco-biomecanico" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Flamenco Biomecanico, 7C/+. Tamajón" src="https://img.youtube.com/vi/G1oUKmi6I1o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/flamenco-biomecanico" class="table-row-name text-bold">Flamenco Biomecanico</a>
+            </div>
+					</td>
+					<td>7C/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fobia, 8a. Tamajón" href="/problems/tamajon/fobia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fobia, 8a. Tamajón" src="https://img.youtube.com/vi/70dm4T14FRs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/fobia" class="table-row-name text-bold">Fobia</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Joao, 6a+. Tamajón" href="/problems/tamajon/joao" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Joao, 6a+. Tamajón" src="https://img.youtube.com/vi/Gc9CW1zcXb4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/joao" class="table-row-name text-bold">Joao</a>
+            </div>
+					</td>
+					<td>6A+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Eterna Promesa, 7C. Tamajón" href="/problems/tamajon/la-eterna-promesa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Eterna Promesa, 7C. Tamajón" src="https://img.youtube.com/vi/Gd4byQXdIOA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/la-eterna-promesa" class="table-row-name text-bold">La Eterna Promesa</a>
+            </div>
+					</td>
+					<td>7C</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Piraña, 7B. Tamajón" href="/problems/tamajon/la-pirana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Piraña, 7B. Tamajón" src="https://img.youtube.com/vi/QJ4N_LWxIq0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/la-pirana" class="table-row-name text-bold">La Piraña</a>
+            </div>
+					</td>
+					<td>7B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La Solución, 7B. Tamajón" href="/problems/tamajon/la-solucion" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La Solución, 7B. Tamajón" src="https://img.youtube.com/vi/rw-RoXt46tk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/la-solucion" class="table-row-name text-bold">La Solución</a>
+            </div>
+					</td>
+					<td>7B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La cuerda Direct, 8a. Tamajón" href="/problems/tamajon/la-cuerda-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La cuerda Direct, 8a. Tamajón" src="https://img.youtube.com/vi/OQIamfpg4OM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/la-cuerda-direct" class="table-row-name text-bold">La cuerda Direct</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Looking for Judas, 7B+ (short). Tamajón" href="/problems/tamajon/looking-for-judas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Looking for Judas, 7B+ (short). Tamajón" src="https://img.youtube.com/vi/ewdmsZSOcu8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/looking-for-judas" class="table-row-name text-bold">Looking for Judas</a>
+            </div>
+					</td>
+					<td>7B+ (short)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="MRW, 7B+. Tamajón" href="/problems/tamajon/mrw" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: MRW, 7B+. Tamajón" src="https://img.youtube.com/vi/OJ47KO0UTA4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/mrw" class="table-row-name text-bold">MRW</a>
+            </div>
+					</td>
+					<td>7B+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Maravillao, 6A+. Tamajón" href="/problems/tamajon/maravillao" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Maravillao, 6A+. Tamajón" src="https://img.youtube.com/vi/w-3HmPxDlD0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/maravillao" class="table-row-name text-bold">Maravillao</a>
+            </div>
+					</td>
+					<td>6A+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Michael Jordan, 7c. Tamajón" href="/problems/tamajon/michael-jordan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Michael Jordan, 7c. Tamajón" src="https://img.youtube.com/vi/I193mBwaT1I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/michael-jordan" class="table-row-name text-bold">Michael Jordan</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Google earth), 6C/+. Tamajón" href="/problems/tamajon/problem-1-google-earth" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Google earth), 6C/+. Tamajón" src="https://img.youtube.com/vi/WCC1hT5OwDw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/problem-1-google-earth" class="table-row-name text-bold">Problem 1 (Google earth)</a>
+            </div>
+					</td>
+					<td>6c/+</td>
+					<td>Google earth</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Quercus ilex, 7c/+. Tamajón" href="/problems/tamajon/quercus-ilex" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Quercus ilex, 7c/+. Tamajón" src="https://img.youtube.com/vi/jmbVTxaZiQU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/quercus-ilex" class="table-row-name text-bold">Quercus ilex</a>
+            </div>
+					</td>
+					<td>7c/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Retrotension, 7b+. Tamajón" href="/problems/tamajon/retrotension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Retrotension, 7b+. Tamajón" src="https://img.youtube.com/vi/LxZOVWp1urc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/retrotension" class="table-row-name text-bold">Retrotension</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Spirant, 8a+. Tamajón" href="/problems/tamajon/spirant" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Spirant, 8a+. Tamajón" src="https://img.youtube.com/vi/TDAi4debUtg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/spirant" class="table-row-name text-bold">Spirant</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="TNT recto, 7C. Tamajón" href="/problems/tamajon/tnt-recto" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: TNT recto, 7C. Tamajón" src="https://img.youtube.com/vi/UXYqsUOWixE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/tnt-recto" class="table-row-name text-bold">TNT recto</a>
+            </div>
+					</td>
+					<td>7C</td>
+					<td>Cueva de Potencia</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tolmojón, 8b+. Tamajón" href="/problems/tamajon/tolmojon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tolmojón, 8b+. Tamajón" src="https://img.youtube.com/vi/SlukSGeEa0A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/tolmojon" class="table-row-name text-bold">Tolmojón</a>
+            </div>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trave de la cobaya, 6c. Tamajón" href="/problems/tamajon/trave-de-la-cobaya" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trave de la cobaya, 6c. Tamajón" src="https://img.youtube.com/vi/vF33hduB1AA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/trave-de-la-cobaya" class="table-row-name text-bold">Trave de la cobaya</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tridedo Asesino, 7B. Tamajón" href="/problems/tamajon/tridedo-asesino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tridedo Asesino, 7B. Tamajón" src="https://img.youtube.com/vi/w3dIjR6UILs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/tridedo-asesino" class="table-row-name text-bold">Tridedo Asesino</a>
+            </div>
+					</td>
+					<td>7B</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vaginoplastia derecha, 7A/+. Tamajón" href="/problems/tamajon/vaginoplastia-derecha" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vaginoplastia derecha, 7A/+. Tamajón" src="https://img.youtube.com/vi/2ZM6GnTT6vE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/vaginoplastia-derecha" class="table-row-name text-bold">Vaginoplastia derecha</a>
+            </div>
+					</td>
+					<td>7A/+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vlad el Empalador, 7B+. Tamajón" href="/problems/tamajon/vlad-el-empalador" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vlad el Empalador, 7B+. Tamajón" src="https://img.youtube.com/vi/h0sXcYDIDqw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/tamajon/vlad-el-empalador" class="table-row-name text-bold">Vlad el Empalador</a>
+            </div>
+					</td>
+					<td>7B+</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

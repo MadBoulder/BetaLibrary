@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Joe's Valley  Boulder | MadBoulder</title>
+	<meta name="description" content="Joe's Valley bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/joe-s-valley">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/utah" class="zone-header-tree-link">Utah</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Joe's Valley 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="39.289613" />
+  <input type="hidden" id="lng" name="lng_val" value="-111.17789" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Joe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Joe's Valley
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Joe's Valley</h4>
+								<p>Joe's Valley, en Utah, es un paraíso de cuarcita con una amplia variedad de problemas. Su popularidad se debe a las condiciones ideales en otoño y primavera. Los bloques únicos y la comunidad amigable hacen de Joe's Valley un destino de boulder de renombre.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 128
+								
+									<br>
+									<b>Tipo de Roca</b> Quartzite
+								
+								
+									<br>
+									<b>Altitud</b> 1996m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://www.lulu.com/shop/brian-koralewski/joes-valley-a-bouldering-guide-to-classic-moderates/paperback/product-1y5zp84e.html?q=&page=1&pageSize=4" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://assets.lulu.com/cover_thumbs/1/y/1y5zp84e-front-shortedge-384.jpg" alt="Joe’s Valley: A Bouldering Guide to Classic Moderates">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Joe’s Valley: A Bouldering Guide to Classic Moderates</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/4aSyjlv" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/51ZnDz2Wz8L.jpg" alt="Utah Bouldering">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Utah Bouldering</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/joe-s-valley"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/area-51" class="table-row-name text-bold">Area 51</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/cabin-fever" class="table-row-name text-bold">Cabin Fever</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/dairy-canyon" class="table-row-name text-bold">Dairy Canyon</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/left-fork" class="table-row-name text-bold">Left Fork</a>
+					</td>
+					<td class="text-center">39</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/new-joe-s" class="table-row-name text-bold">New Joe's</a>
+					</td>
+					<td class="text-center">22</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/right-fork" class="table-row-name text-bold">Right Fork</a>
+					</td>
+					<td class="text-center">58</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/right-sign-area" class="table-row-name text-bold">Right Sign Area</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joe-s-valley/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPmt4bcTlfBkihpHQ3LVw2l"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="A River Runs Through It, V7. Joe's Valley" href="/problems/joe-s-valley/a-river-runs-through-it" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: A River Runs Through It, V7. Joe's Valley" src="https://img.youtube.com/vi/cS4llTnpdrY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/a-river-runs-through-it" class="table-row-name text-bold">A River Runs Through It</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="All You Sinners, V6. Joe's Valley" href="/problems/joe-s-valley/all-you-sinners" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: All You Sinners, V6. Joe's Valley" src="https://img.youtube.com/vi/9hdxh5G7Wzo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/all-you-sinners" class="table-row-name text-bold">All You Sinners</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Anatomy Act, V7. Joe’s Valley" href="/problems/joe-s-valley/anatomy-act" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Anatomy Act, V7. Joe’s Valley" src="https://img.youtube.com/vi/WO6RwxyMkqY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/anatomy-act" class="table-row-name text-bold">Anatomy Act</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Antaeus, V5. Joe's Valley" href="/problems/joe-s-valley/antaeus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Antaeus, V5. Joe's Valley" src="https://img.youtube.com/vi/cBesILqbLJY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/antaeus" class="table-row-name text-bold">Antaeus</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Apple Bottom Jeans, V10. Joe's Valley" href="/problems/joe-s-valley/apple-bottom-jeans" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Apple Bottom Jeans, V10. Joe's Valley" src="https://img.youtube.com/vi/Q5EfWexBjxY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/apple-bottom-jeans" class="table-row-name text-bold">Apple Bottom Jeans</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Arma, V5. Joe's Valley" href="/problems/joe-s-valley/arma" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Arma, V5. Joe's Valley" src="https://img.youtube.com/vi/lKnjmdHeQfY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/arma" class="table-row-name text-bold">Arma</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Baldwin Bash, V7. Joe's Valley" href="/problems/joe-s-valley/baldwin-bash" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Baldwin Bash, V7. Joe's Valley" src="https://img.youtube.com/vi/zfxCQT-2Fqw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/baldwin-bash" class="table-row-name text-bold">Baldwin Bash</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Barely Legal, V11. Joe's Valley" href="/problems/joe-s-valley/barely-legal" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Barely Legal, V11. Joe's Valley" src="https://img.youtube.com/vi/WvuZ7z_d1Pc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/barely-legal" class="table-row-name text-bold">Barely Legal</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Beyond Life, V10. Joe's Valley" href="/problems/joe-s-valley/beyond-life" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Beyond Life, V10. Joe's Valley" src="https://img.youtube.com/vi/HOgcTOKfLos/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/beyond-life" class="table-row-name text-bold">Beyond Life</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Big Boy, V7. Joe's Valley" href="/problems/joe-s-valley/big-boy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Big Boy, V7. Joe's Valley" src="https://img.youtube.com/vi/L05rO1A4IsY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/big-boy" class="table-row-name text-bold">Big Boy</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Big Cheesy, V5. Joe’s Valley" href="/problems/joe-s-valley/big-cheesy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Big Cheesy, V5. Joe’s Valley" src="https://img.youtube.com/vi/np3su8cn0zA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/big-cheesy" class="table-row-name text-bold">Big Cheesy</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Big Joe, V7. Joe's Valley" href="/problems/joe-s-valley/big-joe" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Big Joe, V7. Joe's Valley" src="https://img.youtube.com/vi/TjMRGeY5OBE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/big-joe" class="table-row-name text-bold">Big Joe</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Boysize, V7. Joe's Valley" href="/problems/joe-s-valley/boysize" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Boysize, V7. Joe's Valley" src="https://img.youtube.com/vi/E0B5WksBYgk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/boysize" class="table-row-name text-bold">Boysize</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bring the Heatwole, V7. Joe's Valley" href="/problems/joe-s-valley/bring-the-heatwole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bring the Heatwole, V7. Joe's Valley" src="https://img.youtube.com/vi/EQnSmgWwlw8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/bring-the-heatwole" class="table-row-name text-bold">Bring the Heatwole</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bubbatronic, V9. Joe's Valley" href="/problems/joe-s-valley/bubbatronic" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bubbatronic, V9. Joe's Valley" src="https://img.youtube.com/vi/qM5ASXDrQG0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/bubbatronic" class="table-row-name text-bold">Bubbatronic</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Champagne Supernova, V9. Joe's Valley" href="/problems/joe-s-valley/champagne-supernova" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Champagne Supernova, V9. Joe's Valley" src="https://img.youtube.com/vi/bcKS208gBQI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/champagne-supernova" class="table-row-name text-bold">Champagne Supernova</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Chips, V7. Joe's Valley" href="/problems/joe-s-valley/chips" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Chips, V7. Joe's Valley" src="https://img.youtube.com/vi/38x8hIdIH3k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/chips" class="table-row-name text-bold">Chips</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Contact, V5. Joe’s Valley" href="/problems/joe-s-valley/contact" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Contact, V5. Joe’s Valley" src="https://img.youtube.com/vi/JtjuysqT_TA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/contact" class="table-row-name text-bold">Contact</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cook the Patty, V6. Joe's Valley" href="/problems/joe-s-valley/cook-the-patty" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cook the Patty, V6. Joe's Valley" src="https://img.youtube.com/vi/oy9NhTMtvNM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/cook-the-patty" class="table-row-name text-bold">Cook the Patty</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cook the Patty, V6. Joe's Valley" href="/problems/joe-s-valley/cook-the-patty" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cook the Patty, V6. Joe's Valley" src="https://img.youtube.com/vi/oHEdBt28dwg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/cook-the-patty" class="table-row-name text-bold">Cook the Patty</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cosmos, V8. Joe's Valley" href="/problems/joe-s-valley/cosmos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cosmos, V8. Joe's Valley" src="https://img.youtube.com/vi/k4tojJWgwr0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/cosmos" class="table-row-name text-bold">Cosmos</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Counter Clockwork, V11. Joe's Valley" href="/problems/joe-s-valley/counter-clockwork" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Counter Clockwork, V11. Joe's Valley" src="https://img.youtube.com/vi/jn4rVPqdJcg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/counter-clockwork" class="table-row-name text-bold">Counter Clockwork</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crescent Moon, V2. Joe's Valley" href="/problems/joe-s-valley/crescent-moon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crescent Moon, V2. Joe's Valley" src="https://img.youtube.com/vi/7MNbAMLRJNw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/crescent-moon" class="table-row-name text-bold">Crescent Moon</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cue Ball, V5. Joe’s Valley" href="/problems/joe-s-valley/cue-ball" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cue Ball, V5. Joe’s Valley" src="https://img.youtube.com/vi/LsNfS4C7EGk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/cue-ball" class="table-row-name text-bold">Cue Ball</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dark Continent, V7. Joe's Valley" href="/problems/joe-s-valley/dark-continent" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dark Continent, V7. Joe's Valley" src="https://img.youtube.com/vi/6EenTjRDnLI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/dark-continent" class="table-row-name text-bold">Dark Continent</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Death Scream, V10. Joe's Valley" href="/problems/joe-s-valley/death-scream" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Death Scream, V10. Joe's Valley" src="https://img.youtube.com/vi/VYvi4ADRpR8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/death-scream" class="table-row-name text-bold">Death Scream</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dirty Harry, V7. Joe's Valley" href="/problems/joe-s-valley/dirty-harry" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dirty Harry, V7. Joe's Valley" src="https://img.youtube.com/vi/aZYl7kC6k5s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/dirty-harry" class="table-row-name text-bold">Dirty Harry</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Double Delicious, V6. Joe’s Valley" href="/problems/joe-s-valley/double-delicious" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Double Delicious, V6. Joe’s Valley" src="https://img.youtube.com/vi/Dm9ndyOudJo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/double-delicious" class="table-row-name text-bold">Double Delicious</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dungeon Master, V9. Joe's Valley" href="/problems/joe-s-valley/dungeon-master" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dungeon Master, V9. Joe's Valley" src="https://img.youtube.com/vi/6_s-OIZ7lis/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/dungeon-master" class="table-row-name text-bold">Dungeon Master</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dunkin’ Donuts Variation, V6. Joe’s Valley" href="/problems/joe-s-valley/dunkin-donuts-variation" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dunkin’ Donuts Variation, V6. Joe’s Valley" src="https://img.youtube.com/vi/JenlO3lvf9k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/dunkin-donuts-variation" class="table-row-name text-bold">Dunkin’ Donuts Variation</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dyno Time Low, V7. Joe's Valley" href="/problems/joe-s-valley/dyno-time-low" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dyno Time Low, V7. Joe's Valley" src="https://img.youtube.com/vi/a74Sn1EOCDk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/dyno-time-low" class="table-row-name text-bold">Dyno Time Low</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eden, V10. Joe's Valley" href="/problems/joe-s-valley/eden" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eden, V10. Joe's Valley" src="https://img.youtube.com/vi/J9p-O3AETn8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/eden" class="table-row-name text-bold">Eden</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Electric Fence, V7. Joe's Valley" href="/problems/joe-s-valley/electric-fence" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Electric Fence, V7. Joe's Valley" src="https://img.youtube.com/vi/lPrpZOPDgNA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/electric-fence" class="table-row-name text-bold">Electric Fence</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Cabin Fever</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Entrance Exam, V8. Joe's Valley" href="/problems/joe-s-valley/entrance-exam" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Entrance Exam, V8. Joe's Valley" src="https://img.youtube.com/vi/dZa2Cg5J3rc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/entrance-exam" class="table-row-name text-bold">Entrance Exam</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eurosize, V5. Joe’s Valley" href="/problems/joe-s-valley/eurosize" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eurosize, V5. Joe’s Valley" src="https://img.youtube.com/vi/25EnFSYDsYU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/eurosize" class="table-row-name text-bold">Eurosize</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="External Tulips, V7. Joe’s Valley" href="/problems/joe-s-valley/external-tulips" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: External Tulips, V7. Joe’s Valley" src="https://img.youtube.com/vi/AjhERo8R7g4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/external-tulips" class="table-row-name text-bold">External Tulips</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fanstasy Factory, V8. Joe's Valley" href="/problems/joe-s-valley/fanstasy-factory" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fanstasy Factory, V8. Joe's Valley" src="https://img.youtube.com/vi/QgwPEfZCrGA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/fanstasy-factory" class="table-row-name text-bold">Fanstasy Factory</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Feels Like Grit, V8. Joe's Valley" href="/problems/joe-s-valley/feels-like-grit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Feels Like Grit, V8. Joe's Valley" src="https://img.youtube.com/vi/drUlpI5jyNU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/feels-like-grit" class="table-row-name text-bold">Feels Like Grit</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fig Fart, V5. Joe's Valley" href="/problems/joe-s-valley/fig-fart" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fig Fart, V5. Joe's Valley" src="https://img.youtube.com/vi/GzDZknZttpU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/fig-fart" class="table-row-name text-bold">Fig Fart</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Finger Hut, V10. Joe's Valley" href="/problems/joe-s-valley/finger-hut" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Finger Hut, V10. Joe's Valley" src="https://img.youtube.com/vi/1n-MN-3vVgM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/finger-hut" class="table-row-name text-bold">Finger Hut</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fortune Cookie, V3. Joe's Valley" href="/problems/joe-s-valley/fortune-cookie" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fortune Cookie, V3. Joe's Valley" src="https://img.youtube.com/vi/d2sZLqz0p4c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/fortune-cookie" class="table-row-name text-bold">Fortune Cookie</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Foxy Whore, V9. Joe's Valley" href="/problems/joe-s-valley/foxy-whore" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Foxy Whore, V9. Joe's Valley" src="https://img.youtube.com/vi/1W2H1ZtWSxI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/foxy-whore" class="table-row-name text-bold">Foxy Whore</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Frosted Flakes, V5. Joe's Valley" href="/problems/joe-s-valley/frosted-flakes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Frosted Flakes, V5. Joe's Valley" src="https://img.youtube.com/vi/rcrBvCBJheA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/frosted-flakes" class="table-row-name text-bold">Frosted Flakes</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="G207, V7. Joe's Valley" href="/problems/joe-s-valley/g207" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: G207, V7. Joe's Valley" src="https://img.youtube.com/vi/fA0NJJXti7A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/g207" class="table-row-name text-bold">G207</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ghost King, V11. Joe's Valley" href="/problems/joe-s-valley/ghost-king" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ghost King, V11. Joe's Valley" src="https://img.youtube.com/vi/hNtQiy5WChw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/ghost-king" class="table-row-name text-bold">Ghost King</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Great White V6. Joe's Valley" href="/problems/joe-s-valley/great-white" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Great White V6. Joe's Valley" src="https://img.youtube.com/vi/6g4c6DJn_Yc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/great-white" class="table-row-name text-bold">Great White</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gurkha Knife, V9. Joe's Valley" href="/problems/joe-s-valley/gurkha-knife" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gurkha Knife, V9. Joe's Valley" src="https://img.youtube.com/vi/hKv70GzjyGc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/gurkha-knife" class="table-row-name text-bold">Gurkha Knife</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hand of Doom, V6. Joe's Valley" href="/problems/joe-s-valley/hand-of-doom" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hand of Doom, V6. Joe's Valley" src="https://img.youtube.com/vi/gHd8rFdiI0k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/hand-of-doom" class="table-row-name text-bold">Hand of Doom</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Heartless, V6. Joe's Valley" href="/problems/joe-s-valley/heartless" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Heartless, V6. Joe's Valley" src="https://img.youtube.com/vi/q8ALqCqLVwM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/heartless" class="table-row-name text-bold">Heartless</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="I'd Rather Be Climbing Her, V6. Joe's Valley" href="/problems/joe-s-valley/i-d-rather-be-climbing-her" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: I'd Rather Be Climbing Her, V6. Joe's Valley" src="https://img.youtube.com/vi/0YMl-jOI-FU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/i-d-rather-be-climbing-her" class="table-row-name text-bold">I'd Rather Be Climbing Her</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jarash, V6. Joe's Valley" href="/problems/joe-s-valley/jarash" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jarash, V6. Joe's Valley" src="https://img.youtube.com/vi/8UckTgPvIw0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/jarash" class="table-row-name text-bold">Jarash</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Jarash, V6. Joe’s Valley" href="/problems/joe-s-valley/jarash" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Jarash, V6. Joe’s Valley" src="https://img.youtube.com/vi/LYvVHFYa-34/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/jarash" class="table-row-name text-bold">Jarash</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left  Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Killa Bees, V7. Joe's Valley" href="/problems/joe-s-valley/killa-bees" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Killa Bees, V7. Joe's Valley" src="https://img.youtube.com/vi/zQ3WErgvF8A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/killa-bees" class="table-row-name text-bold">Killa Bees</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kobra Khan, V4. Joe's Valley" href="/problems/joe-s-valley/kobra-khan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kobra Khan, V4. Joe's Valley" src="https://img.youtube.com/vi/WJlXmTN_qU0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/kobra-khan" class="table-row-name text-bold">Kobra Khan</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kung Fu Theatre, V7. Joe's Valley" href="/problems/joe-s-valley/kung-fu-theatre" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kung Fu Theatre, V7. Joe's Valley" src="https://img.youtube.com/vi/mIJSu4PJqvM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/kung-fu-theatre" class="table-row-name text-bold">Kung Fu Theatre</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kung Fury, V10. Joe's Valley" href="/problems/joe-s-valley/kung-fury" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kung Fury, V10. Joe's Valley" src="https://img.youtube.com/vi/Lw_FyR2WtA0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/kung-fury" class="table-row-name text-bold">Kung Fury</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lady Hips, V7. Joe's Valley" href="/problems/joe-s-valley/lady-hips" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lady Hips, V7. Joe's Valley" src="https://img.youtube.com/vi/QboBjRogt80/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/lady-hips" class="table-row-name text-bold">Lady Hips</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Loc-Nar, V8. Joe's Valley" href="/problems/joe-s-valley/loc-nar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Loc-Nar, V8. Joe's Valley" src="https://img.youtube.com/vi/QRPv2lernoM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/loc-nar" class="table-row-name text-bold">Loc-Nar</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Low Tide, V6. Joe's Valley" href="/problems/joe-s-valley/low-tide" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Low Tide, V6. Joe's Valley" src="https://img.youtube.com/vi/OVBOBrnlsSY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/low-tide" class="table-row-name text-bold">Low Tide</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lumberjack, V8. Joe's Valley" href="/problems/joe-s-valley/lumberjack" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lumberjack, V8. Joe's Valley" src="https://img.youtube.com/vi/IXjoLiEBpAQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/lumberjack" class="table-row-name text-bold">Lumberjack</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mars attacks, V5. Joe's Valley" href="/problems/joe-s-valley/mars-attacks" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mars attacks, V5. Joe's Valley" src="https://img.youtube.com/vi/2QaauvLGJBA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/mars-attacks" class="table-row-name text-bold">Mars attacks</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Master Po, V6. Joe's Valley" href="/problems/joe-s-valley/master-po" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Master Po, V6. Joe's Valley" src="https://img.youtube.com/vi/m9mrXMGKV8o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/master-po" class="table-row-name text-bold">Master Po</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mono E Mono, V4. Joe’s Valley" href="/problems/joe-s-valley/mono-e-mono" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mono E Mono, V4. Joe’s Valley" src="https://img.youtube.com/vi/lt9-La30Sx8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/mono-e-mono" class="table-row-name text-bold">Mono E Mono</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mononoke, V7. Joe's Valley" href="/problems/joe-s-valley/mononoke" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mononoke, V7. Joe's Valley" src="https://img.youtube.com/vi/VM496Y-qJxg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/mononoke" class="table-row-name text-bold">Mononoke</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mr. Duck, V7. Joe's Valley" href="/problems/joe-s-valley/mr-duck" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mr. Duck, V7. Joe's Valley" src="https://img.youtube.com/vi/S11pYLdDm74/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/mr-duck" class="table-row-name text-bold">Mr. Duck</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Near Beers, V5. Joe's Valley" href="/problems/joe-s-valley/near-beers" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Near Beers, V5. Joe's Valley" src="https://img.youtube.com/vi/nBoILOvxcgo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/near-beers" class="table-row-name text-bold">Near Beers</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nerve Extension, V10-. Joe's Valley" href="/problems/joe-s-valley/nerve-extension" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nerve Extension, V10-. Joe's Valley" src="https://img.youtube.com/vi/EBc74BZcmKQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/nerve-extension" class="table-row-name text-bold">Nerve Extension</a>
+            </div>
+					</td>
+					<td>V10-</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ninja Please, V7. Joe's Valley" href="/problems/joe-s-valley/ninja-please" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ninja Please, V7. Joe's Valley" src="https://img.youtube.com/vi/yChU3Y--sWk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/ninja-please" class="table-row-name text-bold">Ninja Please</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="No Substance, V8. Joe's Valley" href="/problems/joe-s-valley/no-substance" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: No Substance, V8. Joe's Valley" src="https://img.youtube.com/vi/NdH_6vtkdWo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/no-substance" class="table-row-name text-bold">No Substance</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="North Arete, V6. Joe's Valley" href="/problems/joe-s-valley/north-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: North Arete, V6. Joe's Valley" src="https://img.youtube.com/vi/Y4TN1RPji4o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/north-arete" class="table-row-name text-bold">North Arete</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="O Face, V5. Joe's Valley" href="/problems/joe-s-valley/o-face" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: O Face, V5. Joe's Valley" src="https://img.youtube.com/vi/BnROPCQQ9Q8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/o-face" class="table-row-name text-bold">O Face</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pandemic, V7. Joe's Valley" href="/problems/joe-s-valley/pandemic" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pandemic, V7. Joe's Valley" src="https://img.youtube.com/vi/7nnNvKA3Qrk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/pandemic" class="table-row-name text-bold">Pandemic</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Phony Baloney Traverse, V7. Joe's Valley" href="/problems/joe-s-valley/phony-baloney-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Phony Baloney Traverse, V7. Joe's Valley" src="https://img.youtube.com/vi/nRcfmDAIXww/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/phony-baloney-traverse" class="table-row-name text-bold">Phony Baloney Traverse</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pilot Light, V6. Joe's Valley" href="/problems/joe-s-valley/pilot-light" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pilot Light, V6. Joe's Valley" src="https://img.youtube.com/vi/-sfRNnSpY7s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/pilot-light" class="table-row-name text-bold">Pilot Light</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pitbull, V6. Joe’s Valley" href="/problems/joe-s-valley/pitbull" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pitbull, V6. Joe’s Valley" src="https://img.youtube.com/vi/Tbb0HKoNmTs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/pitbull" class="table-row-name text-bold">Pitbull</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Planet of Apes, V7. Joe’s Valley" href="/problems/joe-s-valley/planet-of-apes" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Planet of Apes, V7. Joe’s Valley" src="https://img.youtube.com/vi/PFhDi6FzJEA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/planet-of-apes" class="table-row-name text-bold">Planet of Apes</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Playmate of the Year, V9. Joe's Valley" href="/problems/joe-s-valley/playmate-of-the-year" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Playmate of the Year, V9. Joe's Valley" src="https://img.youtube.com/vi/g3Y3wxceZN4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/playmate-of-the-year" class="table-row-name text-bold">Playmate of the Year</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Playtime Is Over, V9. Joe's Valley" href="/problems/joe-s-valley/playtime-is-over" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Playtime Is Over, V9. Joe's Valley" src="https://img.youtube.com/vi/zNGOUyCOG_M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/playtime-is-over" class="table-row-name text-bold">Playtime Is Over</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pocket Rocket, V6. Joe's Valley" href="/problems/joe-s-valley/pocket-rocket" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pocket Rocket, V6. Joe's Valley" src="https://img.youtube.com/vi/z9qIBuxQgGw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/pocket-rocket" class="table-row-name text-bold">Pocket Rocket</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Poricini or Portabello, V7. Joe’s Valley" href="/problems/joe-s-valley/poricini-or-portabello" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Poricini or Portabello, V7. Joe’s Valley" src="https://img.youtube.com/vi/olrbwKasUdo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/poricini-or-portabello" class="table-row-name text-bold">Poricini or Portabello</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Poseidon, V8. Joe's Valley" href="/problems/joe-s-valley/poseidon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Poseidon, V8. Joe's Valley" src="https://img.youtube.com/vi/odR_rdUeqtk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/poseidon" class="table-row-name text-bold">Poseidon</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Projectile Dysfunction, V8. Joe's Valley" href="/problems/joe-s-valley/projectile-dysfunction" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Projectile Dysfunction, V8. Joe's Valley" src="https://img.youtube.com/vi/UoRZNmg7x6I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/projectile-dysfunction" class="table-row-name text-bold">Projectile Dysfunction</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Proppa Dyno, V5. Joe’s Valley" href="/problems/joe-s-valley/proppa-dyno" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Proppa Dyno, V5. Joe’s Valley" src="https://img.youtube.com/vi/dXGTKbR2no4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/proppa-dyno" class="table-row-name text-bold">Proppa Dyno</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rabbit Fur, V6. Joe's Valley" href="/problems/joe-s-valley/rabbit-fur" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rabbit Fur, V6. Joe's Valley" src="https://img.youtube.com/vi/xERHYH8UuwE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/rabbit-fur" class="table-row-name text-bold">Rabbit Fur</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Raiden, V6. Joe’s Valley" href="/problems/joe-s-valley/raiden" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Raiden, V6. Joe’s Valley" src="https://img.youtube.com/vi/Z_c8PgF8pYc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/raiden" class="table-row-name text-bold">Raiden</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rawhide, V6. Joe’s Valley" href="/problems/joe-s-valley/rawhide" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rawhide, V6. Joe’s Valley" src="https://img.youtube.com/vi/T-KhD2e-LL0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/rawhide" class="table-row-name text-bold">Rawhide</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Reduced Fat Milk, V7. Joe's Valley" href="/problems/joe-s-valley/reduced-fat-milk" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Reduced Fat Milk, V7. Joe's Valley" src="https://img.youtube.com/vi/wYK5sf5ylWA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/reduced-fat-milk" class="table-row-name text-bold">Reduced Fat Milk</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Renaissance Man, V9. Joe's Valley" href="/problems/joe-s-valley/renaissance-man" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Renaissance Man, V9. Joe's Valley" src="https://img.youtube.com/vi/jhs-X1xbLoM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/renaissance-man" class="table-row-name text-bold">Renaissance Man</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Resident Evil, V10. Joe's Valley" href="/problems/joe-s-valley/resident-evil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Resident Evil, V10. Joe's Valley" src="https://img.youtube.com/vi/FBbxEWvGqPw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/resident-evil" class="table-row-name text-bold">Resident Evil</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rug Rat, V5. Joe's Valley" href="/problems/joe-s-valley/rug-rat" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rug Rat, V5. Joe's Valley" src="https://img.youtube.com/vi/nMcQEq5PXHA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/rug-rat" class="table-row-name text-bold">Rug Rat</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Runt, V7. Joe's Valley" href="/problems/joe-s-valley/runt" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Runt, V7. Joe's Valley" src="https://img.youtube.com/vi/2iFeSCaREgQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/runt" class="table-row-name text-bold">Runt</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="SPAM, V6-7. Joe’s Valley" href="/problems/joe-s-valley/spam" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: SPAM, V6-7. Joe’s Valley" src="https://img.youtube.com/vi/8HdFg9xbi6o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/spam" class="table-row-name text-bold">SPAM</a>
+            </div>
+					</td>
+					<td>V6-7</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scary Monsters, V6. Joe's Valley" href="/problems/joe-s-valley/scary-monsters" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scary Monsters, V6. Joe's Valley" src="https://img.youtube.com/vi/vnhyD6xaX3M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/scary-monsters" class="table-row-name text-bold">Scary Monsters</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scrawny and Brawny, V8. Joe’s Valley" href="/problems/joe-s-valley/scrawny-and-brawny" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scrawny and Brawny, V8. Joe’s Valley" src="https://img.youtube.com/vi/JManLfDg2eU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/scrawny-and-brawny" class="table-row-name text-bold">Scrawny and Brawny</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Self Service, V4. Joe’s Valley" href="/problems/joe-s-valley/self-service" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Self Service, V4. Joe’s Valley" src="https://img.youtube.com/vi/DmsYe_ZYZwo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/self-service" class="table-row-name text-bold">Self Service</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shadow of Death, V7 (sit). Joe's Valley" href="/problems/joe-s-valley/shadow-of-death" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shadow of Death, V7 (sit). Joe's Valley" src="https://img.youtube.com/vi/yGsBP1uMFZw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/shadow-of-death" class="table-row-name text-bold">Shadow of Death</a>
+            </div>
+					</td>
+					<td>V7 (sit)</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shaolin Slab, V4. Joe's Valley" href="/problems/joe-s-valley/shaolin-slab" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shaolin Slab, V4. Joe's Valley" src="https://img.youtube.com/vi/1Bj10pCr0Po/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/shaolin-slab" class="table-row-name text-bold">Shaolin Slab</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shark Bait, V6. Joe's Valley" href="/problems/joe-s-valley/shark-bait" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shark Bait, V6. Joe's Valley" src="https://img.youtube.com/vi/0qGyIMRrPig/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/shark-bait" class="table-row-name text-bold">Shark Bait</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Smokin' Joe, V9. Joe's Valley" href="/problems/joe-s-valley/smokin-joe" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Smokin' Joe, V9. Joe's Valley" src="https://img.youtube.com/vi/Zx8ZRqb7eAM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/smokin-joe" class="table-row-name text-bold">Smokin' Joe</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Speak of the Devil, V7. Joe's Valley" href="/problems/joe-s-valley/speak-of-the-devil" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Speak of the Devil, V7. Joe's Valley" src="https://img.youtube.com/vi/kWTeeTotVII/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/speak-of-the-devil" class="table-row-name text-bold">Speak of the Devil</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stand Up, V8. Joe's Valley" href="/problems/joe-s-valley/stand-up" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stand Up, V8. Joe's Valley" src="https://img.youtube.com/vi/xnafwK0iffI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/stand-up" class="table-row-name text-bold">Stand Up</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Area 51</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stand Up Comedian, V5. Joe's Valley" href="/problems/joe-s-valley/stand-up-comedian" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stand Up Comedian, V5. Joe's Valley" src="https://img.youtube.com/vi/MPFkGN9_fBM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/stand-up-comedian" class="table-row-name text-bold">Stand Up Comedian</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stir The Pie, V8. Joe's Valley" href="/problems/joe-s-valley/stir-the-pie" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stir The Pie, V8. Joe's Valley" src="https://img.youtube.com/vi/FDZb-2EHb-s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/stir-the-pie" class="table-row-name text-bold">Stir The Pie</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Dairy Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Streaked, V6+. Joe's Valley" href="/problems/joe-s-valley/streaked" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Streaked, V6+. Joe's Valley" src="https://img.youtube.com/vi/a3P1YbmxCi8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/streaked" class="table-row-name text-bold">Streaked</a>
+            </div>
+					</td>
+					<td>V6+</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sun in My Eye Traverse, V6. Joe's Valley" href="/problems/joe-s-valley/sun-in-my-eye-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sun in My Eye Traverse, V6. Joe's Valley" src="https://img.youtube.com/vi/Ji6uTBf2psQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/sun-in-my-eye-traverse" class="table-row-name text-bold">Sun in My Eye Traverse</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>New Joe's</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sunshine Daydream, V7. Joe's Valley" href="/problems/joe-s-valley/sunshine-daydream" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sunshine Daydream, V7. Joe's Valley" src="https://img.youtube.com/vi/c3GN2u_Ofz0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/sunshine-daydream" class="table-row-name text-bold">Sunshine Daydream</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Sign Area</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Superman, V10. Joe's Valley" href="/problems/joe-s-valley/superman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Superman, V10. Joe's Valley" src="https://img.youtube.com/vi/DDsVLcpzzvE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/superman" class="table-row-name text-bold">Superman</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Team Effort, V9. Joe's Valley" href="/problems/joe-s-valley/team-effort" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Team Effort, V9. Joe's Valley" src="https://img.youtube.com/vi/Uu3-ZjslJPw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/team-effort" class="table-row-name text-bold">Team Effort</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Angler, V2. Joe’s Valley" href="/problems/joe-s-valley/the-angler" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Angler, V2. Joe’s Valley" src="https://img.youtube.com/vi/YCrKVNlukPs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-angler" class="table-row-name text-bold">The Angler</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Coaster, V7. Joe's Valley" href="/problems/joe-s-valley/the-coaster" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Coaster, V7. Joe's Valley" src="https://img.youtube.com/vi/r6lnxq8BNvA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-coaster" class="table-row-name text-bold">The Coaster</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Dead Sea, V8. Joe's Valley" href="/problems/joe-s-valley/the-dead-sea-aka-black-sea" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Dead Sea, V8. Joe's Valley" src="https://img.youtube.com/vi/jrFCs2k4kyo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-dead-sea-aka-black-sea" class="table-row-name text-bold">The Dead Sea aka Black Sea</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Flu, V8. Joe’s Valley" href="/problems/joe-s-valley/the-flu" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Flu, V8. Joe’s Valley" src="https://img.youtube.com/vi/3c6vFm6y1B4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-flu" class="table-row-name text-bold">The Flu</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Hulk, V8. Joe's Valley" href="/problems/joe-s-valley/the-hulk" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Hulk, V8. Joe's Valley" src="https://img.youtube.com/vi/b1VsjwNOWAU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-hulk" class="table-row-name text-bold">The Hulk</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Wind Below, V7. Joe's Valley" href="/problems/joe-s-valley/the-wind-below" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Wind Below, V7. Joe's Valley" src="https://img.youtube.com/vi/FKMSDQF8Rfo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/the-wind-below" class="table-row-name text-bold">The Wind Below</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Thor's Hammer, V7. Joe's Valley" href="/problems/joe-s-valley/thor-s-hammer" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Thor's Hammer, V7. Joe's Valley" src="https://img.youtube.com/vi/EdYlbkInyyw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/thor-s-hammer" class="table-row-name text-bold">Thor's Hammer</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Three Amigos, V8. Joe's Valley" href="/problems/joe-s-valley/three-amigos" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Three Amigos, V8. Joe's Valley" src="https://img.youtube.com/vi/FLThGKI8Bbc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/three-amigos" class="table-row-name text-bold">Three Amigos</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trent's Mom, V10. Joe's Valley" href="/problems/joe-s-valley/trent-s-mom" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trent's Mom, V10. Joe's Valley" src="https://img.youtube.com/vi/v1QtVuaBDjA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/trent-s-mom" class="table-row-name text-bold">Trent's Mom</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tubesnake Boogie, V8. Joe's Valley" href="/problems/joe-s-valley/tubesnake-boogie" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tubesnake Boogie, V8. Joe's Valley" src="https://img.youtube.com/vi/rWRO_Ze-LBg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/tubesnake-boogie" class="table-row-name text-bold">Tubesnake Boogie</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vertical Ice, V6. Joe’s Valley" href="/problems/joe-s-valley/vertical-ice" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vertical Ice, V6. Joe’s Valley" src="https://img.youtube.com/vi/f9o3bMa0rd0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/vertical-ice" class="table-row-name text-bold">Vertical Ice</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Walrus, V5. Joe's Valley" href="/problems/joe-s-valley/walrus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Walrus, V5. Joe's Valley" src="https://img.youtube.com/vi/goE4iun9NVQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/walrus" class="table-row-name text-bold">Walrus</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Water Paintings, V7. Joe's Valley" href="/problems/joe-s-valley/water-paintings" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Water Paintings, V7. Joe's Valley" src="https://img.youtube.com/vi/HaJZpvmNRok/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/water-paintings" class="table-row-name text-bold">Water Paintings</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="White Buffalo, V8. Joe's Valley" href="/problems/joe-s-valley/white-buffalo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: White Buffalo, V8. Joe's Valley" src="https://img.youtube.com/vi/T_mdAWHSKjY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/white-buffalo" class="table-row-name text-bold">White Buffalo</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Wills Afire, V6. Joe's Valley" href="/problems/joe-s-valley/wills-afire" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Wills Afire, V6. Joe's Valley" src="https://img.youtube.com/vi/6rhS3IdVnOQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/wills-afire" class="table-row-name text-bold">Wills Afire</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Worst Case Scenario, V9. Joe's Valley" href="/problems/joe-s-valley/worst-case-scenario" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Worst Case Scenario, V9. Joe's Valley" src="https://img.youtube.com/vi/Wf1VSvTSFh0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/worst-case-scenario" class="table-row-name text-bold">Worst Case Scenario</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Wrecking Ball, V8. Joe's Valley" href="/problems/joe-s-valley/wrecking-ball" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Wrecking Ball, V8. Joe's Valley" src="https://img.youtube.com/vi/8QiIml0ci68/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/wrecking-ball" class="table-row-name text-bold">Wrecking Ball</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Left Fork</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Zatoichi, V8. Joe's Valley" href="/problems/joe-s-valley/zatoichi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Zatoichi, V8. Joe's Valley" src="https://img.youtube.com/vi/TgDrhoqUjMs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joe-s-valley/zatoichi" class="table-row-name text-bold">Zatoichi</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Right Fork</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Val Daone  Boulder | MadBoulder</title>
+	<meta name="description" content="Val Daone bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/val-daone">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/italy" class="zone-header-tree-link">Italy</a>
+  
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Val Daone 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="46.01376470452921" />
+  <input type="hidden" id="lng" name="lng_val" value="10.510558606136897" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Val Daone
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Val Daone
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/JI77a4VJUpY/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/JI77a4VJUpY/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/JI77a4VJUpY/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/JI77a4VJUpY/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Val Daone</h4>
+								<p>Val Daone, en Italia, es famoso por su roca de granito y sus problemas de boulder técnicos. La primavera y el verano son las mejores estaciones para escalar aquí. La reputación de Val Daone se debe a la alta calidad de la escalada en granito y sus paisajes impresionantes.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 72
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 1406m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3U3Ggy1" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81xN9QIg3wL._SL1381_.jpg" alt="Daone Boulder">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Daone Boulder</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="http://daoneboulder.blogspot.com/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        daoneboulder (blog)
+        
+          <button class="btn-free-madboulder text-bold">
+             {{ _("Free") }} 
+          </button>
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/val-daone"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/val-daone/dos-dei-aser" class="table-row-name text-bold">Dos dei Aser</a>
+					</td>
+					<td class="text-center">9</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/val-daone/dos-dei-aser-the-fisherman" class="table-row-name text-bold">Dos dei Aser - The fisherman</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/val-daone/la-curva" class="table-row-name text-bold">La Curva</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/val-daone/la-plana" class="table-row-name text-bold">La Plana</a>
+					</td>
+					<td class="text-center">34</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/val-daone/nudole" class="table-row-name text-bold">Nudole</a>
+					</td>
+					<td class="text-center">12</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPo_LPDLY3koDrJkVWy97Me"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Nudole</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNSESnWyJJ7tnpXNitPrZSx"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Dos dei Aser</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNwIFfnEtpVyCIqI9xOf6u-"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>La Plana</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMTE12_llc2J2EuQr_YxYWn"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>La Curva</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPC6cFDSHD8Vy2XyfHb31Yd"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alessia, 5c. Val Daone" href="/problems/val-daone/alessia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alessia, 5c. Val Daone" src="https://img.youtube.com/vi/_dUwvlnR-N0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/alessia" class="table-row-name text-bold">Alessia</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Analogia, 8a. Val Daone" href="/problems/val-daone/analogia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Analogia, 8a. Val Daone" src="https://img.youtube.com/vi/6vQnvu3bOag/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/analogia" class="table-row-name text-bold">Analogia</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Angiolino Superstar, 7a. Val Daone" href="/problems/val-daone/angiolino-superstar" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Angiolino Superstar, 7a. Val Daone" src="https://img.youtube.com/vi/lFM5Msp_QWQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/angiolino-superstar" class="table-row-name text-bold">Angiolino Superstar</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Antologia, 7b+. Val Daone" href="/problems/val-daone/antologia" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Antologia, 7b+. Val Daone" src="https://img.youtube.com/vi/XF3Z68fD9IQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/antologia" class="table-row-name text-bold">Antologia</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Attacco ucraino, 7b+. Val Daone" href="/problems/val-daone/attacco-ucraino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Attacco ucraino, 7b+. Val Daone" src="https://img.youtube.com/vi/kt1plbZ29Ac/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/attacco-ucraino" class="table-row-name text-bold">Attacco ucraino</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blue arrow, 8a+. Val Daone" href="/problems/val-daone/blue-arrow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blue arrow, 8a+. Val Daone" src="https://img.youtube.com/vi/NRjFw7Y0DQ4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/blue-arrow" class="table-row-name text-bold">Blue arrow</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bogaboo Rider, 8a. Val Daone" href="/problems/val-daone/bogaboo-rider" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bogaboo Rider, 8a. Val Daone" src="https://img.youtube.com/vi/H70XwqOMjL0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/bogaboo-rider" class="table-row-name text-bold">Bogaboo Rider</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bros Travers, 7a. Val Daone" href="/problems/val-daone/bros-travers" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bros Travers, 7a. Val Daone" src="https://img.youtube.com/vi/NGNGgZ3Uej0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/bros-travers" class="table-row-name text-bold">Bros Travers</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Campari Soda, 7c+. Val Daone" href="/problems/val-daone/campari-soda" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Campari Soda, 7c+. Val Daone" src="https://img.youtube.com/vi/EC_OUDQxHz8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/campari-soda" class="table-row-name text-bold">Campari Soda</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ciam, 6a+. Val Daone" href="/problems/val-daone/ciam" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ciam, 6a+. Val Daone" src="https://img.youtube.com/vi/tBrzBLaODao/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/ciam" class="table-row-name text-bold">Ciam</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Come un Pesce Fuor D'Acqua, 8a. Val Daone" href="/problems/val-daone/come-un-pesce-fuor-d-acqua" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Come un Pesce Fuor D'Acqua, 8a. Val Daone" src="https://img.youtube.com/vi/dN3lNSu4k1Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/come-un-pesce-fuor-d-acqua" class="table-row-name text-bold">Come un Pesce Fuor D'Acqua</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Creep, 5c. Val Daone" href="/problems/val-daone/creep" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Creep, 5c. Val Daone" src="https://img.youtube.com/vi/ZtMH9Hz_Jlg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/creep" class="table-row-name text-bold">Creep</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El bus, 6c+. Val Daone" href="/problems/val-daone/el-bus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El bus, 6c+. Val Daone" src="https://img.youtube.com/vi/YbtPveKqdGU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/el-bus" class="table-row-name text-bold">El bus</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fessura Bagnata, 5c. Val Daone" href="/problems/val-daone/fessura-bagnata" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fessura Bagnata, 5c. Val Daone" src="https://img.youtube.com/vi/RM5Se31hBSA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/fessura-bagnata" class="table-row-name text-bold">Fessura Bagnata</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Il Fiodena, 7a. Val Daone" href="/problems/val-daone/il-fiodena" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Il Fiodena, 7a. Val Daone" src="https://img.youtube.com/vi/aKi30DJFWiI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/il-fiodena" class="table-row-name text-bold">Il Fiodena</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Il Ré di Drena, 6a. Val Daone" href="/problems/val-daone/il-re-di-drena" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Il Ré di Drena, 6a. Val Daone" src="https://img.youtube.com/vi/A7HJiRawGaA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/il-re-di-drena" class="table-row-name text-bold">Il Ré di Drena</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="In Visita, 7a. Val Daone" href="/problems/val-daone/in-visita" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: In Visita, 7a. Val Daone" src="https://img.youtube.com/vi/8dhul59eeks/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/in-visita" class="table-row-name text-bold">In Visita</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Avenir nous Réserve Rien de Bon, 8a. Val Daone" href="/problems/val-daone/l-avenir-nous-reserve-rien-de-bon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Avenir nous Réserve Rien de Bon, 8a. Val Daone" src="https://img.youtube.com/vi/cUazUk5Mhl4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/l-avenir-nous-reserve-rien-de-bon" class="table-row-name text-bold">L'Avenir nous Réserve Rien de Bon</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'Ufficio del Teschio, 7c+. Val Daone" href="/problems/val-daone/l-ufficio-del-teschio" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'Ufficio del Teschio, 7c+. Val Daone" src="https://img.youtube.com/vi/lsnF8Z3iCmE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/l-ufficio-del-teschio" class="table-row-name text-bold">L'Ufficio del Teschio</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="La notte scende, 7a. Val Daone" href="/problems/val-daone/la-notte-scende" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: La notte scende, 7a. Val Daone" src="https://img.youtube.com/vi/1veV0iwc8qs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/la-notte-scende" class="table-row-name text-bold">La notte scende</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Magò, 4a. Val Daone" href="/problems/val-daone/mago" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Magò, 4a. Val Daone" src="https://img.youtube.com/vi/fhjnS0DqDsE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/mago" class="table-row-name text-bold">Magò</a>
+            </div>
+					</td>
+					<td>4a</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mekku, 8a. Val Daone" href="/problems/val-daone/mekku" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mekku, 8a. Val Daone" src="https://img.youtube.com/vi/42lgzf5MaHU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/mekku" class="table-row-name text-bold">Mekku</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mingolo, 6b. Val Daone" href="/problems/val-daone/mingolo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mingolo, 6b. Val Daone" src="https://img.youtube.com/vi/8bJqH7Ohm2s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/mingolo" class="table-row-name text-bold">Mingolo</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mr Krabs, 6c. Val Daone" href="/problems/val-daone/mr-krabs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mr Krabs, 6c. Val Daone" src="https://img.youtube.com/vi/sUKOXLnM3GI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/mr-krabs" class="table-row-name text-bold">Mr Krabs</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Dos dei Aser - The fisherman</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Müller Thurgan, 6c+. Val Daone" href="/problems/val-daone/muller-thurgan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Müller Thurgan, 6c+. Val Daone" src="https://img.youtube.com/vi/N3AGBrPyUoY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/muller-thurgan" class="table-row-name text-bold">Müller Thurgan</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 15 - Dos dei Aser), 6b. Val Daone" href="/problems/val-daone/problem-a-boulder-15-dos-dei-aser" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 15 - Dos dei Aser), 6b. Val Daone" src="https://img.youtube.com/vi/Mo1wH3npgFY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-15-dos-dei-aser" class="table-row-name text-bold">Problem A (Boulder 15 - Dos dei Aser)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 2, La Plana), 5a. Val Daone" href="/problems/val-daone/problem-a-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 2, La Plana), 5a. Val Daone" src="https://img.youtube.com/vi/gM0oaT-Wqrg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-2-la-plana" class="table-row-name text-bold">Problem A (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 24, Nudole), 4a. Val Daone" href="/problems/val-daone/problem-a-boulder-24-nudole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 24, Nudole), 4a. Val Daone" src="https://img.youtube.com/vi/03DkGhoHiNA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-24-nudole" class="table-row-name text-bold">Problem A (Boulder 24, Nudole)</a>
+            </div>
+					</td>
+					<td>4a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 37, Dos dei Aser), 6c/7a. Val Daone" href="/problems/val-daone/problem-a-boulder-37-dos-dei-aser" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 37, Dos dei Aser), 6c/7a. Val Daone" src="https://img.youtube.com/vi/wTL--uaOtXM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-37-dos-dei-aser" class="table-row-name text-bold">Problem A (Boulder 37, Dos dei Aser)</a>
+            </div>
+					</td>
+					<td>6c/7a</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 37, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-a-boulder-37-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 37, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/8pTekdXQd-A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-37-la-plana" class="table-row-name text-bold">Problem A (Boulder 37, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 4, La Plana), 4c. Val Daone" href="/problems/val-daone/problem-a-boulder-4-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 4, La Plana), 4c. Val Daone" src="https://img.youtube.com/vi/wV9OMdxDd2s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-4-la-plana" class="table-row-name text-bold">Problem A (Boulder 4, La Plana)</a>
+            </div>
+					</td>
+					<td>4c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 47 - La Plana), 6b. Val Daone" href="/problems/val-daone/problem-a-boulder-47-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 47 - La Plana), 6b. Val Daone" src="https://img.youtube.com/vi/Nhj2N3TO7os/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-47-la-plana" class="table-row-name text-bold">Problem A (Boulder 47 - La Plana)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 5), 6a+. Val Daone" href="/problems/val-daone/problem-a-boulder-5" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 5), 6a+. Val Daone" src="https://img.youtube.com/vi/XkM1sgiqgqg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-5" class="table-row-name text-bold">Problem A (Boulder 5)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A (Boulder 54, Dos dei Aser), 4c. Val Daone" href="/problems/val-daone/problem-a-boulder-54-dos-dei-aser" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A (Boulder 54, Dos dei Aser), 4c. Val Daone" src="https://img.youtube.com/vi/deZL8uZyqQ4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-boulder-54-dos-dei-aser" class="table-row-name text-bold">Problem A (Boulder 54, Dos dei Aser)</a>
+            </div>
+					</td>
+					<td>4c</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem A Right (Boulder 4, La Plana), 4a. Val Daone" href="/problems/val-daone/problem-a-right-boulder-4-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem A Right (Boulder 4, La Plana), 4a. Val Daone" src="https://img.youtube.com/vi/0DwqlzkRzH8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-a-right-boulder-4-la-plana" class="table-row-name text-bold">Problem A Right (Boulder 4, La Plana)</a>
+            </div>
+					</td>
+					<td>4a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B (Boulder 15 - Dos dei Aser), 6a+. Val Daone" href="/problems/val-daone/problem-b-boulder-15-dos-dei-aser" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B (Boulder 15 - Dos dei Aser), 6a+. Val Daone" src="https://img.youtube.com/vi/XRt5Nsnlm04/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b-boulder-15-dos-dei-aser" class="table-row-name text-bold">Problem B (Boulder 15 - Dos dei Aser)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B (Boulder 17, La Plana), 6b. Val Daone" href="/problems/val-daone/problem-b-boulder-17-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B (Boulder 17, La Plana), 6b. Val Daone" src="https://img.youtube.com/vi/2y0pVYcTxNU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b-boulder-17-la-plana" class="table-row-name text-bold">Problem B (Boulder 17, La Plana)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B (Boulder 2, La Plana), 6a+. Val Daone" href="/problems/val-daone/problem-b-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B (Boulder 2, La Plana), 6a+. Val Daone" src="https://img.youtube.com/vi/h9ldc_kb3rs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b-boulder-2-la-plana" class="table-row-name text-bold">Problem B (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B (Boulder 40, Dos dei Aser), 6b. Val Daone" href="/problems/val-daone/problem-b-boulder-40-dos-dei-aser" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B (Boulder 40, Dos dei Aser), 6b. Val Daone" src="https://img.youtube.com/vi/aV57j1lLNx0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b-boulder-40-dos-dei-aser" class="table-row-name text-bold">Problem B (Boulder 40, Dos dei Aser)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B (Boulder 6, La Plana), 6a+. Val Daone" href="/problems/val-daone/problem-b-boulder-6-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B (Boulder 6, La Plana), 6a+. Val Daone" src="https://img.youtube.com/vi/LEgjSYEji4Y/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b-boulder-6-la-plana" class="table-row-name text-bold">Problem B (Boulder 6, La Plana)</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem B1 (Boulder 5, La Plana), 6c/7a. Val Daone" href="/problems/val-daone/problem-b1-boulder-5-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem B1 (Boulder 5, La Plana), 6c/7a. Val Daone" src="https://img.youtube.com/vi/Hdv86D63q6M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-b1-boulder-5-la-plana" class="table-row-name text-bold">Problem B1 (Boulder 5, La Plana)</a>
+            </div>
+					</td>
+					<td>6c/7a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem C (Boulder 2, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-c-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem C (Boulder 2, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/LOGRKDsDo2Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-c-boulder-2-la-plana" class="table-row-name text-bold">Problem C (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem C (Boulder 30, Nudole), 5b. Val Daone" href="/problems/val-daone/problem-c-boulder-30-nudole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem C (Boulder 30, Nudole), 5b. Val Daone" src="https://img.youtube.com/vi/FznhePA4MgM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-c-boulder-30-nudole" class="table-row-name text-bold">Problem C (Boulder 30, Nudole)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem C (Boulder 4, La Plana), 5c. Val Daone" href="/problems/val-daone/problem-c-boulder-4-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem C (Boulder 4, La Plana), 5c. Val Daone" src="https://img.youtube.com/vi/-gFuarbz_lg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-c-boulder-4-la-plana" class="table-row-name text-bold">Problem C (Boulder 4, La Plana)</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem C (Boulder 43, La Plana), 5a. Val Daone" href="/problems/val-daone/problem-c-boulder-43-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem C (Boulder 43, La Plana), 5a. Val Daone" src="https://img.youtube.com/vi/d0Y4MdCbwZc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-c-boulder-43-la-plana" class="table-row-name text-bold">Problem C (Boulder 43, La Plana)</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem D (Boulder 2, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-d-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem D (Boulder 2, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/BkNkhIb1rRw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-d-boulder-2-la-plana" class="table-row-name text-bold">Problem D (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem D (Boulder 30, Nudole), 5a. Val Daone" href="/problems/val-daone/problem-d-boulder-30-nudole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem D (Boulder 30, Nudole), 5a. Val Daone" src="https://img.youtube.com/vi/C1A-q4BTwks/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-d-boulder-30-nudole" class="table-row-name text-bold">Problem D (Boulder 30, Nudole)</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem D (Boulder 4, La Plana), 4c. Val Daone" href="/problems/val-daone/problem-d-boulder-4-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem D (Boulder 4, La Plana), 4c. Val Daone" src="https://img.youtube.com/vi/ZDiYT-u1Oak/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-d-boulder-4-la-plana" class="table-row-name text-bold">Problem D (Boulder 4, La Plana)</a>
+            </div>
+					</td>
+					<td>4c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem E (Boulder 2, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-e-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem E (Boulder 2, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/8XCZXzFMcjA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-e-boulder-2-la-plana" class="table-row-name text-bold">Problem E (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem E (Boulder 30, Nudole), 6b. Val Daone" href="/problems/val-daone/problem-e-boulder-30-nudole" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem E (Boulder 30, Nudole), 6b. Val Daone" src="https://img.youtube.com/vi/tcztNJtB-qk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-e-boulder-30-nudole" class="table-row-name text-bold">Problem E (Boulder 30, Nudole)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem F (Boulder 2, La Plana), 5c. Val Daone" href="/problems/val-daone/problem-f-boulder-2-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem F (Boulder 2, La Plana), 5c. Val Daone" src="https://img.youtube.com/vi/1xvL5zJXdEg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-f-boulder-2-la-plana" class="table-row-name text-bold">Problem F (Boulder 2, La Plana)</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem F (Boulder 4, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-f-boulder-4-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem F (Boulder 4, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/LMAT_p_KqQQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-f-boulder-4-la-plana" class="table-row-name text-bold">Problem F (Boulder 4, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem I (Boulder 17, La Plana), 6c. Val Daone" href="/problems/val-daone/problem-i-boulder-17-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem I (Boulder 17, La Plana), 6c. Val Daone" src="https://img.youtube.com/vi/dlFDvhPKnBY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-i-boulder-17-la-plana" class="table-row-name text-bold">Problem I (Boulder 17, La Plana)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem I (Boulder 3, La Plana), 5b. Val Daone" href="/problems/val-daone/problem-i-boulder-3-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem I (Boulder 3, La Plana), 5b. Val Daone" src="https://img.youtube.com/vi/UdaZ2tr75yc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-i-boulder-3-la-plana" class="table-row-name text-bold">Problem I (Boulder 3, La Plana)</a>
+            </div>
+					</td>
+					<td>5b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem M (Boulder 1, La Curva), 5c. Val Daone" href="/problems/val-daone/problem-m-boulder-1-la-curva" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem M (Boulder 1, La Curva), 5c. Val Daone" src="https://img.youtube.com/vi/bZSgUEGdyCA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-m-boulder-1-la-curva" class="table-row-name text-bold">Problem M (Boulder 1, La Curva)</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem N (Boulder 1, La Curva), 5a. Val Daone" href="/problems/val-daone/problem-n-boulder-1-la-curva" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem N (Boulder 1, La Curva), 5a. Val Daone" src="https://img.youtube.com/vi/aQVJnxHLRVo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-n-boulder-1-la-curva" class="table-row-name text-bold">Problem N (Boulder 1, La Curva)</a>
+            </div>
+					</td>
+					<td>5a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem N (Boulder 17, La Curva), 6a. Val Daone" href="/problems/val-daone/problem-n-boulder-17-la-curva" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem N (Boulder 17, La Curva), 6a. Val Daone" src="https://img.youtube.com/vi/XJx0DUlRdTY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-n-boulder-17-la-curva" class="table-row-name text-bold">Problem N (Boulder 17, La Curva)</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem O (Boulder 1, La Curva), 3a. Val Daone" href="/problems/val-daone/problem-o-boulder-1-la-curva" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem O (Boulder 1, La Curva), 3a. Val Daone" src="https://img.youtube.com/vi/YuMwovHtYlY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-o-boulder-1-la-curva" class="table-row-name text-bold">Problem O (Boulder 1, La Curva)</a>
+            </div>
+					</td>
+					<td>3a</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem Q (Boulder 7 - La Plana), 6c. Val Daone" href="/problems/val-daone/problem-q-boulder-7-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem Q (Boulder 7 - La Plana), 6c. Val Daone" src="https://img.youtube.com/vi/GVKAoOJGnrQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-q-boulder-7-la-plana" class="table-row-name text-bold">Problem Q (Boulder 7 - La Plana)</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem S (Boulder 7 - La Plana), 6b. Val Daone" href="/problems/val-daone/problem-s-boulder-7-la-plana" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem S (Boulder 7 - La Plana), 6b. Val Daone" src="https://img.youtube.com/vi/AvLyvislBH8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/problem-s-boulder-7-la-plana" class="table-row-name text-bold">Problem S (Boulder 7 - La Plana)</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Salto Morticale, 7c+. Val Daone" href="/problems/val-daone/salto-morticale" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Salto Morticale, 7c+. Val Daone" src="https://img.youtube.com/vi/Esq9xS-n2-o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/salto-morticale" class="table-row-name text-bold">Salto Morticale</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sama, 7c+ Val Daone" href="/problems/val-daone/sama" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sama, 7c+ Val Daone" src="https://img.youtube.com/vi/aST9Db6IhZU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/sama" class="table-row-name text-bold">Sama</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shrek, 7a. Val Daone" href="/problems/val-daone/shrek" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shrek, 7a. Val Daone" src="https://img.youtube.com/vi/6hmn9CjWVAo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/shrek" class="table-row-name text-bold">Shrek</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sky Dive, 8a+. Val Daone" href="/problems/val-daone/sky-dive" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sky Dive, 8a+. Val Daone" src="https://img.youtube.com/vi/JI77a4VJUpY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/sky-dive" class="table-row-name text-bold">Sky Dive</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Dos dei Aser</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Something Special, 5c. Val Daone" href="/problems/val-daone/something-special" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Something Special, 5c. Val Daone" src="https://img.youtube.com/vi/V2uByeLFocY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/something-special" class="table-row-name text-bold">Something Special</a>
+            </div>
+					</td>
+					<td>5c</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Spigolo dell'Anguria, 7b+. Val Daone" href="/problems/val-daone/spigolo-dell-anguria" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Spigolo dell'Anguria, 7b+. Val Daone" src="https://img.youtube.com/vi/-RtDU2MTW4w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/spigolo-dell-anguria" class="table-row-name text-bold">Spigolo dell'Anguria</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Suami, 7b. Val Daone" href="/problems/val-daone/suami" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Suami, 7b. Val Daone" src="https://img.youtube.com/vi/_9ZZMdrhFVs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/suami" class="table-row-name text-bold">Suami</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Super Grip, 6c+. Val Daone" href="/problems/val-daone/super-grip" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Super Grip, 6c+. Val Daone" src="https://img.youtube.com/vi/n6i2rSUjflI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/super-grip" class="table-row-name text-bold">Super Grip</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>La Plana</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tarta Salsara, 7c .Val Daone" href="/problems/val-daone/tarta-salsara" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tarta Salsara, 7c .Val Daone" src="https://img.youtube.com/vi/IXOqfcF7BaA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/tarta-salsara" class="table-row-name text-bold">Tarta Salsara</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>La Curva</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Thor The King, 8a. Val Daone" href="/problems/val-daone/thor-the-king" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Thor The King, 8a. Val Daone" src="https://img.youtube.com/vi/YRG1h5lIMVc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/thor-the-king" class="table-row-name text-bold">Thor The King</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="You Drive Me Crazy, 8a. Val Daone" href="/problems/val-daone/you-drive-me-crazy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: You Drive Me Crazy, 8a. Val Daone" src="https://img.youtube.com/vi/o-o4x8x_cX4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/you-drive-me-crazy" class="table-row-name text-bold">You Drive Me Crazy</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Nudole</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ziri, 7c+. Val Daone" href="/problems/val-daone/ziri" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ziri, 7c+. Val Daone" src="https://img.youtube.com/vi/foefdSV4Tig/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/val-daone/ziri" class="table-row-name text-bold">Ziri</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Nudole</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

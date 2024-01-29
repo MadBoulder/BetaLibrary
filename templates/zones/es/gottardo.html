@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Gottardo  Boulder | MadBoulder</title>
+	<meta name="description" content="Gottardo bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/gottardo">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/switzerland" class="zone-header-tree-link">Switzerland</a>
+  
+   > 
+  <a href="/states/ticino" class="zone-header-tree-link">Ticino</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Gottardo 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="46.56009058392939" />
+  <input type="hidden" id="lng" name="lng_val" value="8.552562349220693" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Gottardo
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Gottardo
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/jPx1_KmhU14/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/jPx1_KmhU14/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/jPx1_KmhU14/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/jPx1_KmhU14/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Gottardo</h4>
+								<p>Gottardo, ubicado en Suiza, cuenta con impresionantes bloques de granito que desafían a los escaladores con una variedad de presas, incluyendo placas inclinadas delicadas y agarres técnicos. La zona cobra vida durante la primavera y el verano, lo que la convierte en una visita obligada para los entusiastas del boulder.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 65
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 2149m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="http://www.ticinoboulder.ch/ticino-guides" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="static/images/guides/Gottardo-Boulder-guidebook.webp" alt="Gottardo Boulder">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Gottardo Boulder</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/gottardo"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/dark-side" class="table-row-name text-bold">Dark side</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/ecastasy" class="table-row-name text-bold">Ecastasy</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/ecstasy" class="table-row-name text-bold">Ecstasy</a>
+					</td>
+					<td class="text-center">7</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/fass-90" class="table-row-name text-bold">Fass 90</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/il-cecchino" class="table-row-name text-bold">Il cecchino</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/loch-ness" class="table-row-name text-bold">Loch Ness</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/mushroom-tunnel" class="table-row-name text-bold">Mushroom tunnel</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/parking" class="table-row-name text-bold">Parking</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/scary-christmas" class="table-row-name text-bold">Scary Christmas</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/shark" class="table-row-name text-bold">Shark</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/suworow" class="table-row-name text-bold">Suworow</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">6</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/gottardo/x-sector" class="table-row-name text-bold">X-Sector</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPbxMbM0XQxGwsiYk2lUIUr"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Parking</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNfCoIJMF0SQA0LQ5xEpjOJ"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Loch Ness</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPKYUgjARvA796cPFF6_AKK"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Scary Christmas</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMVY1lIBhQ86GIHC35YBI8g"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Dark side</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOkCiyf6BqLOVcJkA4XkWd2"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>X</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNwchjM7kycvhDIAiz4rdS6"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Mushroom tunnel</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN_3XBdQF3UCErT-g3eqXtx"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Shark</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOORuzGFPCCTfUmYEDwKC6o"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Suworow</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPGtHv3iN3NrFRxfXgOHHV1"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Il cecchino</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPqDxkscqhWaHqiAYQqrKf-"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Ecstasy</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP28UVTaQ13KMvPd7cLFuM7"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alan Parson project, 7a. Gottardo" href="/problems/gottardo/alan-parson-project" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alan Parson project, 7a. Gottardo" src="https://img.youtube.com/vi/l9pZxD8pwsw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/alan-parson-project" class="table-row-name text-bold">Alan Parson project</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alinghi, 6c. Gottardo" href="/problems/gottardo/alinghi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alinghi, 6c. Gottardo" src="https://img.youtube.com/vi/H4No8XX9DtA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/alinghi" class="table-row-name text-bold">Alinghi</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Atahualpa, 7c. Gottardo" href="/problems/gottardo/atahualpa" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Atahualpa, 7c. Gottardo" src="https://img.youtube.com/vi/J4BdjQcFVzA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/atahualpa" class="table-row-name text-bold">Atahualpa</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Banda Bassoti, 6c. Gottardo" href="/problems/gottardo/banda-bassoti" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Banda Bassoti, 6c. Gottardo" src="https://img.youtube.com/vi/xxz80x84ZLs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/banda-bassoti" class="table-row-name text-bold">Banda Bassoti</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bonjour Finesse, 8b. Gottardo" href="/problems/gottardo/bonjour-finesse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bonjour Finesse, 8b. Gottardo" src="https://img.youtube.com/vi/GZTRDVSt5M8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/bonjour-finesse" class="table-row-name text-bold">Bonjour Finesse</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Brain Damage, 8b. Gottardo" href="/problems/gottardo/brain-damage" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Brain Damage, 8b. Gottardo" src="https://img.youtube.com/vi/9vvUdykfKVo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/brain-damage" class="table-row-name text-bold">Brain Damage</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Breaking Back, 7b+. Gottardo" href="/problems/gottardo/breaking-back" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Breaking Back, 7b+. Gottardo" src="https://img.youtube.com/vi/JUV-N_aC3lI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/breaking-back" class="table-row-name text-bold">Breaking Back</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Caffé, croissants et gourmandise, 7c+. Gottardo" href="/problems/gottardo/caffe-croissants-et-gourmandise" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Caffé, croissants et gourmandise, 7c+. Gottardo" src="https://img.youtube.com/vi/JplS2BBwwwk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/caffe-croissants-et-gourmandise" class="table-row-name text-bold">Caffé, croissants et gourmandise</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Car pool, 7a+. Gottardo" href="/problems/gottardo/car-pool" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Car pool, 7a+. Gottardo" src="https://img.youtube.com/vi/MwDxukXu8sE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/car-pool" class="table-row-name text-bold">Car pool</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Collegebrock, 4+. Gottardo" href="/problems/gottardo/collegebrock" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Collegebrock, 4+. Gottardo" src="https://img.youtube.com/vi/dBrJN68fA2U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/collegebrock" class="table-row-name text-bold">Collegebrock</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Colpo di fulmine, 8a. Gottardo" href="/problems/gottardo/colpo-di-fulmine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Colpo di fulmine, 8a. Gottardo" src="https://img.youtube.com/vi/w1JBcEZ7Ogw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/colpo-di-fulmine" class="table-row-name text-bold">Colpo di fulmine</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Suworow </td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dark side of the moon, 7c+. Gottardo" href="/problems/gottardo/dark-side-of-the-moon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dark side of the moon, 7c+. Gottardo" src="https://img.youtube.com/vi/pbYwQ9alW0w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/dark-side-of-the-moon" class="table-row-name text-bold">Dark side of the moon</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dark side of the moon, 8a (sit). Gottardo" href="/problems/gottardo/dark-side-of-the-moon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dark side of the moon, 8a (sit). Gottardo" src="https://img.youtube.com/vi/BLfml3Zvjv0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/dark-side-of-the-moon" class="table-row-name text-bold">Dark side of the moon</a>
+            </div>
+					</td>
+					<td>8a (sit)</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Diabolik, 7c. Gottardo" href="/problems/gottardo/diabolik" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Diabolik, 7c. Gottardo" src="https://img.youtube.com/vi/_IHuHDdjx0c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/diabolik" class="table-row-name text-bold">Diabolik</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Drago rosso, 6c. Gottardo" href="/problems/gottardo/drago-rosso" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Drago rosso, 6c. Gottardo" src="https://img.youtube.com/vi/x46fGQOywzY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/drago-rosso" class="table-row-name text-bold">Drago rosso</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eckzimmer, 8b. Gottardo" href="/problems/gottardo/eckzimmer" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eckzimmer, 8b. Gottardo" src="https://img.youtube.com/vi/R4lXUj_nTwA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/eckzimmer" class="table-row-name text-bold">Eckzimmer</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>X-Sector</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ecstasy, 6c+. Gottardo" href="/problems/gottardo/ecstasy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ecstasy, 6c+. Gottardo" src="https://img.youtube.com/vi/gDT1LzrsCac/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/ecstasy" class="table-row-name text-bold">Ecstasy</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="El Toro, 8a+. Gottardo" href="/problems/gottardo/el-toro" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: El Toro, 8a+. Gottardo" src="https://img.youtube.com/vi/wVEQSomc9hE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/el-toro" class="table-row-name text-bold">El Toro</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eris quod sum, 7b. Gottardo" href="/problems/gottardo/eris-quod-sum" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eris quod sum, 7b. Gottardo" src="https://img.youtube.com/vi/e-niEeFTtN0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/eris-quod-sum" class="table-row-name text-bold">Eris quod sum</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>X-Sector</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Eva Kant, 7c+. Gottardo" href="/problems/gottardo/eva-kant" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Eva Kant, 7c+. Gottardo" src="https://img.youtube.com/vi/XLr7W2r2eQ8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/eva-kant" class="table-row-name text-bold">Eva Kant</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="FlipFlopShop, 6a. Gottardo" href="/problems/gottardo/flipflopshop" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: FlipFlopShop, 6a. Gottardo" src="https://img.youtube.com/vi/uBiw-Ui80Kw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/flipflopshop" class="table-row-name text-bold">FlipFlopShop</a>
+            </div>
+					</td>
+					<td>6a</td>
+					<td>Fass 90</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Golden Power, 7c+. Gottardo" href="/problems/gottardo/golden-power" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Golden Power, 7c+. Gottardo" src="https://img.youtube.com/vi/Ugr0xzPYLko/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/golden-power" class="table-row-name text-bold">Golden Power</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Goldrake, 6b. Gottardo" href="/problems/gottardo/goldrake" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Goldrake, 6b. Gottardo" src="https://img.youtube.com/vi/7hDbBcZPyNc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/goldrake" class="table-row-name text-bold">Goldrake</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Gratulescion, 5. Gottardo" href="/problems/gottardo/gratulescion" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Gratulescion, 5. Gottardo" src="https://img.youtube.com/vi/hO1alSjnwTg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/gratulescion" class="table-row-name text-bold">Gratulescion</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hazel Grace, 8b+. Gottardo" href="/problems/gottardo/hazel-grace" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hazel Grace, 8b+. Gottardo" src="https://img.youtube.com/vi/jPx1_KmhU14/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/hazel-grace" class="table-row-name text-bold">Hazel Grace</a>
+            </div>
+					</td>
+					<td>8b+</td>
+					<td>Loch Ness</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Herr Zimmerli, 7b. Gottardo" href="/problems/gottardo/herr-zimmerli" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Herr Zimmerli, 7b. Gottardo" src="https://img.youtube.com/vi/28GE7_OboKQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/herr-zimmerli" class="table-row-name text-bold">Herr Zimmerli</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Mushroom tunnel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Homo mouse, 7c. Gottardo" href="/problems/gottardo/homo-mouse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Homo mouse, 7c. Gottardo" src="https://img.youtube.com/vi/emrSUsZWtrc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/homo-mouse" class="table-row-name text-bold">Homo mouse</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Scary christmas</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Il marocchino, 7a+. Gottardo" href="/problems/gottardo/il-marocchino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Il marocchino, 7a+. Gottardo" src="https://img.youtube.com/vi/errmHtrBWQM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/il-marocchino" class="table-row-name text-bold">Il marocchino</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>Scary Christmas</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Imagine, 8a. Gottardo" href="/problems/gottardo/imagine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Imagine, 8a. Gottardo" src="https://img.youtube.com/vi/GgYo4O_DB84/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/imagine" class="table-row-name text-bold">Imagine</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kingda Ka, 8a+. Gottardo" href="/problems/gottardo/kingda-ka" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kingda Ka, 8a+. Gottardo" src="https://img.youtube.com/vi/YmgHPKVDoIg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/kingda-ka" class="table-row-name text-bold">Kingda Ka</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Korsakow, 7a. Gottardo" href="/problems/gottardo/korsakow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Korsakow, 7a. Gottardo" src="https://img.youtube.com/vi/I18gbPk0sLU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/korsakow" class="table-row-name text-bold">Korsakow</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="L'edile, 7a. Gottardo" href="/problems/gottardo/l-edile" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: L'edile, 7a. Gottardo" src="https://img.youtube.com/vi/xNfYlWzZZT0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/l-edile" class="table-row-name text-bold">L'edile</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Parking</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lievantù, 6c+. Gottardo" href="/problems/gottardo/lievantu" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lievantù, 6c+. Gottardo" src="https://img.youtube.com/vi/fyoZUBHIn3I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/lievantu" class="table-row-name text-bold">Lievantù</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Il cecchino</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lo stretto indispensabile, 8a+. Gottardo" href="/problems/gottardo/lo-stretto-indispensabile" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lo stretto indispensabile, 8a+. Gottardo" src="https://img.youtube.com/vi/4Sd0TWkXagc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/lo-stretto-indispensabile" class="table-row-name text-bold">Lo stretto indispensabile</a>
+            </div>
+					</td>
+					<td>8a+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lucy, 8a. Gottardo" href="/problems/gottardo/lucy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lucy, 8a. Gottardo" src="https://img.youtube.com/vi/FXoakfnbUMw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/lucy" class="table-row-name text-bold">Lucy</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Margaret, 6c. Gottardo" href="/problems/gottardo/margaret" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Margaret, 6c. Gottardo" src="https://img.youtube.com/vi/Szn4wywvZbY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/margaret" class="table-row-name text-bold">Margaret</a>
+            </div>
+					</td>
+					<td>6c</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mayoko, 6b. Gottardo" href="/problems/gottardo/mayoko" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mayoko, 6b. Gottardo" src="https://img.youtube.com/vi/MfVpj0FhCSo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/mayoko" class="table-row-name text-bold">Mayoko</a>
+            </div>
+					</td>
+					<td>6b</td>
+					<td>Il cecchino</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mior, 8b. Gottardo" href="/problems/gottardo/mior" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mior, 8b. Gottardo" src="https://img.youtube.com/vi/1bJp4WKOUag/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/mior" class="table-row-name text-bold">Mior</a>
+            </div>
+					</td>
+					<td>8b</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nangaparbat Nordostkante, 7a+. Gottardo" href="/problems/gottardo/nangaparbat-nordostkante" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nangaparbat Nordostkante, 7a+. Gottardo" src="https://img.youtube.com/vi/Bsh3dlXlhdg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/nangaparbat-nordostkante" class="table-row-name text-bold">Nangaparbat Nordostkante</a>
+            </div>
+					</td>
+					<td>7a+</td>
+					<td>X-Sector</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pane e cioccolato, 7b. Gottardo" href="/problems/gottardo/pane-e-cioccolato" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pane e cioccolato, 7b. Gottardo" src="https://img.youtube.com/vi/pl4PBRtnXB8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/pane-e-cioccolato" class="table-row-name text-bold">Pane e cioccolato</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Mushroom tunnel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Patak's, 4. Gottardo" href="/problems/gottardo/patak-s" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Patak's, 4. Gottardo" src="https://img.youtube.com/vi/3QbDOI2zkdo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/patak-s" class="table-row-name text-bold">Patak's</a>
+            </div>
+					</td>
+					<td>4</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pentagram, 6a+. Gottardo" href="/problems/gottardo/pentagram" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pentagram, 6a+. Gottardo" src="https://img.youtube.com/vi/6JTIvfcbe08/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/pentagram" class="table-row-name text-bold">Pentagram</a>
+            </div>
+					</td>
+					<td>6a+</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pol Pot, 5. Gottardo" href="/problems/gottardo/pol-pot" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pol Pot, 5. Gottardo" src="https://img.youtube.com/vi/HWHzdJIe-lc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/pol-pot" class="table-row-name text-bold">Pol Pot</a>
+            </div>
+					</td>
+					<td>5</td>
+					<td>Dark side</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pollicino, 8a. Gottardo" href="/problems/gottardo/pollicino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pollicino, 8a. Gottardo" src="https://img.youtube.com/vi/l0wNZlrR03E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/pollicino" class="table-row-name text-bold">Pollicino</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Postan 500, 6c+. Gottardo" href="/problems/gottardo/postan-500" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Postan 500, 6c+. Gottardo" src="https://img.youtube.com/vi/3V2wfwau-1c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/postan-500" class="table-row-name text-bold">Postan 500</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Scary Christmas</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 1 (Boulder, Il cecchino), 5+. Gottardo" href="/problems/gottardo/problem-1-boulder-il-cecchino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 1 (Boulder, Il cecchino), 5+. Gottardo" src="https://img.youtube.com/vi/s2YK2_9Xx4Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/problem-1-boulder-il-cecchino" class="table-row-name text-bold">Problem 1 (Boulder, Il cecchino)</a>
+            </div>
+					</td>
+					<td>5+</td>
+					<td>Il cecchino</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Problem 3 (Boulder 4, Il cecchino), 4+. Gottardo" href="/problems/gottardo/problem-3-boulder-4-il-cecchino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Problem 3 (Boulder 4, Il cecchino), 4+. Gottardo" src="https://img.youtube.com/vi/80acS1EtCZA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/problem-3-boulder-4-il-cecchino" class="table-row-name text-bold">Problem 3 (Boulder 4, Il cecchino)</a>
+            </div>
+					</td>
+					<td>4+</td>
+					<td>Il cecchino</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rosa maialino, 8a. Gottardo" href="/problems/gottardo/rosa-maialino" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rosa maialino, 8a. Gottardo" src="https://img.youtube.com/vi/Enn8_xKEBH8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/rosa-maialino" class="table-row-name text-bold">Rosa maialino</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Santa Claus, 8a. Gottardo" href="/problems/gottardo/santa-claus" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Santa Claus, 8a. Gottardo" src="https://img.youtube.com/vi/foyz4TECwyY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/santa-claus" class="table-row-name text-bold">Santa Claus</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scary Christmas, 8a. Gottardo" href="/problems/gottardo/scary-christmas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scary Christmas, 8a. Gottardo" src="https://img.youtube.com/vi/6rgzE9iK3Wk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/scary-christmas" class="table-row-name text-bold">Scary Christmas</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Scary Christmas</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shark zone, 6c+. Gottardo" href="/problems/gottardo/shark-zone" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shark zone, 6c+. Gottardo" src="https://img.youtube.com/vi/UHQI_rNSrY0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/shark-zone" class="table-row-name text-bold">Shark zone</a>
+            </div>
+					</td>
+					<td>6c+</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Signor "G", 7c. Gottardo" href="/problems/gottardo/signor-g" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Signor "G", 7c. Gottardo" src="https://img.youtube.com/vi/i0nvovvx4ug/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/signor-g" class="table-row-name text-bold">Signor "G"</a>
+            </div>
+					</td>
+					<td>7c</td>
+					<td>Mushroom tunnel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Silence, 8a. Gottardo" href="/problems/gottardo/silence" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Silence, 8a. Gottardo" src="https://img.youtube.com/vi/P9eSPjeKTfs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/silence" class="table-row-name text-bold">Silence</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Mushroom tunnel</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sissy dog, 8a. Gottardo" href="/problems/gottardo/sissy-dog" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sissy dog, 8a. Gottardo" src="https://img.youtube.com/vi/rkEVta7FF7s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/sissy-dog" class="table-row-name text-bold">Sissy dog</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stairway to heaven, 8b+. Gottardo" href="/problems/gottardo/stairway-to-heaven" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stairway to heaven, 8b+. Gottardo" src="https://img.youtube.com/vi/wKxfKBpZA94/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/stairway-to-heaven" class="table-row-name text-bold">Stairway to heaven</a>
+            </div>
+					</td>
+					<td>8b+</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Standing ovation, 7a. Gottardo" href="/problems/gottardo/standing-ovation" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Standing ovation, 7a. Gottardo" src="https://img.youtube.com/vi/-_iLWYL2U3A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/standing-ovation" class="table-row-name text-bold">Standing ovation</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Steini Christmas, 8a. Gottardo" href="/problems/gottardo/steini-christmas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Steini Christmas, 8a. Gottardo" src="https://img.youtube.com/vi/yo5HyhpRjM8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/steini-christmas" class="table-row-name text-bold">Steini Christmas</a>
+            </div>
+					</td>
+					<td>8a</td>
+					<td>Scary Christmas</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Super Tramp, 7c+. Gottardo" href="/problems/gottardo/super-tramp" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Super Tramp, 7c+. Gottardo" src="https://img.youtube.com/vi/8yRGjdwYWAU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/super-tramp" class="table-row-name text-bold">Super Tramp</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Suworow, 7b+. Gottardo" href="/problems/gottardo/suworow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Suworow, 7b+. Gottardo" src="https://img.youtube.com/vi/W9aQPppW83s/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/suworow" class="table-row-name text-bold">Suworow</a>
+            </div>
+					</td>
+					<td>7b+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Suworow direct, 7c+. Gottardo" href="/problems/gottardo/suworow-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Suworow direct, 7c+. Gottardo" src="https://img.youtube.com/vi/1gtbyNXl12k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/suworow-direct" class="table-row-name text-bold">Suworow direct</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Suworow</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Swiss Corner, 7c (sit). Gottardo" href="/problems/gottardo/swiss-corner" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Swiss Corner, 7c (sit). Gottardo" src="https://img.youtube.com/vi/f4hocqNhSHw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/swiss-corner" class="table-row-name text-bold">Swiss Corner</a>
+            </div>
+					</td>
+					<td>7c (sit)</td>
+					<td>Ecstasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Witch, 8a+/b. Gottardo" href="/problems/gottardo/the-witch" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Witch, 8a+/b. Gottardo" src="https://img.youtube.com/vi/u6VmygKtRqY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/the-witch" class="table-row-name text-bold">The Witch</a>
+            </div>
+					</td>
+					<td>8a+/b</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Time machine, 7b. Gottardo" href="/problems/gottardo/time-machine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Time machine, 7b. Gottardo" src="https://img.youtube.com/vi/DPpBjg3Zl4w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/time-machine" class="table-row-name text-bold">Time machine</a>
+            </div>
+					</td>
+					<td>7b</td>
+					<td>Shark</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Trieste-Gottardo, 7c+. Gottardo" href="/problems/gottardo/trieste-gottardo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Trieste-Gottardo, 7c+. Gottardo" src="https://img.youtube.com/vi/hou-ouYDlSs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/trieste-gottardo" class="table-row-name text-bold">Trieste-Gottardo</a>
+            </div>
+					</td>
+					<td>7c+</td>
+					<td>Ecastasy</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vaffa un mental, 7a. Gottardo" href="/problems/gottardo/vaffa-un-mental" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vaffa un mental, 7a. Gottardo" src="https://img.youtube.com/vi/NobVMEUk7Uc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/gottardo/vaffa-un-mental" class="table-row-name text-bold">Vaffa un mental</a>
+            </div>
+					</td>
+					<td>7a</td>
+					<td>Mushroom tunnel</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

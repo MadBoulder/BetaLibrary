@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Joshua Tree  Boulder | MadBoulder</title>
+	<meta name="description" content="Joshua Tree bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/joshua-tree">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/california" class="zone-header-tree-link">California</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Joshua Tree 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="34.018876" />
+  <input type="hidden" id="lng" name="lng_val" value="-116.167611" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Joshua Tree
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Joshua Tree
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/5fVCcQcCrKU/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/5fVCcQcCrKU/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/5fVCcQcCrKU/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/5fVCcQcCrKU/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Joshua Tree</h4>
+								<p>Joshua Tree, en California, es famoso por sus bloques de granito y su paisaje desértico. La temporada de invierno es la mejor para escalar aquí. La singularidad de Joshua Tree y sus rutas clásicas han atraído a escaladores de todo el mundo.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 71
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 1288m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://www.wolverinepublishing.com/store/joshua-tree-bouldering/" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://www.wolverinepublishing.com/wp-content/uploads/2017/04/JTBouldering_big-e1613696628406.png" alt="Joshua Tree Bouldering">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Joshua Tree Bouldering</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/joshua-tree"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/central" class="table-row-name text-bold">Central</a>
+					</td>
+					<td class="text-center">16</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/central-lonesome-crowded-west" class="table-row-name text-bold">Central - Lonesome Crowded West</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/central-planet-x" class="table-row-name text-bold">Central - Planet X</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/hidden-valley" class="table-row-name text-bold">Hidden Valley</a>
+					</td>
+					<td class="text-center">17</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/lost-horse" class="table-row-name text-bold">Lost Horse</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/quail-springs" class="table-row-name text-bold">Quail Springs</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/queen-valley" class="table-row-name text-bold">Queen Valley</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/joshua-tree/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">27</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnON7Nao1yrfaMQgwJ-4Eogu"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="4-Star Dyno, V6. Joshua Tree" href="/problems/joshua-tree/4-star-dyno" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: 4-Star Dyno, V6. Joshua Tree" src="https://img.youtube.com/vi/-5s6wBputuE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/4-star-dyno" class="table-row-name text-bold">4-Star Dyno</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Alexandria, V6. Joshua Tree" href="/problems/joshua-tree/alexandria" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Alexandria, V6. Joshua Tree" src="https://img.youtube.com/vi/qb4Zw9cL5WU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/alexandria" class="table-row-name text-bold">Alexandria</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Any Name But Sue, V7. Joshua Tree" href="/problems/joshua-tree/any-name-but-sue" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Any Name But Sue, V7. Joshua Tree" src="https://img.youtube.com/vi/DtzbLGPTIKo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/any-name-but-sue" class="table-row-name text-bold">Any Name But Sue</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Betty Jo  Yablonski, V0. Joshua Tree" href="/problems/joshua-tree/betty-jo-yablonski" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Betty Jo  Yablonski, V0. Joshua Tree" src="https://img.youtube.com/vi/jonlrg4aKxY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/betty-jo-yablonski" class="table-row-name text-bold">Betty Jo  Yablonski</a>
+            </div>
+					</td>
+					<td>V0</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bittersweet, V9. Joshua Tree" href="/problems/joshua-tree/bittersweet" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bittersweet, V9. Joshua Tree" src="https://img.youtube.com/vi/TWR6gAqIUxo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/bittersweet" class="table-row-name text-bold">Bittersweet</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blood Diamond, V10. Joshua Tree" href="/problems/joshua-tree/blood-diamond" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blood Diamond, V10. Joshua Tree" src="https://img.youtube.com/vi/U1umJlI_DMs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/blood-diamond" class="table-row-name text-bold">Blood Diamond</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Body and Soul, V5. Joshua Tree" href="/problems/joshua-tree/body-and-soul" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Body and Soul, V5. Joshua Tree" src="https://img.youtube.com/vi/IiSXFdcI0hs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/body-and-soul" class="table-row-name text-bold">Body and Soul</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Broken Flowers, V7. Joshua Tree" href="/problems/joshua-tree/broken-flowers" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Broken Flowers, V7. Joshua Tree" src="https://img.youtube.com/vi/iTGaSGJdRFI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/broken-flowers" class="table-row-name text-bold">Broken Flowers</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Broken Flowers, V9. Joshua Tree" href="/problems/joshua-tree/broken-flowers" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Broken Flowers, V9. Joshua Tree" src="https://img.youtube.com/vi/9KDcNWkSDUM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/broken-flowers" class="table-row-name text-bold">Broken Flowers</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Caveman, V7. Joshua Tree" href="/problems/joshua-tree/caveman" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Caveman, V7. Joshua Tree" src="https://img.youtube.com/vi/bwXd2qNYMvY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/caveman" class="table-row-name text-bold">Caveman</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Caveman Finish, V3. Joshua Tree" href="/problems/joshua-tree/caveman-finish" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Caveman Finish, V3. Joshua Tree" src="https://img.youtube.com/vi/UP0Ki9j2fls/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/caveman-finish" class="table-row-name text-bold">Caveman Finish</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Chasm Gasm, V3. Joshua Tree" href="/problems/joshua-tree/chasm-gasm" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Chasm Gasm, V3. Joshua Tree" src="https://img.youtube.com/vi/XmVIpRu1NIc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/chasm-gasm" class="table-row-name text-bold">Chasm Gasm</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Chili Sauce, V7. Joshua Tree" href="/problems/joshua-tree/chili-sauce" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Chili Sauce, V7. Joshua Tree" src="https://img.youtube.com/vi/Lpb7RMS4xC0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/chili-sauce" class="table-row-name text-bold">Chili Sauce</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Claude Funstun, V5. Joshua Tree" href="/problems/joshua-tree/claude-funstun" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Claude Funstun, V5. Joshua Tree" src="https://img.youtube.com/vi/V1C8CgOvUGA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/claude-funstun" class="table-row-name text-bold">Claude Funstun</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dab Rig, V7. Joshua Tree" href="/problems/joshua-tree/dab-rig" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dab Rig, V7. Joshua Tree" src="https://img.youtube.com/vi/Wk0FCELNtIQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/dab-rig" class="table-row-name text-bold">Dab Rig</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dark Matter, V9. Joshua Tree" href="/problems/joshua-tree/dark-matter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dark Matter, V9. Joshua Tree" src="https://img.youtube.com/vi/3AN9A_RqLtQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/dark-matter" class="table-row-name text-bold">Dark Matter</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Digital Black, V10. Joshua Tree" href="/problems/joshua-tree/digital-black" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Digital Black, V10. Joshua Tree" src="https://img.youtube.com/vi/0Z3-J9vlves/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/digital-black" class="table-row-name text-bold">Digital Black</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Doctor Brown, V10. Joshua Tree" href="/problems/joshua-tree/doctor-brown" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Doctor Brown, V10. Joshua Tree" src="https://img.youtube.com/vi/keL12FaBtxw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/doctor-brown" class="table-row-name text-bold">Doctor Brown</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dodging Bullets, V9. Joshua Tree" href="/problems/joshua-tree/dodging-bullets" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dodging Bullets, V9. Joshua Tree" src="https://img.youtube.com/vi/k814SMVy_cQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/dodging-bullets" class="table-row-name text-bold">Dodging Bullets</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Doesn't Matter, V7. Joshua Tree" href="/problems/joshua-tree/doesn-t-matter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Doesn't Matter, V7. Joshua Tree" src="https://img.youtube.com/vi/rhyNLVJPhrU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/doesn-t-matter" class="table-row-name text-bold">Doesn't Matter</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dream Sequence, V6. Joshua Tree" href="/problems/joshua-tree/dream-sequence" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dream Sequence, V6. Joshua Tree" src="https://img.youtube.com/vi/ScRaT_fZy9Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/dream-sequence" class="table-row-name text-bold">Dream Sequence</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Quail Springs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dreaming of the Master, V8. Joshua Tree" href="/problems/joshua-tree/dreaming-of-the-master" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dreaming of the Master, V8. Joshua Tree" src="https://img.youtube.com/vi/5fVCcQcCrKU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/dreaming-of-the-master" class="table-row-name text-bold">Dreaming of the Master</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fry Problem, V2. Joshua Tree" href="/problems/joshua-tree/false-hueco-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fry Problem, V2. Joshua Tree" src="https://img.youtube.com/vi/oR2P0lcFGdo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/false-hueco-traverse" class="table-row-name text-bold">False Hueco Traverse</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="False Hueco Traverse, V2. Joshua Tree" href="/problems/joshua-tree/false-hueco-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: False Hueco Traverse, V2. Joshua Tree" src="https://img.youtube.com/vi/dQX0a_l-6rk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/false-hueco-traverse" class="table-row-name text-bold">False Hueco Traverse</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="False Up 20, V0. Joshua Tree" href="/problems/joshua-tree/false-up-20" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: False Up 20, V0. Joshua Tree" src="https://img.youtube.com/vi/C0Kevwl7mdU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/false-up-20" class="table-row-name text-bold">False Up 20</a>
+            </div>
+					</td>
+					<td>V0</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Feel The Grit, V5. Joshua Tree" href="/problems/joshua-tree/feel-the-grit" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Feel The Grit, V5. Joshua Tree" src="https://img.youtube.com/vi/4Jjo7yncczg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/feel-the-grit" class="table-row-name text-bold">Feel The Grit</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Finger Fetish, V8. Joshua Tree" href="/problems/joshua-tree/finger-fetish" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Finger Fetish, V8. Joshua Tree" src="https://img.youtube.com/vi/Mnx_G6hHWJc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/finger-fetish" class="table-row-name text-bold">Finger Fetish</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Flight Attendant, V4. Joshua Tree" href="/problems/joshua-tree/flight-attendant" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Flight Attendant, V4. Joshua Tree" src="https://img.youtube.com/vi/B_rWrJvHgVo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/flight-attendant" class="table-row-name text-bold">Flight Attendant</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Hey Ladies, V6+. Joshua Tree" href="/problems/joshua-tree/hey-ladies" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Hey Ladies, V6+. Joshua Tree" src="https://img.youtube.com/vi/JPV58Y9LKXY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/hey-ladies" class="table-row-name text-bold">Hey Ladies</a>
+            </div>
+					</td>
+					<td>V6+</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Igneous Ambiance, V7. Joshua Tree" href="/problems/joshua-tree/igneous-ambiance" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Igneous Ambiance, V7. Joshua Tree" src="https://img.youtube.com/vi/5u1zku2z9CA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/igneous-ambiance" class="table-row-name text-bold">Igneous Ambiance</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="K.D. Supreme, V4. Joshua Tree" href="/problems/joshua-tree/k-d-supreme" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: K.D. Supreme, V4. Joshua Tree" src="https://img.youtube.com/vi/-EYdX5kaFu8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/k-d-supreme" class="table-row-name text-bold">K.D. Supreme</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Quail Springs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Little Black Book, V9-10. Joshua Tree" href="/problems/joshua-tree/little-black-book" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Little Black Book, V9-10. Joshua Tree" src="https://img.youtube.com/vi/nzSjcxEPMQE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/little-black-book" class="table-row-name text-bold">Little Black Book</a>
+            </div>
+					</td>
+					<td>V9-10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Little Chucky, V4. Joshua Tree" href="/problems/joshua-tree/little-chucky" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Little Chucky, V4. Joshua Tree" src="https://img.youtube.com/vi/-_LbhIjM-Sc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/little-chucky" class="table-row-name text-bold">Little Chucky</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Lost and Found, V8. Joshua Tree" href="/problems/joshua-tree/lost-and-found" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Lost and Found, V8. Joshua Tree" src="https://img.youtube.com/vi/PWOQcgZCcTg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/lost-and-found" class="table-row-name text-bold">Lost and Found</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mantle The Martian, V5. Joshua Tree" href="/problems/joshua-tree/mantle-the-martian" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mantle The Martian, V5. Joshua Tree" src="https://img.youtube.com/vi/xDp7hsHviLY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/mantle-the-martian" class="table-row-name text-bold">Mantle The Martian</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Meadows Direct, V6. Joshua Tree" href="/problems/joshua-tree/meadows-direct" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Meadows Direct, V6. Joshua Tree" src="https://img.youtube.com/vi/X-MaqH31RUQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/meadows-direct" class="table-row-name text-bold">Meadows Direct</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mulligan Variation, V8. Joshua Tree" href="/problems/joshua-tree/mulligan-variation" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mulligan Variation, V8. Joshua Tree" src="https://img.youtube.com/vi/0-qh-u-arXU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/mulligan-variation" class="table-row-name text-bold">Mulligan Variation</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nicole Face, V4. Joshua Tree" href="/problems/joshua-tree/nicole-face" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nicole Face, V4. Joshua Tree" src="https://img.youtube.com/vi/GtffaAQ4dC4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/nicole-face" class="table-row-name text-bold">Nicole Face</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nicole Overhang, V6. Joshua Tree" href="/problems/joshua-tree/nicole-overhang" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nicole Overhang, V6. Joshua Tree" src="https://img.youtube.com/vi/pN8qB3O3dqI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/nicole-overhang" class="table-row-name text-bold">Nicole Overhang</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Central - Planet X</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Penguins in Bondage, V4. Joshua Tree" href="/problems/joshua-tree/penguins-in-bondage" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Penguins in Bondage, V4. Joshua Tree" src="https://img.youtube.com/vi/_24KLrtbQrI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/penguins-in-bondage" class="table-row-name text-bold">Penguins in Bondage</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Lost Horse</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Perpetual Darkness, V10. Joshua Tree" href="/problems/joshua-tree/perpetual-darkness" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Perpetual Darkness, V10. Joshua Tree" src="https://img.youtube.com/vi/LY-11S9Lg2I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/perpetual-darkness" class="table-row-name text-bold">Perpetual Darkness</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Planet X, V6. Joshua Tree" href="/problems/joshua-tree/planet-x" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Planet X, V6. Joshua Tree" src="https://img.youtube.com/vi/ZJnk-_cfwAA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/planet-x" class="table-row-name text-bold">Planet X</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Poop Emoji, V4. Joshua Tree" href="/problems/joshua-tree/poop-emoji" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Poop Emoji, V4. Joshua Tree" src="https://img.youtube.com/vi/Zr7COiX5Z_A/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/poop-emoji" class="table-row-name text-bold">Poop Emoji</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Psyche, V4. Joshua Tree" href="/problems/joshua-tree/psyche" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Psyche, V4. Joshua Tree" src="https://img.youtube.com/vi/iWpg_ABdbC4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/psyche" class="table-row-name text-bold">Psyche</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pumping Monzonite, V7. Joshua Tree" href="/problems/joshua-tree/pumping-monzonite" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pumping Monzonite, V7. Joshua Tree" src="https://img.youtube.com/vi/7REkFL0Z4gY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/pumping-monzonite" class="table-row-name text-bold">Pumping Monzonite</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Rail Shark, V11. Joshua Tree" href="/problems/joshua-tree/rail-shark" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Rail Shark, V11. Joshua Tree" src="https://img.youtube.com/vi/bjIBKmq8XkE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/rail-shark" class="table-row-name text-bold">Rail Shark</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Raspberry, V6. Joshua Tree" href="/problems/joshua-tree/raspberry" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Raspberry, V6. Joshua Tree" src="https://img.youtube.com/vi/zzoOo8uFai0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/raspberry" class="table-row-name text-bold">Raspberry</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Roof Romp, V4. Joshua Tree" href="/problems/joshua-tree/roof-romp" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Roof Romp, V4. Joshua Tree" src="https://img.youtube.com/vi/gi7oZK7fzOs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/roof-romp" class="table-row-name text-bold">Roof Romp</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ryan's roof, V5. Joshua Tree" href="/problems/joshua-tree/ryan-s-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ryan's roof, V5. Joshua Tree" src="https://img.youtube.com/vi/iechlPuXXss/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/ryan-s-roof" class="table-row-name text-bold">Ryan's roof</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Saturday Night Live, V4. Joshua Tree" href="/problems/joshua-tree/saturday-night-live" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Saturday Night Live, V4. Joshua Tree" src="https://img.youtube.com/vi/QsZnAdVqHHc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/saturday-night-live" class="table-row-name text-bold">Saturday Night Live</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Saxwing on the DL, V5. Joshua Tree" href="/problems/joshua-tree/saxwing-on-the-dl" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Saxwing on the DL, V5. Joshua Tree" src="https://img.youtube.com/vi/kvgqd-P6das/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/saxwing-on-the-dl" class="table-row-name text-bold">Saxwing on the DL</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scatterbrain, V6. Joshua Tree" href="/problems/joshua-tree/scatterbrain" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scatterbrain, V6. Joshua Tree" src="https://img.youtube.com/vi/bvizFsSzYS8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/scatterbrain" class="table-row-name text-bold">Scatterbrain</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scorpion Roof, V6. Joshua Tree" href="/problems/joshua-tree/scorpion-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scorpion Roof, V6. Joshua Tree" src="https://img.youtube.com/vi/GuURUTaITwY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/scorpion-roof" class="table-row-name text-bold">Scorpion Roof</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Scrambled Legs, V5. Joshua Tree" href="/problems/joshua-tree/scrambled-legs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Scrambled Legs, V5. Joshua Tree" src="https://img.youtube.com/vi/q6FS6Gd1Gjs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/scrambled-legs" class="table-row-name text-bold">Scrambled Legs</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Secret Samurai, V4. Joshua Tree" href="/problems/joshua-tree/secret-samurai" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Secret Samurai, V4. Joshua Tree" src="https://img.youtube.com/vi/Pk1AhRoz8yY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/secret-samurai" class="table-row-name text-bold">Secret Samurai</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Skimbles, V6. Joshua Tree" href="/problems/joshua-tree/skimbles" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Skimbles, V6. Joshua Tree" src="https://img.youtube.com/vi/r1jDlNtf_wo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/skimbles" class="table-row-name text-bold">Skimbles</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Slashface, V3. Joshua Tree" href="/problems/joshua-tree/slashface" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Slashface, V3. Joshua Tree" src="https://img.youtube.com/vi/R8m1yJ0c9xw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/slashface" class="table-row-name text-bold">Slashface</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Queen Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="So High, V5. Joshua Tree" href="/problems/joshua-tree/so-high" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: So High, V5. Joshua Tree" src="https://img.youtube.com/vi/99aQXz3fLtk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/so-high" class="table-row-name text-bold">So High</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Strawberry Contraceptives, V7. Joshua Tree" href="/problems/joshua-tree/strawberry-contraceptives" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Strawberry Contraceptives, V7. Joshua Tree" src="https://img.youtube.com/vi/HtzGLOl0ye0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/strawberry-contraceptives" class="table-row-name text-bold">Strawberry Contraceptives</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Central - Planet X</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Heart, V4. Joshua Tree" href="/problems/joshua-tree/the-heart" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Heart, V4. Joshua Tree" src="https://img.youtube.com/vi/SbcIU8AlEDA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/the-heart" class="table-row-name text-bold">The Heart</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Inquisition, V6. Joshua Tree" href="/problems/joshua-tree/the-inquisition" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Inquisition, V6. Joshua Tree" src="https://img.youtube.com/vi/KR-pDsNgIZY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/the-inquisition" class="table-row-name text-bold">The Inquisition</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Central - Lonesome Crowded West</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Love Machine, V10. Joshua Tree" href="/problems/joshua-tree/the-love-machine" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Love Machine, V10. Joshua Tree" src="https://img.youtube.com/vi/AmKPojedDyM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/the-love-machine" class="table-row-name text-bold">The Love Machine</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Yogi, V9. Joshua Tree" href="/problems/joshua-tree/the-yogi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Yogi, V9. Joshua Tree" src="https://img.youtube.com/vi/KEY7ItoXCCI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/the-yogi" class="table-row-name text-bold">The Yogi</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Thin Lizzie, V8. Joshua Tree" href="/problems/joshua-tree/thin-lizzie" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Thin Lizzie, V8. Joshua Tree" src="https://img.youtube.com/vi/6gmudLaF8Qo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/thin-lizzie" class="table-row-name text-bold">Thin Lizzie</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Thunder Egg, V5. Joshua Tree" href="/problems/joshua-tree/thunder-egg" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Thunder Egg, V5. Joshua Tree" src="https://img.youtube.com/vi/MmHUV6esAek/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/thunder-egg" class="table-row-name text-bold">Thunder Egg</a>
+            </div>
+					</td>
+					<td>V5</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tidal Wave, V9. Joshua Tree" href="/problems/joshua-tree/tidal-wave" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tidal Wave, V9. Joshua Tree" src="https://img.youtube.com/vi/Ja0ddNDLUtY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/tidal-wave" class="table-row-name text-bold">Tidal Wave</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Up 40, V3. Joshua Tree" href="/problems/joshua-tree/up-40" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Up 40, V3. Joshua Tree" src="https://img.youtube.com/vi/P7PAWYGPvI0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/up-40" class="table-row-name text-bold">Up 40</a>
+            </div>
+					</td>
+					<td>V3</td>
+					<td>Central</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vicarious, V10. Joshua Tree" href="/problems/joshua-tree/vicarious" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vicarious, V10. Joshua Tree" src="https://img.youtube.com/vi/vslT80qrJsk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/vicarious" class="table-row-name text-bold">Vicarious</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="White Rastafarian, V2. Joshua Tree" href="/problems/joshua-tree/white-rastafarian" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: White Rastafarian, V2. Joshua Tree" src="https://img.youtube.com/vi/D6jO2VZgWj8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/white-rastafarian" class="table-row-name text-bold">White Rastafarian</a>
+            </div>
+					</td>
+					<td>V2</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Yabo Roof Traverse, V4. Joshua Tree" href="/problems/joshua-tree/yabo-roof-traverse" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Yabo Roof Traverse, V4. Joshua Tree" src="https://img.youtube.com/vi/IBJv64VCCPw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/yabo-roof-traverse" class="table-row-name text-bold">Yabo Roof Traverse</a>
+            </div>
+					</td>
+					<td>V4</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Youth Body Explosion, V11. Joshua Tree" href="/problems/joshua-tree/youth-body-explosion" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Youth Body Explosion, V11. Joshua Tree" src="https://img.youtube.com/vi/LRP7x2VMQWQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/joshua-tree/youth-body-explosion" class="table-row-name text-bold">Youth Body Explosion</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Hidden Valley</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

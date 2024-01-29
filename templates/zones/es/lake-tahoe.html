@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Lake Tahoe  Boulder | MadBoulder</title>
+	<meta name="description" content="Lake Tahoe bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/lake-tahoe">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/california" class="zone-header-tree-link">California</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Lake Tahoe 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="39.11519" />
+  <input type="hidden" id="lng" name="lng_val" value="-120.034444" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Lake Tahoe
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Lake Tahoe
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/w7TY12H8vm4/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/w7TY12H8vm4/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/w7TY12H8vm4/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/w7TY12H8vm4/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Lake Tahoe</h4>
+								<p>Lake Tahoe, en California, atrae a escaladores por su granito de alta calidad y variadas rutas. Es popular en primavera y otoño, ofreciendo desafíos diversos y una experiencia escénica en la naturaleza.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 109
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 1904m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="https://www.laketahoebouldering.com/guide/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        Lake Tahoe Bouldering
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/lake-tahoe"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/boreal" class="table-row-name text-bold">Boreal</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/camouflage-forest" class="table-row-name text-bold">Camouflage Forest</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/caples-lake" class="table-row-name text-bold">Caples Lake</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/castle-boulder" class="table-row-name text-bold">Castle Boulder</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/castle-peak" class="table-row-name text-bold">Castle Peak</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/coldstream-canyon" class="table-row-name text-bold">Coldstream Canyon</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/donner-truckee-castle-peak" class="table-row-name text-bold">Donner/Truckee - Castle Peak</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/echoland" class="table-row-name text-bold">Echoland</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/firestones" class="table-row-name text-bold">Firestones</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/hate-handles" class="table-row-name text-bold">Hate Handles</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/kirkwood" class="table-row-name text-bold">Kirkwood</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/kirkwood-lake" class="table-row-name text-bold">Kirkwood Lake</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/lake-audrain" class="table-row-name text-bold">Lake Audrain</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/lost-world" class="table-row-name text-bold">Lost World</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/luther-pass" class="table-row-name text-bold">Luther Pass</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/mineral-bar" class="table-row-name text-bold">Mineral Bar</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/phantom-spires" class="table-row-name text-bold">Phantom Spires</a>
+					</td>
+					<td class="text-center">5</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/prison-hill" class="table-row-name text-bold">Prison Hill</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/ronin" class="table-row-name text-bold">Ronin</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/stud-garden" class="table-row-name text-bold">Stud Garden</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/sugar-pine" class="table-row-name text-bold">Sugar Pine</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/sugarloaf" class="table-row-name text-bold">Sugarloaf</a>
+					</td>
+					<td class="text-center">3</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/voodoo-stones" class="table-row-name text-bold">Voodoo Stones</a>
+					</td>
+					<td class="text-center">2</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/woods-lake" class="table-row-name text-bold">Woods Lake</a>
+					</td>
+					<td class="text-center">4</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/lake-tahoe/zephyrs" class="table-row-name text-bold">Zephyrs</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM3dxwuLGJdSe2ZgZhIPU0b"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Erratica</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNwj1uLcrAL0T-6Iz7LXpex"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+  <br />
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        <b>Beavers</b>
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMBAL881_Pc8CBCKPl1c_9N"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Air Trojan, V7. Lake Tahoe" href="/problems/lake-tahoe/air-trojan" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Air Trojan, V7. Lake Tahoe" src="https://img.youtube.com/vi/-G5WRmqLQes/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/air-trojan" class="table-row-name text-bold">Air Trojan</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Castle Boulder</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="American Ninja Warrior, V9. Lake Tahoe" href="/problems/lake-tahoe/american-ninja-warrior" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: American Ninja Warrior, V9. Lake Tahoe" src="https://img.youtube.com/vi/1ftQnmiZ4uY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/american-ninja-warrior" class="table-row-name text-bold">American Ninja Warrior</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Echoland</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Ashy To Classy, V9 (sit). Lake Tahoe" href="/problems/lake-tahoe/ashy-to-classy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Ashy To Classy, V9 (sit). Lake Tahoe" src="https://img.youtube.com/vi/HR3LGn2a-uc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/ashy-to-classy" class="table-row-name text-bold">Ashy To Classy</a>
+            </div>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Kirkwood Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bird Dog, V7. Lake Tahoe" href="/problems/lake-tahoe/bird-dog" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bird Dog, V7. Lake Tahoe" src="https://img.youtube.com/vi/AUEa7nUlqmo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/bird-dog" class="table-row-name text-bold">Bird Dog</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Sugarloaf</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Black Jettas, V9. Lake Tahoe" href="/problems/lake-tahoe/black-jettas" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Black Jettas, V9. Lake Tahoe" src="https://img.youtube.com/vi/WEbmTaxQfXA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/black-jettas" class="table-row-name text-bold">Black Jettas</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Luther Pass</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blackalicious, V8. Lake Tahoe" href="/problems/lake-tahoe/blackalicious" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blackalicious, V8. Lake Tahoe" src="https://img.youtube.com/vi/3tJ4pJ_NPLo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/blackalicious" class="table-row-name text-bold">Blackalicious</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Boreal</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blackmail, V8. Lake Tahoe" href="/problems/lake-tahoe/blackmail" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blackmail, V8. Lake Tahoe" src="https://img.youtube.com/vi/1RNxR8Df9Rg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/blackmail" class="table-row-name text-bold">Blackmail</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Castle Peak</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bodhi, V8. Lake Tahoe" href="/problems/lake-tahoe/bodhi" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bodhi, V8. Lake Tahoe" src="https://img.youtube.com/vi/IXIuCIc2-X8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/bodhi" class="table-row-name text-bold">Bodhi</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Coldstream Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bubble Bath, V9 (sit). Lake Tahoe" href="/problems/lake-tahoe/bubble-bath" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bubble Bath, V9 (sit). Lake Tahoe" src="https://img.youtube.com/vi/Rkft0aQbB9M/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/bubble-bath" class="table-row-name text-bold">Bubble Bath</a>
+            </div>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Mineral Bar</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bumpy Prow, V7. Lake Tahoe" href="/problems/lake-tahoe/bumpy-prow" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bumpy Prow, V7. Lake Tahoe" src="https://img.youtube.com/vi/bCLm1ighmoY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/bumpy-prow" class="table-row-name text-bold">Bumpy Prow</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Phantom Spires</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bunny Funeral, V8. Lake Tahoe" href="/problems/lake-tahoe/bunny-funeral" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bunny Funeral, V8. Lake Tahoe" src="https://img.youtube.com/vi/lvObheGmgOs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/bunny-funeral" class="table-row-name text-bold">Bunny Funeral</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Castle Boulder</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buttload of Sausage, V8. Lake Tahoe" href="/problems/lake-tahoe/buttload-of-sausage" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buttload of Sausage, V8. Lake Tahoe" src="https://img.youtube.com/vi/YCRQdAYjXIA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/buttload-of-sausage" class="table-row-name text-bold">Buttload of Sausage</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Woods Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Buttload of Sausage, V8. Lake Tahoe" href="/problems/lake-tahoe/buttload-of-sausage" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Buttload of Sausage, V8. Lake Tahoe" src="https://img.youtube.com/vi/BcDKD2hhazs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/buttload-of-sausage" class="table-row-name text-bold">Buttload of Sausage</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Woods Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Calmer than you are, V7. Lake Tahoe" href="/problems/lake-tahoe/calmer-than-you-are" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Calmer than you are, V7. Lake Tahoe" src="https://img.youtube.com/vi/jqc6P3c_wQk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/calmer-than-you-are" class="table-row-name text-bold">Calmer than you are</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Woods Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crystal Harvester, V9. Lake Tahoe" href="/problems/lake-tahoe/crystal-harvester" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crystal Harvester, V9. Lake Tahoe" src="https://img.youtube.com/vi/WOW_yrI0AaE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/crystal-harvester" class="table-row-name text-bold">Crystal Harvester</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Echoland</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Deer Creek Arete, V9. Lake Tahoe" href="/problems/lake-tahoe/deer-creek-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Deer Creek Arete, V9. Lake Tahoe" src="https://img.youtube.com/vi/CX1deWkcWZU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/deer-creek-arete" class="table-row-name text-bold">Deer Creek Arete</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Demon on a Leash, V10. Lake Tahoe" href="/problems/lake-tahoe/demon-on-a-leash" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Demon on a Leash, V10. Lake Tahoe" src="https://img.youtube.com/vi/bgibO3aQlO4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/demon-on-a-leash" class="table-row-name text-bold">Demon on a Leash</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Lost World</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dire Wolf, V8. Lake Tahoe" href="/problems/lake-tahoe/dire-wolf" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dire Wolf, V8. Lake Tahoe" src="https://img.youtube.com/vi/qOCi3G0HqR4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/dire-wolf" class="table-row-name text-bold">Dire Wolf</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Sugar Pine</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Double Dragon, V9. Lake Tahoe" href="/problems/lake-tahoe/double-dragon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Double Dragon, V9. Lake Tahoe" src="https://img.youtube.com/vi/xAGD4iAqpEo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/double-dragon" class="table-row-name text-bold">Double Dragon</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Ronin</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Down Syndrome, V8. Lake Tahoe" href="/problems/lake-tahoe/down-syndrome" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Down Syndrome, V8. Lake Tahoe" src="https://img.youtube.com/vi/pBzr0yH_FZ0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/down-syndrome" class="table-row-name text-bold">Down Syndrome</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Donner/Truckee - Castle Peak</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dragon Tooth, V8. Lake Tahoe" href="/problems/lake-tahoe/dragon-tooth" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dragon Tooth, V8. Lake Tahoe" src="https://img.youtube.com/vi/D5xHxLCIt8c/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/dragon-tooth" class="table-row-name text-bold">Dragon Tooth</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Echoland</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Dynamo, V9. Lake Tahoe" href="/problems/lake-tahoe/dynamo" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Dynamo, V9. Lake Tahoe" src="https://img.youtube.com/vi/SXN7ZxId2yw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/dynamo" class="table-row-name text-bold">Dynamo</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Coldstream Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Enter the Dragon, V8. Lake Tahoe" href="/problems/lake-tahoe/enter-the-dragon" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Enter the Dragon, V8. Lake Tahoe" src="https://img.youtube.com/vi/4VrDK4ncL00/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/enter-the-dragon" class="table-row-name text-bold">Enter the Dragon</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Excalibur, V7. Lake Tahoe" href="/problems/lake-tahoe/excalibur" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Excalibur, V7. Lake Tahoe" src="https://img.youtube.com/vi/r0esXMx74p0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/excalibur" class="table-row-name text-bold">Excalibur</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Caples Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fallen Leaf, V9. Lake Tahoe" href="/problems/lake-tahoe/fallen-leaf" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fallen Leaf, V9. Lake Tahoe" src="https://img.youtube.com/vi/XWYJzdKxD6E/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/fallen-leaf" class="table-row-name text-bold">Fallen Leaf</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Voodoo Stones</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Globetrotter, V9 (sit). Lake Tahoe" href="/problems/lake-tahoe/globetrotter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Globetrotter, V9 (sit). Lake Tahoe" src="https://img.youtube.com/vi/npC5s9mvHEg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/globetrotter" class="table-row-name text-bold">Globetrotter</a>
+            </div>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Lake Audrain</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Handle Bar Moustache, V9. Lake Tahoe" href="/problems/lake-tahoe/handle-bar-moustache" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Handle Bar Moustache, V9. Lake Tahoe" src="https://img.youtube.com/vi/UKkFdHk3aG4/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/handle-bar-moustache" class="table-row-name text-bold">Handle Bar Moustache</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Hate Handles</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Human Math, V7. Lake Tahoe" href="/problems/lake-tahoe/human-math" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Human Math, V7. Lake Tahoe" src="https://img.youtube.com/vi/jKhbzr9pxKU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/human-math" class="table-row-name text-bold">Human Math</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Camouflage Forest</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="It’s A Boy, V10. Lake Tahoe" href="/problems/lake-tahoe/its-a-boy" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: It’s A Boy, V10. Lake Tahoe" src="https://img.youtube.com/vi/k5kxU6C7aW0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/its-a-boy" class="table-row-name text-bold">It’s A Boy</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Firestones</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Kids These Days, V8. Lake Tahoe" href="/problems/lake-tahoe/kids-these-days" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Kids These Days, V8. Lake Tahoe" src="https://img.youtube.com/vi/vLnr6f-1if8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/kids-these-days" class="table-row-name text-bold">Kids These Days</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Coldstream Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Master Blaster, V9 (low). Lake Tahoe" href="/problems/lake-tahoe/master-blaster" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Master Blaster, V9 (low). Lake Tahoe" src="https://img.youtube.com/vi/DyNh32cjRgs/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/master-blaster" class="table-row-name text-bold">Master Blaster</a>
+            </div>
+					</td>
+					<td>V9 (low)</td>
+					<td>Echoland</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Master Blaster, V10 (sit). Lake Tahoe" href="/problems/lake-tahoe/master-blaster" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Master Blaster, V10 (sit). Lake Tahoe" src="https://img.youtube.com/vi/m_Iu18VRJsw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/master-blaster" class="table-row-name text-bold">Master Blaster</a>
+            </div>
+					</td>
+					<td>V10 (sit)</td>
+					<td>Phantom Spires</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Peace of Mind, V7. Lake Tahoe" href="/problems/lake-tahoe/peace-of-mind" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Peace of Mind, V7. Lake Tahoe" src="https://img.youtube.com/vi/P7VUOo1RQiY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/peace-of-mind" class="table-row-name text-bold">Peace of Mind</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Zephyrs</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Piano Man, V7. Lake Tahoe" href="/problems/lake-tahoe/piano-man" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Piano Man, V7. Lake Tahoe" src="https://img.youtube.com/vi/iAjiiruDSNg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/piano-man" class="table-row-name text-bold">Piano Man</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Sugarloaf</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pit and the Pendulum, V8. Lake Tahoe" href="/problems/lake-tahoe/pit-and-the-pendulum" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pit and the Pendulum, V8. Lake Tahoe" src="https://img.youtube.com/vi/ULr9kt_Uxuw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/pit-and-the-pendulum" class="table-row-name text-bold">Pit and the Pendulum</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Castle Boulder</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Polaski Arete, V10. Lake Tahoe" href="/problems/lake-tahoe/polaski-arete" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Polaski Arete, V10. Lake Tahoe" src="https://img.youtube.com/vi/cJANMfj007w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/polaski-arete" class="table-row-name text-bold">Polaski Arete</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Sugarloaf</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Prisoner on the Roof, V8. Lake Tahoe" href="/problems/lake-tahoe/prisoner-on-the-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Prisoner on the Roof, V8. Lake Tahoe" src="https://img.youtube.com/vi/-GZxbGswx7o/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/prisoner-on-the-roof" class="table-row-name text-bold">Prisoner on the Roof</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Prison Hill</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Prospector’s Roof, V9. Lake Tahoe" href="/problems/lake-tahoe/prospectors-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Prospector’s Roof, V9. Lake Tahoe" src="https://img.youtube.com/vi/5GqKD49B4II/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/prospectors-roof" class="table-row-name text-bold">Prospector’s Roof</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Mineral Bar</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Pure Gold, V10 (low). Lake Tahoe" href="/problems/lake-tahoe/pure-gold" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Pure Gold, V10 (low). Lake Tahoe" src="https://img.youtube.com/vi/TKeIm32gc28/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/pure-gold" class="table-row-name text-bold">Pure Gold</a>
+            </div>
+					</td>
+					<td>V10 (low)</td>
+					<td>Voodoo Stones</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Raging Buhl, V9. Lake Tahoe" href="/problems/lake-tahoe/raging-buhl" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Raging Buhl, V9. Lake Tahoe" src="https://img.youtube.com/vi/Rvn19a7tOJI/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/raging-buhl" class="table-row-name text-bold">Raging Buhl</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Kirkwood</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Secret Roof, V10 (sit). Lake Tahoe" href="/problems/lake-tahoe/secret-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Secret Roof, V10 (sit). Lake Tahoe" src="https://img.youtube.com/vi/buT6q8tZna0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/secret-roof" class="table-row-name text-bold">Secret Roof</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Phantom Spires</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Secret Roof, V8. Lake Tahoe" href="/problems/lake-tahoe/secret-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Secret Roof, V8. Lake Tahoe" src="https://img.youtube.com/vi/fRHoNL4Q67U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/secret-roof" class="table-row-name text-bold">Secret Roof</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Phantom Spires</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Seth Carter, V9. Lake Tahoe" href="/problems/lake-tahoe/seth-carter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Seth Carter, V9. Lake Tahoe" src="https://img.youtube.com/vi/aSUj7c8WmPk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/seth-carter" class="table-row-name text-bold">Seth Carter</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Mineral Bar</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Sierra Pinstripe, V9. Lake Tahoe" href="/problems/lake-tahoe/sierra-pinstripe" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Sierra Pinstripe, V9. Lake Tahoe" src="https://img.youtube.com/vi/2VPSO4TL-48/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/sierra-pinstripe" class="table-row-name text-bold">Sierra Pinstripe</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Coldstream Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Smooth Operator, V8. Lake Tahoe" href="/problems/lake-tahoe/smooth-operator" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Smooth Operator, V8. Lake Tahoe" src="https://img.youtube.com/vi/_A3L7iyewos/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/smooth-operator" class="table-row-name text-bold">Smooth Operator</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Lake Audrain</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Stepbrother, V9. Lake Tahoe" href="/problems/lake-tahoe/stepbrother" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Stepbrother, V9. Lake Tahoe" src="https://img.youtube.com/vi/19QwTH_KO80/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/stepbrother" class="table-row-name text-bold">Stepbrother</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Phantom Spires</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tahoe House, V10. Lake Tahoe" href="/problems/lake-tahoe/tahoe-house" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tahoe House, V10. Lake Tahoe" src="https://img.youtube.com/vi/nDtA9lgEPcY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/tahoe-house" class="table-row-name text-bold">Tahoe House</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Stud Garden</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Best Crack, V9. Lake Tahoe" href="/problems/lake-tahoe/the-best-crack" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Best Crack, V9. Lake Tahoe" src="https://img.youtube.com/vi/fGm0LF1cfJk/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/the-best-crack" class="table-row-name text-bold">The Best Crack</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Castle Peak</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Slug, V9. Lake Tahoe" href="/problems/lake-tahoe/the-slug" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Slug, V9. Lake Tahoe" src="https://img.youtube.com/vi/SoW2xeb9oKc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/the-slug" class="table-row-name text-bold">The Slug</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Echoland</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vince Carter, V10. Lake Tahoe" href="/problems/lake-tahoe/vince-carter" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vince Carter, V10. Lake Tahoe" src="https://img.youtube.com/vi/OYHdao-ZPdg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/vince-carter" class="table-row-name text-bold">Vince Carter</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Mineral Bar</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Vitamin D, V9. Lake Tahoe" href="/problems/lake-tahoe/vitamin-d" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Vitamin D, V9. Lake Tahoe" src="https://img.youtube.com/vi/k48DAzo-MT0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/vitamin-d" class="table-row-name text-bold">Vitamin D</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Caples Lake</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Where the red fern grows, V11. Lake Tahoe" href="/problems/lake-tahoe/where-the-red-fern-grows" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Where the red fern grows, V11. Lake Tahoe" src="https://img.youtube.com/vi/nlOJJDOou4I/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/where-the-red-fern-grows" class="table-row-name text-bold">Where the red fern grows</a>
+            </div>
+					</td>
+					<td>V11</td>
+					<td>Coldstream Canyon</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Zun Zun, V8. Lake Tahoe" href="/problems/lake-tahoe/zun-zun" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Zun Zun, V8. Lake Tahoe" src="https://img.youtube.com/vi/SO__4jyus0Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/lake-tahoe/zun-zun" class="table-row-name text-bold">Zun Zun</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Woods Lake</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

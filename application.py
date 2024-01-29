@@ -97,9 +97,12 @@ def set_language(language=None):
     print("set_language")
     session['language'] = language
     referrer_url = request.referrer
+    print("referrer_url: " + referrer_url)
     if referrer_url:
         parsed_url = urlparse(referrer_url)
-        return redirect(parsed_url.path)
+        print("parsed_url.path: " + parsed_url.path)
+        path_without_language = parsed_url.path.replace('/es/', '/').replace('/en/', '/')
+        return redirect(path_without_language)
     else:
         return redirect('')
 
@@ -552,31 +555,56 @@ def custom_statistics():
 @app.route('/<string:page>.html')
 def render_page(page):
     try:
-        try:
-            views_count = utils.zone_helpers.get_zone_view_count_from_zone_code(slugify(page))
-            video_count = get_zone_video_count(slugify(page))
-            sector_count = utils.helpers.count_sectors_in_zone(page)
-            data = [
-                {
-                    'logo': 'fas fa-video-camera',
-                    'text': _('Videos'),
-                    'data': video_count
-                },
-                {
-                    'logo': 'fas fa-eye',
-                    'text': _('Views'),
-                    'data': views_count
-                },
-                {
-                    'logo': 'fa fa-map-marked',
-                    'text': _('Sectors'),
-                    'data': sector_count
-                }]
-        except:
-            data = []
-        return render_template('zones/' + slugify(page) + EXTENSION, current_url=page, stats_list=data)
+
+        language_extension = ''
+        if get_locale() == 'es':
+            language_extension = 'es/'
+
+        page_path = 'zones/' + language_extension + slugify(page) + EXTENSION
+        print(page_path)
+
+        return render_template(page_path, current_url=page, stats_list=get_area_page_stats())
     except:
         abort(404)
+
+
+@app.route('/es/<string:page>')
+@app.route('/es/<string:page>.html')
+@app.route('/templates/zones/es/<string:page>.html')
+def render_page_es(page):
+    try:
+        page_path = 'zones/' + 'es/' + slugify(page) + EXTENSION
+        return render_template(page_path, current_url=page, stats_list=get_area_page_stats())
+    except:
+        abort(404)
+
+
+def get_area_page_stats():
+    try:
+        views_count = utils.zone_helpers.get_zone_view_count_from_zone_code(slugify(page))
+        video_count = get_zone_video_count(slugify(page))
+        sector_count = utils.helpers.count_sectors_in_zone(page)
+        data = [
+            {
+                'logo': 'fas fa-video-camera',
+                'text': _('Videos'),
+                'data': video_count
+            },
+            {
+                'logo': 'fas fa-eye',
+                'text': _('Views'),
+                'data': views_count
+            },
+            {
+                'logo': 'fa fa-map-marked',
+                'text': _('Sectors'),
+                'data': sector_count
+            }]
+    except:
+        data = []
+
+    return data
+
         
 
 @app.route('/problems/<string:page>/<string:problem_name>')

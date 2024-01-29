@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title> Little Cottonwood Canyon  Boulder | MadBoulder</title>
+	<meta name="description" content="Little Cottonwood Canyon bouldering información, bloques, sectores, previsión del tiempo, guía de boulder | MadBoulder">
+    
+
+<!-- Weather Widget dependencies-->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+crossorigin="anonymous"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+crossorigin="anonymous"></script>
+
+<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+
+<!-- Table Widget dependencies-->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+<link rel="canonical" href="https://www.madboulder.org/es/little-cottonwood-canyon">
+
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			
+	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+	 > 
+	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+  
+   > 
+  <a href="/states/utah" class="zone-header-tree-link">Utah</a>
+	
+
+		  </div>
+          <h1 class="zone-header-title text-bold">
+             Little Cottonwood Canyon 
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					
+<div class="container" style="padding-top: 1rem;">
+  <!-- Zone summary -->
+  <div id="zone-summary" class="row justify-content-center">
+     {% for stat in stats_list %}
+    <div class="col-md-2 col-sm-2 stats-col">
+      <div class="card mx-sm-1 p-2">
+        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+          <span class="{{stat['logo']}}" aria-hidden="true"></span>
+        </div>
+        <div class="text-center mt-2">
+          <h5 class="stats-title">{{stat['text']}}</h5>
+        </div>
+        <div class="text-center mt-1 mb-0">
+          <h3 class="stats-content">{{stat['data']}}</h3>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+  <input type="hidden" id="lat" name="lat_val" value="40.571796" />
+  <input type="hidden" id="lng" name="lng_val" value="-111.77225" />
+  <!--Weather widget html code-->
+  <div class="card mt-3" style="width:80%;">
+    <div class="card-header d-flex justify-content-center">
+      Little Cottonwood Canyon
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row mt-1 mb-1">
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <img height="75" class="weather-icon"></img>
+            <div class="mx-auto text-capitalize weather-description text-center"></div>
+      </div>
+      <div class="d-flex col-2 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+          <div class="my-auto d-flex align-items-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto">
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-wind mr-2">air</i>
+              <div class="wind-speed mb-2" style="font-size: small;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-8 d-flex align-content-center flex-wrap">
+        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+  <!--small weather widget html code-->
+  <div class="card mt-1" style="width: 95%;">
+    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+      Little Cottonwood Canyon
+      <!-- This will come from the datafile -->
+    </div>
+    <div class="row">
+      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+        <img height="60" class="weather-icon"></img>
+        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+      </div>
+      <div class="d-flex col-6 flex-column justify-content-center">
+        <div id="current_weather" class="d-flex flex-column justify-content-center">
+          <div class="my-auto d-flex justify-content-center">
+            <div class="weather-temperature mb-2" style="font-size: large;"></div>
+          </div>
+          <div class="my-auto mx-auto d-flex">
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Min:&nbsp;</label>
+              <div class="weather-min-temperature" style="font-size: small;"></div>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <label style="font-size: small;">Max:&nbsp;</label>
+              <div class="weather-max-temperature" style="font-size: small;"></div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-wind mr-2">air</i>
+            <div class="wind-speed mb-2" style="font-size: small;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;" />
+    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+    </div>
+  </div>
+</div>
+
+<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+<!-- jQuery, the solution to all your problems -->
+
+<script>
+  $('.weather-temperature').openWeather({
+    lat: $('input#lat').val(), // From zone data
+    lng: $('input#lng').val(), // From zone data
+    iconTarget: '.weather-icon',
+    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+    customIcons: 'images/weather_icons/',
+    minTemperatureTarget: '.weather-min-temperature',
+    maxTemperatureTarget: '.weather-max-temperature',
+    windSpeedTarget: '.wind-speed',
+    windSpeedUnit: 'km/h',
+    descriptionTarget: '.weather-description',
+    forecastTarget: 'weather-forecast',
+    lang: '{{ current_lang }}', // from zone data
+    query: 'onecall' // to get forecast
+  });
+</script>
+ 
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="-info">
+					
+<div id="main" class="row" style="margin-bottom: 1rem;">
+	<div class="col-md-12">
+		<div class="tab-content ">
+			<div class="row">
+				<div class="col-md-6">						
+					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+						<picture>
+							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/sI_rtjGOhxY/maxresdefault.jpg">
+							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/sI_rtjGOhxY/maxresdefault.jpg">
+							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/sI_rtjGOhxY/maxresdefault.jpg">
+							<img class="img-fluid d-block" src="https://i.ytimg.com/vi/sI_rtjGOhxY/maxresdefault.jpg" alt="">
+						</picture>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="general-info" class="overflow-auto d-flex flex-column">
+						
+							<div id="features_info" class="position-relative">
+								<h4>Escalada en Little Cottonwood Canyon</h4>
+								<p>Little Cottonwood Canyon es una meca de la escalada en Utah. Con su granito de alta calidad y una gran variedad de rutas, es apreciada por escaladores de todo el mundo. La temporada de verano es ideal, pero el otoño y la primavera también ofrecen condiciones excelentes.</p>
+							</div>
+						
+						<div id="general_stats">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+								<b>Videos</b> 37
+								
+									<br>
+									<b>Tipo de Roca</b> Granite
+								
+								
+									<br>
+									<b>Altitud</b> 1672m
+								
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+		
+      <div class="mr-2">
+        <a class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/4aSyjlv" target="_blank">
+          <div class="card-body" style="background:none;box-shadow: none;">
+            <div class="card-body-image-container">
+              <div class="card-body-image-container-container">
+                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/51ZnDz2Wz8L.jpg" alt="Utah Bouldering">
+              </div>
+            </div>
+            <div class="card-body-title-container">
+              <h6 class="text-bold card-title" style="text-align: center;">Utah Bouldering</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+		
+	</div>
+
+
+  <div class="list-group">
+    
+      <a id="guide_link"  href="https://apps.apple.com/us/app/lcc-bouldering-guidebook/id1486115560" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+        LCC Bouldering Guidebook App
+        
+      </a>
+    
+  </div>
+
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					
+<!-- Zone Map -->
+<div class="container">
+	<div style="position: relative; padding-top: 56%;">
+		<iframe
+			src="maps/little-cottonwood-canyon"
+			frameborder="0"
+		  loading="lazy"
+			allowfullscreen
+			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+		</iframe>
+	</div>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade show active" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					
+<!--Sector List-->
+<div class="container">
+	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="sectors-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Bloques</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/little-cottonwood-canyon/secret-garden" class="table-row-name text-bold">Secret Garden</a>
+					</td>
+					<td class="text-center">1</td>
+				</tr>
+			
+				<tr class="sector-row">
+					<td>
+						<a href="/sectors/little-cottonwood-canyon/unknown" class="table-row-name text-bold">Unknown</a>
+					</td>
+					<td class="text-center">36</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#sectors-table').DataTable({
+				paging: false,
+				dom: 'tr'
+			});
+			$("#search-sector").trigger("keyup");
+				
+			$("#search-sector").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".sector-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+				<div class="tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					
+<!--Playlists-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3 col-md-3"></div>
+    <div class="col-sm-6 col-md-6">
+      <p class="text-center">
+        
+        <b>Completa</b>
+        
+      </p>
+      <div style="position: relative; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPQh0Nd5cELGnKI5Mq7-blm"
+          frameborder="0"
+          loading="lazy"
+          allowfullscreen
+          style="
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+          "
+        >
+        </iframe>
+      </div>
+    </div>
+    <div class="col-sm-3 col-md-3"></div>
+  </div>
+  
+
+					<hr class="mt-3 mt-md-5">
+					<h2 style="clear:both;display:block" class="">Lista de Bloques</h2>
+				</div>
+			</div>
+			
+<!--Problem List-->
+<div class="container">
+	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<table id="problems-table" class="table table-hover">
+		<thead>
+			<tr>
+				
+				<th scope="col" class="sorting">Nombre</th>
+				<th scope="col" class="sorting">Grado</th>
+				<th scope="col" class="sorting">Sector</th>
+				
+			</tr>
+		</thead>
+		<tbody style="vertical-align: middle;">
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="1 in the Chamber, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/1-in-the-chamber" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: 1 in the Chamber, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/8Th-vWYR2NQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/1-in-the-chamber" class="table-row-name text-bold">1 in the Chamber</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="All Thumbs, V10. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/all-thumbs" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: All Thumbs, V10. Little Cottonwood Canyon" src="https://img.youtube.com/vi/yDL-1qx2YjU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/all-thumbs" class="table-row-name text-bold">All Thumbs</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Angry Little Monster, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/angry-little-monster" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Angry Little Monster, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/Kh7Kt-iNp4Q/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/angry-little-monster" class="table-row-name text-bold">Angry Little Monster</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Bear Hug, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/bear-hug" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Bear Hug, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/j1DGit1fgOY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/bear-hug" class="table-row-name text-bold">Bear Hug</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blindspot, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/blindspot" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blindspot, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/Ond9yEyXyls/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/blindspot" class="table-row-name text-bold">Blindspot</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Blue Steel, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/blue-steel" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Blue Steel, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/JBom7V_KgYY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/blue-steel" class="table-row-name text-bold">Blue Steel</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Burly, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/burly" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Burly, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/gr9J_iagL6w/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/burly" class="table-row-name text-bold">Burly</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Secret Garden</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cattleguard, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/cattleguard" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cattleguard, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/k0Op6uc82zE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/cattleguard" class="table-row-name text-bold">Cattleguard</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Cronin's Egg, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/cronin-s-egg" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Cronin's Egg, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/di-k_pMwt7k/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/cronin-s-egg" class="table-row-name text-bold">Cronin's Egg</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Crystal Pinch, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/crystal-pinch" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Crystal Pinch, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/kK14RN9a8Ro/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/crystal-pinch" class="table-row-name text-bold">Crystal Pinch</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Euro Roof, V10. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/euro-roof" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Euro Roof, V10. Little Cottonwood Canyon" src="https://img.youtube.com/vi/sI_rtjGOhxY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/euro-roof" class="table-row-name text-bold">Euro Roof</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Face Off, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/face-off" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Face Off, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/TVpY__nNcwQ/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/face-off" class="table-row-name text-bold">Face Off</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Face Off Right, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/face-off-right" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Face Off Right, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/QHv4vFeRNxM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/face-off-right" class="table-row-name text-bold">Face Off Right</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Fat Grips, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/fat-grips" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Fat Grips, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/Jd4m1-i6Zhg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/fat-grips" class="table-row-name text-bold">Fat Grips</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="First Down, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/first-down" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: First Down, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/B0GBz7IVbcE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/first-down" class="table-row-name text-bold">First Down</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Good Listener, V9. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/good-listener" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Good Listener, V9. Little Cottonwood Canyon" src="https://img.youtube.com/vi/xmiPE478gPg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/good-listener" class="table-row-name text-bold">Good Listener</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Handsome Jansen, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/handsome-jansen" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Handsome Jansen, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/ia5C8EABmjY/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/handsome-jansen" class="table-row-name text-bold">Handsome Jansen</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Matt's Cave, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/matt-s-cave" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Matt's Cave, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/Bx2WD7duMJw/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/matt-s-cave" class="table-row-name text-bold">Matt's Cave</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Mini Maisch, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/mini-maisch" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Mini Maisch, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/3srBCe8iuto/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/mini-maisch" class="table-row-name text-bold">Mini Maisch</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nest Egg, V9 (sit). Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/nest-egg" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nest Egg, V9 (sit). Little Cottonwood Canyon" src="https://img.youtube.com/vi/0HUzwfMsVho/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/nest-egg" class="table-row-name text-bold">Nest Egg</a>
+            </div>
+					</td>
+					<td>V9 (sit)</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Nest Egg, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/nest-egg" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Nest Egg, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/RCIZgt02-X0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/nest-egg" class="table-row-name text-bold">Nest Egg</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Orange Crush, V6. Big Cottonwood Canyon" href="/problems/little-cottonwood-canyon/orange-crush" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Orange Crush, V6. Big Cottonwood Canyon" src="https://img.youtube.com/vi/e4M63OOC8pc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/orange-crush" class="table-row-name text-bold">Orange Crush</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Physicality, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/physicality" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Physicality, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/KNbagVKMKf0/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/physicality" class="table-row-name text-bold">Physicality</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Prowler, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/prowler" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Prowler, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/3hJt-foDYSU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/prowler" class="table-row-name text-bold">Prowler</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Shingles, V9. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/shingles" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Shingles, V9. Little Cottonwood Canyon" src="https://img.youtube.com/vi/tBuoovugwrU/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/shingles" class="table-row-name text-bold">Shingles</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Summertime Blues, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/summertime-blues" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Summertime Blues, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/mD_re4EBCos/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/summertime-blues" class="table-row-name text-bold">Summertime Blues</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Superchunk, V10. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/superchunk" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Superchunk, V10. Little Cottonwood Canyon" src="https://img.youtube.com/vi/S0gHql3ZWjg/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/superchunk" class="table-row-name text-bold">Superchunk</a>
+            </div>
+					</td>
+					<td>V10</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Superfly, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/superfly" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Superfly, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/HtfO0cD-wXo/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/superfly" class="table-row-name text-bold">Superfly</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Surprise, V8. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/surprise" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Surprise, V8. Little Cottonwood Canyon" src="https://img.youtube.com/vi/kOY8FYAPpyE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/surprise" class="table-row-name text-bold">Surprise</a>
+            </div>
+					</td>
+					<td>V8</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Buzz, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/the-buzz" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Buzz, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/irk_k42ZKA8/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/the-buzz" class="table-row-name text-bold">The Buzz</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="The Minch, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/the-minch" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: The Minch, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/yxPUrvIaIVc/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/the-minch" class="table-row-name text-bold">The Minch</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Tiger Snake Venom, V9. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/tiger-snake-venom" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Tiger Snake Venom, V9. Little Cottonwood Canyon" src="https://img.youtube.com/vi/bzy9hkVIlVE/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/tiger-snake-venom" class="table-row-name text-bold">Tiger Snake Venom</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Toolshed, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/toolshed" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Toolshed, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/KKjB3MBYkPM/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/toolshed" class="table-row-name text-bold">Toolshed</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Warm Up Dyno, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/warm-up-dyno" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Warm Up Dyno, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/ArRj4VDHm0U/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/warm-up-dyno" class="table-row-name text-bold">Warm Up Dyno</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Whiskey, V7. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/whiskey" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Whiskey, V7. Little Cottonwood Canyon" src="https://img.youtube.com/vi/LcwyBc7ZUwA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/whiskey" class="table-row-name text-bold">Whiskey</a>
+            </div>
+					</td>
+					<td>V7</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Wormography, V6. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/wormography" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Wormography, V6. Little Cottonwood Canyon" src="https://img.youtube.com/vi/JUa-3gpp-ig/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/wormography" class="table-row-name text-bold">Wormography</a>
+            </div>
+					</td>
+					<td>V6</td>
+					<td>Unknown</td>
+				</tr>
+			
+				<tr class="problem-row">
+					<td>
+            <div class="problem-thumbnail-cell">
+              <i class="fas fa-video-camera table-row-icon video-icon"></i>
+              <div id="video-thumbnail" >
+                <a id="thumbnail-anchor" aria-hidden="false" aria-label="Wrist Rocket, V9. Little Cottonwood Canyon" href="/problems/little-cottonwood-canyon/wrist-rocket" tabindex="0" target="">
+                  <div class="video-thumbnail-container">
+                    <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail: Wrist Rocket, V9. Little Cottonwood Canyon" src="https://img.youtube.com/vi/tdB_LwnWtQA/mqdefault.jpg">
+                  </div>
+                </a>
+              </div>
+              <a href="/problems/little-cottonwood-canyon/wrist-rocket" class="table-row-name text-bold">Wrist Rocket</a>
+            </div>
+					</td>
+					<td>V9</td>
+					<td>Unknown</td>
+				</tr>
+			
+		</tbody>
+	</table>
+	<script>
+		$(document).ready(function () {
+			$('#problems-table').DataTable({
+				paging: false,
+				dom: 'tr',
+				columnDefs: [
+					{
+						targets: [1],
+						type: 'custom-grade',
+					},
+				]
+			});
+			
+			$("#search-problem").trigger("keyup");
+				
+			$("#search-problem").keyup(function() {
+				var search_query = $.trim($(this).val());
+				var items = $(".problem-row");
+				filter_items_by_query(search_query, items)
+			});
+		});
+	</script>
+</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

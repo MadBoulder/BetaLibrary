@@ -37,7 +37,16 @@ def main():
         # get external links
         links = [link for link in area.get(LINKS_FIELD, []) if link.get(LINK_FIELD)]
         # get external guides
-        guides = [guide for guide in area.get(GUIDES_FIELD, []) if guide.get(LINK_FIELD)]
+        guides = [
+            {
+                "name": guide["name"],
+                "link": guide["link"][0] if isinstance(guide["link"], list) else guide["link"],
+                "thumbnail": guide["thumbnail"]
+            }
+            for guide in area.get(GUIDES_FIELD, [])
+            if guide.get(LINK_FIELD)
+        ]
+        guides = [guide for guide in guides if guide.get(LINK_FIELD)]
 
         # problems
         problems = utils.zone_helpers.get_problems_from_zone_code(area[ZONE_CODE_FIELD])
@@ -89,6 +98,49 @@ def main():
 
         with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
+
+
+
+        guides_es = [
+            {
+                "name": guide["name"],
+                "link": guide["link"][1] if isinstance(guide["link"], list) else guide["link"],
+                "thumbnail": guide["thumbnail"]
+            }
+            for guide in area.get(GUIDES_FIELD, [])
+            if guide.get(LINK_FIELD)
+        ]
+        guides_es = [guide for guide in guides_es if guide.get(LINK_FIELD)]
+        state_name_es = state.get('name','')[1] if state else ''
+        overview_es = area.get("overview", [""])[1]
+
+        template_es = template_env.get_template('templates/templates/es/area-layout.html')
+        output = template_es.render(
+            problems=problems,
+            sectors=sectors,
+            area_code=area[ZONE_CODE_FIELD],
+            name=area[NAME_FIELD],
+            rock_type=utils.zone_helpers.get_rock_type_str(area.get(ROCK_TYPE_FIELD, "")),
+            overview=overview_es,
+            file_name=area[ZONE_CODE_FIELD],
+            tag_name=area[NAME_FIELD].replace("'", r"\'"),
+            links_list=links,
+            guides_list=guides_es,
+            map_url='maps/'+area[ZONE_CODE_FIELD],
+            playlists=playlists,
+            lat=area[LATITUDE_FIELD],
+            lng=area[LONGITUDE_FIELD],
+            alt=int(area.get(ALTITUDE_FIELD,'0')),
+            zone=area[NAME_FIELD],
+            country_code=country.get('code',''),
+            country_name=country_name,
+            state_code=state_code,
+            state_name=state_name_es
+        )
+
+        with open('templates/zones/es/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template_es:
+            template_es.write(output)
+
 
 
 if __name__ == '__main__':
