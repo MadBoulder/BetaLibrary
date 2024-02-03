@@ -39,7 +39,7 @@ def main():
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
             for p in problems:
-                p['secure'] = slugify(p['name'])
+                p['secure'] = slugify(p['name']) + '-'+ slugify(p['grade_with_info'])
                
             video_id = ""
             if 'sectors' in playlists:

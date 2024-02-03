@@ -201,6 +201,8 @@ def search():
             search_results['problems'] = utils.helpers.search_problem( query, max_score=max_score)
             search_problem_elapsed_time = time.time() - search_problem_start_time
             print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
+            for p in search_results['problems']:
+                p['secure'] = slugify(p['name']) + '-'+ slugify(p['grade_with_info'])
 
         def search_beta():
             search_beta_start_time = time.time()

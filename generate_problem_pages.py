@@ -11,7 +11,7 @@ NAME_FIELD = 'name'
 GRADE_FIELD = 'grade'
 GRADE_WITH_INFO_FIELD = 'grade_with_info'
 ZONE_FIELD = 'zone'
-SSECTOR_FIELD = 'sector'
+SECTOR_FIELD = 'sector'
 
 def get_embed_url(full_url):
     return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
@@ -39,6 +39,7 @@ def main():
         state_name = state.get('name','')[0] if state else ''
 
         for problem in problems:
+            file_name = slugify(problem[NAME_FIELD]) + '-' + slugify(problem[GRADE_WITH_INFO_FIELD])
             template = template_env.get_template(
                 'templates/templates/problem-layout.html')
             output = template.render(
@@ -48,18 +49,19 @@ def main():
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
                 zone_code=zone_code,
-                sector=problem[SSECTOR_FIELD],
-                sector_code=slugify(problem[SSECTOR_FIELD]),
+                sector=problem[SECTOR_FIELD],
+                sector_code=slugify(problem[SECTOR_FIELD]),
                 video_url=get_embed_url(problem[LINK_FIELD]),
                 country_code=country.get('code',''),
                 country_name=country_name,
                 state_code=state_code,
-                state_name=state_name
+                state_name=state_name,
+                file_name=file_name
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')
 
-            with open(f'templates/problems/{zone_code}/{slugify(problem["name"])}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/problems/{zone_code}/{file_name}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 
