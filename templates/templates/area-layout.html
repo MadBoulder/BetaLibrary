@@ -22,7 +22,7 @@ crossorigin="anonymous"></script>
 {% endraw %}
 <link rel="canonical" href="https://www.madboulder.org/{{area_code}}">
 {% endblock %} 
-{% block zone_name %} {{ name }} {% endblock %} 
+{% block zone_name %} {{ name }} Boulder{% endblock %} 
 
 {% block tree %}
 	<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
@@ -35,6 +35,7 @@ crossorigin="anonymous"></script>
 {% endblock %} 
 
 {% block stats %}
+<h2 style="clear:both;display:block" class="">Stats of {{ name }}</h2>
 <div class="container" style="padding-top: 1rem;">
   <!-- Zone summary -->
   <div id="zone-summary" class="row justify-content-center">
@@ -58,7 +59,8 @@ crossorigin="anonymous"></script>
 {% endblock %} 
 
 {% block widget %}
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center" style="margin-top: 40px;">
+<h2 style="clear:both;display:block" class="">Weather in {{ name }}</h2>
+<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
   <input type="hidden" id="lat" name="lat_val" value="{{ lat }}" />
   <input type="hidden" id="lng" name="lng_val" value="{{ lng }}" />
   <!--Weather widget html code-->
@@ -168,13 +170,13 @@ crossorigin="anonymous"></script>
 	<div class="col-md-12">
 		<div class="tab-content ">
 			<div class="row">
-				<div class="col-md-6">						
-					<div id="area-thumbnail" title="A foto example of this area" style="opacity: 1; filter: saturate(100%);">
+				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+					<div id="area-thumbnail" title="Photo of {{ name }} Boulder" style="opacity: 1; filter: saturate(100%);">
 						<picture>
 							<source media="(min-width: 1200px)" sizes="605px" srcset="{{ playlists["thumbnail"] }}">
 							<source media="(min-width: 997px)" sizes="450px" srcset="{{ playlists["thumbnail"] }}">
 							<source media="(min-width: 768px)" sizes="330px" srcset="{{ playlists["thumbnail"] }}">
-							<img class="img-fluid d-block" src="{{ playlists["thumbnail"] }}" alt="">
+							<img class="img-fluid d-block" src="{{ playlists["thumbnail"] }}" alt="Photo of {{ name }} Boulder">
 						</picture>
 					</div>
 				</div>
@@ -182,12 +184,12 @@ crossorigin="anonymous"></script>
 					<div id="general-info" class="overflow-auto d-flex flex-column">
 						{% if overview %}
 							<div id="features_info" class="position-relative">
-								<h4>Bouldering in {{ name }}</h4>
-								<p>{{ overview }}</p>
+								<h2>Bouldering in {{ name }}</h2>
+								<p style="text-align: justify;">{{ overview }}</p>
 							</div>
 						{% endif %}
 						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px;">
+							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
 								<b>Videos</b> {{ playlists["video_count"] }}
 								{% if rock_type %}
 									<br>
@@ -205,45 +207,51 @@ crossorigin="anonymous"></script>
 		</div>
 	</div>
 </div>
-{% if guides_list %}
-	<div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-		{% for guide in guides_list %}
-      <div class="mr-2">
-        <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="{{ guide["link"] }}" target="_blank">
-          <div class="card-body" style="background:none;box-shadow: none;">
-            <div class="card-body-image-container">
-              <div class="card-body-image-container-container">
-                <img loading="lazy" class="card-body-image" style="object-fit: contain" src="{{ guide["thumbnail"] }}" alt="{{ guide["name"] }}">
+{% if guides_list or links_list%}
+  <div>
+    <h2>Guidebooks of {{ name }} Boulder</h2>
+    {% if guides_list %}
+      <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+        {% for guide in guides_list %}
+          <div class="mr-2">
+            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="{{ guide["link"] }}" target="_blank">
+              <div class="card-body" style="background:none;box-shadow: none;">
+                <div class="card-body-image-container">
+                  <div class="card-body-image-container-container">
+                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="{{ guide["thumbnail"] }}" alt="{{ guide["name"] }}">
+                  </div>
+                </div>
+                <div class="card-body-title-container">
+                  <h6 class="text-bold card-title" style="text-align: center;">{{ guide["name"] }}</h6>
+                </div>
               </div>
-            </div>
-            <div class="card-body-title-container">
-              <h6 class="text-bold card-title" style="text-align: center;">{{ guide["name"] }}</h6>
-            </div>
+            </a>
           </div>
-        </a>
+        {% endfor %}
       </div>
-		{% endfor %}
-	</div>
-{% endif %}
-{% if links_list %}
-  <div class="list-group">
-    {% for link in links_list %}
-      <a id="generic_link" href="{{ link["link"] }}" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-        <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-        {{ link["name"] }}
-        {% if link["free"] %}
-          <button class="btn-free-madboulder text-bold">
-            {% raw %} {{ _("Free") }} {% endraw %}
-          </button>
-        {% endif %}
-      </a>
-    {% endfor %}
+    {% endif %}
+    {% if links_list %}
+      <div class="list-group">
+        {% for link in links_list %}
+          <a id="generic_link" href="{{ link["link"] }}" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+            {{ link["name"] }}
+            {% if link["free"] %}
+              <button class="btn-free-madboulder text-bold">
+                Free
+              </button>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 {% endif %}
 {% endblock %} 
 
 {% block map %}
 <!-- Zone Map -->
+<h2 style="clear:both;display:block" class="">Map of {{ name }}</h2>
 <div class="container">
 	<div style="position: relative; padding-top: 56%;">
 		<iframe
@@ -259,6 +267,7 @@ crossorigin="anonymous"></script>
 
 {% block problems %}
 <!--Problem List-->
+<h2 style="clear:both;display:block" class="">List of Problems of {{ name }}</h2>
 <div class="container">
 	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table id="problems-table" class="table table-hover">
@@ -320,6 +329,7 @@ crossorigin="anonymous"></script>
 
 {% block sectors %}
 <!--Sector List-->
+<h2 style="clear:both;display:block" class="">List of Sectors of {{ name }}</h2>
 <div class="container">
 	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 	<table id="sectors-table" class="table table-hover">
@@ -362,6 +372,7 @@ crossorigin="anonymous"></script>
 
 {% block playlists %}
 <!--Playlists-->
+<h2 style="clear:both;display:block" class="">List of Playlists of {{ name }}</h2>
 <div class="container">
   <div class="row">
     <div class="col-sm-3 col-md-3"></div>
