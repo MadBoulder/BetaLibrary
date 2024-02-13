@@ -7,6 +7,7 @@ from slugify import slugify
 
 LINK_FIELD = 'url'
 CLIMBER_FIELD = 'climber'
+TITLE_FIELD = 'title'
 NAME_FIELD = 'name'
 GRADE_FIELD = 'grade'
 GRADE_WITH_INFO_FIELD = 'grade_with_info'
@@ -46,6 +47,7 @@ def main():
                 climber=problem[CLIMBER_FIELD],
                 name=problem[NAME_FIELD],
                 name_code=slugify(problem[NAME_FIELD]),
+                title=problem[TITLE_FIELD],
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
                 zone_code=zone_code,
