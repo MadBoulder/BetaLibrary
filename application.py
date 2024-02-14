@@ -448,7 +448,7 @@ def render_about_us():
         },
         {
             'text': _('Videos'),
-            'data': 8.850
+            'data': 8850
             #channel_info['items'][0]['statistics']['videoCount']
         }
     ]

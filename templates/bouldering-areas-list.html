@@ -111,201 +111,200 @@
 	</main>
 	{% include 'elements/footer.html' %}
   </body>
-</html>
-
-<script>
-  var translator;
-  var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-  var c_data = '{{ country_data | tojson | safe}}';
-  var dict = JSON.parse(c_data);
-  
-  function sortCountryNodesAlphabetically() {
-    var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
-    items.sort(function(a, b) {
-       return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
-    });
-    for(var i = 0, len = items.length; i < len; i++) {
-      var parent = items[i].parentNode;
-      var detatchedItem = parent.removeChild(items[i]);
-      parent.appendChild(detatchedItem);
+  <script>
+    var translator;
+    var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+    var c_data = '{{ country_data | tojson | safe}}';
+    var dict = JSON.parse(c_data);
+    
+    function sortCountryNodesAlphabetically() {
+      var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
+      items.sort(function(a, b) {
+         return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
+      });
+      for(var i = 0, len = items.length; i < len; i++) {
+        var parent = items[i].parentNode;
+        var detatchedItem = parent.removeChild(items[i]);
+        parent.appendChild(detatchedItem);
+      }
     }
-  }
-  
-  function updateListOfZones() {
-    var $cards = $(".custom-card");
-    var $countries = $("#selected-countries")[0].childNodes;
-    var ids = [];
-    $countries.forEach(c => {
-      if (c.id) ids.push(c.id);
-    });
-    if (ids.length === 0)
-    {
-      $cards.show();
-      return;
-    }
-    $cards.hide();
-    $cards.each(
-      function()
+    
+    function updateListOfZones() {
+      var $cards = $(".custom-card");
+      var $countries = $("#selected-countries")[0].childNodes;
+      var ids = [];
+      $countries.forEach(c => {
+        if (c.id) ids.push(c.id);
+      });
+      if (ids.length === 0)
       {
-        var country = $(this)[0].id.split("_")[1];
-        if(ids.includes(country))
+        $cards.show();
+        return;
+      }
+      $cards.hide();
+      $cards.each(
+        function()
         {
-          $(this).show();
-        }
-      }
-    );
-  };
-  
-  function removeElement(element) {
-      var id_to_place = $(element).parent()[0].id;
-      var text_to_place = $(element).parent().data('country-name');
-      $("#inactive-countries-list").append(
-        '<div class="active-filter-selection row" id="' + id_to_place + '">' +
-          '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
-            text_to_place +
-          '</span>' +
-          '<div class="col-6" style="display: flex; justify-content: flex-end;">' +
-            '<button class="btn" onclick="addElement(this)">' +
-              '<i class="fas fa-plus item-icon"></i>' +
-            '</button>' +
-          '</div>' +
-        '</div>' 
-      );
-      translator.lang(curr_lng);
-      $(element).parent().remove();
-      sortCountryNodesAlphabetically();
-      updateListOfZones();
-      sessionStorage.setItem(id_to_place, "inactive");
-      // Reset searchbox
-      $("#search-zone")[0].value = "";
-  };
-  
-  function addElement(element) {
-      // Add to active selection list:
-      var id_to_place = $(element).parent().parent()[0].id;
-      var text_to_place = $(element).parent().parent().data('country-name');
-      $("#selected-countries").append(
-        '<div class="active-filter-selection" id="'+ id_to_place +'" data-country-name="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
-        text_to_place +
-        '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
-      );
-      // Remove from list
-      translator.lang(curr_lng);
-      $(element).parent().parent().remove();
-      sortCountryNodesAlphabetically();
-      updateListOfZones();
-      sessionStorage.setItem(id_to_place, "active");
-      // close modal if open
-      if (($("#country-modal").data('bs.modal') || {})._isShown)
-        $('#country-modal').modal('toggle');
-      // Reset searchbox
-      $("#search-zone")[0].value = "";
-  };
-  
-  function Sort(asc) {
-    var criteria = $("#sort-criteria")[0].value;
-    $(".custom-card").sort(function(a, b) {
-      if (criteria==="nvid") {
-		var aValue = parseInt($(a).find("p")[0].dataset.videos);
-		var bValue = parseInt($(b).find("p")[0].dataset.videos);
-        return (asc ? 1 : -1) * (aValue - bValue);
-      }
-      else if (criteria==="alph") {
-        return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-      }
-    }).appendTo('#zones-list');
-    sessionStorage.setItem("sortCriteria", criteria);
-	if(asc){
-		sessionStorage.setItem("sortOrder", "asc");
-		$("#btn-asc").hide();
-		$("#btn-desc").show();
-	} 
-	else{
-		sessionStorage.setItem("sortOrder", "des");
-		$("#btn-asc").show();
-		$("#btn-desc").hide();
-	}
-  };
-  
-  function ReorderZones() {
-    if (sessionStorage.getItem("sortOrder") === "asc")
-        Sort(asc=true);
-    else if (sessionStorage.getItem("sortOrder") === "des")
-        Sort(asc=true);
-  };
-  
-  function loadSessionStatus() {
-    if (!sessionStorage.getItem("initialized")) {
-      $("#inactive-countries-list")[0].childNodes.forEach(c => {
-          if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
-        }
-      );
-      sessionStorage.setItem("initialized", "done");
-      Sort(asc=true);
-    } else {
-      var to_be_modified = [];
-      $("#inactive-countries-list")[0].childNodes.forEach(c => {
-          if (c.tagName === 'DIV') {
-            // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
-            if (sessionStorage.getItem(c.id) === "active" )
-            {
-              to_be_modified.push(c);
-            }
+          var country = $(this)[0].id.split("_")[1];
+          if(ids.includes(country))
+          {
+            $(this).show();
           }
         }
       );
-      to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
-      $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
-      ReorderZones();
+    };
+    
+    function removeElement(element) {
+        var id_to_place = $(element).parent()[0].id;
+        var text_to_place = $(element).parent().data('country-name');
+        $("#inactive-countries-list").append(
+          '<div class="active-filter-selection row" id="' + id_to_place + '">' +
+            '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
+              text_to_place +
+            '</span>' +
+            '<div class="col-6" style="display: flex; justify-content: flex-end;">' +
+              '<button class="btn" onclick="addElement(this)">' +
+                '<i class="fas fa-plus item-icon"></i>' +
+              '</button>' +
+            '</div>' +
+          '</div>' 
+        );
+        translator.lang(curr_lng);
+        $(element).parent().remove();
+        sortCountryNodesAlphabetically();
+        updateListOfZones();
+        sessionStorage.setItem(id_to_place, "inactive");
+        // Reset searchbox
+        $("#search-zone")[0].value = "";
+    };
+    
+    function addElement(element) {
+        // Add to active selection list:
+        var id_to_place = $(element).parent().parent()[0].id;
+        var text_to_place = $(element).parent().parent().data('country-name');
+        $("#selected-countries").append(
+          '<div class="active-filter-selection" id="'+ id_to_place +'" data-country-name="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
+          text_to_place +
+          '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
+        );
+        // Remove from list
+        translator.lang(curr_lng);
+        $(element).parent().parent().remove();
+        sortCountryNodesAlphabetically();
+        updateListOfZones();
+        sessionStorage.setItem(id_to_place, "active");
+        // close modal if open
+        if (($("#country-modal").data('bs.modal') || {})._isShown)
+          $('#country-modal').modal('toggle');
+        // Reset searchbox
+        $("#search-zone")[0].value = "";
+    };
+    
+    function Sort(asc) {
+      var criteria = $("#sort-criteria")[0].value;
+      $(".custom-card").sort(function(a, b) {
+        if (criteria==="nvid") {
+      var aValue = parseInt($(a).find("p")[0].dataset.videos);
+      var bValue = parseInt($(b).find("p")[0].dataset.videos);
+          return (asc ? 1 : -1) * (aValue - bValue);
+        }
+        else if (criteria==="alph") {
+          return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+        }
+      }).appendTo('#zones-list');
+      sessionStorage.setItem("sortCriteria", criteria);
+    if(asc){
+      sessionStorage.setItem("sortOrder", "asc");
+      $("#btn-asc").hide();
+      $("#btn-desc").show();
+    } 
+    else{
+      sessionStorage.setItem("sortOrder", "des");
+      $("#btn-asc").show();
+      $("#btn-desc").hide();
     }
-  };
-  
-  window.addEventListener('load', function(){
-    curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-    translator = $('body').translate({lang: curr_lng, t: dict}); //use English
-    translator.lang(curr_lng);
-    sortCountryNodesAlphabetically();
-    loadSessionStatus();
-  
-    var $cards = $(".custom-card");
-  
-    $("#search-zone").keyup(function() {
-        var val = $.trim(this.value).toLowerCase();
-        if (val === "")
-            $cards.show();
-        else {
-          $cards.hide();
-          $cards.each(function()
-          {
-            if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
-            {
-              $(this).show();
-            }
-          });
-        }
-        // At this point we are only showing zones that matched the search pattern,
-        // Now filter by country if required
-        var $countries = $("#selected-countries")[0].childNodes;
-        var ids = [];
-        $countries.forEach(c => {
-          if (c.id) ids.push(c.id);
-        });
-        if (ids.length === 0)
-        {
-          // No Ids, everything is already ok
-          return;
-        }
-        // IDs ?
-        $cards.each(
-          function()
-          {
-            var country = $(this)[0].id.split("_")[1];
-            if(!ids.includes(country))
-            {
-              $(this).hide();
+    };
+    
+    function ReorderZones() {
+      if (sessionStorage.getItem("sortOrder") === "asc")
+          Sort(asc=true);
+      else if (sessionStorage.getItem("sortOrder") === "des")
+          Sort(asc=true);
+    };
+    
+    function loadSessionStatus() {
+      if (!sessionStorage.getItem("initialized")) {
+        $("#inactive-countries-list")[0].childNodes.forEach(c => {
+            if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
+          }
+        );
+        sessionStorage.setItem("initialized", "done");
+        Sort(asc=true);
+      } else {
+        var to_be_modified = [];
+        $("#inactive-countries-list")[0].childNodes.forEach(c => {
+            if (c.tagName === 'DIV') {
+              // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
+              if (sessionStorage.getItem(c.id) === "active" )
+              {
+                to_be_modified.push(c);
+              }
             }
           }
         );
+        to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
+        $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
+        ReorderZones();
+      }
+    };
+    
+    window.addEventListener('load', function(){
+      curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
+      translator = $('body').translate({lang: curr_lng, t: dict}); //use English
+      translator.lang(curr_lng);
+      sortCountryNodesAlphabetically();
+      loadSessionStatus();
+    
+      var $cards = $(".custom-card");
+    
+      $("#search-zone").keyup(function() {
+          var val = $.trim(this.value).toLowerCase();
+          if (val === "")
+              $cards.show();
+          else {
+            $cards.hide();
+            $cards.each(function()
+            {
+              if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1)
+              {
+                $(this).show();
+              }
+            });
+          }
+          // At this point we are only showing zones that matched the search pattern,
+          // Now filter by country if required
+          var $countries = $("#selected-countries")[0].childNodes;
+          var ids = [];
+          $countries.forEach(c => {
+            if (c.id) ids.push(c.id);
+          });
+          if (ids.length === 0)
+          {
+            // No Ids, everything is already ok
+            return;
+          }
+          // IDs ?
+          $cards.each(
+            function()
+            {
+              var country = $(this)[0].id.split("_")[1];
+              if(!ids.includes(country))
+              {
+                $(this).hide();
+              }
+            }
+          );
+      });
     });
-  });
-</script>
+  </script>  
+</html>
