@@ -36,7 +36,7 @@ def create_sitemap(xml_filename, html_files):
 
 
 if __name__ == "__main__":
-    sitemapFolders = ["templates", "templates/errors", "templates/policy"]
+    sitemapFolders = ["templates", "templates/errors", "templates/policy", "templates/es"]
     create_sitemap("sitemap-main.xml", get_files(sitemapFolders, False, ".html"))
     create_sitemap("sitemap-zones.xml", get_files(["templates/zones"], True, ".html"))
     create_sitemap("sitemap-sectors.xml", get_files(["templates/sectors"], True, ".html"))
