@@ -140,12 +140,24 @@ def static_from_root():
 def zone_cache_key():
     return request.url
 
-# use decorators to link the function to a url
+
 @app.route('/home.html')
 @app.route('/home')
 @app.route('/')
 def home():
-    return render_template('home.html')
+    language_extension = ''
+    if get_locale() == 'es':
+        language_extension = 'es/'
+
+    home_path = '/' + language_extension + 'home' + EXTENSION
+    return render_template(home_path)
+
+
+@app.route('/es/home.html')
+@app.route('/es/home')
+@app.route('/es')
+def home_es():
+    return render_template('/es/home.html')
 
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
