@@ -640,7 +640,24 @@ def load_sector(page, sector_name):
 @app.route('/countries/<string:country_name>')
 @app.route('/templates/countries/<string:country_name>.html')
 def load_country(country_name):
-    return render_template(f'countries/{slugify(country_name)}.html')
+    try:
+
+        language_extension = ''
+        if get_locale() == 'es':
+            language_extension = 'es/'
+
+        page_path = 'countries/' + language_extension + slugify(country_name) + EXTENSION
+        print(page_path)
+
+        return render_template(page_path)
+    except:
+        abort(404)
+
+
+@app.route('/countries/es/<string:country_name>')
+@app.route('/templates/countries/es/<string:country_name>.html')
+def load_country_es(country_name):
+    return render_template(f'countries/es/{slugify(country_name)}.html')
 
 
 @app.route('/states/<string:state_name>')

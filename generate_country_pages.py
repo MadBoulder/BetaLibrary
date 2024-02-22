@@ -29,6 +29,7 @@ def main():
         country_name = country.get("name", [""])[0]
         areas = utils.zone_helpers.get_areas_from_country(country['reduced_code'])
         states=country.get("states", [])
+        overview=country['overview'][0]
         
         area_state_codes = [area.get("state", '') for area in areas]
         state_code_counts = Counter(area_state_codes)
@@ -46,10 +47,27 @@ def main():
             country_name=country_name,
             states=states,
             areas=areas,
-            playlists=playlists['items']
+            playlists=playlists['items'],
+            overview=overview
         )
 
         with open(f'templates/countries/{slugify(country_name)}.html', 'w', encoding='utf-8') as template:
+            template.write(output)
+
+        country_name_es = country.get("name", [""])[1]
+        overview_es=country['overview'][1]
+        template = template_env.get_template(
+            'templates/templates/es/country_layout.html')
+        output = template.render(
+            country_code=country_code,
+            country_name=country_name_es,
+            states=states,
+            areas=areas,
+            playlists=playlists['items'],
+            overview=overview_es
+        )
+
+        with open(f'templates/countries/es/{slugify(country_name)}.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
         for state in states:

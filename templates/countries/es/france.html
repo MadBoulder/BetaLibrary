@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Zonas de Boulder en Francia | MadBoulder</title>
+	<meta name="description" content="Bouldering information and videos of country Descubre todas las 11 Zonas de Boulder en Francia | MadBoulder">
+	
+<link rel="canonical" href="https://www.madboulder.org/countries/france">
+<link rel="alternate" hreflang="en" href="https://www.madboulder.org/countriesfrance">
+<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/countries/france">
+
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/zones.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/country.css') }}" />
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+	<main>
+		
+<div class="zone-header">
+	<div class="container zone-header-tree">
+		<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las Zonas</a>
+	</div>
+	<h1 class="zone-header-title text-bold">
+		11 Zonas de Boulder en Francia
+	</h1>
+</div>
+
+		<div class="container" id="mainContainer">
+			
+	<div class="container">
+		<h2>Boulder en Francia</h2>
+		<p class="country-overview" id="overview">
+			Francia cuenta con possibilidades de boulder ricas y diversaa, siendo Fontainebleau un ícono mundial y a menudo aclamado como una de las mejores zonas de boulder en todo el mundo. Conocido por su extenso bosque de arenisca, Fontainebleau ofrece miles de problemas de boulder, adaptados a diversos estilos de escalada y niveles de habilidad.<br><br>Más allá de Fontainebleau, Francia cuenta con otros destinos destacados de boulder, como Targasonne en los Pirineos, que presenta bloques de granito con placas y desplomes, ofreciendo a los escaladores una amplia gama de grados.<br><br>Le Prieure, cerca de Montpellier, ofrece boulder de arenisca al estilo de Fontainebleau en un pintoresco bosque de robles. Para aquellos que buscan una experiencia costera, Kerlouan, en el extremo noroeste de Francia, ofrece playas de arena y bloques de granito. Además, diversas áreas de boulder de arenisca se encuentran dispersas alrededor de ciudades como Reims, Estrasburgo y Lyon, ofreciendo experiencias de escalada más pequeñas pero de calidad en entornos tranquilos.<br><br>El paisaje de boulder de Francia muestra una fusión armoniosa de belleza natural y formaciones rocosas desafiantes, convirtiéndolo en un destino muy buscado para escaladores de todos los niveles que buscan experiencias diversas y memorables.
+		</p>
+		<div class="ellipsis-container">
+			<span class="ellipsis" id="ellipsis">...</span>
+		</div>
+		<p id="showMoreLink" class="show-more-trigger" onclick="toggleShowMore()">Read more</p>
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+
+				if (checkOverflow(content)) { 
+                    showMoreLink.style.display = "block";
+					ellipsis.style.display = "inline";
+					content.style.marginBottom = "0px"
+                }
+			});
+
+			function checkOverflow(el) { 
+                let curOverf = el.style.overflow; 
+                 
+                if ( !curOverf || curOverf === "visible" ) 
+                    el.style.overflow = "hidden"; 
+                 
+                let isOverflowing = el.clientWidth < el.scrollWidth
+                    || el.clientHeight < el.scrollHeight; 
+                 
+                el.style.overflow = curOverf; 
+                 
+                return isOverflowing; 
+            }
+
+			function toggleShowMore() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+				if (checkOverflow(content)) { 
+                    showMoreLink.textContent = "Show less";
+					content.style.maxHeight = "none";
+					ellipsis.style.display = "none";
+                }
+				else{
+                    showMoreLink.textContent = "Show more";
+					content.style.maxHeight = "100px";
+					ellipsis.style.display = "inline";
+				}
+			}
+		</script>
+	</div>
+	
+	
+	<div class="container">
+		<h2>Lista de 11 Zonas de Boulder</h2>
+		<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: nowrap;">
+			<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+			<!-- Sort order -->
+			<div class="btn-group mb-2 joint-btns">
+				<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+					<select id="sort-criteria" onchange="ReorderZones()">
+						
+						<option value="alph" selected>Alfabeticamente</option>
+						<option value="nvid">Numero de videos</option>
+						
+					</select>
+					<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+						<i class="fas fa-angle-up"></i>
+					</button>
+					<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+						<i class="fas fa-angle-down"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+			
+				<div class="custom-card" id="ailefroide_fr">
+					
+					
+					<a href="/ailefroide" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Ailefroide</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("ailefroide_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 34;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="annot_fr">
+					
+					
+					<a href="/annot" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Annot</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("annot_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/WzprN2nVycs/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 6;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="fontainebleau_fr">
+					
+					
+					<a href="/fontainebleau" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Fontainebleau</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("fontainebleau_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/bdOutNHHFQY/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 383;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="gsnp_fr">
+					
+					
+					<a href="/gsnp" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">GSNP</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("gsnp_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/gqE99xcP-RU/sddefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 4;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="la-capelle_fr">
+					
+					
+					<a href="/la-capelle" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">La Capelle</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("la-capelle_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/vaC34aJnn-8/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 7;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="laramade_fr">
+					
+					
+					<a href="/laramade" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Laramade</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("laramade_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/9uuc7n3oLJA/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 10;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="laurenzoboulderfels_fr">
+					
+					
+					<a href="/laurenzoboulderfels" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Laurenzoboulderfels</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("laurenzoboulderfels_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/9nOZNK2TBuc/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 13;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="orlu_fr">
+					
+					
+					<a href="/orlu" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Orlu</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("orlu_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/zkcxCoiPCbE/sddefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 13;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="pont-de-camps_fr">
+					
+					
+					<a href="/pont-de-camps" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Pont de Camps</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("pont-de-camps_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/XDoIb8PTR1A/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 32;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="riouperoux_fr">
+					
+					
+					<a href="/riouperoux" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Rioupéroux</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("riouperoux_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/4o07jjHJIVU/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 10;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+				<div class="custom-card" id="targasonne_fr">
+					
+					
+					<a href="/targasonne" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">Targasonne</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("targasonne_fr");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "https://i.ytimg.com/vi/YitmF3ybluM/maxresdefault.jpg";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = 446;
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					
+				</div>
+			
+			
+			<script>
+				function Sort(asc) {
+				var criteria = $("#sort-criteria")[0].value;
+				$(".custom-card").sort(function(a, b) {
+					if (criteria==="nvid") {
+					var aValue = parseInt($(a).find("p")[0].dataset.videos);
+					var bValue = parseInt($(b).find("p")[0].dataset.videos);
+					return (asc ? 1 : -1) * (aValue - bValue);
+					}
+					else if (criteria==="alph") {
+					return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+					}
+				}).appendTo('#zones-list');
+				sessionStorage.setItem("sortCriteria", criteria);
+				if(asc){
+					sessionStorage.setItem("sortOrder", "asc");
+					$("#btn-asc").hide();
+					$("#btn-desc").show();
+				} 
+				else{
+					sessionStorage.setItem("sortOrder", "des");
+					$("#btn-asc").show();
+					$("#btn-desc").hide();
+				}
+				};
+				
+				function ReorderZones() {
+				if (sessionStorage.getItem("sortOrder") === "asc")
+					Sort(asc=true);
+				else if (sessionStorage.getItem("sortOrder") === "des")
+					Sort(asc=true);
+				};
+				
+				window.addEventListener('load', function() {
+				var $cards = $(".custom-card");
+				
+				$("#search-zone").keyup(function() {
+					var val = $.trim(this.value).toLowerCase();
+					if (val === "")
+						$cards.show();
+					else {
+						$cards.hide();
+						$cards.each(function(){
+						if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
+							$(this).show();
+						}
+						});
+					}
+				});
+				});
+			</script>
+		</div>
+	</div>
+
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

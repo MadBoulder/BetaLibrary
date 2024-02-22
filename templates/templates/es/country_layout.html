@@ -1,0 +1,226 @@
+{% extends "templates/templates/es/country_page_layout.html" %}
+
+{% block title %}Zonas de Boulder en {{ country_name }}{% endblock %} 
+{% block description %}Descubre todas las {{ areas|length }} Zonas de Boulder en {{ country_name }}{% endblock%} 
+{% block head %}
+<link rel="canonical" href="https://www.madboulder.org/countries/{{country_code}}">
+<link rel="alternate" hreflang="en" href="https://www.madboulder.org/countries{{country_code}}">
+<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/countries/{{country_code}}">
+{% endblock%} 
+
+{% block heading %}
+<div class="zone-header">
+	<div class="container zone-header-tree">
+		<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las Zonas</a>
+	</div>
+	<h1 class="zone-header-title text-bold">
+		{{ areas|length }} Zonas de Boulder en {{ country_name }}
+	</h1>
+</div>
+{% endblock%} 
+
+{% block body %}
+	<div class="container">
+		<h2>Boulder en {{ country_name }}</h2>
+		<p class="country-overview" id="overview">
+			{{ overview }}
+		</p>
+		<div class="ellipsis-container">
+			<span class="ellipsis" id="ellipsis">...</span>
+		</div>
+		<p id="showMoreLink" class="show-more-trigger" onclick="toggleShowMore()">Read more</p>
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+
+				if (checkOverflow(content)) { 
+                    showMoreLink.style.display = "block";
+					ellipsis.style.display = "inline";
+					content.style.marginBottom = "0px"
+                }
+			});
+
+			function checkOverflow(el) { 
+                let curOverf = el.style.overflow; 
+                 
+                if ( !curOverf || curOverf === "visible" ) 
+                    el.style.overflow = "hidden"; 
+                 
+                let isOverflowing = el.clientWidth < el.scrollWidth
+                    || el.clientHeight < el.scrollHeight; 
+                 
+                el.style.overflow = curOverf; 
+                 
+                return isOverflowing; 
+            }
+
+			function toggleShowMore() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+				if (checkOverflow(content)) { 
+                    showMoreLink.textContent = "Show less";
+					content.style.maxHeight = "none";
+					ellipsis.style.display = "none";
+                }
+				else{
+                    showMoreLink.textContent = "Show more";
+					content.style.maxHeight = "100px";
+					ellipsis.style.display = "inline";
+				}
+			}
+		</script>
+	</div>
+	{% if states %}
+		<!--States List-->
+		<div class="container mb-3">
+			<h2>Lista de {{ states|length }} Estados</h2>
+			<input id="search-state" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+			<table id="states-table" class="table table-hover">
+				<thead>
+					<tr>
+						<th scope="col" class="sorting">Sombre</th>
+						<th scope="col" class="sorting">Zonas</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for state in states %}
+						<tr class="state-row">
+							<td>
+								<i class="fas fa-map table-row-icon"></i>
+								<a href="/states/{{state['code']}}" class="table-row-name text-bold">{{ state["name"][0] }}</a>
+							</td>
+							<td>{{ state["count"] }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<script>
+				$(document).ready(function () {
+					$('#states-table').DataTable({
+						paging: false,
+						dom: 'tr'
+					});
+					
+					$("#search-state").trigger("keyup");
+					
+					$("#search-state").keyup(function() {
+						var search_query = $.trim($(this).val());
+						var items = $(".state-row");
+						filter_items_by_query(search_query, items)
+					});
+				});
+			</script>
+		</div>
+	{% endif %}
+	
+	<div class="container">
+		<h2>Lista de {{ areas|length }} Zonas de Boulder</h2>
+		<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: nowrap;">
+			<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+			<!-- Sort order -->
+			<div class="btn-group mb-2 joint-btns">
+				<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+					<select id="sort-criteria" onchange="ReorderZones()">
+						{% raw %}
+						<option value="alph" selected>Alfabeticamente</option>
+						<option value="nvid">Numero de videos</option>
+						{% endraw %}
+					</select>
+					<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+						<i class="fas fa-angle-up"></i>
+					</button>
+					<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+						<i class="fas fa-angle-down"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+			{% for area in areas %}
+				<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
+					{% set found_element = playlists | selectattr('zone_code', 'equalto', area['zone_code']) | first %}
+					{% if found_element %}
+					<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">{{ area['name'] }}</h5>
+								<p class="card-text">
+								</p>
+							</div>
+						</div>
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("{{ area['zone_code'] }}_{{ area['country'] }}");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "{{ found_element.thumbnail }}";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = {{ found_element.video_count }};
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					{% endif %}
+				</div>
+			{% endfor %}
+			
+			<script>
+				function Sort(asc) {
+				var criteria = $("#sort-criteria")[0].value;
+				$(".custom-card").sort(function(a, b) {
+					if (criteria==="nvid") {
+					var aValue = parseInt($(a).find("p")[0].dataset.videos);
+					var bValue = parseInt($(b).find("p")[0].dataset.videos);
+					return (asc ? 1 : -1) * (aValue - bValue);
+					}
+					else if (criteria==="alph") {
+					return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+					}
+				}).appendTo('#zones-list');
+				sessionStorage.setItem("sortCriteria", criteria);
+				if(asc){
+					sessionStorage.setItem("sortOrder", "asc");
+					$("#btn-asc").hide();
+					$("#btn-desc").show();
+				} 
+				else{
+					sessionStorage.setItem("sortOrder", "des");
+					$("#btn-asc").show();
+					$("#btn-desc").hide();
+				}
+				};
+				
+				function ReorderZones() {
+				if (sessionStorage.getItem("sortOrder") === "asc")
+					Sort(asc=true);
+				else if (sessionStorage.getItem("sortOrder") === "des")
+					Sort(asc=true);
+				};
+				
+				window.addEventListener('load', function() {
+				var $cards = $(".custom-card");
+				
+				$("#search-zone").keyup(function() {
+					var val = $.trim(this.value).toLowerCase();
+					if (val === "")
+						$cards.show();
+					else {
+						$cards.hide();
+						$cards.each(function(){
+						if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
+							$(this).show();
+						}
+						});
+					}
+				});
+				});
+			</script>
+		</div>
+	</div>
+{% endblock %}

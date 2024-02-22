@@ -1,30 +1,86 @@
 {% extends "templates/templates/country_page_layout.html" %}
 
-{% block title %}{% raw %}{{ _("Bouldering Areas in") }}{% endraw %} {{ country_name }}{% endblock %} 
-{% block description %}{% raw %}{{ _("List fo Bouldering Areas in") }}{% endraw %} {{ country_name }}{% endblock%} 
+{% block title %}Bouldering Areas in {{ country_name }}{% endblock %} 
+{% block description %}Discover all {{ areas|length }} Bouldering Areas in {{ country_name }}{% endblock%} 
 {% block head %}
 <link rel="canonical" href="https://www.madboulder.org/countries/{{country_code}}">
+<link rel="alternate" hreflang="en" href="https://www.madboulder.org/countries{{country_code}}">
+<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/countries/{{country_code}}">
 {% endblock%} 
 
-{% block name %}{% raw %}{{ _("Bouldering Areas in") }}{% endraw %}  {{ country_name }} {% endblock %} 
-
-{% block tree %}
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
-{% endblock %} 
+{% block heading %}
+<div class="zone-header">
+	<div class="container zone-header-tree">
+		<a href="/bouldering-areas-list" class="zone-header-tree-link">All Areas</a>
+	</div>
+	<h1 class="zone-header-title text-bold">
+		{{ areas|length }} Bouldering Areas in {{ country_name }}
+	</h1>
+</div>
+{% endblock%} 
 
 {% block body %}
+	<div class="container">
+		<h2>Bouldering in {{ country_name }}</h2>
+		<p class="country-overview" id="overview">
+			{{ overview }}
+		</p>
+		<div class="ellipsis-container">
+			<span class="ellipsis" id="ellipsis">...</span>
+		</div>
+		<p id="showMoreLink" class="show-more-trigger" onclick="toggleShowMore()">Show more</p>
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+
+				if (checkOverflow(content)) { 
+                    showMoreLink.style.display = "block";
+					ellipsis.style.display = "inline";
+					content.style.marginBottom = "0px";
+                }
+			});
+
+			function checkOverflow(el) { 
+                let curOverf = el.style.overflow; 
+                 
+                if ( !curOverf || curOverf === "visible" ) 
+                    el.style.overflow = "hidden"; 
+                 
+                let isOverflowing = el.clientWidth < el.scrollWidth
+                    || el.clientHeight < el.scrollHeight; 
+                 
+                el.style.overflow = curOverf; 
+                 
+                return isOverflowing; 
+            }
+
+			function toggleShowMore() {
+				var content = document.getElementById("overview");
+				var showMoreLink = document.getElementById("showMoreLink");
+				if (checkOverflow(content)) { 
+                    showMoreLink.textContent = "Show less";
+					content.style.maxHeight = "none";
+					ellipsis.style.display = "none";
+                }
+				else{
+                    showMoreLink.textContent = "Show more";
+					content.style.maxHeight = "100px";
+					ellipsis.style.display = "inline";
+				}
+			}
+		</script>
+	</div>
 	{% if states %}
 		<!--States List-->
-		<h2 style="clear:both;display:block" class="">{% raw %} {{ _("List of States") }} {% endraw %}</h2>
-		<div class="container">
-			<input id="search-state" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+		<div class="container mb-3">
+			<h2>List of {{ states|length }} States</h2>
+			<input id="search-state" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
 			<table id="states-table" class="table table-hover">
 				<thead>
 					<tr>
-						{% raw %}
-						<th scope="col" class="sorting">{{ _("Name") }}</th>
-						<th scope="col" class="sorting">{{ _("Areas") }}</th>
-						{% endraw %}
+						<th scope="col" class="sorting">Name</th>
+						<th scope="col" class="sorting">Areas</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -57,111 +113,114 @@
 			</script>
 		</div>
 	{% endif %}
-	<h2 style="clear:both;display:block" class="">{% raw %} {{ _("List of Areas") }} {% endraw %}</h2>
-	<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
-		<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-		<!-- Sort order -->
-		<div class="btn-group mb-2 joint-btns">
-			<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
-				<select id="sort-criteria" onchange="ReorderZones()">
-					{% raw %}
-					<option value="alph" selected>{{ _("Alphabetically") }}</option>
-					<option value="nvid">{{ _("Number of videos") }}</option>
-					{% endraw %}
-				</select>
-				<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
-					<i class="fas fa-angle-up"></i>
-				</button>
-				<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
-					<i class="fas fa-angle-down"></i>
-				</button>
+	
+	<div class="container">
+		<h2>List of {{ areas|length }} Bouldering Areas</h2>
+		<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: nowrap;">
+			<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+			<!-- Sort order -->
+			<div class="btn-group mb-2 joint-btns">
+				<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+					<select id="sort-criteria" onchange="ReorderZones()">
+						{% raw %}
+						<option value="alph" selected>Alphabetically</option>
+						<option value="nvid">Number of videos</option>
+						{% endraw %}
+					</select>
+					<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+						<i class="fas fa-angle-up"></i>
+					</button>
+					<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+						<i class="fas fa-angle-down"></i>
+					</button>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
-		{% for area in areas %}
-			<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
-				{% set found_element = playlists | selectattr('zone_code', 'equalto', area['zone_code']) | first %}
-				{% if found_element %}
-				<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
-					<div class="card-body">
-						<div class="card-body-image-container">
-							<div class="card-body-image-container-container">
-								<img loading="lazy" class="card-body-image">
+		<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+			{% for area in areas %}
+				<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
+					{% set found_element = playlists | selectattr('zone_code', 'equalto', area['zone_code']) | first %}
+					{% if found_element %}
+					<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
+						<div class="card-body">
+							<div class="card-body-image-container">
+								<div class="card-body-image-container-container">
+									<img loading="lazy" class="card-body-image">
+								</div>
+							</div>
+							<div class="card-body-title-container">
+								<h5 class="text-bold card-title">{{ area['name'] }}</h5>
+								<p class="card-text">
+								</p>
 							</div>
 						</div>
-						<div class="card-body-title-container">
-							<h5 class="text-bold card-title">{{ area['name'] }}</h5>
-							<p class="card-text">
-							</p>
-						</div>
-					</div>
-				</a>
-				<script>
-					document.addEventListener("DOMContentLoaded", function() {
-                        var card = document.getElementById("{{ area['zone_code'] }}_{{ area['country'] }}");
-                        var cardImage = card.querySelector(".card-body-image");
-                        cardImage.src = "{{ found_element.thumbnail }}";
-                        var cardText = card.querySelector(".card-text");
-                        var videoCount = {{ found_element.video_count }};
-                        cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-                        cardText.setAttribute("data-videos", videoCount);
-                    });		
-				</script>
-				{% endif %}
-			</div>
-		{% endfor %}
-		
-		<script>
-			function Sort(asc) {
-			  var criteria = $("#sort-criteria")[0].value;
-			  $(".custom-card").sort(function(a, b) {
-				if (criteria==="nvid") {
-				  var aValue = parseInt($(a).find("p")[0].dataset.videos);
-				  var bValue = parseInt($(b).find("p")[0].dataset.videos);
-				  return (asc ? 1 : -1) * (aValue - bValue);
+					</a>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var card = document.getElementById("{{ area['zone_code'] }}_{{ area['country'] }}");
+							var cardImage = card.querySelector(".card-body-image");
+							cardImage.src = "{{ found_element.thumbnail }}";
+							var cardText = card.querySelector(".card-text");
+							var videoCount = {{ found_element.video_count }};
+							cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+							cardText.setAttribute("data-videos", videoCount);
+						});		
+					</script>
+					{% endif %}
+				</div>
+			{% endfor %}
+			
+			<script>
+				function Sort(asc) {
+				var criteria = $("#sort-criteria")[0].value;
+				$(".custom-card").sort(function(a, b) {
+					if (criteria==="nvid") {
+					var aValue = parseInt($(a).find("p")[0].dataset.videos);
+					var bValue = parseInt($(b).find("p")[0].dataset.videos);
+					return (asc ? 1 : -1) * (aValue - bValue);
+					}
+					else if (criteria==="alph") {
+					return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+					}
+				}).appendTo('#zones-list');
+				sessionStorage.setItem("sortCriteria", criteria);
+				if(asc){
+					sessionStorage.setItem("sortOrder", "asc");
+					$("#btn-asc").hide();
+					$("#btn-desc").show();
+				} 
+				else{
+					sessionStorage.setItem("sortOrder", "des");
+					$("#btn-asc").show();
+					$("#btn-desc").hide();
 				}
-				else if (criteria==="alph") {
-				  return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-				}
-			  }).appendTo('#zones-list');
-			  sessionStorage.setItem("sortCriteria", criteria);
-			  if(asc){
-				  sessionStorage.setItem("sortOrder", "asc");
-				  $("#btn-asc").hide();
-				  $("#btn-desc").show();
-			  } 
-			  else{
-				  sessionStorage.setItem("sortOrder", "des");
-				  $("#btn-asc").show();
-				  $("#btn-desc").hide();
-			  }
-			};
-			
-			function ReorderZones() {
-			  if (sessionStorage.getItem("sortOrder") === "asc")
-				  Sort(asc=true);
-			  else if (sessionStorage.getItem("sortOrder") === "des")
-				  Sort(asc=true);
-			};
-			
-			window.addEventListener('load', function() {
-			  var $cards = $(".custom-card");
-			
-			  $("#search-zone").keyup(function() {
-				  var val = $.trim(this.value).toLowerCase();
-				  if (val === "")
-					  $cards.show();
-				  else {
-					$cards.hide();
-					$cards.each(function(){
-					  if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
-						$(this).show();
-					  }
-					});
-				  }
-			  });
-			});
-		  </script>
+				};
+				
+				function ReorderZones() {
+				if (sessionStorage.getItem("sortOrder") === "asc")
+					Sort(asc=true);
+				else if (sessionStorage.getItem("sortOrder") === "des")
+					Sort(asc=true);
+				};
+				
+				window.addEventListener('load', function() {
+				var $cards = $(".custom-card");
+				
+				$("#search-zone").keyup(function() {
+					var val = $.trim(this.value).toLowerCase();
+					if (val === "")
+						$cards.show();
+					else {
+						$cards.hide();
+						$cards.each(function(){
+						if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
+							$(this).show();
+						}
+						});
+					}
+				});
+				});
+			</script>
+		</div>
 	</div>
 {% endblock %}
