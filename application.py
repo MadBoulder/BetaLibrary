@@ -670,6 +670,9 @@ def load_state(state_name):
 @app.route('/maps/<string:area>')
 @app.route('/maps/<string:area>.html')
 @app.route('/templates/maps/<string:area>.html')
+@app.route('/es/maps/<string:area>')
+@app.route('/es/maps/<string:area>.html')
+@app.route('/es/templates/maps/<string:area>.html')
 def render_area(area):
     try:
         return render_template('maps/' + area + EXTENSION)
