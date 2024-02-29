@@ -12,8 +12,9 @@ def main():
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
 
-    if not os.path.exists(f'templates/sectors'):
-        os.mkdir(f'templates/sectors')
+    
+    dir_path_countries = 'templates/sectors'
+    utils.helpers.empty_and_create_dir(dir_path_countries)
 
     zone_data = handle_channel_data.get_zone_data()
 

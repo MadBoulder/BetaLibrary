@@ -4,10 +4,12 @@ import json
 import html
 import os
 import os.path
+import shutil
 import utils.zone_helpers
 from googleapiclient.discovery import build
 from werkzeug.utils import secure_filename
 import handle_channel_data
+from slugify import slugify
 
 
 MAX_ITEMS_API_QUERY = 50
@@ -276,6 +278,38 @@ def get_number_of_videos_for_zone(zone_name):
             return item['video_count']
             
     return 0
+
+
+def get_contributors_list():
+    print("get_contributors_list")
+    video_data = handle_channel_data.get_video_data()
+
+    contributors = {}
+    for video in video_data['items']:
+        climber_name = video['climber']
+        climber_code = slugify(climber_name)
+        if climber_code not in contributors:
+            contributors[climber_code] = {'name': climber_name, 'videos': []}
+            
+        contributors[climber_code]['name'] = climber_name
+        contributors[climber_code]['videos'].append(video)
+
+    return contributors
+
+
+def empty_and_create_dir(dir_path):
+    if os.path.exists(dir_path):
+        for filename in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+    else:
+        os.mkdir(dir_path)
 
 
 def generate_download_url(area, filename):

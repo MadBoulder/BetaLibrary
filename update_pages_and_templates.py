@@ -3,6 +3,7 @@ from generate_maps import main as generate_maps_main
 from generate_country_pages import main as generate_country_main
 from generate_problem_pages import main as generate_problem_pages_main
 from generate_sector_pages import main as generate_sector_pages
+from generate_contributor_pages import main as generate_contributor_pages
 
 if __name__ == "__main__":
     print("\nUpdating and adding maps\n")
@@ -15,3 +16,5 @@ if __name__ == "__main__":
     generate_problem_pages_main()
     print("\nUpdating and adding sector pages\n")
     generate_sector_pages()
+    print("\nUpdating and adding contributor pages\n")
+    generate_contributor_pages()

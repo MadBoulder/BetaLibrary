@@ -1,21 +1,18 @@
 from collections import Counter
-import os
 from jinja2 import Environment, FileSystemLoader
 import utils.zone_helpers
+import utils.helpers
 import handle_channel_data
 from slugify import slugify
 
 
 def main():
-    """
-    Generate html templates for all the countries listed in the countries file
-    """
-
-    if not os.path.exists(f'templates/countries'):
-        os.mkdir(f'templates/countries')
-
-    if not os.path.exists(f'templates/states'):
-        os.mkdir(f'templates/states')
+    dir_path_countries = 'templates/countries'
+    utils.helpers.empty_and_create_dir(dir_path_countries)
+    dir_path_countries_es = 'templates/countries/es'
+    utils.helpers.empty_and_create_dir(dir_path_countries_es)
+    dir_path_states = 'templates/states'
+    utils.helpers.empty_and_create_dir(dir_path_states)
 
     country_data = handle_channel_data.get_country_data()
     playlists = handle_channel_data.get_playlist_data()

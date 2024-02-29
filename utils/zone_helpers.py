@@ -14,8 +14,6 @@ def get_problems_from_zone_name(zone_name):
         data = json.load(f)
     # filter data by zone and extract problem name
     problems = [p for p in data['items'] if p['zone'] == zone_name]
-    for p in problems:
-        p['name'] = get_problem_name(p)
     return problems
     
 def get_zone_view_count(zone_name):
@@ -27,37 +25,6 @@ def get_zone_view_count_from_zone_code(zone_code):
     problems = get_problems_from_zone_code(zone_code)
     total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
     return total_views
-
-def get_problem_name(problem_data):
-    """
-    Ugly function to remove pieces from the video 
-    title until we are left with the problem name
-    """
-    # remove grade from title?
-    name = problem_data['name']
-    if name == 'Unknown':
-        name = problem_data['title'].replace(
-            problem_data.get('zone', ''), ''
-        ).replace(
-            problem_data.get('grade', '').lower(), ''
-        ).replace(
-            problem_data.get('grade', '').upper(), ''
-        ).replace(
-            '(sit)',
-            ''
-        ).replace(
-            '(stand)',
-            ''
-        ).replace(
-            '(crouching start)',
-            ''
-        ).strip()
-
-        if name[-1] == '.':
-            name = name[:-1].strip()
-        if name[-1] == ',':
-            name = name[:-1].strip()
-    return name
     
     
 def get_problems_from_sector(problems_zone, sector_code):

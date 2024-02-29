@@ -626,7 +626,11 @@ def get_area_page_stats():
 @app.route('/problems/<string:page>/<string:problem_name>.html')
 @app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
-    return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
+    try:
+        return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
+    except:
+        abort(404)
+
     
     
 @app.route('/sectors/<string:page>/<string:sector_name>')
@@ -634,7 +638,10 @@ def load_problem(page, problem_name):
 @app.route('/sectors/<string:page>/<string:sector_name>.html')
 @app.route('/<string:page>/sector/<string:sector_name>') #deprecated
 def load_sector(page, sector_name):
-    return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
+    try:
+        return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
+    except:
+        abort(404)
 
 
 @app.route('/countries/<string:country_name>')
@@ -657,13 +664,28 @@ def load_country(country_name):
 @app.route('/countries/es/<string:country_name>')
 @app.route('/templates/countries/es/<string:country_name>.html')
 def load_country_es(country_name):
-    return render_template(f'countries/es/{slugify(country_name)}.html')
+    try:
+        return render_template(f'countries/es/{slugify(country_name)}.html')
+    except:
+        abort(404)
 
 
 @app.route('/states/<string:state_name>')
 @app.route('/templates/states/<string:state_name>.html')
 def load_state(state_name):
-    return render_template(f'states/{slugify(state_name)}.html')
+    try:
+        return render_template(f'states/{slugify(state_name)}.html')
+    except:
+        abort(404)
+
+
+@app.route('/contributors/<string:contributor_name>')
+@app.route('/templates/contributors/<string:contributor_name>.html')
+def load_contributor(contributor_name):
+    try:
+        return render_template(f'contributors/{slugify(contributor_name)}.html')
+    except:
+        abort(404)
 
 
 # this route is used for rendering maps inside an iframe

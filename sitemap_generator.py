@@ -43,6 +43,7 @@ if __name__ == "__main__":
     create_sitemap("sitemap-problems.xml", get_files(["templates/problems"], True, ".html"))
     create_sitemap("sitemap-countries.xml", get_files(["templates/countries"], True, ".html"))
     create_sitemap("sitemap-states.xml", get_files(["templates/states"], True, ".html"))
+    create_sitemap("sitemap-contributors.xml", get_files(["templates/contributors"], True, ".html"))
     create_sitemap("sitemap-pdfs.xml", get_files(["data/zones"], True, ".pdf"))
     
     

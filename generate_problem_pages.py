@@ -7,12 +7,15 @@ from slugify import slugify
 
 LINK_FIELD = 'url'
 CLIMBER_FIELD = 'climber'
+CLIMBER_CODE_FIELD = 'climber_code'
 TITLE_FIELD = 'title'
 NAME_FIELD = 'name'
 GRADE_FIELD = 'grade'
 GRADE_WITH_INFO_FIELD = 'grade_with_info'
 ZONE_FIELD = 'zone'
+ZONE_CODE_FIELD = 'zone_code'
 SECTOR_FIELD = 'sector'
+SECTOR_CODE_FIELD = 'sector_code'
 
 def get_embed_url(full_url):
     return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
@@ -24,11 +27,14 @@ def main():
     """
     zone_data = handle_channel_data.get_zone_data()
 
+    dir_path_countries = 'templates/problems'
+    utils.helpers.empty_and_create_dir(dir_path_countries)
+
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
     for zone in zone_data['items']:
-        zone_code = zone['zone_code']
+        zone_code = zone[ZONE_CODE_FIELD]
         problems = utils.zone_helpers.get_problems_from_zone_code(zone_code)
 
         #country
@@ -39,20 +45,21 @@ def main():
         state_code = state.get('code','') if state else ''
         state_name = state.get('name','')[0] if state else ''
 
+
         for problem in problems:
-            file_name = slugify(problem[NAME_FIELD]) + '-' + slugify(problem[GRADE_WITH_INFO_FIELD])
+            file_name = problem['secure']
             template = template_env.get_template(
                 'templates/templates/problem-layout.html')
             output = template.render(
                 climber=problem[CLIMBER_FIELD],
+                climber_code=problem[CLIMBER_CODE_FIELD],
                 name=problem[NAME_FIELD],
-                name_code=slugify(problem[NAME_FIELD]),
                 title=problem[TITLE_FIELD],
                 grade=problem[GRADE_WITH_INFO_FIELD],
                 zone=problem[ZONE_FIELD],
                 zone_code=zone_code,
                 sector=problem[SECTOR_FIELD],
-                sector_code=slugify(problem[SECTOR_FIELD]),
+                sector_code=problem[SECTOR_CODE_FIELD],
                 video_url=get_embed_url(problem[LINK_FIELD]),
                 country_code=country.get('code',''),
                 country_name=country_name,

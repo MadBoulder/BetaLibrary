@@ -246,13 +246,56 @@ def process_climber_data(infile=None, data=None):
 def process_zone_data(infile=None, data=None):
     video_data = load_data(infile, data)
     zone_regex = r'Zone: \s*?(.*?)(?:\n|$)'
-    return match_regex_and_add_field(zone_regex, 'description', 'zone', video_data)
+    return  match_regex_and_add_field(zone_regex, 'description', 'zone', video_data)
 
 
 def process_sector_data(infile=None, data=None):
     video_data = load_data(infile, data)
     sector_regex = r'Sector: \s*?(.*?)(?:\n|$)'
     return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
+
+def process_all_data(infile=None, data=None):
+    video_data = load_data(infile, data)
+    for video in video_data:
+        video['name'] = get_problem_name(video)
+        video['secure'] = slugify(video['name']) + '-'+ slugify(video['grade_with_info'])
+        video['zone_code'] = slugify(video['zone'])
+        video['sector_code'] = slugify(video['sector'])
+        video['climber_code'] = slugify(video['climber'])
+
+    return video_data
+
+
+def get_problem_name(problem_data):
+    """
+    Ugly function to remove pieces from the video 
+    title until we are left with the problem name
+    """
+    # remove grade from title?
+    name = problem_data['name']
+    if name == 'Unknown':
+        name = problem_data['title'].replace(
+            problem_data.get('zone', ''), ''
+        ).replace(
+            problem_data.get('grade', '').lower(), ''
+        ).replace(
+            problem_data.get('grade', '').upper(), ''
+        ).replace(
+            '(sit)',
+            ''
+        ).replace(
+            '(stand)',
+            ''
+        ).replace(
+            '(crouching start)',
+            ''
+        ).strip()
+
+        if name[-1] == '.':
+            name = name[:-1].strip()
+        if name[-1] == ',':
+            name = name[:-1].strip()
+    return name
 
 
 def update_local_database(
@@ -314,6 +357,7 @@ def process_video_data_local(
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)
+    processed_data = process_all_data(data=processed_data)
     
     with open(outfile, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
@@ -325,7 +369,10 @@ def process_video_data_local(
         del video['stats']
         del video['description']
         del video['id']
-        del video['date']
+        del video['secure']
+        del video['zone_code']
+        del video['climber_code']
+        del video['sector_code']
     
     with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
