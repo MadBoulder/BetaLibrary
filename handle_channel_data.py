@@ -535,7 +535,7 @@ def regenerate_firebase_data(is_update=True):
     country_data = get_country_data_local()
     root.child('country_data').set(country_data)
     
-    num_climbers = len(list({video['climber'] for video in video_data['items']}))
+    num_climbers = len(list({slugify(video['climber']) for video in video_data['items']}))
     root.child('contributor_count').set(num_climbers)
 
 
