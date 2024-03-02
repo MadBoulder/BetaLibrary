@@ -10,6 +10,7 @@
 
 {% block tree %}
 	<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
+	{% if zone_added %}
 	 > 
 	<a href="/countries/{{country_code}}" class="zone-header-tree-link">{{ country_name }}</a>
 	{% if state_code %}
@@ -20,6 +21,7 @@
 	<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
 	 > 
 	<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
+	{% endif %}
 {% endblock %} 
 
 {% block body %}
@@ -31,8 +33,13 @@
 	<div>
 		<p> {% raw %}{{ _("Name") }}{% endraw %}: {{ name }} </p>
 		<p> {% raw %}{{ _("Grade") }}{% endraw %}: {{grade}} </p>
-		<p> {% raw %}{{ _("Zone") }}{% endraw %}: <a href="/{{zone_code}}">{{ zone }}</a></p>
-		<p> {% raw %}{{ _("Sector") }}{% endraw %}: <a href="/sectors/{{zone_code}}/{{sector_code}}">{{ sector }}</a></p>
+		{% if zone_added %}
+			<p> {% raw %}{{ _("Zone") }}{% endraw %}: <a href="/{{zone_code}}">{{ zone }}</a></p>
+			<p> {% raw %}{{ _("Sector") }}{% endraw %}: <a href="/sectors/{{zone_code}}/{{sector_code}}">{{ sector }}</a></p>
+		{% else %}
+			<p> {% raw %}{{ _("Zone") }}{% endraw %}: {{ zone }}</p>
+			<p> {% raw %}{{ _("Sector") }}{% endraw %}: {{ sector }}</p>
+		{% endif %}
 		<p> {% raw %}{{ _("Climber") }}{% endraw %}: <a href="/contributors/{{climber_code}}">{{ climber }}</a></p>
 	</div>
 {% endblock %}

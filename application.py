@@ -460,8 +460,7 @@ def render_about_us():
         },
         {
             'text': _('Videos'),
-            'data': 8850
-            #channel_info['items'][0]['statistics']['videoCount']
+            'data': handle_channel_data.get_video_count()
         }
     ]
     return render_template('about-us.html', stats_list=stats_list)

@@ -297,6 +297,35 @@ def get_contributors_list():
     return contributors
 
 
+def format_views(number):
+    if number >= 1_000_000:
+        formatted_number = number / 1_000_000
+        return f"{formatted_number:.2f}M".rstrip('0').rstrip('.') if formatted_number < 10 else f"{formatted_number:.1f}M".rstrip('0').rstrip('.') if formatted_number < 100 else f"{int(formatted_number)}M"
+    elif number >= 1_000:
+        formatted_number = number / 1_000
+        return f"{formatted_number:.2f}k".rstrip('0').rstrip('.') if formatted_number < 10 else f"{formatted_number:.1f}k".rstrip('0').rstrip('.') if formatted_number < 100 else f"{int(formatted_number)}k"
+    else:
+        return str(number)
+
+
+def get_all_areas_list():
+    print("get_all_areas_list")
+    video_data = handle_channel_data.get_video_data()
+
+    all_areas = list({video['zone_code'] for video in video_data['items']})
+
+    return all_areas
+
+
+def find_item(json_data, key, value):
+    items = json_data.get('items', [])
+    
+    for item in items:
+        if item.get(key) == value:
+            return item
+    return None
+
+
 def empty_and_create_dir(dir_path):
     if os.path.exists(dir_path):
         for filename in os.listdir(dir_path):

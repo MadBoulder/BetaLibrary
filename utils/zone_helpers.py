@@ -4,22 +4,11 @@ import handle_channel_data
 
 
 def get_problems_from_zone_code(zone_code):
-    with open(f'data/zones/{zone_code}/{zone_code}.json', 'r', encoding='utf-8') as z:
-        zone_name = json.load(z)['name']
-    return get_problems_from_zone_name(zone_name)
-    
-    
-def get_problems_from_zone_name(zone_name):
     with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
-    # filter data by zone and extract problem name
-    problems = [p for p in data['items'] if p['zone'] == zone_name]
+    problems = [p for p in data['items'] if p['zone_code'] == zone_code]
     return problems
     
-def get_zone_view_count(zone_name):
-    problems = get_problems_from_zone_name(zone_name)
-    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
-    return total_views
     
 def get_zone_view_count_from_zone_code(zone_code):
     problems = get_problems_from_zone_code(zone_code)

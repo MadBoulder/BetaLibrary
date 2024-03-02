@@ -537,6 +537,9 @@ def regenerate_firebase_data(is_update=True):
     
     num_climbers = len(list({slugify(video['climber']) for video in video_data['items']}))
     root.child('contributor_count').set(num_climbers)
+    
+    num_videos = len(video_data['items'])
+    root.child('video_count').set(num_videos)
 
 
 def get_video_data():
@@ -547,6 +550,9 @@ def get_video_data_search_optimized():
 
 def get_contributors_count():
     return get_element_from_firebase('contributor_count')
+
+def get_video_count():
+    return get_element_from_firebase('video_count')
 
 def get_playlist_data():
     return get_element_from_firebase('playlist_data')

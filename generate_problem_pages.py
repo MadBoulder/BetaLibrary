@@ -25,7 +25,8 @@ def main():
     Generate html templates for all the problems listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
-    zone_data = handle_channel_data.get_zone_data()
+    zones_data = handle_channel_data.get_zone_data()
+    all_areas_list = utils.helpers.get_all_areas_list()
 
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -33,17 +34,27 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for zone in zone_data['items']:
-        zone_code = zone[ZONE_CODE_FIELD]
+    for zone_code in all_areas_list:
+        print("Generating Problems for " + zone_code)
+        zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
+        zone_added = zone_data is not None
+
         problems = utils.zone_helpers.get_problems_from_zone_code(zone_code)
 
         #country
-        country = utils.zone_helpers.get_country_from_code(zone['country'])
-        country_name = country.get('name','')[0] if country else ''
+        country_name = ''
+        country_code = ''
+        if zone_data:
+            country = utils.zone_helpers.get_country_from_code(zone_data.get('country',''))
+            country_code = country.get('code','') if country else ''
+            country_name = country.get('name','')[0] if country else ''
 
-        state = utils.zone_helpers.get_state_from_code(zone.get('state',''))
-        state_code = state.get('code','') if state else ''
-        state_name = state.get('name','')[0] if state else ''
+        state_name = ''
+        state_code = ''
+        if zone_data:
+            state = utils.zone_helpers.get_state_from_code(zone_data.get('state',''))
+            state_code = state.get('code','') if state else ''
+            state_name = state.get('name','')[0] if state else ''
 
 
         for problem in problems:
@@ -61,11 +72,12 @@ def main():
                 sector=problem[SECTOR_FIELD],
                 sector_code=problem[SECTOR_CODE_FIELD],
                 video_url=get_embed_url(problem[LINK_FIELD]),
-                country_code=country.get('code',''),
+                country_code=country_code,
                 country_name=country_name,
                 state_code=state_code,
                 state_name=state_name,
-                file_name=file_name
+                file_name=file_name,
+                zone_added=zone_added
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')

@@ -15,6 +15,7 @@ def main():
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
+    template_env.filters['format_views'] = utils.helpers.format_views
 
     template = template_env.get_template(
         'templates/templates/contributors_list_layout.html')
