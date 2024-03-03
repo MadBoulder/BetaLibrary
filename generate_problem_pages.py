@@ -16,6 +16,8 @@ ZONE_FIELD = 'zone'
 ZONE_CODE_FIELD = 'zone_code'
 SECTOR_FIELD = 'sector'
 SECTOR_CODE_FIELD = 'sector_code'
+BOULDER_FIELD = 'boulder'
+BOULDER_CODE_FIELD = 'boulder_code'
 
 def get_embed_url(full_url):
     return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
@@ -27,6 +29,8 @@ def main():
     """
     zones_data = handle_channel_data.get_zone_data()
     all_areas_list = utils.helpers.get_all_areas_list()
+    
+    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in handle_channel_data.get_boulder_data()['items']}
 
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -56,8 +60,16 @@ def main():
             state_code = state.get('code','') if state else ''
             state_name = state.get('name','')[0] if state else ''
 
-
         for problem in problems:
+            coordinates = None
+            boulder_code = ''
+            if zone_code in boulders:
+                boulder_code = problem.get(BOULDER_CODE_FIELD)
+                if boulder_code and boulder_code in boulders[zone_code]:
+                    coordinates = boulders[zone_code][boulder_code]
+            
+            boulder_name = problem.get(BOULDER_FIELD, '')
+
             file_name = problem['secure']
             template = template_env.get_template(
                 'templates/templates/problem-layout.html')
@@ -77,7 +89,10 @@ def main():
                 state_code=state_code,
                 state_name=state_name,
                 file_name=file_name,
-                zone_added=zone_added
+                zone_added=zone_added,
+                coordinates=coordinates,
+                boulder_code=boulder_code,
+                boulder_name=boulder_name
             )
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')

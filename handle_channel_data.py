@@ -254,6 +254,13 @@ def process_sector_data(infile=None, data=None):
     sector_regex = r'Sector: \s*?(.*?)(?:\n|$)'
     return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
 
+
+def process_sector_data(infile=None, data=None):
+    video_data = load_data(infile, data)
+    sector_regex = r'Boulder: \s*?(.*?)(?:\n|$)'
+    return match_regex_and_add_field(sector_regex, 'description', 'boulder', video_data)
+
+
 def process_all_data(infile=None, data=None):
     video_data = load_data(infile, data)
     for video in video_data:
@@ -262,6 +269,7 @@ def process_all_data(infile=None, data=None):
         video['zone_code'] = slugify(video['zone'])
         video['sector_code'] = slugify(video['sector'])
         video['climber_code'] = slugify(video['climber'])
+        video['boulder_code'] = slugify(video['boulder'])
 
     return video_data
 
@@ -535,6 +543,9 @@ def regenerate_firebase_data(is_update=True):
     country_data = get_country_data_local()
     root.child('country_data').set(country_data)
     
+    country_data = get_boulder_data_local()
+    root.child('boulder_data').set(country_data)
+    
     num_climbers = len(list({slugify(video['climber']) for video in video_data['items']}))
     root.child('contributor_count').set(num_climbers)
     
@@ -562,6 +573,9 @@ def get_zone_data():
 
 def get_country_data():
     return get_element_from_firebase('country_data')
+
+def get_boulder_data():
+    return get_element_from_firebase('boulder_data')
     
 def get_element_from_firebase(element_name):
     with firebase_lock:
@@ -620,6 +634,13 @@ def get_zone_data_local():
 def get_country_data_local():
     zone_data = {}
     with open('data/countries.json', 'r', encoding='utf-8') as f:
+        zone_data = json.load(f)
+    return zone_data
+    
+
+def get_boulder_data_local():
+    zone_data = {}
+    with open('data/channel/boulder_data.json', 'r', encoding='utf-8') as f:
         zone_data = json.load(f)
     return zone_data
 

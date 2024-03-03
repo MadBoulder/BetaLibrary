@@ -289,10 +289,11 @@ def get_contributors_list():
         climber_name = video['climber']
         climber_code = slugify(climber_name)
         if climber_code not in contributors:
-            contributors[climber_code] = {'name': climber_name, 'videos': []}
+            contributors[climber_code] = {'name': climber_name, 'videos': [], 'view_count': 0}
             
         contributors[climber_code]['name'] = climber_name
         contributors[climber_code]['videos'].append(video)
+        contributors[climber_code]['view_count'] += int(video['stats']['viewCount'])
 
     return contributors
 

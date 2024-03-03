@@ -1,45 +1,114 @@
-{% extends "templates/templates/problem-page-layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ name }} {{grade}} Boulder Problem in {{ zone }} | MadBoulder</title>
+	<meta name="description" content="Videos of {{ name }} Boulder Problem in {{ zone }} climbed by {{ climber }} | MadBoulder">
+	
+	{% raw %}
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	{% endraw %}
 
-{% block title %}{{ name }} {{grade}} Boulder Problem in {{ zone }}{% endblock %} 
-{% block description %}Videos of {{ name }} Boulder Problem in {{ zone }} climbed by {{ climber }}{% endblock%} 
-{% block head %}
-<link rel="canonical" href="https://www.madboulder.org/problems/{{zone_code}}/{{file_name}}">
-{% endblock%} 
-
-{% block problem_name %} {{ title }} {% endblock %} 
-
-{% block tree %}
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
-	{% if zone_added %}
-	 > 
-	<a href="/countries/{{country_code}}" class="zone-header-tree-link">{{ country_name }}</a>
-	{% if state_code %}
-	 > 
-	<a href="/states/{{state_code}}" class="zone-header-tree-link">{{ state_name }}</a>
+	<link rel="canonical" href="https://www.madboulder.org/problems/{{zone_code}}/{{file_name}}">
+	{% if coordinates %}
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 	{% endif %}
-	 > 
-	<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
-	 > 
-	<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
-	{% endif %}
-{% endblock %} 
-
-{% block body %}
-<!-- Problem data -->
-	<div class="video-container" >
-		<iframe src="{{ video_url }}" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-	</div>
-	<br />
-	<div>
-		<p> {% raw %}{{ _("Name") }}{% endraw %}: {{ name }} </p>
-		<p> {% raw %}{{ _("Grade") }}{% endraw %}: {{grade}} </p>
-		{% if zone_added %}
-			<p> {% raw %}{{ _("Zone") }}{% endraw %}: <a href="/{{zone_code}}">{{ zone }}</a></p>
-			<p> {% raw %}{{ _("Sector") }}{% endraw %}: <a href="/sectors/{{zone_code}}/{{sector_code}}">{{ sector }}</a></p>
-		{% else %}
-			<p> {% raw %}{{ _("Zone") }}{% endraw %}: {{ zone }}</p>
-			<p> {% raw %}{{ _("Sector") }}{% endraw %}: {{ sector }}</p>
-		{% endif %}
-		<p> {% raw %}{{ _("Climber") }}{% endraw %}: <a href="/contributors/{{climber_code}}">{{ climber }}</a></p>
-	</div>
-{% endblock %}
+	
+    
+  </head>
+  <body>
+	{% raw %}
+	{% include 'elements/main-menu.html' %}
+	{% endraw %}
+	<main>
+		<div class="zone-header">
+			<div class="container zone-header-tree">
+				<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
+				{% if zone_added %}
+				> 
+				<a href="/countries/{{country_code}}" class="zone-header-tree-link">{{ country_name }}</a>
+				{% if state_code %}
+				> 
+				<a href="/states/{{state_code}}" class="zone-header-tree-link">{{ state_name }}</a>
+				{% endif %}
+				> 
+				<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
+				> 
+				<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
+				{% endif %}
+			</div>
+			<h1 class="zone-header-title text-bold">
+				{{ title }}
+			</h1>
+		</div>
+		<div class="container" id="mainContainer">
+			<div class="video-container" >
+				<iframe src="{{ video_url }}" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+			</div>
+			
+			<div class="text-and-map-container">
+				<div class="text-container">
+					<p> {% raw %}{{ _("Name") }}{% endraw %}: {{ name }} </p>
+					<p> {% raw %}{{ _("Grade") }}{% endraw %}: {{grade}} </p>
+					{% if zone_added %}
+						<p> {% raw %}{{ _("Zone") }}{% endraw %}: <a href="/{{zone_code}}">{{ zone }}</a></p>
+						<p> {% raw %}{{ _("Sector") }}{% endraw %}: <a href="/sectors/{{zone_code}}/{{sector_code}}">{{ sector }}</a></p>
+					{% else %}
+						<p> {% raw %}{{ _("Zone") }}{% endraw %}: {{ zone }}</p>
+						<p> {% raw %}{{ _("Sector") }}{% endraw %}: {{ sector }}</p>
+					{% endif %}
+					{% if boulder_name %}
+						{% if boulder_code %}
+							<p> {% raw %}{{ _("Boulder") }}{% endraw %}: <a href="/boulders/{{zone_code}}/{{boulder_code}}">{{ boulder_name }}</a></p>
+						{% else %}
+							<p> {% raw %}{{ _("Boulder") }}{% endraw %}: {{ boulder_name }}</p>
+						{% endif %}
+					{% endif %}
+					<p> {% raw %}{{ _("Climber") }}{% endraw %}: <a href="/contributors/{{climber_code}}">{{ climber }}</a></p>
+				</div>
+				{% if coordinates %}
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([{{ coordinates.latitude }}, {{ coordinates.longitude }}], 13);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([{{ coordinates.latitude }}, {{ coordinates.longitude }}], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>Boulder Location</b><br><a href='https://www.google.com/maps/dir/?api=1&destination={{ coordinates.latitude }}, {{ coordinates.longitude }}' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
+				{% endif %}
+			</div>
+        </div>
+	</main>
+	{% raw %}
+	{% include 'elements/footer.html' %}
+	{% endraw %}
+  </body>
+</html>
