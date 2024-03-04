@@ -255,9 +255,9 @@ def process_sector_data(infile=None, data=None):
     return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
 
 
-def process_sector_data(infile=None, data=None):
+def process_boulder_data(infile=None, data=None):
     video_data = load_data(infile, data)
-    sector_regex = r'Boulder: \s*?(.*?)(?:\n|$)'
+    sector_regex = r'\bBoulder:\s*([^\n]+)'
     return match_regex_and_add_field(sector_regex, 'description', 'boulder', video_data)
 
 
@@ -365,6 +365,7 @@ def process_video_data_local(
     processed_data = process_climber_data(data=processed_data)
     processed_data = process_zone_data(data=processed_data)
     processed_data = process_sector_data(data=processed_data)
+    processed_data = process_boulder_data(data=processed_data)
     processed_data = process_all_data(data=processed_data)
     
     with open(outfile, 'w', encoding='utf-8') as f:
@@ -381,6 +382,7 @@ def process_video_data_local(
         del video['zone_code']
         del video['climber_code']
         del video['sector_code']
+        del video['boulder_code']
     
     with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),

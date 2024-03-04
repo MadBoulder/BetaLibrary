@@ -13,6 +13,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/can-boquet/justicia-salvaje-7c-sit">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 	
     
   </head>
@@ -36,6 +39,10 @@
 				> 
 				<a href="/sectors/can-boquet/la-font" class="zone-header-tree-link">La Font</a>
 				
+				> 
+				<a href="/boulders/can-boquet/la-llengua-negre" class="zone-header-tree-link">La Llengua Negre</a>
+				
+				
 			</div>
 			<h1 class="zone-header-title text-bold">
 				Justícia salvaje, 7c (sit). Can Boquet
@@ -55,8 +62,46 @@
 						<p> {{ _("Sector") }}: <a href="/sectors/can-boquet/la-font">La Font</a></p>
 					
 					
+						
+							<p> {{ _("Boulder") }}: <a href="/boulders/can-boquet/la-llengua-negre">La Llengua Negre</a></p>
+						
+					
 					<p> {{ _("Climber") }}: <a href="/contributors/alexis-llop">@alexis_llop</a></p>
 				</div>
+				
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([41.510186, 2.323793], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([41.510186, 2.323793], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>La Llengua Negre Boulder Location</b><br><a href='https://www.google.com/maps?q=41.510186,2.323793' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
 				
 			</div>
         </div>

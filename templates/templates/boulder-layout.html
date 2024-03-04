@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ name }} Boulder in {{ zone }} | MadBoulder</title>
+	<meta name="description" content="Beta Videos in {{ name }} Boulder in {{ zone }} | MadBoulder">
+	
+	{% raw %}
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	{% endraw %}
+
+	<link rel="canonical" href="https://www.madboulder.org/boulders/{{zone_code}}/{{file_name}}">
+	{% if coordinates %}
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	{% endif %}
+	
+    
+  </head>
+  <body>
+	{% raw %}
+	{% include 'elements/main-menu.html' %}
+	{% endraw %}
+	<main>
+		<div class="zone-header">
+			<div class="container zone-header-tree">
+				<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
+				{% if zone_added %}
+				> 
+				<a href="/countries/{{country_code}}" class="zone-header-tree-link">{{ country_name }}</a>
+				{% if state_code %}
+				> 
+				<a href="/states/{{state_code}}" class="zone-header-tree-link">{{ state_name }}</a>
+				{% endif %}
+				> 
+				<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
+				> 
+				<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
+				{% endif %}
+			</div>
+			<h1 class="zone-header-title text-bold">
+				{{ name }} Boulder
+			</h1>
+		</div>
+		<div class="container" id="mainContainer">
+			<div>
+				{% if coordinates %}
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([{{ coordinates.latitude }}, {{ coordinates.longitude }}], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([{{ coordinates.latitude }}, {{ coordinates.longitude }}], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>{{ name }} Boulder Location</b><br><a href='https://www.google.com/maps?q={{ coordinates.latitude }},{{ coordinates.longitude }}' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
+				{% endif %}
+			</div>
+			<!--Problem List-->
+			<h2 style="clear:both;display:block" class="">List of {{ problems|length }} Problems in Video of {{ name }} Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							{% raw %}
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							{% endraw %}
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						{% for problem in problems %}
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="{{ problem["title"] }}" href="/problems/{{zone_code}}/{{problem['secure']}}" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of {{ problem["title"] }}" src="https://img.youtube.com/vi/{{ problem["id"] }}/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/{{zone_code}}/{{problem['secure']}}" class="table-row-name text-bold">{{ problem["name"] }}</a>
+						</div>
+								</td>
+								<td>{{ problem["grade_with_info"] }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	{% raw %}
+	{% include 'elements/footer.html' %}
+	{% endraw %}
+  </body>
+</html>

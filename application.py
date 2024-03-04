@@ -643,6 +643,16 @@ def load_sector(page, sector_name):
         abort(404)
 
 
+@app.route('/boulders/<string:page>/<string:boulder_code>')
+@app.route('/templates/boulders/<string:page>/<string:boulder_code>.html')
+@app.route('/boulders/<string:page>/<string:boulder_code>.html')
+def load_boulder(page, boulder_code):
+    try:
+        return render_template(f'boulders/{slugify(page)}/{slugify(boulder_code)}.html')
+    except:
+        abort(404)
+
+
 @app.route('/countries/<string:country_name>')
 @app.route('/templates/countries/<string:country_name>.html')
 def load_country(country_name):

@@ -38,6 +38,10 @@
 				<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
 				> 
 				<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
+				{% if boulder_name and boulder_name != 'Unknown' %}
+				> 
+				<a href="/boulders/{{zone_code}}/{{boulder_code}}" class="zone-header-tree-link">{{ boulder_name }}</a>
+				{% endif %}
 				{% endif %}
 			</div>
 			<h1 class="zone-header-title text-bold">
@@ -60,7 +64,7 @@
 						<p> {% raw %}{{ _("Zone") }}{% endraw %}: {{ zone }}</p>
 						<p> {% raw %}{{ _("Sector") }}{% endraw %}: {{ sector }}</p>
 					{% endif %}
-					{% if boulder_name %}
+					{% if boulder_name and boulder_name != 'Unknown' %}
 						{% if boulder_code %}
 							<p> {% raw %}{{ _("Boulder") }}{% endraw %}: <a href="/boulders/{{zone_code}}/{{boulder_code}}">{{ boulder_name }}</a></p>
 						{% else %}
@@ -72,7 +76,7 @@
 				{% if coordinates %}
 				<div class="map-container" id="mapid"></div>
 				<script>
-					var mymap = L.map('mapid').setView([{{ coordinates.latitude }}, {{ coordinates.longitude }}], 13);
+					var mymap = L.map('mapid').setView([{{ coordinates.latitude }}, {{ coordinates.longitude }}], 15);
 				
 					// Base layer
 					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -94,7 +98,7 @@
 					});
 				
 					var marker = L.marker([{{ coordinates.latitude }}, {{ coordinates.longitude }}], {icon: customIcon}).addTo(mymap);
-					marker.bindPopup("<b>Boulder Location</b><br><a href='https://www.google.com/maps/dir/?api=1&destination={{ coordinates.latitude }}, {{ coordinates.longitude }}' target='_blank'>Open in Google Maps</a>").openPopup();
+					marker.bindPopup("<b>{{ boulder_name }} Boulder Location</b><br><a href='https://www.google.com/maps?q={{ coordinates.latitude }},{{ coordinates.longitude }}' target='_blank'>Open in Google Maps</a>").openPopup();
 				
 					var baseLayers = {
 						"Street Map": streetMap,

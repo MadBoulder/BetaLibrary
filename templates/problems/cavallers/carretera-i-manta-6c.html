@@ -13,6 +13,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/cavallers/carretera-i-manta-6c">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 	
     
   </head>
@@ -36,6 +39,10 @@
 				> 
 				<a href="/sectors/cavallers/el-bosc" class="zone-header-tree-link">El Bosc</a>
 				
+				> 
+				<a href="/boulders/cavallers/el-bosc-1" class="zone-header-tree-link">El Bosc 1</a>
+				
+				
 			</div>
 			<h1 class="zone-header-title text-bold">
 				Carretera i manta, 6c. Cavallers
@@ -55,8 +62,46 @@
 						<p> {{ _("Sector") }}: <a href="/sectors/cavallers/el-bosc">El Bosc</a></p>
 					
 					
+						
+							<p> {{ _("Boulder") }}: <a href="/boulders/cavallers/el-bosc-1">El Bosc 1</a></p>
+						
+					
 					<p> {{ _("Climber") }}: <a href="/contributors/aniol-santacreu">Aniol Santacreu</a></p>
 				</div>
+				
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([42.575541, 0.849017], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([42.575541, 0.849017], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>El Bosc 1 Boulder Location</b><br><a href='https://www.google.com/maps?q=42.575541,0.849017' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
 				
 			</div>
         </div>
