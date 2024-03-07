@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Trave de la cobaya 6c Boulder Problem in Tamajón | MadBoulder</title>
+    <title>Trave de la cobaya 6C Boulder Problem in Tamajón | MadBoulder</title>
 	<meta name="description" content="Videos of Trave de la cobaya Boulder Problem in Tamajón climbed by Vicescaleitor | MadBoulder">
 	
 	
@@ -12,6 +12,9 @@
 	
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/tamajon/trave-de-la-cobaya-6c">
+	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 	
 	
     
@@ -34,15 +37,15 @@
 				> 
 				<a href="/tamajon" class="zone-header-tree-link">Tamajón</a>
 				> 
-				<a href="/sectors/tamajon/unknown" class="zone-header-tree-link">Unknown</a>
+				<a href="/sectors/tamajon/carretera" class="zone-header-tree-link">Carretera</a>
 				
 				> 
-				<a href="/boulders/tamajon/" class="zone-header-tree-link">La Cobaya</a>
+				<a href="/boulders/tamajon/cobaya" class="zone-header-tree-link">Cobaya</a>
 				
 				
 			</div>
 			<h1 class="zone-header-title text-bold">
-				Trave de la cobaya, 6c. Tamajón
+				Trave de la cobaya, 6C. Tamajón
 			</h1>
 		</div>
 		<div class="container" id="mainContainer">
@@ -53,18 +56,52 @@
 			<div class="text-and-map-container">
 				<div class="text-container">
 					<p> {{ _("Name") }}: Trave de la cobaya </p>
-					<p> {{ _("Grade") }}: 6c </p>
+					<p> {{ _("Grade") }}: 6C </p>
 					
 						<p> {{ _("Zone") }}: <a href="/tamajon">Tamajón</a></p>
-						<p> {{ _("Sector") }}: <a href="/sectors/tamajon/unknown">Unknown</a></p>
+						<p> {{ _("Sector") }}: <a href="/sectors/tamajon/carretera">Carretera</a></p>
 					
 					
 						
-							<p> {{ _("Boulder") }}: La Cobaya</p>
+							<p> {{ _("Boulder") }}: <a href="/boulders/tamajon/cobaya">Cobaya</a></p>
 						
 					
 					<p> {{ _("Climber") }}: <a href="/contributors/vicescaleitor">Vicescaleitor</a></p>
 				</div>
+				
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([41.014491, -3.254717], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([41.014491, -3.254717], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>Cobaya Boulder Location</b><br><a href='https://www.google.com/maps?q=41.014491,-3.254717' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
 				
 			</div>
         </div>

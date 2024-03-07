@@ -13,6 +13,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/tamajon/tnt-recto-7c">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 	
     
   </head>
@@ -34,7 +37,10 @@
 				> 
 				<a href="/tamajon" class="zone-header-tree-link">Tamajón</a>
 				> 
-				<a href="/sectors/tamajon/cueva-de-potencia" class="zone-header-tree-link">Cueva de Potencia</a>
+				<a href="/sectors/tamajon/cueva-potencia-hidrogenada" class="zone-header-tree-link">Cueva Potencia Hidrogenada</a>
+				
+				> 
+				<a href="/boulders/tamajon/cueva-potencia-hidrogenada-izquierda" class="zone-header-tree-link">Cueva Potencia Hidrogenada Izquierda</a>
 				
 				
 			</div>
@@ -53,11 +59,49 @@
 					<p> {{ _("Grade") }}: 7C </p>
 					
 						<p> {{ _("Zone") }}: <a href="/tamajon">Tamajón</a></p>
-						<p> {{ _("Sector") }}: <a href="/sectors/tamajon/cueva-de-potencia">Cueva de Potencia</a></p>
+						<p> {{ _("Sector") }}: <a href="/sectors/tamajon/cueva-potencia-hidrogenada">Cueva Potencia Hidrogenada</a></p>
 					
+					
+						
+							<p> {{ _("Boulder") }}: <a href="/boulders/tamajon/cueva-potencia-hidrogenada-izquierda">Cueva Potencia Hidrogenada Izquierda</a></p>
+						
 					
 					<p> {{ _("Climber") }}: <a href="/contributors/fernando-bescos"> Fernando Bescós</a></p>
 				</div>
+				
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([41.012058, -3.254069], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([41.012058, -3.254069], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>Cueva Potencia Hidrogenada Izquierda Boulder Location</b><br><a href='https://www.google.com/maps?q=41.012058,-3.254069' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
 				
 			</div>
         </div>

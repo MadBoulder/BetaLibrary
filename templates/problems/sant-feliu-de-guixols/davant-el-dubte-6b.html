@@ -13,6 +13,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/sant-feliu-de-guixols/davant-el-dubte-6b">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 	
     
   </head>
@@ -37,7 +40,7 @@
 				<a href="/sectors/sant-feliu-de-guixols/parc-aventura" class="zone-header-tree-link">Parc Aventura</a>
 				
 				> 
-				<a href="/boulders/sant-feliu-de-guixols/" class="zone-header-tree-link">40 Cagadubtes</a>
+				<a href="/boulders/sant-feliu-de-guixols/40-cagadubtes" class="zone-header-tree-link">40 Cagadubtes</a>
 				
 				
 			</div>
@@ -60,11 +63,45 @@
 					
 					
 						
-							<p> {{ _("Boulder") }}: 40 Cagadubtes</p>
+							<p> {{ _("Boulder") }}: <a href="/boulders/sant-feliu-de-guixols/40-cagadubtes">40 Cagadubtes</a></p>
 						
 					
 					<p> {{ _("Climber") }}: <a href="/contributors/aniol-santacreu">Aniol Santacreu</a></p>
 				</div>
+				
+				<div class="map-container" id="mapid"></div>
+				<script>
+					var mymap = L.map('mapid').setView([41.776439, 3.004293], 15);
+				
+					// Base layer
+					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 18,
+					}).addTo(mymap);
+				
+					// Satellite layer (for ortho view)
+					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+						maxZoom: 18,
+					});
+				
+					var customIcon = L.icon({
+						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+						iconSize: [24, 24], // Size of the icon
+						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+					});
+				
+					var marker = L.marker([41.776439, 3.004293], {icon: customIcon}).addTo(mymap);
+					marker.bindPopup("<b>40 Cagadubtes Boulder Location</b><br><a href='https://www.google.com/maps?q=41.776439,3.004293' target='_blank'>Open in Google Maps</a>").openPopup();
+				
+					var baseLayers = {
+						"Street Map": streetMap,
+						"Satellite": satelliteMap
+					};
+				
+					L.control.layers(baseLayers).addTo(mymap);
+				</script>
 				
 			</div>
         </div>
