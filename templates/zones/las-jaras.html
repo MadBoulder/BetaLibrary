@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Las Jaras | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Las Jaras with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Las Jaras | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Las Jaras with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/las-jaras">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/las-jaras">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/las-jaras">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/las-jaras">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/las-jaras">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/las-jaras">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,18 +41,16 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-  
-   > 
-  <a href="/states/andalusia" class="zone-header-tree-link">Andalusia</a>
-	
-
+				> 
+				<a href="/states/andalusia" class="zone-header-tree-link">Andalusia</a>
+			
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Las Jaras Boulder
+            Las Jaras
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -139,537 +136,518 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Las Jaras Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Las Jaras Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Las Jaras Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="37.963232" />
-  <input type="hidden" id="lng" name="lng_val" value="-4.829627" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Las Jaras
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Las Jaras
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Las Jaras Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg" alt="Photo of Las Jaras Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Las Jaras</h2>
-								<p style="text-align: justify;">Las Jaras is a small bouldering area situated by the reservoir near Córdoba, offering climbers the chance to engage with boulders against a picturesque forested backdrop. Beyond climbing, Las Jaras invites outdoor enthusiasts to enjoy water activities and the natural tranquility of the area, making it a perfect spot for a comprehensive outdoor adventure.</p>
+					<h2>Weather Forecast in Las Jaras Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="37.963232" />
+					<input type="hidden" id="lng" name="lng_val" value="-4.829627" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Las Jaras
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 13
-								
-									<br>
-									<b>Rock type</b> Limestone
-								
-								
-									<br>
-									<b>Altitude</b> 492m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Las Jaras
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Las Jaras Boulder</h2>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://27crags.com/crags/cerro-muriano" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Las Jaras Boudering (27Crags)
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Las Jaras Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/KGOYtJQYVpk/maxresdefault.jpg" alt="Photo of Las Jaras Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Las Jaras</h2>
+													<p style="text-align: justify;">Las Jaras is a small bouldering area situated by the reservoir near Córdoba, offering climbers the chance to engage with boulders against a picturesque forested backdrop. Beyond climbing, Las Jaras invites outdoor enthusiasts to enjoy water activities and the natural tranquility of the area, making it a perfect spot for a comprehensive outdoor adventure.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 13
+													
+														<br>
+														<b>Rock type</b> Limestone
+													
+													
+														<br>
+														<b>Altitude</b> 492m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Las Jaras Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://27crags.com/crags/cerro-muriano" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Las Jaras Boudering (27Crags)
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Las Jaras Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/las-jaras"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Las Jaras Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/las-jaras"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 1 Sectors of Las Jaras Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/las-jaras/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">13</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 1 Sectors of Las Jaras Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/las-jaras/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">13</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 5 Playlists of Las Jaras Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN648Jov-GUrd0EJ2HnBPMI"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 5 Playlists of Las Jaras Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnN648Jov-GUrd0EJ2HnBPMI"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 13 Problems in Video of Las Jaras Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Baguette, 5+. Las Jaras" href="/problems/las-jaras/baguette-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Baguette, 5+. Las Jaras" src="https://img.youtube.com/vi/ZiflQ0xqkOY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/baguette-5" class="table-row-name text-bold">Baguette</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Coffee Machine, 6a. Las Jaras" href="/problems/las-jaras/coffee-machine-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Coffee Machine, 6a. Las Jaras" src="https://img.youtube.com/vi/amabLSXoDdc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/coffee-machine-6a" class="table-row-name text-bold">Coffee Machine</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Cierra la puerta niña, 6c. Las Jaras" href="/problems/las-jaras/croquetas-geminis-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cierra la puerta niña, 6c. Las Jaras" src="https://img.youtube.com/vi/-OocUPdwg3Y/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/croquetas-geminis-6c" class="table-row-name text-bold">Croquetas geminis</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Croquetas geminis, 6b+. Las Jaras" href="/problems/las-jaras/croquetas-geminis-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Croquetas geminis, 6b+. Las Jaras" src="https://img.youtube.com/vi/0MCLGpd9kVM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/croquetas-geminis-6b" class="table-row-name text-bold">Croquetas geminis</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Dos regletas buenas, 5. Las Jaras" href="/problems/las-jaras/dos-regletas-buenas-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dos regletas buenas, 5. Las Jaras" src="https://img.youtube.com/vi/wtuA994bZws/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/dos-regletas-buenas-5" class="table-row-name text-bold">Dos regletas buenas</a>
-            </div>
-					</td>
-					<td>5</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Elefante, 6c/+. Las Jaras" href="/problems/las-jaras/el-elefante-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Elefante, 6c/+. Las Jaras" src="https://img.youtube.com/vi/KmpGtnc6yNc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/el-elefante-6c" class="table-row-name text-bold">El Elefante</a>
-            </div>
-					</td>
-					<td>6c/+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El filo de la navaja, 5. Las Jaras" href="/problems/las-jaras/el-filo-de-la-navaja-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El filo de la navaja, 5. Las Jaras" src="https://img.youtube.com/vi/ZwVY61bY6nk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/el-filo-de-la-navaja-5" class="table-row-name text-bold">El filo de la navaja</a>
-            </div>
-					</td>
-					<td>5</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="McClure be proud, 6a+. Las Jaras" href="/problems/las-jaras/mcclure-be-proud-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of McClure be proud, 6a+. Las Jaras" src="https://img.youtube.com/vi/cxvTgK_9SLI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/mcclure-be-proud-6a" class="table-row-name text-bold">McClure be proud</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Obélix, 5+. Las Jaras" href="/problems/las-jaras/obelix-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Obélix, 5+. Las Jaras" src="https://img.youtube.com/vi/NE3U3JQwVRc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/obelix-5" class="table-row-name text-bold">Obélix</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Romo-mano-pié, 6b+. Las Jaras" href="/problems/las-jaras/romo-mano-pie-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Romo-mano-pié, 6b+. Las Jaras" src="https://img.youtube.com/vi/KGOYtJQYVpk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/romo-mano-pie-6b" class="table-row-name text-bold">Romo-mano-pié</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Rompecantos, 5. Las Jaras" href="/problems/las-jaras/rompecantos-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Rompecantos, 5. Las Jaras" src="https://img.youtube.com/vi/83XVbY41Zaw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/rompecantos-5" class="table-row-name text-bold">Rompecantos</a>
-            </div>
-					</td>
-					<td>5</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Tatanka, 6a+. Las Jaras" href="/problems/las-jaras/tatanka-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tatanka, 6a+. Las Jaras" src="https://img.youtube.com/vi/kIcwRmeN9l4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/tatanka-6a" class="table-row-name text-bold">Tatanka</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Zorro Perdido, 6a. Las Jaras" href="/problems/las-jaras/zorro-perdido-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zorro Perdido, 6a. Las Jaras" src="https://img.youtube.com/vi/yftTT_gShvw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/las-jaras/zorro-perdido-6a" class="table-row-name text-bold">Zorro Perdido</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Unknown</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 13 Problems in Video of Las Jaras Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Baguette, 5+. Las Jaras" href="/problems/las-jaras/baguette-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Baguette, 5+. Las Jaras" src="https://img.youtube.com/vi/ZiflQ0xqkOY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/baguette-5" class="table-row-name text-bold">Baguette</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Coffee Machine, 6a. Las Jaras" href="/problems/las-jaras/coffee-machine-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Coffee Machine, 6a. Las Jaras" src="https://img.youtube.com/vi/amabLSXoDdc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/coffee-machine-6a" class="table-row-name text-bold">Coffee Machine</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Cierra la puerta niña, 6c. Las Jaras" href="/problems/las-jaras/croquetas-geminis-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cierra la puerta niña, 6c. Las Jaras" src="https://img.youtube.com/vi/-OocUPdwg3Y/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/croquetas-geminis-6c" class="table-row-name text-bold">Croquetas geminis</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Croquetas geminis, 6b+. Las Jaras" href="/problems/las-jaras/croquetas-geminis-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Croquetas geminis, 6b+. Las Jaras" src="https://img.youtube.com/vi/0MCLGpd9kVM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/croquetas-geminis-6b" class="table-row-name text-bold">Croquetas geminis</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Dos regletas buenas, 5. Las Jaras" href="/problems/las-jaras/dos-regletas-buenas-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dos regletas buenas, 5. Las Jaras" src="https://img.youtube.com/vi/wtuA994bZws/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/dos-regletas-buenas-5" class="table-row-name text-bold">Dos regletas buenas</a>
+						</div>
+								</td>
+								<td>5</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Elefante, 6c/+. Las Jaras" href="/problems/las-jaras/el-elefante-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Elefante, 6c/+. Las Jaras" src="https://img.youtube.com/vi/KmpGtnc6yNc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/el-elefante-6c" class="table-row-name text-bold">El Elefante</a>
+						</div>
+								</td>
+								<td>6c/+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El filo de la navaja, 5. Las Jaras" href="/problems/las-jaras/el-filo-de-la-navaja-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El filo de la navaja, 5. Las Jaras" src="https://img.youtube.com/vi/ZwVY61bY6nk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/el-filo-de-la-navaja-5" class="table-row-name text-bold">El filo de la navaja</a>
+						</div>
+								</td>
+								<td>5</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="McClure be proud, 6a+. Las Jaras" href="/problems/las-jaras/mcclure-be-proud-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of McClure be proud, 6a+. Las Jaras" src="https://img.youtube.com/vi/cxvTgK_9SLI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/mcclure-be-proud-6a" class="table-row-name text-bold">McClure be proud</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Obélix, 5+. Las Jaras" href="/problems/las-jaras/obelix-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Obélix, 5+. Las Jaras" src="https://img.youtube.com/vi/NE3U3JQwVRc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/obelix-5" class="table-row-name text-bold">Obélix</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Romo-mano-pié, 6b+. Las Jaras" href="/problems/las-jaras/romo-mano-pie-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Romo-mano-pié, 6b+. Las Jaras" src="https://img.youtube.com/vi/KGOYtJQYVpk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/romo-mano-pie-6b" class="table-row-name text-bold">Romo-mano-pié</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Rompecantos, 5. Las Jaras" href="/problems/las-jaras/rompecantos-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Rompecantos, 5. Las Jaras" src="https://img.youtube.com/vi/83XVbY41Zaw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/rompecantos-5" class="table-row-name text-bold">Rompecantos</a>
+						</div>
+								</td>
+								<td>5</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tatanka, 6a+. Las Jaras" href="/problems/las-jaras/tatanka-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tatanka, 6a+. Las Jaras" src="https://img.youtube.com/vi/kIcwRmeN9l4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/tatanka-6a" class="table-row-name text-bold">Tatanka</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Zorro Perdido, 6a. Las Jaras" href="/problems/las-jaras/zorro-perdido-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zorro Perdido, 6a. Las Jaras" src="https://img.youtube.com/vi/yftTT_gShvw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/las-jaras/zorro-perdido-6a" class="table-row-name text-bold">Zorro Perdido</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

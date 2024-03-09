@@ -72,7 +72,7 @@ def main():
 
             file_name = problem['secure']
             template = template_env.get_template(
-                'templates/templates/problem-layout.html')
+                'templates/templates/problem_template.html')
             output = template.render(
                 climber=problem[CLIMBER_FIELD],
                 climber_code=problem[CLIMBER_CODE_FIELD],

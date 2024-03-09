@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Salt Point | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Salt Point with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Salt Point | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Salt Point with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/salt-point">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/salt-point">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/salt-point">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/salt-point">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/salt-point">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/salt-point">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,18 +41,16 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
-  
-   > 
-  <a href="/states/california" class="zone-header-tree-link">California</a>
-	
-
+				> 
+				<a href="/states/california" class="zone-header-tree-link">California</a>
+			
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Salt Point Boulder
+            Salt Point
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -139,480 +136,461 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Salt Point Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Salt Point Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Salt Point Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="37.245405" />
-  <input type="hidden" id="lng" name="lng_val" value="-122.114214" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Salt Point
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Salt Point
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Salt Point Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg" alt="Photo of Salt Point Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Salt Point</h2>
-								<p style="text-align: justify;">Salt Point, on the California coast, features stunning sandstone formations, making it a popular destination for boulderers. The sandstone offers a variety of holds and features, and the best season to visit is during cooler months.</p>
+					<h2>Weather Forecast in Salt Point Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="37.245405" />
+					<input type="hidden" id="lng" name="lng_val" value="-122.114214" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Salt Point
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 5
-								
-									<br>
-									<b>Rock type</b> Sandstone
-								
-								
-									<br>
-									<b>Altitude</b> 794m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Salt Point
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Salt Point Boulder</h2>
-    
-      <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-        
-          <div class="mr-2">
-            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.jimthornburg.com/bay-area-bouldering.html" target="_blank">
-              <div class="card-body" style="background:none;box-shadow: none;">
-                <div class="card-body-image-container">
-                  <div class="card-body-image-container-container">
-                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="static/images/guides/San-Francisco-Bay-Area-Bouldering.webp" alt="San Francisco Bay Area Bouldering">
-                  </div>
-                </div>
-                <div class="card-body-title-container">
-                  <h6 class="text-bold card-title" style="text-align: center;">San Francisco Bay Area Bouldering</h6>
-                </div>
-              </div>
-            </a>
-          </div>
-        
-          <div class="mr-2">
-            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.goldenstatebouldering.com/" target="_blank">
-              <div class="card-body" style="background:none;box-shadow: none;">
-                <div class="card-body-image-container">
-                  <div class="card-body-image-container-container">
-                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="static/images/guides/Golden-State-Bouldering.webp" alt="Golden State Bouldering">
-                  </div>
-                </div>
-                <div class="card-body-title-container">
-                  <h6 class="text-bold card-title" style="text-align: center;">Golden State Bouldering</h6>
-                </div>
-              </div>
-            </a>
-          </div>
-        
-          <div class="mr-2">
-            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3SkutJe" target="_blank">
-              <div class="card-body" style="background:none;box-shadow: none;">
-                <div class="card-body-image-container">
-                  <div class="card-body-image-container-container">
-                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/61NkX9QJKML._SL1200_.jpg" alt="Bay Area Bouldering">
-                  </div>
-                </div>
-                <div class="card-body-title-container">
-                  <h6 class="text-bold card-title" style="text-align: center;">Bay Area Bouldering</h6>
-                </div>
-              </div>
-            </a>
-          </div>
-        
-      </div>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://kayaclimb.com/golden-state-guide" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Golden State Bouldering on KAYA
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Salt Point Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/H_wnRTuxEOI/maxresdefault.jpg" alt="Photo of Salt Point Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Salt Point</h2>
+													<p style="text-align: justify;">Salt Point, on the California coast, features stunning sandstone formations, making it a popular destination for boulderers. The sandstone offers a variety of holds and features, and the best season to visit is during cooler months.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 5
+													
+														<br>
+														<b>Rock type</b> Sandstone
+													
+													
+														<br>
+														<b>Altitude</b> 794m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Salt Point Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.jimthornburg.com/bay-area-bouldering.html" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="static/images/guides/San-Francisco-Bay-Area-Bouldering.webp" alt="San Francisco Bay Area Bouldering">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">San Francisco Bay Area Bouldering</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.goldenstatebouldering.com/" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="static/images/guides/Golden-State-Bouldering.webp" alt="Golden State Bouldering">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Golden State Bouldering</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3SkutJe" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/61NkX9QJKML._SL1200_.jpg" alt="Bay Area Bouldering">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Bay Area Bouldering</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://kayaclimb.com/golden-state-guide" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Golden State Bouldering on KAYA
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Salt Point Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/salt-point"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Salt Point Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/salt-point"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 3 Sectors of Salt Point Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/salt-point/call-box-rocks" class="table-row-name text-bold">Call Box Rocks</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/salt-point/secrets" class="table-row-name text-bold">Secrets</a>
-					</td>
-					<td class="text-center">3</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/salt-point/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 3 Sectors of Salt Point Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/salt-point/call-box-rocks" class="table-row-name text-bold">Call Box Rocks</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/salt-point/secrets" class="table-row-name text-bold">Secrets</a>
+										</td>
+										<td class="text-center">3</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/salt-point/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 5 Playlists of Salt Point Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPzzHQXrYKP3uZiAgg-1OP9"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 5 Playlists of Salt Point Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPzzHQXrYKP3uZiAgg-1OP9"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 5 Problems in Video of Salt Point Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Fear of the Inevitable, V7. Salt Point" href="/problems/salt-point/fear-of-the-inevitable-v7" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fear of the Inevitable, V7. Salt Point" src="https://img.youtube.com/vi/62uR9cUQhyg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/salt-point/fear-of-the-inevitable-v7" class="table-row-name text-bold">Fear of the Inevitable</a>
-            </div>
-					</td>
-					<td>V7</td>
-					<td>Call Box Rocks</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Kungfu Kitten, V9. Salt Point" href="/problems/salt-point/kungfu-kitten-v9" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Kungfu Kitten, V9. Salt Point" src="https://img.youtube.com/vi/_nNnIVYLyjQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/salt-point/kungfu-kitten-v9" class="table-row-name text-bold">Kungfu Kitten</a>
-            </div>
-					</td>
-					<td>V9</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Sabertooth, V7. Salt Point State Park" href="/problems/salt-point/sabertooth-v7" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sabertooth, V7. Salt Point State Park" src="https://img.youtube.com/vi/meyVYXJ8g7c/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/salt-point/sabertooth-v7" class="table-row-name text-bold">Sabertooth</a>
-            </div>
-					</td>
-					<td>V7</td>
-					<td>Secrets</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Sabertooth Low, V9. Salt Point State Park" href="/problems/salt-point/sabertooth-low-v9" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sabertooth Low, V9. Salt Point State Park" src="https://img.youtube.com/vi/H_wnRTuxEOI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/salt-point/sabertooth-low-v9" class="table-row-name text-bold">Sabertooth Low</a>
-            </div>
-					</td>
-					<td>V9</td>
-					<td>Secrets</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Slap Fight, V7. Salt Point" href="/problems/salt-point/slap-fight-v7" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Slap Fight, V7. Salt Point" src="https://img.youtube.com/vi/lSIZ0T97FT4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/salt-point/slap-fight-v7" class="table-row-name text-bold">Slap Fight</a>
-            </div>
-					</td>
-					<td>V7</td>
-					<td>Secrets</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 5 Problems in Video of Salt Point Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Fear of the Inevitable, V7. Salt Point" href="/problems/salt-point/fear-of-the-inevitable-v7" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fear of the Inevitable, V7. Salt Point" src="https://img.youtube.com/vi/62uR9cUQhyg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/salt-point/fear-of-the-inevitable-v7" class="table-row-name text-bold">Fear of the Inevitable</a>
+						</div>
+								</td>
+								<td>V7</td>
+								<td>Call Box Rocks</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Kungfu Kitten, V9. Salt Point" href="/problems/salt-point/kungfu-kitten-v9" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Kungfu Kitten, V9. Salt Point" src="https://img.youtube.com/vi/_nNnIVYLyjQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/salt-point/kungfu-kitten-v9" class="table-row-name text-bold">Kungfu Kitten</a>
+						</div>
+								</td>
+								<td>V9</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Sabertooth, V7. Salt Point State Park" href="/problems/salt-point/sabertooth-v7" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sabertooth, V7. Salt Point State Park" src="https://img.youtube.com/vi/meyVYXJ8g7c/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/salt-point/sabertooth-v7" class="table-row-name text-bold">Sabertooth</a>
+						</div>
+								</td>
+								<td>V7</td>
+								<td>Secrets</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Sabertooth Low, V9. Salt Point State Park" href="/problems/salt-point/sabertooth-low-v9" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sabertooth Low, V9. Salt Point State Park" src="https://img.youtube.com/vi/H_wnRTuxEOI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/salt-point/sabertooth-low-v9" class="table-row-name text-bold">Sabertooth Low</a>
+						</div>
+								</td>
+								<td>V9</td>
+								<td>Secrets</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Slap Fight, V7. Salt Point" href="/problems/salt-point/slap-fight-v7" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Slap Fight, V7. Salt Point" src="https://img.youtube.com/vi/lSIZ0T97FT4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/salt-point/slap-fight-v7" class="table-row-name text-bold">Slap Fight</a>
+						</div>
+								</td>
+								<td>V7</td>
+								<td>Secrets</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

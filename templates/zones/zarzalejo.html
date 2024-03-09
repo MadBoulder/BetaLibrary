@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Zarzalejo | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Zarzalejo with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Zarzalejo | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Zarzalejo with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/zarzalejo">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/zarzalejo">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/zarzalejo">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/zarzalejo">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/zarzalejo">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/zarzalejo">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,18 +41,16 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-  
-   > 
-  <a href="/states/madrid" class="zone-header-tree-link">Madrid</a>
-	
-
+				> 
+				<a href="/states/madrid" class="zone-header-tree-link">Madrid</a>
+			
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Zarzalejo Boulder
+            Zarzalejo
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -139,936 +136,917 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Zarzalejo Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Zarzalejo Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Zarzalejo Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="40.535551" />
-  <input type="hidden" id="lng" name="lng_val" value="-4.179463" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Zarzalejo
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Zarzalejo
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Zarzalejo Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg" alt="Photo of Zarzalejo Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Zarzalejo</h2>
-								<p style="text-align: justify;">Zarzalejo, located in Spain, is renowned for its beautiful granite boulders and unique climbing routes. This area's reputation is built on the quality of its rock formations and the picturesque landscape. Zarzalejo is a year-round climbing destination, attracting climbers with its scenic beauty and versatile routes.</p>
+					<h2>Weather Forecast in Zarzalejo Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="40.535551" />
+					<input type="hidden" id="lng" name="lng_val" value="-4.179463" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Zarzalejo
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 34
-								
-									<br>
-									<b>Rock type</b> Granite
-								
-								
-									<br>
-									<b>Altitude</b> 1016m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Zarzalejo
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Zarzalejo Boulder</h2>
-    
-      <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-        
-          <div class="mr-2">
-            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3UizeG0" target="_blank">
-              <div class="card-body" style="background:none;box-shadow: none;">
-                <div class="card-body-image-container">
-                  <div class="card-body-image-container-container">
-                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81UJX3rkGML._AC_UY218_.jpg" alt="Boulder en España">
-                  </div>
-                </div>
-                <div class="card-body-title-container">
-                  <h6 class="text-bold card-title" style="text-align: center;">Boulder en España</h6>
-                </div>
-              </div>
-            </a>
-          </div>
-        
-      </div>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://dparapente.com/cosas-que-hacer-en-zarzalejo/escalada-en-zarzalejo/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            DParapente
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-          <a id="generic_link" href="http://sitioboulder.blogspot.com/2012/08/zarzalejo.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Sitioboulder
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-          <a id="generic_link" href="https://solobulder.wordpress.com/2008/04/03/zarzalejo-croquis-y-como-llegar/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Soloboulder
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-          <a id="generic_link" href="https://27crags.com/crags/zarzalejo" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            27 Crags
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Zarzalejo Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/wniQROGuxAM/sddefault.jpg" alt="Photo of Zarzalejo Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Zarzalejo</h2>
+													<p style="text-align: justify;">Zarzalejo, located in Spain, is renowned for its beautiful granite boulders and unique climbing routes. This area's reputation is built on the quality of its rock formations and the picturesque landscape. Zarzalejo is a year-round climbing destination, attracting climbers with its scenic beauty and versatile routes.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 34
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 1016m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Zarzalejo Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://amzn.to/3UizeG0" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/81UJX3rkGML._AC_UY218_.jpg" alt="Boulder en España">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Boulder en España</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://dparapente.com/cosas-que-hacer-en-zarzalejo/escalada-en-zarzalejo/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								DParapente
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+							  <a id="generic_link" href="http://sitioboulder.blogspot.com/2012/08/zarzalejo.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Sitioboulder
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+							  <a id="generic_link" href="https://solobulder.wordpress.com/2008/04/03/zarzalejo-croquis-y-como-llegar/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Soloboulder
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+							  <a id="generic_link" href="https://27crags.com/crags/zarzalejo" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								27 Crags
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Zarzalejo Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/zarzalejo"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Zarzalejo Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/zarzalejo"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 6 Sectors of Zarzalejo Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/alunecer" class="table-row-name text-bold">Alunecer </a>
-					</td>
-					<td class="text-center">3</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/campo-de-futbol" class="table-row-name text-bold">Campo de Fútbol</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/cantera" class="table-row-name text-bold">Cantera</a>
-					</td>
-					<td class="text-center">4</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/la-pradera" class="table-row-name text-bold">La pradera</a>
-					</td>
-					<td class="text-center">2</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/pradera" class="table-row-name text-bold">Pradera </a>
-					</td>
-					<td class="text-center">7</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/zarzalejo/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">17</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 6 Sectors of Zarzalejo Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/alunecer" class="table-row-name text-bold">Alunecer </a>
+										</td>
+										<td class="text-center">3</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/campo-de-futbol" class="table-row-name text-bold">Campo de Fútbol</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/cantera" class="table-row-name text-bold">Cantera</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/la-pradera" class="table-row-name text-bold">La pradera</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/pradera" class="table-row-name text-bold">Pradera </a>
+										</td>
+										<td class="text-center">7</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/zarzalejo/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">17</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 5 Playlists of Zarzalejo Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOAYiD7NGSuV0xQLiJ5QJee"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 5 Playlists of Zarzalejo Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOAYiD7NGSuV0xQLiJ5QJee"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 34 Problems in Video of Zarzalejo Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Allstars, 7A. Zarzalejo" href="/problems/zarzalejo/allstars-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Allstars, 7A. Zarzalejo" src="https://img.youtube.com/vi/KpCBU6uYLyo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/allstars-7a" class="table-row-name text-bold">Allstars</a>
-            </div>
-					</td>
-					<td>7A</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Alunecer, 7A. Zarzalejo" href="/problems/zarzalejo/alunecer-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Alunecer, 7A. Zarzalejo" src="https://img.youtube.com/vi/Pu4zsJ9M9cw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/alunecer-7a" class="table-row-name text-bold">Alunecer</a>
-            </div>
-					</td>
-					<td>7A</td>
-					<td>Alunecer </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Apollo XIII, 7a. Zarzalejo" href="/problems/zarzalejo/apollo-xiii-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Apollo XIII, 7a. Zarzalejo" src="https://img.youtube.com/vi/OJV0LZdwtT4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/apollo-xiii-7a" class="table-row-name text-bold">Apollo XIII</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Be Chop, 7b+. Zarzalejo" href="/problems/zarzalejo/be-chop-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Be Chop, 7b+. Zarzalejo" src="https://img.youtube.com/vi/zQOSr5cVzII/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/be-chop-7b" class="table-row-name text-bold">Be Chop</a>
-            </div>
-					</td>
-					<td>7b+</td>
-					<td>Alunecer</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Cena de mantels, 7A+/B. Zarzalejo" href="/problems/zarzalejo/cena-de-mantels-7a-b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cena de mantels, 7A+/B. Zarzalejo" src="https://img.youtube.com/vi/jcz7EtyY8G4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/cena-de-mantels-7a-b" class="table-row-name text-bold">Cena de mantels</a>
-            </div>
-					</td>
-					<td>7A+/B</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Dharmakarma, 7B (directo). Zarzalejo" href="/problems/zarzalejo/dharmakarma-7b-directo" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dharmakarma, 7B (directo). Zarzalejo" src="https://img.youtube.com/vi/WGh0cLh83ng/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/dharmakarma-7b-directo" class="table-row-name text-bold">Dharmakarma</a>
-            </div>
-					</td>
-					<td>7B (directo)</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Dharmakarma, 7A. Zarzalejo" href="/problems/zarzalejo/dharmakarma-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dharmakarma, 7A. Zarzalejo" src="https://img.youtube.com/vi/80JwVdcOVD8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/dharmakarma-7a" class="table-row-name text-bold">Dharmakarma</a>
-            </div>
-					</td>
-					<td>7A</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Australiano, 7a. Zarzalejo" href="/problems/zarzalejo/el-australiano-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Australiano, 7a. Zarzalejo" src="https://img.youtube.com/vi/XahlOQ150ng/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/el-australiano-7a" class="table-row-name text-bold">El Australiano</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Australiano, 7c. Zarzalejo" href="/problems/zarzalejo/el-australiano-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Australiano, 7c. Zarzalejo" src="https://img.youtube.com/vi/rcwDOfa1OBM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/el-australiano-7c" class="table-row-name text-bold">El Australiano</a>
-            </div>
-					</td>
-					<td>7c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Corso, 7B. Zarzalejo" href="/problems/zarzalejo/el-corso-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Corso, 7B. Zarzalejo" src="https://img.youtube.com/vi/AbKO1LtIF88/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/el-corso-7b" class="table-row-name text-bold">El Corso</a>
-            </div>
-					</td>
-					<td>7B</td>
-					<td>Campo de Fútbol</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Mundo al Revés, 7B. Zarzalejo" href="/problems/zarzalejo/el-mundo-al-reves-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Mundo al Revés, 7B. Zarzalejo" src="https://img.youtube.com/vi/zo-lZqwuw6A/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/el-mundo-al-reves-7b" class="table-row-name text-bold">El Mundo al Revés</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Equipo A, 7a. Zarzalejo" href="/problems/zarzalejo/equipo-a-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Equipo A, 7a. Zarzalejo" src="https://img.youtube.com/vi/PnDndAAaNT0/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/equipo-a-7a" class="table-row-name text-bold">Equipo A</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Han Solo, 7a. Zarzalejo" href="/problems/zarzalejo/han-solo-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Han Solo, 7a. Zarzalejo" src="https://img.youtube.com/vi/VEd0KkkVwRY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/han-solo-7a" class="table-row-name text-bold">Han Solo</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="KCO, 6c. Zarzalejo" href="/problems/zarzalejo/kco-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of KCO, 6c. Zarzalejo" src="https://img.youtube.com/vi/MRlYprW1Cr0/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/kco-6c" class="table-row-name text-bold">KCO</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Karma Crack, 7B. Zarzalejo" href="/problems/zarzalejo/karma-crack-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Karma Crack, 7B. Zarzalejo" src="https://img.youtube.com/vi/cfvk8qXopsg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/karma-crack-7b" class="table-row-name text-bold">Karma Crack</a>
-            </div>
-					</td>
-					<td>7B</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La parada, 7b. Zarzalejo" href="/problems/zarzalejo/la-parada-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La parada, 7b. Zarzalejo" src="https://img.youtube.com/vi/oaBQoqfau7c/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/la-parada-7b" class="table-row-name text-bold">La parada</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La trave de la Ola, 7a. Zarzalejo" href="/problems/zarzalejo/la-trave-de-la-ola-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La trave de la Ola, 7a. Zarzalejo" src="https://img.youtube.com/vi/V9nLkxPqj4c/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/la-trave-de-la-ola-7a" class="table-row-name text-bold">La trave de la Ola</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Las supernenas, 6b+. Zarzalejo" href="/problems/zarzalejo/las-supernenas-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las supernenas, 6b+. Zarzalejo" src="https://img.youtube.com/vi/zULNh2o6RZ4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/las-supernenas-6b" class="table-row-name text-bold">Las supernenas</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Main the stone, 7a. Zarzalejo" href="/problems/zarzalejo/main-the-stone-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Main the stone, 7a. Zarzalejo" src="https://img.youtube.com/vi/bQNE5izG05o/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/main-the-stone-7a" class="table-row-name text-bold">Main the stone</a>
-            </div>
-					</td>
-					<td>7A</td>
-					<td>La pradera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Masái mara, 7b. Zarzalejo" href="/problems/zarzalejo/masai-mara-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Masái mara, 7b. Zarzalejo" src="https://img.youtube.com/vi/39IADP03TDg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/masai-mara-7b" class="table-row-name text-bold">Masái mara</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Misericordia, 7b+. Zarzalejo" href="/problems/zarzalejo/misericordia-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Misericordia, 7b+. Zarzalejo" src="https://img.youtube.com/vi/aYwaxJFicxg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/misericordia-7b" class="table-row-name text-bold">Misericordia</a>
-            </div>
-					</td>
-					<td>7b+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Mundo Feliz, 7a+. Zarzalejo" href="/problems/zarzalejo/mundo-feliz-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Mundo Feliz, 7a+. Zarzalejo" src="https://img.youtube.com/vi/YDxOmWD9QSU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/mundo-feliz-7a" class="table-row-name text-bold">Mundo Feliz</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="No por mucho alunecer amanece mas temprano, 7b+. Zarzalejo" href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of No por mucho alunecer amanece mas temprano, 7b+. Zarzalejo" src="https://img.youtube.com/vi/Rs_mPPh3bLA/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano-7b" class="table-row-name text-bold">No por mucho alunecer amanece mas temprano</a>
-            </div>
-					</td>
-					<td>7b+</td>
-					<td>Alunecer </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Only true recto, 7A. Zarzalejo" href="/problems/zarzalejo/only-true-recto-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Only true recto, 7A. Zarzalejo" src="https://img.youtube.com/vi/iF_iYiwdaeQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/only-true-recto-7a" class="table-row-name text-bold">Only true recto</a>
-            </div>
-					</td>
-					<td>7A</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Ovni, 8b. Zarzalejo" href="/problems/zarzalejo/ovni-8b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Ovni, 8b. Zarzalejo" src="https://img.youtube.com/vi/45vT5PLNKVY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/ovni-8b" class="table-row-name text-bold">Ovni</a>
-            </div>
-					</td>
-					<td>8b</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Patatas, 7a. Zarzalejo" href="/problems/zarzalejo/patatas-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Patatas, 7a. Zarzalejo" src="https://img.youtube.com/vi/-2m4uCDyfB8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/patatas-7a" class="table-row-name text-bold">Patatas</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Pirámide de arena, 7A+. Zarzalejo" href="/problems/zarzalejo/piramide-de-arena-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pirámide de arena, 7A+. Zarzalejo" src="https://img.youtube.com/vi/Yn3N1J0wbVw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/piramide-de-arena-7a" class="table-row-name text-bold">Pirámide de arena</a>
-            </div>
-					</td>
-					<td>7A+</td>
-					<td>La pradera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Romero, 7a. Zarzalejo" href="/problems/zarzalejo/romero-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Romero, 7a. Zarzalejo" src="https://img.youtube.com/vi/Dmy-oWD-eI4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/romero-7a" class="table-row-name text-bold">Romero</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Soyuz, 7B. Zarzalejo" href="/problems/zarzalejo/soyuz-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Soyuz, 7B. Zarzalejo" src="https://img.youtube.com/vi/MaptJ6F52zk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/soyuz-7b" class="table-row-name text-bold">Soyuz</a>
-            </div>
-					</td>
-					<td>7B</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Tam tam, 7a+. Zarzalejo" href="/problems/zarzalejo/tam-tam-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tam tam, 7a+. Zarzalejo" src="https://img.youtube.com/vi/bNANrv35GgY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/tam-tam-7a" class="table-row-name text-bold">Tam tam</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Pradera </td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Unos Mecos Bicho, 7a. Zarzalejo" href="/problems/zarzalejo/unos-mecos-bicho-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Unos Mecos Bicho, 7a. Zarzalejo" src="https://img.youtube.com/vi/bWB4SjnWJbI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/unos-mecos-bicho-7a" class="table-row-name text-bold">Unos Mecos Bicho</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Vafalungo, 8a. Zarzalejo" href="/problems/zarzalejo/vafalungo-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Vafalungo, 8a. Zarzalejo" src="https://img.youtube.com/vi/H743Lvyx1TI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/vafalungo-8a" class="table-row-name text-bold">Vafalungo</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Zarzafar, 8b+ (sit). Zarzalejo" href="/problems/zarzalejo/zarzafar-8b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zarzafar, 8b+ (sit). Zarzalejo" src="https://img.youtube.com/vi/wniQROGuxAM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/zarzafar-8b" class="table-row-name text-bold">Zarzafar</a>
-            </div>
-					</td>
-					<td>8b+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Zarzaplasteco. Zarzalejo" href="/problems/zarzalejo/zarzaplasteco-unknown" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zarzaplasteco. Zarzalejo" src="https://img.youtube.com/vi/N6AqDZdul_8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/zarzalejo/zarzaplasteco-unknown" class="table-row-name text-bold">Zarzaplasteco</a>
-            </div>
-					</td>
-					<td>Unknown</td>
-					<td>Unknown</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 34 Problems in Video of Zarzalejo Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Allstars, 7A. Zarzalejo" href="/problems/zarzalejo/allstars-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Allstars, 7A. Zarzalejo" src="https://img.youtube.com/vi/KpCBU6uYLyo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/allstars-7a" class="table-row-name text-bold">Allstars</a>
+						</div>
+								</td>
+								<td>7A</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Alunecer, 7A. Zarzalejo" href="/problems/zarzalejo/alunecer-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Alunecer, 7A. Zarzalejo" src="https://img.youtube.com/vi/Pu4zsJ9M9cw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/alunecer-7a" class="table-row-name text-bold">Alunecer</a>
+						</div>
+								</td>
+								<td>7A</td>
+								<td>Alunecer </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Apollo XIII, 7a. Zarzalejo" href="/problems/zarzalejo/apollo-xiii-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Apollo XIII, 7a. Zarzalejo" src="https://img.youtube.com/vi/OJV0LZdwtT4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/apollo-xiii-7a" class="table-row-name text-bold">Apollo XIII</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Be Chop, 7b+. Zarzalejo" href="/problems/zarzalejo/be-chop-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Be Chop, 7b+. Zarzalejo" src="https://img.youtube.com/vi/zQOSr5cVzII/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/be-chop-7b" class="table-row-name text-bold">Be Chop</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Alunecer</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Cena de mantels, 7A+/B. Zarzalejo" href="/problems/zarzalejo/cena-de-mantels-7a-b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cena de mantels, 7A+/B. Zarzalejo" src="https://img.youtube.com/vi/jcz7EtyY8G4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/cena-de-mantels-7a-b" class="table-row-name text-bold">Cena de mantels</a>
+						</div>
+								</td>
+								<td>7A+/B</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Dharmakarma, 7B (directo). Zarzalejo" href="/problems/zarzalejo/dharmakarma-7b-directo" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dharmakarma, 7B (directo). Zarzalejo" src="https://img.youtube.com/vi/WGh0cLh83ng/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/dharmakarma-7b-directo" class="table-row-name text-bold">Dharmakarma</a>
+						</div>
+								</td>
+								<td>7B (directo)</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Dharmakarma, 7A. Zarzalejo" href="/problems/zarzalejo/dharmakarma-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dharmakarma, 7A. Zarzalejo" src="https://img.youtube.com/vi/80JwVdcOVD8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/dharmakarma-7a" class="table-row-name text-bold">Dharmakarma</a>
+						</div>
+								</td>
+								<td>7A</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Australiano, 7a. Zarzalejo" href="/problems/zarzalejo/el-australiano-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Australiano, 7a. Zarzalejo" src="https://img.youtube.com/vi/XahlOQ150ng/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/el-australiano-7a" class="table-row-name text-bold">El Australiano</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Australiano, 7c. Zarzalejo" href="/problems/zarzalejo/el-australiano-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Australiano, 7c. Zarzalejo" src="https://img.youtube.com/vi/rcwDOfa1OBM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/el-australiano-7c" class="table-row-name text-bold">El Australiano</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Corso, 7B. Zarzalejo" href="/problems/zarzalejo/el-corso-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Corso, 7B. Zarzalejo" src="https://img.youtube.com/vi/AbKO1LtIF88/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/el-corso-7b" class="table-row-name text-bold">El Corso</a>
+						</div>
+								</td>
+								<td>7B</td>
+								<td>Campo de Fútbol</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Mundo al Revés, 7B. Zarzalejo" href="/problems/zarzalejo/el-mundo-al-reves-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Mundo al Revés, 7B. Zarzalejo" src="https://img.youtube.com/vi/zo-lZqwuw6A/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/el-mundo-al-reves-7b" class="table-row-name text-bold">El Mundo al Revés</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Equipo A, 7a. Zarzalejo" href="/problems/zarzalejo/equipo-a-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Equipo A, 7a. Zarzalejo" src="https://img.youtube.com/vi/PnDndAAaNT0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/equipo-a-7a" class="table-row-name text-bold">Equipo A</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Han Solo, 7a. Zarzalejo" href="/problems/zarzalejo/han-solo-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Han Solo, 7a. Zarzalejo" src="https://img.youtube.com/vi/VEd0KkkVwRY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/han-solo-7a" class="table-row-name text-bold">Han Solo</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="KCO, 6c. Zarzalejo" href="/problems/zarzalejo/kco-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of KCO, 6c. Zarzalejo" src="https://img.youtube.com/vi/MRlYprW1Cr0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/kco-6c" class="table-row-name text-bold">KCO</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Karma Crack, 7B. Zarzalejo" href="/problems/zarzalejo/karma-crack-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Karma Crack, 7B. Zarzalejo" src="https://img.youtube.com/vi/cfvk8qXopsg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/karma-crack-7b" class="table-row-name text-bold">Karma Crack</a>
+						</div>
+								</td>
+								<td>7B</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La parada, 7b. Zarzalejo" href="/problems/zarzalejo/la-parada-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La parada, 7b. Zarzalejo" src="https://img.youtube.com/vi/oaBQoqfau7c/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/la-parada-7b" class="table-row-name text-bold">La parada</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La trave de la Ola, 7a. Zarzalejo" href="/problems/zarzalejo/la-trave-de-la-ola-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La trave de la Ola, 7a. Zarzalejo" src="https://img.youtube.com/vi/V9nLkxPqj4c/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/la-trave-de-la-ola-7a" class="table-row-name text-bold">La trave de la Ola</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Las supernenas, 6b+. Zarzalejo" href="/problems/zarzalejo/las-supernenas-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las supernenas, 6b+. Zarzalejo" src="https://img.youtube.com/vi/zULNh2o6RZ4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/las-supernenas-6b" class="table-row-name text-bold">Las supernenas</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Main the stone, 7a. Zarzalejo" href="/problems/zarzalejo/main-the-stone-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Main the stone, 7a. Zarzalejo" src="https://img.youtube.com/vi/bQNE5izG05o/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/main-the-stone-7a" class="table-row-name text-bold">Main the stone</a>
+						</div>
+								</td>
+								<td>7A</td>
+								<td>La pradera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Masái mara, 7b. Zarzalejo" href="/problems/zarzalejo/masai-mara-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Masái mara, 7b. Zarzalejo" src="https://img.youtube.com/vi/39IADP03TDg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/masai-mara-7b" class="table-row-name text-bold">Masái mara</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Misericordia, 7b+. Zarzalejo" href="/problems/zarzalejo/misericordia-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Misericordia, 7b+. Zarzalejo" src="https://img.youtube.com/vi/aYwaxJFicxg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/misericordia-7b" class="table-row-name text-bold">Misericordia</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Mundo Feliz, 7a+. Zarzalejo" href="/problems/zarzalejo/mundo-feliz-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Mundo Feliz, 7a+. Zarzalejo" src="https://img.youtube.com/vi/YDxOmWD9QSU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/mundo-feliz-7a" class="table-row-name text-bold">Mundo Feliz</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="No por mucho alunecer amanece mas temprano, 7b+. Zarzalejo" href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of No por mucho alunecer amanece mas temprano, 7b+. Zarzalejo" src="https://img.youtube.com/vi/Rs_mPPh3bLA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/no-por-mucho-alunecer-amanece-mas-temprano-7b" class="table-row-name text-bold">No por mucho alunecer amanece mas temprano</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Alunecer </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Only true recto, 7A. Zarzalejo" href="/problems/zarzalejo/only-true-recto-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Only true recto, 7A. Zarzalejo" src="https://img.youtube.com/vi/iF_iYiwdaeQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/only-true-recto-7a" class="table-row-name text-bold">Only true recto</a>
+						</div>
+								</td>
+								<td>7A</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Ovni, 8b. Zarzalejo" href="/problems/zarzalejo/ovni-8b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Ovni, 8b. Zarzalejo" src="https://img.youtube.com/vi/45vT5PLNKVY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/ovni-8b" class="table-row-name text-bold">Ovni</a>
+						</div>
+								</td>
+								<td>8b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Patatas, 7a. Zarzalejo" href="/problems/zarzalejo/patatas-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Patatas, 7a. Zarzalejo" src="https://img.youtube.com/vi/-2m4uCDyfB8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/patatas-7a" class="table-row-name text-bold">Patatas</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pirámide de arena, 7A+. Zarzalejo" href="/problems/zarzalejo/piramide-de-arena-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pirámide de arena, 7A+. Zarzalejo" src="https://img.youtube.com/vi/Yn3N1J0wbVw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/piramide-de-arena-7a" class="table-row-name text-bold">Pirámide de arena</a>
+						</div>
+								</td>
+								<td>7A+</td>
+								<td>La pradera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Romero, 7a. Zarzalejo" href="/problems/zarzalejo/romero-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Romero, 7a. Zarzalejo" src="https://img.youtube.com/vi/Dmy-oWD-eI4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/romero-7a" class="table-row-name text-bold">Romero</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Soyuz, 7B. Zarzalejo" href="/problems/zarzalejo/soyuz-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Soyuz, 7B. Zarzalejo" src="https://img.youtube.com/vi/MaptJ6F52zk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/soyuz-7b" class="table-row-name text-bold">Soyuz</a>
+						</div>
+								</td>
+								<td>7B</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tam tam, 7a+. Zarzalejo" href="/problems/zarzalejo/tam-tam-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tam tam, 7a+. Zarzalejo" src="https://img.youtube.com/vi/bNANrv35GgY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/tam-tam-7a" class="table-row-name text-bold">Tam tam</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Pradera </td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Unos Mecos Bicho, 7a. Zarzalejo" href="/problems/zarzalejo/unos-mecos-bicho-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Unos Mecos Bicho, 7a. Zarzalejo" src="https://img.youtube.com/vi/bWB4SjnWJbI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/unos-mecos-bicho-7a" class="table-row-name text-bold">Unos Mecos Bicho</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Vafalungo, 8a. Zarzalejo" href="/problems/zarzalejo/vafalungo-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Vafalungo, 8a. Zarzalejo" src="https://img.youtube.com/vi/H743Lvyx1TI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/vafalungo-8a" class="table-row-name text-bold">Vafalungo</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Zarzafar, 8b+ (sit). Zarzalejo" href="/problems/zarzalejo/zarzafar-8b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zarzafar, 8b+ (sit). Zarzalejo" src="https://img.youtube.com/vi/wniQROGuxAM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/zarzafar-8b" class="table-row-name text-bold">Zarzafar</a>
+						</div>
+								</td>
+								<td>8b+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Zarzaplasteco. Zarzalejo" href="/problems/zarzalejo/zarzaplasteco-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Zarzaplasteco. Zarzalejo" src="https://img.youtube.com/vi/N6AqDZdul_8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/zarzalejo/zarzaplasteco-unknown" class="table-row-name text-bold">Zarzaplasteco</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

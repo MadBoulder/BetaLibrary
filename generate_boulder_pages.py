@@ -59,7 +59,7 @@ def main():
                         state_name = state.get('name','')[0] if state else ''
 
                     template = template_env.get_template(
-                        'templates/templates/boulder-layout.html')
+                        'templates/templates/boulder_template.html')
                     output = template.render(
                         problems = boulder['problems'],
                         name=boulder['name'],

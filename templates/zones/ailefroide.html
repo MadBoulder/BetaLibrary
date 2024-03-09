@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Ailefroide | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Ailefroide with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Ailefroide | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Ailefroide with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/ailefroide">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/ailefroide">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/ailefroide">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/ailefroide">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/ailefroide">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/ailefroide">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,15 +41,13 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/france" class="zone-header-tree-link">France</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/france" class="zone-header-tree-link">France</a>
-  
-
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Ailefroide Boulder
+            Ailefroide
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -136,1061 +133,1042 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Ailefroide Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Ailefroide Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Ailefroide Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="44.89047468001038" />
-  <input type="hidden" id="lng" name="lng_val" value="6.447606931109021" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Ailefroide
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Ailefroide
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Ailefroide Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg" alt="Photo of Ailefroide Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Ailefroide</h2>
-								<p style="text-align: justify;">Ailefroide is an alpine paradise in the French High Alps, renowned for its formidable granite boulders. The area is famous for its variety of mostly highball boulder problems and its reputation as a favorite destination for climbers. The best time to visit is in summer when conditions are ideal.</p>
+					<h2>Weather Forecast in Ailefroide Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="44.89047468001038" />
+					<input type="hidden" id="lng" name="lng_val" value="6.447606931109021" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Ailefroide
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 35
-								
-									<br>
-									<b>Rock type</b> Granite
-								
-								
-									<br>
-									<b>Altitude</b> 1528m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Ailefroide
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Ailefroide Boulder</h2>
-    
-      <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-        
-          <div class="mr-2">
-            <a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.climbing-guide.eu/bouldering-guidebook-ailefroide-entraygues-10684/" target="_blank">
-              <div class="card-body" style="background:none;box-shadow: none;">
-                <div class="card-body-image-container">
-                  <div class="card-body-image-container-container">
-                    <img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://www.climbing-guide.eu/media/image/54/77/c9/684_0gW7H0xTDCmMtM.jpg" alt="Ailefroide + Entraygues Boulder Guide">
-                  </div>
-                </div>
-                <div class="card-body-title-container">
-                  <h6 class="text-bold card-title" style="text-align: center;">Ailefroide + Entraygues Boulder Guide</h6>
-                </div>
-              </div>
-            </a>
-          </div>
-        
-      </div>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://www.grimper.com/site-escalade-ailefroide" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            General Info
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Ailefroide Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/LoUrdFu4-Cs/maxresdefault.jpg" alt="Photo of Ailefroide Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Ailefroide</h2>
+													<p style="text-align: justify;">Ailefroide is an alpine paradise in the French High Alps, renowned for its formidable granite boulders. The area is famous for its variety of mostly highball boulder problems and its reputation as a favorite destination for climbers. The best time to visit is in summer when conditions are ideal.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 35
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 1528m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Ailefroide Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.climbing-guide.eu/bouldering-guidebook-ailefroide-entraygues-10684/" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://www.climbing-guide.eu/media/image/54/77/c9/684_0gW7H0xTDCmMtM.jpg" alt="Ailefroide + Entraygues Boulder Guide">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Ailefroide + Entraygues Boulder Guide</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://www.grimper.com/site-escalade-ailefroide" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								General Info
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Ailefroide Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/ailefroide"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Ailefroide Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/ailefroide"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 10 Sectors of Ailefroide Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/glacier-noir" class="table-row-name text-bold">Glacier noir</a>
-					</td>
-					<td class="text-center">2</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/la-plaque" class="table-row-name text-bold">La Plaque</a>
-					</td>
-					<td class="text-center">5</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/le-pave" class="table-row-name text-bold">Le Pavé</a>
-					</td>
-					<td class="text-center">5</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/les-cahutes" class="table-row-name text-bold">Les Cahutes</a>
-					</td>
-					<td class="text-center">5</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/manu-02" class="table-row-name text-bold">Manu 02</a>
-					</td>
-					<td class="text-center">3</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/philemon" class="table-row-name text-bold">Philémon</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/pont" class="table-row-name text-bold">Pont</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/surprise-du-chef" class="table-row-name text-bold">Surprise du Chef</a>
-					</td>
-					<td class="text-center">8</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/sybille" class="table-row-name text-bold">Sybille</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/ailefroide/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">4</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 10 Sectors of Ailefroide Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/glacier-noir" class="table-row-name text-bold">Glacier noir</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/la-plaque" class="table-row-name text-bold">La Plaque</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/le-pave" class="table-row-name text-bold">Le Pavé</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/les-cahutes" class="table-row-name text-bold">Les Cahutes</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/manu-02" class="table-row-name text-bold">Manu 02</a>
+										</td>
+										<td class="text-center">3</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/philemon" class="table-row-name text-bold">Philémon</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/pont" class="table-row-name text-bold">Pont</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/surprise-du-chef" class="table-row-name text-bold">Surprise du Chef</a>
+										</td>
+										<td class="text-center">8</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/sybille" class="table-row-name text-bold">Sybille</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/ailefroide/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 6 Playlists of Ailefroide Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMVy8ahlvukKmwpekfCBgY2"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 6 Playlists of Ailefroide Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMVy8ahlvukKmwpekfCBgY2"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>La Plaque</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPPCLUvcNLQbJGd9yl4sVkQ"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Les Cahutes</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP316CEuTTx3tvnVcF-4doQ"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Le Pavé</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNPV9JKUfhIG9YAmlUgMN07"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Surprise du Chef</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMzdG7RKO8jhMa87UufZP2K"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>La Plaque</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPPCLUvcNLQbJGd9yl4sVkQ"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Les Cahutes</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP316CEuTTx3tvnVcF-4doQ"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Le Pavé</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNPV9JKUfhIG9YAmlUgMN07"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Surprise du Chef</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMzdG7RKO8jhMa87UufZP2K"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 35 Problems in Video of Ailefroide Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="40.12 bis, 8a. Ailefroide" href="/problems/ailefroide/40-12-bis-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of 40.12 bis, 8a. Ailefroide" src="https://img.youtube.com/vi/W1ZstDL16zE/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/40-12-bis-8a" class="table-row-name text-bold">40.12 bis</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Agent de la paix Ghesquier, 8a. Ailefroide" href="/problems/ailefroide/agent-de-la-paix-ghesquier-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Agent de la paix Ghesquier, 8a. Ailefroide" src="https://img.youtube.com/vi/0wEM6ZeA7oY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/agent-de-la-paix-ghesquier-8a" class="table-row-name text-bold">Agent de la paix Ghesquier</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Billy the kid, 7a. Ailefroide" href="/problems/ailefroide/billy-the-kid-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Billy the kid, 7a. Ailefroide" src="https://img.youtube.com/vi/guZubYbcDYg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/billy-the-kid-7a" class="table-row-name text-bold">Billy the kid</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Les Cahutes</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Cash, 7b (sit). Ailefroide" href="/problems/ailefroide/cash-7b-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cash, 7b (sit). Ailefroide" src="https://img.youtube.com/vi/ceZLRJ5LPTY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/cash-7b-sit" class="table-row-name text-bold">Cash</a>
-            </div>
-					</td>
-					<td>7b (sit)</td>
-					<td>Le Pavé</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Chamois d'or, 6b. Ailefroide" href="/problems/ailefroide/chamois-d-or-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Chamois d'or, 6b. Ailefroide" src="https://img.youtube.com/vi/vrfv4oWkD6Y/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/chamois-d-or-6b" class="table-row-name text-bold">Chamois d'or</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Fantastique, 6b. Ailefroide" href="/problems/ailefroide/fantastique-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fantastique, 6b. Ailefroide" src="https://img.youtube.com/vi/N91SZPrGEu0/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/fantastique-6b" class="table-row-name text-bold">Fantastique</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Les Cahutes</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Gagné, 7c. Ailefroide" href="/problems/ailefroide/gagne-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Gagné, 7c. Ailefroide" src="https://img.youtube.com/vi/w5D2ZZ_hlAo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/gagne-7c" class="table-row-name text-bold">Gagné</a>
-            </div>
-					</td>
-					<td>7c</td>
-					<td>Manu 02</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Igouane, 8a. Ailefroide" href="/problems/ailefroide/igouane-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Igouane, 8a. Ailefroide" src="https://img.youtube.com/vi/LoUrdFu4-Cs/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/igouane-8a" class="table-row-name text-bold">Igouane</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="L'impreza, 7a+. Ailefroide" href="/problems/ailefroide/l-impreza-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'impreza, 7a+. Ailefroide" src="https://img.youtube.com/vi/K_WYI62Z3Jo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/l-impreza-7a" class="table-row-name text-bold">L'impreza</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Les Cahutes</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="L'énarque, 7b. Ailefroide" href="/problems/ailefroide/l-enarque-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'énarque, 7b. Ailefroide" src="https://img.youtube.com/vi/zgQDtsYrHFc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/l-enarque-7b" class="table-row-name text-bold">L'énarque</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Philémon</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La Baleine, 7c. Ailefroide" href="/problems/ailefroide/la-baleine-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Baleine, 7c. Ailefroide" src="https://img.youtube.com/vi/Y7VqMU1ZNp8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/la-baleine-7c" class="table-row-name text-bold">La Baleine</a>
-            </div>
-					</td>
-					<td>7c</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Le grenouille, 7a (sit). Ailefroide" href="/problems/ailefroide/le-grenouille-7a-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Le grenouille, 7a (sit). Ailefroide" src="https://img.youtube.com/vi/tUNg31JM9E8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/le-grenouille-7a-sit" class="table-row-name text-bold">Le grenouille</a>
-            </div>
-					</td>
-					<td>7a (sit)</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Le pied de la Sybille, 7c+. Ailefroide" href="/problems/ailefroide/le-pied-de-la-sybille-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Le pied de la Sybille, 7c+. Ailefroide" src="https://img.youtube.com/vi/yvrf0udB93k/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/le-pied-de-la-sybille-7c" class="table-row-name text-bold">Le pied de la Sybille</a>
-            </div>
-					</td>
-					<td>7c+</td>
-					<td>Sybille</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Les consommateurs (tout droit), 7c. Ailefroide" href="/problems/ailefroide/les-consommateurs-tout-droit-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les consommateurs (tout droit), 7c. Ailefroide" src="https://img.youtube.com/vi/VfQNNHRXIRg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/les-consommateurs-tout-droit-7c" class="table-row-name text-bold">Les consommateurs (tout droit)</a>
-            </div>
-					</td>
-					<td>7c</td>
-					<td>Les Cahutes</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Les croisés, 8a. Ailefroide" href="/problems/ailefroide/les-croises-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les croisés, 8a. Ailefroide" src="https://img.youtube.com/vi/lEnvA46q24g/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/les-croises-8a" class="table-row-name text-bold">Les croisés</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Manu 02</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Les trous sciés, 7a+. Ailefroide" href="/problems/ailefroide/les-trous-scies-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les trous sciés, 7a+. Ailefroide" src="https://img.youtube.com/vi/fDgv9LDie34/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/les-trous-scies-7a" class="table-row-name text-bold">Les trous sciés</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Le Pavé</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Marmotte armée, 7b+. Ailefroide" href="/problems/ailefroide/marmotte-armee-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Marmotte armée, 7b+. Ailefroide" src="https://img.youtube.com/vi/kF1vhENpWjA/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/marmotte-armee-7b" class="table-row-name text-bold">Marmotte armée</a>
-            </div>
-					</td>
-					<td>7b+</td>
-					<td>Pont</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Maroual Chamak, 6c+. Ailefroide" href="/problems/ailefroide/maroual-chamak-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Maroual Chamak, 6c+. Ailefroide" src="https://img.youtube.com/vi/WjYZFPFKic4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/maroual-chamak-6c" class="table-row-name text-bold">Maroual Chamak</a>
-            </div>
-					</td>
-					<td>6c+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Nuage noir, 7a+. Ailefroide" href="/problems/ailefroide/nuage-noir-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Nuage noir, 7a+. Ailefroide" src="https://img.youtube.com/vi/hUyPwQuXodw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/nuage-noir-7a" class="table-row-name text-bold">Nuage noir</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Glacier noir</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Papa Bongo, 6a+. Ailefroide" href="/problems/ailefroide/papa-bongo-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Papa Bongo, 6a+. Ailefroide" src="https://img.youtube.com/vi/5abSnJYIjsU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/papa-bongo-6a" class="table-row-name text-bold">Papa Bongo</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Papillon noir, 7b+. Ailefroide" href="/problems/ailefroide/papillon-noir-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Papillon noir, 7b+. Ailefroide" src="https://img.youtube.com/vi/BbitCj6eqwc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/papillon-noir-7b" class="table-row-name text-bold">Papillon noir</a>
-            </div>
-					</td>
-					<td>7b+</td>
-					<td>Glacier noir</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 25 (Surprise du Chef), 4+. Ailefroide" href="/problems/ailefroide/problem-25-surprise-du-chef-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 25 (Surprise du Chef), 4+. Ailefroide" src="https://img.youtube.com/vi/cMA0rqIeYXc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/problem-25-surprise-du-chef-4" class="table-row-name text-bold">Problem 25 (Surprise du Chef)</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Profession de croix, 8a (sit). Ailefroide" href="/problems/ailefroide/profession-de-croix-8a-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Profession de croix, 8a (sit). Ailefroide" src="https://img.youtube.com/vi/w9sr_cAQ0BQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/profession-de-croix-8a-sit" class="table-row-name text-bold">Profession de croix</a>
-            </div>
-					</td>
-					<td>8a (sit)</td>
-					<td>La Plaque</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Prouesse, 7b. Ailefroide" href="/problems/ailefroide/prouesse-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Prouesse, 7b. Ailefroide" src="https://img.youtube.com/vi/mSMl7QgMUiU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/prouesse-7b" class="table-row-name text-bold">Prouesse</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>La Plaque</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Prow, 7a. Ailefroide" href="/problems/ailefroide/prow-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Prow, 7a. Ailefroide" src="https://img.youtube.com/vi/895njCIdffA/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/prow-7a" class="table-row-name text-bold">Prow</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Roi minuscule, 7c+ (sit). Ailefroide" href="/problems/ailefroide/roi-minuscule-7c-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Roi minuscule, 7c+ (sit). Ailefroide" src="https://img.youtube.com/vi/bbXtnVyWlwQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/roi-minuscule-7c-sit" class="table-row-name text-bold">Roi minuscule</a>
-            </div>
-					</td>
-					<td>7c+ (sit)</td>
-					<td>Manu 02</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Sergei easy, 7a. Ailefroide" href="/problems/ailefroide/sergei-easy-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sergei easy, 7a. Ailefroide" src="https://img.youtube.com/vi/w1zBDkbv8tk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/sergei-easy-7a" class="table-row-name text-bold">Sergei easy</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Le Pavé</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Shoulder Mouvement, 7b. Ailefroide" href="/problems/ailefroide/shoulder-mouvement-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Shoulder Mouvement, 7b. Ailefroide" src="https://img.youtube.com/vi/8oCqU4WMqRQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/shoulder-mouvement-7b" class="table-row-name text-bold">Shoulder Mouvement</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Le Pavé</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Showbiz extension, 7c. Ailefroide" href="/problems/ailefroide/showbiz-extension-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Showbiz extension, 7c. Ailefroide" src="https://img.youtube.com/vi/KUk51_tIyVE/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/showbiz-extension-7c" class="table-row-name text-bold">Showbiz extension</a>
-            </div>
-					</td>
-					<td>7c</td>
-					<td>La Plaque</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Showbiz intégral, 7c+. Ailefroide" href="/problems/ailefroide/showbiz-integral-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Showbiz intégral, 7c+. Ailefroide" src="https://img.youtube.com/vi/FBGYZw9_VgI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/showbiz-integral-7c" class="table-row-name text-bold">Showbiz intégral</a>
-            </div>
-					</td>
-					<td>7c+</td>
-					<td>La Plaque</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Sicaplaf, 7c+. Ailefroide" href="/problems/ailefroide/sicaplaf-7c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sicaplaf, 7c+. Ailefroide" src="https://img.youtube.com/vi/ZsurxSK8wck/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/sicaplaf-7c" class="table-row-name text-bold">Sicaplaf</a>
-            </div>
-					</td>
-					<td>7c+</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Soirée Parisienne droite, 7a+. Ailefroide" href="/problems/ailefroide/soiree-parisienne-droite-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Soirée Parisienne droite, 7a+. Ailefroide" src="https://img.youtube.com/vi/IF3tEMDy8rk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/soiree-parisienne-droite-7a" class="table-row-name text-bold">Soirée Parisienne droite</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>La Plaque</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Stop, 7b. Ailefroide" href="/problems/ailefroide/stop-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stop, 7b. Ailefroide" src="https://img.youtube.com/vi/pSM_KxZYwZQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/stop-7b" class="table-row-name text-bold">Stop</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Le Pavé</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Virata, 8a. Ailefroide" href="/problems/ailefroide/virata-8a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Virata, 8a. Ailefroide" src="https://img.youtube.com/vi/dXiB4T_oYj0/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/virata-8a" class="table-row-name text-bold">Virata</a>
-            </div>
-					</td>
-					<td>8a</td>
-					<td>Surprise du Chef</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Wife of the year, 7a. Ailefroide" href="/problems/ailefroide/wife-of-the-year-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Wife of the year, 7a. Ailefroide" src="https://img.youtube.com/vi/CO0DHNQQtno/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/ailefroide/wife-of-the-year-7a" class="table-row-name text-bold">Wife of the year</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Les Cahutes</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 35 Problems in Video of Ailefroide Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="40.12 bis, 8a. Ailefroide" href="/problems/ailefroide/40-12-bis-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of 40.12 bis, 8a. Ailefroide" src="https://img.youtube.com/vi/W1ZstDL16zE/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/40-12-bis-8a" class="table-row-name text-bold">40.12 bis</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Agent de la paix Ghesquier, 8a. Ailefroide" href="/problems/ailefroide/agent-de-la-paix-ghesquier-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Agent de la paix Ghesquier, 8a. Ailefroide" src="https://img.youtube.com/vi/0wEM6ZeA7oY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/agent-de-la-paix-ghesquier-8a" class="table-row-name text-bold">Agent de la paix Ghesquier</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Billy the kid, 7a. Ailefroide" href="/problems/ailefroide/billy-the-kid-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Billy the kid, 7a. Ailefroide" src="https://img.youtube.com/vi/guZubYbcDYg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/billy-the-kid-7a" class="table-row-name text-bold">Billy the kid</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Les Cahutes</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Cash, 7b (sit). Ailefroide" href="/problems/ailefroide/cash-7b-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Cash, 7b (sit). Ailefroide" src="https://img.youtube.com/vi/ceZLRJ5LPTY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/cash-7b-sit" class="table-row-name text-bold">Cash</a>
+						</div>
+								</td>
+								<td>7b (sit)</td>
+								<td>Le Pavé</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Chamois d'or, 6b. Ailefroide" href="/problems/ailefroide/chamois-d-or-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Chamois d'or, 6b. Ailefroide" src="https://img.youtube.com/vi/vrfv4oWkD6Y/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/chamois-d-or-6b" class="table-row-name text-bold">Chamois d'or</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Fantastique, 6b. Ailefroide" href="/problems/ailefroide/fantastique-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fantastique, 6b. Ailefroide" src="https://img.youtube.com/vi/N91SZPrGEu0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/fantastique-6b" class="table-row-name text-bold">Fantastique</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Les Cahutes</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Gagné, 7c. Ailefroide" href="/problems/ailefroide/gagne-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Gagné, 7c. Ailefroide" src="https://img.youtube.com/vi/w5D2ZZ_hlAo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/gagne-7c" class="table-row-name text-bold">Gagné</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>Manu 02</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Igouane, 8a. Ailefroide" href="/problems/ailefroide/igouane-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Igouane, 8a. Ailefroide" src="https://img.youtube.com/vi/LoUrdFu4-Cs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/igouane-8a" class="table-row-name text-bold">Igouane</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="L'impreza, 7a+. Ailefroide" href="/problems/ailefroide/l-impreza-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'impreza, 7a+. Ailefroide" src="https://img.youtube.com/vi/K_WYI62Z3Jo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/l-impreza-7a" class="table-row-name text-bold">L'impreza</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Les Cahutes</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="L'énarque, 7b. Ailefroide" href="/problems/ailefroide/l-enarque-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'énarque, 7b. Ailefroide" src="https://img.youtube.com/vi/zgQDtsYrHFc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/l-enarque-7b" class="table-row-name text-bold">L'énarque</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Philémon</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La Baleine, 7c. Ailefroide" href="/problems/ailefroide/la-baleine-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Baleine, 7c. Ailefroide" src="https://img.youtube.com/vi/Y7VqMU1ZNp8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/la-baleine-7c" class="table-row-name text-bold">La Baleine</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Le grenouille, 7a (sit). Ailefroide" href="/problems/ailefroide/le-grenouille-7a-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Le grenouille, 7a (sit). Ailefroide" src="https://img.youtube.com/vi/tUNg31JM9E8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/le-grenouille-7a-sit" class="table-row-name text-bold">Le grenouille</a>
+						</div>
+								</td>
+								<td>7a (sit)</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Le pied de la Sybille, 7c+. Ailefroide" href="/problems/ailefroide/le-pied-de-la-sybille-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Le pied de la Sybille, 7c+. Ailefroide" src="https://img.youtube.com/vi/yvrf0udB93k/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/le-pied-de-la-sybille-7c" class="table-row-name text-bold">Le pied de la Sybille</a>
+						</div>
+								</td>
+								<td>7c+</td>
+								<td>Sybille</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Les consommateurs (tout droit), 7c. Ailefroide" href="/problems/ailefroide/les-consommateurs-tout-droit-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les consommateurs (tout droit), 7c. Ailefroide" src="https://img.youtube.com/vi/VfQNNHRXIRg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/les-consommateurs-tout-droit-7c" class="table-row-name text-bold">Les consommateurs (tout droit)</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>Les Cahutes</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Les croisés, 8a. Ailefroide" href="/problems/ailefroide/les-croises-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les croisés, 8a. Ailefroide" src="https://img.youtube.com/vi/lEnvA46q24g/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/les-croises-8a" class="table-row-name text-bold">Les croisés</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Manu 02</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Les trous sciés, 7a+. Ailefroide" href="/problems/ailefroide/les-trous-scies-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Les trous sciés, 7a+. Ailefroide" src="https://img.youtube.com/vi/fDgv9LDie34/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/les-trous-scies-7a" class="table-row-name text-bold">Les trous sciés</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Le Pavé</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Marmotte armée, 7b+. Ailefroide" href="/problems/ailefroide/marmotte-armee-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Marmotte armée, 7b+. Ailefroide" src="https://img.youtube.com/vi/kF1vhENpWjA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/marmotte-armee-7b" class="table-row-name text-bold">Marmotte armée</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Pont</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Maroual Chamak, 6c+. Ailefroide" href="/problems/ailefroide/maroual-chamak-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Maroual Chamak, 6c+. Ailefroide" src="https://img.youtube.com/vi/WjYZFPFKic4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/maroual-chamak-6c" class="table-row-name text-bold">Maroual Chamak</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Nuage noir, 7a+. Ailefroide" href="/problems/ailefroide/nuage-noir-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Nuage noir, 7a+. Ailefroide" src="https://img.youtube.com/vi/hUyPwQuXodw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/nuage-noir-7a" class="table-row-name text-bold">Nuage noir</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Glacier noir</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Papa Bongo, 6a+. Ailefroide" href="/problems/ailefroide/papa-bongo-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Papa Bongo, 6a+. Ailefroide" src="https://img.youtube.com/vi/5abSnJYIjsU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/papa-bongo-6a" class="table-row-name text-bold">Papa Bongo</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Papillon noir, 7b+. Ailefroide" href="/problems/ailefroide/papillon-noir-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Papillon noir, 7b+. Ailefroide" src="https://img.youtube.com/vi/BbitCj6eqwc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/papillon-noir-7b" class="table-row-name text-bold">Papillon noir</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Glacier noir</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 25 (Surprise du Chef), 4+. Ailefroide" href="/problems/ailefroide/problem-25-surprise-du-chef-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 25 (Surprise du Chef), 4+. Ailefroide" src="https://img.youtube.com/vi/cMA0rqIeYXc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/problem-25-surprise-du-chef-4" class="table-row-name text-bold">Problem 25 (Surprise du Chef)</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Profession de croix, 8a (sit). Ailefroide" href="/problems/ailefroide/profession-de-croix-8a-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Profession de croix, 8a (sit). Ailefroide" src="https://img.youtube.com/vi/w9sr_cAQ0BQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/profession-de-croix-8a-sit" class="table-row-name text-bold">Profession de croix</a>
+						</div>
+								</td>
+								<td>8a (sit)</td>
+								<td>La Plaque</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Prouesse, 7b. Ailefroide" href="/problems/ailefroide/prouesse-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Prouesse, 7b. Ailefroide" src="https://img.youtube.com/vi/mSMl7QgMUiU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/prouesse-7b" class="table-row-name text-bold">Prouesse</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>La Plaque</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Prow, 7a. Ailefroide" href="/problems/ailefroide/prow-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Prow, 7a. Ailefroide" src="https://img.youtube.com/vi/895njCIdffA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/prow-7a" class="table-row-name text-bold">Prow</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Roi minuscule, 7c+ (sit). Ailefroide" href="/problems/ailefroide/roi-minuscule-7c-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Roi minuscule, 7c+ (sit). Ailefroide" src="https://img.youtube.com/vi/bbXtnVyWlwQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/roi-minuscule-7c-sit" class="table-row-name text-bold">Roi minuscule</a>
+						</div>
+								</td>
+								<td>7c+ (sit)</td>
+								<td>Manu 02</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Sergei easy, 7a. Ailefroide" href="/problems/ailefroide/sergei-easy-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sergei easy, 7a. Ailefroide" src="https://img.youtube.com/vi/w1zBDkbv8tk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/sergei-easy-7a" class="table-row-name text-bold">Sergei easy</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Le Pavé</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Shoulder Mouvement, 7b. Ailefroide" href="/problems/ailefroide/shoulder-mouvement-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Shoulder Mouvement, 7b. Ailefroide" src="https://img.youtube.com/vi/8oCqU4WMqRQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/shoulder-mouvement-7b" class="table-row-name text-bold">Shoulder Mouvement</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Le Pavé</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Showbiz extension, 7c. Ailefroide" href="/problems/ailefroide/showbiz-extension-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Showbiz extension, 7c. Ailefroide" src="https://img.youtube.com/vi/KUk51_tIyVE/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/showbiz-extension-7c" class="table-row-name text-bold">Showbiz extension</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>La Plaque</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Showbiz intégral, 7c+. Ailefroide" href="/problems/ailefroide/showbiz-integral-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Showbiz intégral, 7c+. Ailefroide" src="https://img.youtube.com/vi/FBGYZw9_VgI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/showbiz-integral-7c" class="table-row-name text-bold">Showbiz intégral</a>
+						</div>
+								</td>
+								<td>7c+</td>
+								<td>La Plaque</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Sicaplaf, 7c+. Ailefroide" href="/problems/ailefroide/sicaplaf-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sicaplaf, 7c+. Ailefroide" src="https://img.youtube.com/vi/ZsurxSK8wck/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/sicaplaf-7c" class="table-row-name text-bold">Sicaplaf</a>
+						</div>
+								</td>
+								<td>7c+</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Soirée Parisienne droite, 7a+. Ailefroide" href="/problems/ailefroide/soiree-parisienne-droite-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Soirée Parisienne droite, 7a+. Ailefroide" src="https://img.youtube.com/vi/IF3tEMDy8rk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/soiree-parisienne-droite-7a" class="table-row-name text-bold">Soirée Parisienne droite</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>La Plaque</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Stop, 7b. Ailefroide" href="/problems/ailefroide/stop-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stop, 7b. Ailefroide" src="https://img.youtube.com/vi/pSM_KxZYwZQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/stop-7b" class="table-row-name text-bold">Stop</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Le Pavé</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Virata, 8a. Ailefroide" href="/problems/ailefroide/virata-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Virata, 8a. Ailefroide" src="https://img.youtube.com/vi/dXiB4T_oYj0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/virata-8a" class="table-row-name text-bold">Virata</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Surprise du Chef</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Wife of the year, 7a. Ailefroide" href="/problems/ailefroide/wife-of-the-year-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Wife of the year, 7a. Ailefroide" src="https://img.youtube.com/vi/CO0DHNQQtno/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/ailefroide/wife-of-the-year-7a" class="table-row-name text-bold">Wife of the year</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Les Cahutes</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

@@ -38,7 +38,7 @@ def main():
                 state['count'] = state_code_counts[state['code']]
 
         template = template_env.get_template(
-            'templates/templates/country_layout.html')
+            'templates/templates/country_page_template.html')
         output = template.render(
             country_code=country_code,
             country_name=country_name,
@@ -54,7 +54,7 @@ def main():
         country_name_es = country.get("name", [""])[1]
         overview_es=country['overview'][1]
         template = template_env.get_template(
-            'templates/templates/es/country_layout.html')
+            'templates/templates/es/country_page_template.html')
         output = template.render(
             country_code=country_code,
             country_name=country_name_es,
@@ -73,7 +73,7 @@ def main():
             print("generating state: " + state_code)
             
             state_areas = utils.zone_helpers.get_areas_from_state(state_code)
-            state_template = template_env.get_template('templates/templates/state_layout.html')
+            state_template = template_env.get_template('templates/templates/state_page_template.html')
             state_output = state_template.render(
                 country_code=country_code,
                 country_name=country_name,

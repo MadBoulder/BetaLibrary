@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Santa Blocona | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Santa Blocona with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Santa Blocona | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Santa Blocona with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/santa-blocona">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/santa-blocona">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/santa-blocona">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/santa-blocona">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/santa-blocona">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/santa-blocona">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,18 +41,16 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-  
-   > 
-  <a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
-	
-
+				> 
+				<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
+			
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Santa Blocona Boulder
+            Santa Blocona
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -139,840 +136,821 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Santa Blocona Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Santa Blocona Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Santa Blocona Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="41.858309627686644" />
-  <input type="hidden" id="lng" name="lng_val" value="2.6434584164359194" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Santa Blocona
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Santa Blocona
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Santa Blocona Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg" alt="Photo of Santa Blocona Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Santa Blocona</h2>
-								<p style="text-align: justify;">Santa Blocona, situated near Santa Coloma de Farners, boasts granite rock boulders. Climbers appreciate the diverse range of problems and the accessible location, making it a popular spot for all skill levels.</p>
+					<h2>Weather Forecast in Santa Blocona Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="41.858309627686644" />
+					<input type="hidden" id="lng" name="lng_val" value="2.6434584164359194" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Santa Blocona
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 26
-								
-									<br>
-									<b>Rock type</b> Granite
-								
-								
-									<br>
-									<b>Altitude</b> 316m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Santa Blocona
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Santa Blocona Boulder</h2>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://27crags.com/crags/santa-blocona" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            27 Crags (Guide)
-            
-          </a>
-        
-          <a id="generic_link" href="http://www.caranorte.com/resenas/directorio/europa/espana/catalunya/santa_coloma_de_farners/sta_coloma_de_farners.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Guia d'Escalada en bloc a Santa Coloma de Farners (pdf)
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Santa Blocona Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/eignseP2ydQ/maxresdefault.jpg" alt="Photo of Santa Blocona Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Santa Blocona</h2>
+													<p style="text-align: justify;">Santa Blocona, situated near Santa Coloma de Farners, boasts granite rock boulders. Climbers appreciate the diverse range of problems and the accessible location, making it a popular spot for all skill levels.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 26
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 316m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Santa Blocona Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://27crags.com/crags/santa-blocona" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								27 Crags (Guide)
+								
+							  </a>
+							
+							  <a id="generic_link" href="http://www.caranorte.com/resenas/directorio/europa/espana/catalunya/santa_coloma_de_farners/sta_coloma_de_farners.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Guia d'Escalada en bloc a Santa Coloma de Farners (pdf)
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Santa Blocona Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/santa-blocona"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Santa Blocona Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/santa-blocona"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 6 Sectors of Santa Blocona Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/7" class="table-row-name text-bold">7</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/font-del-ferro" class="table-row-name text-bold">Font del ferro</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/graffity" class="table-row-name text-bold">Graffity</a>
-					</td>
-					<td class="text-center">10</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/la-font-del-ferro" class="table-row-name text-bold">La font del ferro</a>
-					</td>
-					<td class="text-center">3</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/roca-de-l-avi" class="table-row-name text-bold">Roca de l'avi</a>
-					</td>
-					<td class="text-center">5</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/santa-blocona/turo-dels-galls" class="table-row-name text-bold">Turó dels galls</a>
-					</td>
-					<td class="text-center">3</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 6 Sectors of Santa Blocona Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/7" class="table-row-name text-bold">7</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/font-del-ferro" class="table-row-name text-bold">Font del ferro</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/graffity" class="table-row-name text-bold">Graffity</a>
+										</td>
+										<td class="text-center">10</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/la-font-del-ferro" class="table-row-name text-bold">La font del ferro</a>
+										</td>
+										<td class="text-center">3</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/roca-de-l-avi" class="table-row-name text-bold">Roca de l'avi</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/santa-blocona/turo-dels-galls" class="table-row-name text-bold">Turó dels galls</a>
+										</td>
+										<td class="text-center">3</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 6 Playlists of Santa Blocona Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOCn9zjMXJmCifpmFX8dplM"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 6 Playlists of Santa Blocona Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOCn9zjMXJmCifpmFX8dplM"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Turó dels galls</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPGoaMswcV9G5gyNFiCZn9A"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Graffity</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMgxlekdZk7deOjhj4rfiBC"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>Roca de l'avi</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNYag6P6loTHI-PkeQDydZm"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-  <br />
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        <b>de la font del ferro</b>
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM0U-FRKwvjZ87KV6DwZU7k"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Turó dels galls</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPGoaMswcV9G5gyNFiCZn9A"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Graffity</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMgxlekdZk7deOjhj4rfiBC"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>Roca de l'avi</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNYag6P6loTHI-PkeQDydZm"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+					<br />
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							<b>de la font del ferro</b>
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnM0U-FRKwvjZ87KV6DwZU7k"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 23 Problems in Video of Santa Blocona Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="23-F, 6a+. Santa Blocona" href="/problems/santa-blocona/23-f-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of 23-F, 6a+. Santa Blocona" src="https://img.youtube.com/vi/onqPr795c0s/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/23-f-6a" class="table-row-name text-bold">23-F</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Roca de l'avi</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Amor brujo, 7a. Santa Blocona" href="/problems/santa-blocona/amor-brujo-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Amor brujo, 7a. Santa Blocona" src="https://img.youtube.com/vi/eignseP2ydQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/amor-brujo-7a" class="table-row-name text-bold">Amor brujo</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Baile de mulatas, 6a. Santa Blocona" href="/problems/santa-blocona/baile-de-mulatas-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Baile de mulatas, 6a. Santa Blocona" src="https://img.youtube.com/vi/1uRN_4DiUPk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/baile-de-mulatas-6a" class="table-row-name text-bold">Baile de mulatas</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>La font del ferro</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Can Porket, 4. Santa Blocona" href="/problems/santa-blocona/can-porket-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Can Porket, 4. Santa Blocona" src="https://img.youtube.com/vi/kyA3tJ3lx0k/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/can-porket-4" class="table-row-name text-bold">Can Porket</a>
-            </div>
-					</td>
-					<td>4</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Conan el paralítico, 6a. Santa Blocona" href="/problems/santa-blocona/conan-el-paralitico-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Conan el paralítico, 6a. Santa Blocona" src="https://img.youtube.com/vi/uGJIYz57dAo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/conan-el-paralitico-6a" class="table-row-name text-bold">Conan el paralítico</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Roca de l'avi</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Contracturation, 6a. Santa Blocona" href="/problems/santa-blocona/contracturation-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Contracturation, 6a. Santa Blocona" src="https://img.youtube.com/vi/wL6bGc9qREY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/contracturation-6a" class="table-row-name text-bold">Contracturation</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>La font del ferro</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Gilipollas, 4+. Santa Blocona" href="/problems/santa-blocona/gilipollas-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Gilipollas, 4+. Santa Blocona" src="https://img.youtube.com/vi/6SSaofCN4lU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/gilipollas-4" class="table-row-name text-bold">Gilipollas</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Roca de l'avi</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Hidroxilamina, 5. Santa Blocona" href="/problems/santa-blocona/hidroxilamina-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Hidroxilamina, 5. Santa Blocona" src="https://img.youtube.com/vi/_rtsM6IFQ98/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/hidroxilamina-5" class="table-row-name text-bold">Hidroxilamina</a>
-            </div>
-					</td>
-					<td>5</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La caja del diablo, 6c. Santa Blocona" href="/problems/santa-blocona/la-caja-del-diablo-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La caja del diablo, 6c. Santa Blocona" src="https://img.youtube.com/vi/SGDxxoQ3aHA/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/la-caja-del-diablo-6c" class="table-row-name text-bold">La caja del diablo</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>La font del ferro</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Las veneno, 6a+. Santa Blocona" href="/problems/santa-blocona/las-veneno-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las veneno, 6a+. Santa Blocona" src="https://img.youtube.com/vi/1rAbO16hspo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/las-veneno-6a" class="table-row-name text-bold">Las veneno</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Ma aburro un guevo, 4+. Santa Blocona" href="/problems/santa-blocona/ma-aburro-un-guevo-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Ma aburro un guevo, 4+. Santa Blocona" src="https://img.youtube.com/vi/bokqGLKr1fc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/ma-aburro-un-guevo-4" class="table-row-name text-bold">Ma aburro un guevo</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Turó dels galls</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Marianico el corto, 5+. Santa Blocona" href="/problems/santa-blocona/marianico-el-corto-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Marianico el corto, 5+. Santa Blocona" src="https://img.youtube.com/vi/YOK2K_M1ffo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/marianico-el-corto-5" class="table-row-name text-bold">Marianico el corto</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>7</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Minoria absoluta, 4+. Santa Blocona" href="/problems/santa-blocona/minoria-absoluta-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Minoria absoluta, 4+. Santa Blocona" src="https://img.youtube.com/vi/TEzpapKgsXY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/minoria-absoluta-4" class="table-row-name text-bold">Minoria absoluta</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Roca de l'avi</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Pa la prensa, 5+. Santa Blocona" href="/problems/santa-blocona/pa-la-prensa-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pa la prensa, 5+. Santa Blocona" src="https://img.youtube.com/vi/KLfSkZoFDFg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/pa-la-prensa-5" class="table-row-name text-bold">Pa la prensa</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>Turó dels galls</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Pablito pegó un clavito, 4+. Santa Blocona" href="/problems/santa-blocona/pablito-pego-un-clavito-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pablito pegó un clavito, 4+. Santa Blocona" src="https://img.youtube.com/vi/EUEcj1Jdfug/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/pablito-pego-un-clavito-4" class="table-row-name text-bold">Pablito pegó un clavito</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Roca de l'avi</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Por orgullo, 6a. Santa Blocona" href="/problems/santa-blocona/por-orgullo-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Por orgullo, 6a. Santa Blocona" src="https://img.youtube.com/vi/dcirqA6f5qk/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/por-orgullo-6a" class="table-row-name text-bold">Por orgullo</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 1 (Graffity Extra), 6b. Santa Blocona" href="/problems/santa-blocona/problem-1-graffity-extra-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 1 (Graffity Extra), 6b. Santa Blocona" src="https://img.youtube.com/vi/EZjevgd9Knw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/problem-1-graffity-extra-6b" class="table-row-name text-bold">Problem 1 (Graffity Extra)</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 2 (Graffity Extra), 6a. Santa Blocona" href="/problems/santa-blocona/problem-2-graffity-extra-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 2 (Graffity Extra), 6a. Santa Blocona" src="https://img.youtube.com/vi/vqCFP09_9Lw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/problem-2-graffity-extra-6a" class="table-row-name text-bold">Problem 2 (Graffity Extra)</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Psicología legionaria, 4+. Santa Blocona" href="/problems/santa-blocona/psicologia-legionaria-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Psicología legionaria, 4+. Santa Blocona" src="https://img.youtube.com/vi/Y3vox4VgfYI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/psicologia-legionaria-4" class="table-row-name text-bold">Psicología legionaria</a>
-            </div>
-					</td>
-					<td>4+</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Startaja, 5+. Santa Blocona" href="/problems/santa-blocona/startaja-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Startaja, 5+. Santa Blocona" src="https://img.youtube.com/vi/h3L_NuQ_vf8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/startaja-5" class="table-row-name text-bold">Startaja</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Startaja Right, 5. Santa Blocona" href="/problems/santa-blocona/startaja-right-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Startaja Right, 5. Santa Blocona" src="https://img.youtube.com/vi/dpFv5GDj5PM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/startaja-right-5" class="table-row-name text-bold">Startaja Right</a>
-            </div>
-					</td>
-					<td>5</td>
-					<td>Graffity</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Stricnina, 6a. Santa Blocona" href="/problems/santa-blocona/stricnina-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stricnina, 6a. Santa Blocona" src="https://img.youtube.com/vi/QDM9zY-6qzQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/stricnina-4" class="table-row-name text-bold">Stricnina</a>
-            </div>
-					</td>
-					<td>4</td>
-					<td>Font del ferro</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Tu puta trave, 6a. Santa Blocona" href="/problems/santa-blocona/tu-puta-trave-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tu puta trave, 6a. Santa Blocona" src="https://img.youtube.com/vi/Ki1Zdd37ha4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/santa-blocona/tu-puta-trave-6a" class="table-row-name text-bold">Tu puta trave</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Turó dels galls</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 23 Problems in Video of Santa Blocona Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="23-F, 6a+. Santa Blocona" href="/problems/santa-blocona/23-f-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of 23-F, 6a+. Santa Blocona" src="https://img.youtube.com/vi/onqPr795c0s/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/23-f-6a" class="table-row-name text-bold">23-F</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Roca de l'avi</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Amor brujo, 7a. Santa Blocona" href="/problems/santa-blocona/amor-brujo-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Amor brujo, 7a. Santa Blocona" src="https://img.youtube.com/vi/eignseP2ydQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/amor-brujo-7a" class="table-row-name text-bold">Amor brujo</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Baile de mulatas, 6a. Santa Blocona" href="/problems/santa-blocona/baile-de-mulatas-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Baile de mulatas, 6a. Santa Blocona" src="https://img.youtube.com/vi/1uRN_4DiUPk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/baile-de-mulatas-6a" class="table-row-name text-bold">Baile de mulatas</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>La font del ferro</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Can Porket, 4. Santa Blocona" href="/problems/santa-blocona/can-porket-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Can Porket, 4. Santa Blocona" src="https://img.youtube.com/vi/kyA3tJ3lx0k/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/can-porket-4" class="table-row-name text-bold">Can Porket</a>
+						</div>
+								</td>
+								<td>4</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Conan el paralítico, 6a. Santa Blocona" href="/problems/santa-blocona/conan-el-paralitico-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Conan el paralítico, 6a. Santa Blocona" src="https://img.youtube.com/vi/uGJIYz57dAo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/conan-el-paralitico-6a" class="table-row-name text-bold">Conan el paralítico</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Roca de l'avi</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Contracturation, 6a. Santa Blocona" href="/problems/santa-blocona/contracturation-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Contracturation, 6a. Santa Blocona" src="https://img.youtube.com/vi/wL6bGc9qREY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/contracturation-6a" class="table-row-name text-bold">Contracturation</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>La font del ferro</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Gilipollas, 4+. Santa Blocona" href="/problems/santa-blocona/gilipollas-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Gilipollas, 4+. Santa Blocona" src="https://img.youtube.com/vi/6SSaofCN4lU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/gilipollas-4" class="table-row-name text-bold">Gilipollas</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Roca de l'avi</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Hidroxilamina, 5. Santa Blocona" href="/problems/santa-blocona/hidroxilamina-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Hidroxilamina, 5. Santa Blocona" src="https://img.youtube.com/vi/_rtsM6IFQ98/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/hidroxilamina-5" class="table-row-name text-bold">Hidroxilamina</a>
+						</div>
+								</td>
+								<td>5</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La caja del diablo, 6c. Santa Blocona" href="/problems/santa-blocona/la-caja-del-diablo-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La caja del diablo, 6c. Santa Blocona" src="https://img.youtube.com/vi/SGDxxoQ3aHA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/la-caja-del-diablo-6c" class="table-row-name text-bold">La caja del diablo</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>La font del ferro</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Las veneno, 6a+. Santa Blocona" href="/problems/santa-blocona/las-veneno-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las veneno, 6a+. Santa Blocona" src="https://img.youtube.com/vi/1rAbO16hspo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/las-veneno-6a" class="table-row-name text-bold">Las veneno</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Ma aburro un guevo, 4+. Santa Blocona" href="/problems/santa-blocona/ma-aburro-un-guevo-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Ma aburro un guevo, 4+. Santa Blocona" src="https://img.youtube.com/vi/bokqGLKr1fc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/ma-aburro-un-guevo-4" class="table-row-name text-bold">Ma aburro un guevo</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Turó dels galls</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Marianico el corto, 5+. Santa Blocona" href="/problems/santa-blocona/marianico-el-corto-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Marianico el corto, 5+. Santa Blocona" src="https://img.youtube.com/vi/YOK2K_M1ffo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/marianico-el-corto-5" class="table-row-name text-bold">Marianico el corto</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>7</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Minoria absoluta, 4+. Santa Blocona" href="/problems/santa-blocona/minoria-absoluta-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Minoria absoluta, 4+. Santa Blocona" src="https://img.youtube.com/vi/TEzpapKgsXY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/minoria-absoluta-4" class="table-row-name text-bold">Minoria absoluta</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Roca de l'avi</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pa la prensa, 5+. Santa Blocona" href="/problems/santa-blocona/pa-la-prensa-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pa la prensa, 5+. Santa Blocona" src="https://img.youtube.com/vi/KLfSkZoFDFg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/pa-la-prensa-5" class="table-row-name text-bold">Pa la prensa</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Turó dels galls</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pablito pegó un clavito, 4+. Santa Blocona" href="/problems/santa-blocona/pablito-pego-un-clavito-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pablito pegó un clavito, 4+. Santa Blocona" src="https://img.youtube.com/vi/EUEcj1Jdfug/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/pablito-pego-un-clavito-4" class="table-row-name text-bold">Pablito pegó un clavito</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Roca de l'avi</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Por orgullo, 6a. Santa Blocona" href="/problems/santa-blocona/por-orgullo-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Por orgullo, 6a. Santa Blocona" src="https://img.youtube.com/vi/dcirqA6f5qk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/por-orgullo-6a" class="table-row-name text-bold">Por orgullo</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 1 (Graffity Extra), 6b. Santa Blocona" href="/problems/santa-blocona/problem-1-graffity-extra-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 1 (Graffity Extra), 6b. Santa Blocona" src="https://img.youtube.com/vi/EZjevgd9Knw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/problem-1-graffity-extra-6b" class="table-row-name text-bold">Problem 1 (Graffity Extra)</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 2 (Graffity Extra), 6a. Santa Blocona" href="/problems/santa-blocona/problem-2-graffity-extra-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 2 (Graffity Extra), 6a. Santa Blocona" src="https://img.youtube.com/vi/vqCFP09_9Lw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/problem-2-graffity-extra-6a" class="table-row-name text-bold">Problem 2 (Graffity Extra)</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Psicología legionaria, 4+. Santa Blocona" href="/problems/santa-blocona/psicologia-legionaria-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Psicología legionaria, 4+. Santa Blocona" src="https://img.youtube.com/vi/Y3vox4VgfYI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/psicologia-legionaria-4" class="table-row-name text-bold">Psicología legionaria</a>
+						</div>
+								</td>
+								<td>4+</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Startaja, 5+. Santa Blocona" href="/problems/santa-blocona/startaja-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Startaja, 5+. Santa Blocona" src="https://img.youtube.com/vi/h3L_NuQ_vf8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/startaja-5" class="table-row-name text-bold">Startaja</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Startaja Right, 5. Santa Blocona" href="/problems/santa-blocona/startaja-right-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Startaja Right, 5. Santa Blocona" src="https://img.youtube.com/vi/dpFv5GDj5PM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/startaja-right-5" class="table-row-name text-bold">Startaja Right</a>
+						</div>
+								</td>
+								<td>5</td>
+								<td>Graffity</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Stricnina, 6a. Santa Blocona" href="/problems/santa-blocona/stricnina-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stricnina, 6a. Santa Blocona" src="https://img.youtube.com/vi/QDM9zY-6qzQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/stricnina-4" class="table-row-name text-bold">Stricnina</a>
+						</div>
+								</td>
+								<td>4</td>
+								<td>Font del ferro</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tu puta trave, 6a. Santa Blocona" href="/problems/santa-blocona/tu-puta-trave-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tu puta trave, 6a. Santa Blocona" src="https://img.youtube.com/vi/Ki1Zdd37ha4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/santa-blocona/tu-puta-trave-6a" class="table-row-name text-bold">Tu puta trave</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Turó dels galls</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

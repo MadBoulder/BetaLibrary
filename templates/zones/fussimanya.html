@@ -8,30 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder in Fussimanya | MadBoulder</title>
-	 <meta name="description" content="Page about bouldering in Fussimanya with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    <title>Boulder in Fussimanya | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Fussimanya with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
     
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/fussimanya">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/fussimanya">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/fussimanya">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/fussimanya">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/fussimanya">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/fussimanya">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -42,18 +41,16 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-	 > 
-	<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-  
-   > 
-  <a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
-	
-
+				> 
+				<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
+			
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Fussimanya Boulder
+            Fussimanya
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -139,709 +136,690 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Stats of Fussimanya Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
+					<h2>Stats of Fussimanya Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Weather Forecast in Fussimanya Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="41.967258361683754" />
-  <input type="hidden" id="lng" name="lng_val" value="2.3496118403834316" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Fussimanya
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Fussimanya
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Photo of Fussimanya Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg" alt="Photo of Fussimanya Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Bouldering in Fussimanya</h2>
-								<p style="text-align: justify;">Nestled in the beautiful surroundings of Catalonia, Fussimanya is renowned for its sandstone rock, offering a unique and varied climbing experience. Climbers flock to this area for its distinct features, including challenging pockets and slopers. Fussimanya is most popular in the spring and fall when the colors come alive, providing an unforgettable bouldering adventure.</p>
+					<h2>Weather Forecast in Fussimanya Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="41.967258361683754" />
+					<input type="hidden" id="lng" name="lng_val" value="2.3496118403834316" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Fussimanya
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 21
-								
-									<br>
-									<b>Rock type</b> Sandstone
-								
-								
-									<br>
-									<b>Altitude</b> 619m
-								
-							</p>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
 						</div>
 					</div>
+					</div>
+
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Fussimanya
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
+
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
-
-  <div>
-    <h2>Guidebooks of Fussimanya Boulder</h2>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://madboulder.org/download/fussimanya/fussimanya-bouldering-guide.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Fussimanya Boulder pdf
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-          <a id="generic_link" href="https://www.instagram.com/fussimanya_boulder/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Instagram
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-          <a id="generic_link" href="http://rotpunktholds.blogspot.com/2010/01/resenas-de-fussimanya-por-el-momento.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            rotpunktholds (Guide + Blog)
-            
-              <button class="btn-free-madboulder text-bold">
-                Free
-              </button>
-            
-          </a>
-        
-      </div>
-    
-  </div>
-
-
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Fussimanya Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/1rzLCS8v0Uw/hqdefault.jpg" alt="Photo of Fussimanya Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Fussimanya</h2>
+													<p style="text-align: justify;">Nestled in the beautiful surroundings of Catalonia, Fussimanya is renowned for its sandstone rock, offering a unique and varied climbing experience. Climbers flock to this area for its distinct features, including challenging pockets and slopers. Fussimanya is most popular in the spring and fall when the colors come alive, providing an unforgettable bouldering adventure.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 21
+													
+														<br>
+														<b>Rock type</b> Sandstone
+													
+													
+														<br>
+														<b>Altitude</b> 619m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guidebooks of Fussimanya Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://madboulder.org/download/fussimanya/fussimanya-bouldering-guide.pdf" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Fussimanya Boulder pdf
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+							  <a id="generic_link" href="https://www.instagram.com/fussimanya_boulder/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Instagram
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+							  <a id="generic_link" href="http://rotpunktholds.blogspot.com/2010/01/resenas-de-fussimanya-por-el-momento.html" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								rotpunktholds (Guide + Blog)
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Map of Fussimanya Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/fussimanya"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Map of Fussimanya Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/fussimanya"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">List of 5 Sectors of Fussimanya Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Problems") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/fussimanya/boix-boig" class="table-row-name text-bold">Boix Boig</a>
-					</td>
-					<td class="text-center">2</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/fussimanya/bolet" class="table-row-name text-bold">Bolet</a>
-					</td>
-					<td class="text-center">2</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/fussimanya/cantera" class="table-row-name text-bold">Cantera</a>
-					</td>
-					<td class="text-center">12</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/fussimanya/granja" class="table-row-name text-bold">Granja</a>
-					</td>
-					<td class="text-center">4</td>
-				</tr>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/fussimanya/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">1</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>List of 5 Sectors of Fussimanya Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/fussimanya/boix-boig" class="table-row-name text-bold">Boix Boig</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/fussimanya/bolet" class="table-row-name text-bold">Bolet</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/fussimanya/cantera" class="table-row-name text-bold">Cantera</a>
+										</td>
+										<td class="text-center">12</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/fussimanya/granja" class="table-row-name text-bold">Granja</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/fussimanya/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 5 Playlists of Fussimanya Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnONBt8a4NfMppiIOiIVo6tV"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">List of 5 Playlists of Fussimanya Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>{{ _("Full") }}</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnONBt8a4NfMppiIOiIVo6tV"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">List of 21 Problems in Video of Fussimanya Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">{{ _("Name") }}</th>
-				<th scope="col" class="sorting">{{ _("Grade") }}</th>
-				<th scope="col" class="sorting">{{ _("Sector") }}</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Boquerón sit. Fussimanya" href="/problems/fussimanya/boqueron-sit-unknown" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Boquerón sit. Fussimanya" src="https://img.youtube.com/vi/jdNgcvYF6cs/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/boqueron-sit-unknown" class="table-row-name text-bold">Boquerón sit</a>
-            </div>
-					</td>
-					<td>Unknown</td>
-					<td>Granja</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Profeta, 7b. Fussimanya" href="/problems/fussimanya/el-profeta-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Profeta, 7b. Fussimanya" src="https://img.youtube.com/vi/pgyhIkpn0lM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/el-profeta-7b" class="table-row-name text-bold">El Profeta</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El bloquero solitario, 6a+. Fussimanya" href="/problems/fussimanya/el-bloquero-solitario-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El bloquero solitario, 6a+. Fussimanya" src="https://img.youtube.com/vi/SUbPkm9B6JM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/el-bloquero-solitario-6a" class="table-row-name text-bold">El bloquero solitario</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El pan pan y el filo fino, 6b+. Fussimanya" href="/problems/fussimanya/el-pan-pan-y-el-filo-fino-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El pan pan y el filo fino, 6b+. Fussimanya" src="https://img.youtube.com/vi/WYczJy5b794/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/el-pan-pan-y-el-filo-fino-6b" class="table-row-name text-bold">El pan pan y el filo fino</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Flipando en solo, 6c. Fussimanya" href="/problems/fussimanya/flipando-en-solo-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Flipando en solo, 6c. Fussimanya" src="https://img.youtube.com/vi/m9GitaOsss4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/flipando-en-solo-6c" class="table-row-name text-bold">Flipando en solo</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="In the cube, 4. Fussimanya" href="/problems/fussimanya/in-the-cube-4" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of In the cube, 4. Fussimanya" src="https://img.youtube.com/vi/8xjIGx_Adc0/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/in-the-cube-4" class="table-row-name text-bold">In the cube</a>
-            </div>
-					</td>
-					<td>4</td>
-					<td>Granja</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La Llesca, 6a. Fussimanya" href="/problems/fussimanya/la-llesca-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Llesca, 6a. Fussimanya" src="https://img.youtube.com/vi/kwGxVwL5gSI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/la-llesca-6a" class="table-row-name text-bold">La Llesca</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La Regleta Fantasma, 6b+. Fussimanya" href="/problems/fussimanya/la-regleta-fantasma-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Regleta Fantasma, 6b+. Fussimanya" src="https://img.youtube.com/vi/2--777gTMeQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/la-regleta-fantasma-6b" class="table-row-name text-bold">La Regleta Fantasma</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Bolet</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Las nueve motivaciones, 6b+. Fussimanya" href="/problems/fussimanya/las-nueve-motivaciones-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las nueve motivaciones, 6b+. Fussimanya" src="https://img.youtube.com/vi/1rzLCS8v0Uw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/las-nueve-motivaciones-6b" class="table-row-name text-bold">Las nueve motivaciones</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Manuela's, 6a+. Fussimanya" href="/problems/fussimanya/manuela-s-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Manuela's, 6a+. Fussimanya" src="https://img.youtube.com/vi/mbHxQ-N8q8U/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/manuela-s-6a" class="table-row-name text-bold">Manuela's</a>
-            </div>
-					</td>
-					<td>6a+</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Manuela's Boulder, 7a. Fussimanya" href="/problems/fussimanya/manuela-s-boulder-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Manuela's Boulder, 7a. Fussimanya" src="https://img.youtube.com/vi/RHbYXG1gpSU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/manuela-s-boulder-7a" class="table-row-name text-bold">Manuela's Boulder</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Musliman, 6b. Fussimanya" href="/problems/fussimanya/musliman-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Musliman, 6b. Fussimanya" src="https://img.youtube.com/vi/CPSPPGMhYUI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/musliman-6b" class="table-row-name text-bold">Musliman</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Boix Boig</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Más vale maña que fuerza, 6b. Fussimanya" href="/problems/fussimanya/mas-vale-mana-que-fuerza-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Más vale maña que fuerza, 6b. Fussimanya" src="https://img.youtube.com/vi/4s7kQHGP0uU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/mas-vale-mana-que-fuerza-6b" class="table-row-name text-bold">Más vale maña que fuerza</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Más vale maña que fuerza, 6c (sit). Fussimanya" href="/problems/fussimanya/mas-vale-mana-que-fuerza-6c-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Más vale maña que fuerza, 6c (sit). Fussimanya" src="https://img.youtube.com/vi/ttOCBgk-BHo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/mas-vale-mana-que-fuerza-6c-sit" class="table-row-name text-bold">Más vale maña que fuerza</a>
-            </div>
-					</td>
-					<td>6c (sit)</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Placa Gruyère, 6b+. Fussimanya" href="/problems/fussimanya/placa-gruyere-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Placa Gruyère, 6b+. Fussimanya" src="https://img.youtube.com/vi/oF1Vb7ca-hs/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/placa-gruyere-6b" class="table-row-name text-bold">Placa Gruyère</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Granja</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 1 (Boulder 15), 6a. Fussimanya" href="/problems/fussimanya/problem-1-boulder-15-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 1 (Boulder 15), 6a. Fussimanya" src="https://img.youtube.com/vi/e6dDibmlTP4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/problem-1-boulder-15-6a" class="table-row-name text-bold">Problem 1 (Boulder 15)</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 2 (Boulder 15), 6a. Fussimanya" href="/problems/fussimanya/problem-2-boulder-15-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 2 (Boulder 15), 6a. Fussimanya" src="https://img.youtube.com/vi/FpJapDFE3mc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/problem-2-boulder-15-6a" class="table-row-name text-bold">Problem 2 (Boulder 15)</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Cantera</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Problem 3 (La Piramide), 6c (sit). Fussimanya" href="/problems/fussimanya/problem-3-la-piramide-6c-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 3 (La Piramide), 6c (sit). Fussimanya" src="https://img.youtube.com/vi/KwCR6aWlqJg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/problem-3-la-piramide-6c-sit" class="table-row-name text-bold">Problem 3 (La Piramide)</a>
-            </div>
-					</td>
-					<td>6c (sit)</td>
-					<td>Granja</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Se te'n va la pinça, 6b. Fussimanya" href="/problems/fussimanya/se-te-n-va-la-pinca-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Se te'n va la pinça, 6b. Fussimanya" src="https://img.youtube.com/vi/r6KTjl5orGw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/se-te-n-va-la-pinca-6b" class="table-row-name text-bold">Se te'n va la pinça</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Bolet</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Stractor, 7b+ (sit). Fussimanya" href="/problems/fussimanya/stractor-7b-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stractor, 7b+ (sit). Fussimanya" src="https://img.youtube.com/vi/POaxmLUgEfM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/stractor-7b-sit" class="table-row-name text-bold">Stractor</a>
-            </div>
-					</td>
-					<td>7b+ (sit)</td>
-					<td>Boix Boig</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="The Fusi experience, 6b+. Fussimanya" href="/problems/fussimanya/the-fusi-experience-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Fusi experience, 6b+. Fussimanya" src="https://img.youtube.com/vi/gudsnI27JOw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/fussimanya/the-fusi-experience-6b" class="table-row-name text-bold">The Fusi experience</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Cantera</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>List of 21 Problems in Video of Fussimanya Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Boquerón sit. Fussimanya" href="/problems/fussimanya/boqueron-sit-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Boquerón sit. Fussimanya" src="https://img.youtube.com/vi/jdNgcvYF6cs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/boqueron-sit-unknown" class="table-row-name text-bold">Boquerón sit</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Granja</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Profeta, 7b. Fussimanya" href="/problems/fussimanya/el-profeta-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El Profeta, 7b. Fussimanya" src="https://img.youtube.com/vi/pgyhIkpn0lM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/el-profeta-7b" class="table-row-name text-bold">El Profeta</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El bloquero solitario, 6a+. Fussimanya" href="/problems/fussimanya/el-bloquero-solitario-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El bloquero solitario, 6a+. Fussimanya" src="https://img.youtube.com/vi/SUbPkm9B6JM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/el-bloquero-solitario-6a" class="table-row-name text-bold">El bloquero solitario</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El pan pan y el filo fino, 6b+. Fussimanya" href="/problems/fussimanya/el-pan-pan-y-el-filo-fino-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El pan pan y el filo fino, 6b+. Fussimanya" src="https://img.youtube.com/vi/WYczJy5b794/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/el-pan-pan-y-el-filo-fino-6b" class="table-row-name text-bold">El pan pan y el filo fino</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Flipando en solo, 6c. Fussimanya" href="/problems/fussimanya/flipando-en-solo-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Flipando en solo, 6c. Fussimanya" src="https://img.youtube.com/vi/m9GitaOsss4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/flipando-en-solo-6c" class="table-row-name text-bold">Flipando en solo</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="In the cube, 4. Fussimanya" href="/problems/fussimanya/in-the-cube-4" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of In the cube, 4. Fussimanya" src="https://img.youtube.com/vi/8xjIGx_Adc0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/in-the-cube-4" class="table-row-name text-bold">In the cube</a>
+						</div>
+								</td>
+								<td>4</td>
+								<td>Granja</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La Llesca, 6a. Fussimanya" href="/problems/fussimanya/la-llesca-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Llesca, 6a. Fussimanya" src="https://img.youtube.com/vi/kwGxVwL5gSI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/la-llesca-6a" class="table-row-name text-bold">La Llesca</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La Regleta Fantasma, 6b+. Fussimanya" href="/problems/fussimanya/la-regleta-fantasma-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Regleta Fantasma, 6b+. Fussimanya" src="https://img.youtube.com/vi/2--777gTMeQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/la-regleta-fantasma-6b" class="table-row-name text-bold">La Regleta Fantasma</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Bolet</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Las nueve motivaciones, 6b+. Fussimanya" href="/problems/fussimanya/las-nueve-motivaciones-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Las nueve motivaciones, 6b+. Fussimanya" src="https://img.youtube.com/vi/1rzLCS8v0Uw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/las-nueve-motivaciones-6b" class="table-row-name text-bold">Las nueve motivaciones</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Manuela's, 6a+. Fussimanya" href="/problems/fussimanya/manuela-s-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Manuela's, 6a+. Fussimanya" src="https://img.youtube.com/vi/mbHxQ-N8q8U/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/manuela-s-6a" class="table-row-name text-bold">Manuela's</a>
+						</div>
+								</td>
+								<td>6a+</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Manuela's Boulder, 7a. Fussimanya" href="/problems/fussimanya/manuela-s-boulder-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Manuela's Boulder, 7a. Fussimanya" src="https://img.youtube.com/vi/RHbYXG1gpSU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/manuela-s-boulder-7a" class="table-row-name text-bold">Manuela's Boulder</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Musliman, 6b. Fussimanya" href="/problems/fussimanya/musliman-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Musliman, 6b. Fussimanya" src="https://img.youtube.com/vi/CPSPPGMhYUI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/musliman-6b" class="table-row-name text-bold">Musliman</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Boix Boig</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Más vale maña que fuerza, 6b. Fussimanya" href="/problems/fussimanya/mas-vale-mana-que-fuerza-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Más vale maña que fuerza, 6b. Fussimanya" src="https://img.youtube.com/vi/4s7kQHGP0uU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/mas-vale-mana-que-fuerza-6b" class="table-row-name text-bold">Más vale maña que fuerza</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Más vale maña que fuerza, 6c (sit). Fussimanya" href="/problems/fussimanya/mas-vale-mana-que-fuerza-6c-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Más vale maña que fuerza, 6c (sit). Fussimanya" src="https://img.youtube.com/vi/ttOCBgk-BHo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/mas-vale-mana-que-fuerza-6c-sit" class="table-row-name text-bold">Más vale maña que fuerza</a>
+						</div>
+								</td>
+								<td>6c (sit)</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Placa Gruyère, 6b+. Fussimanya" href="/problems/fussimanya/placa-gruyere-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Placa Gruyère, 6b+. Fussimanya" src="https://img.youtube.com/vi/oF1Vb7ca-hs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/placa-gruyere-6b" class="table-row-name text-bold">Placa Gruyère</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Granja</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 1 (Boulder 15), 6a. Fussimanya" href="/problems/fussimanya/problem-1-boulder-15-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 1 (Boulder 15), 6a. Fussimanya" src="https://img.youtube.com/vi/e6dDibmlTP4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/problem-1-boulder-15-6a" class="table-row-name text-bold">Problem 1 (Boulder 15)</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 2 (Boulder 15), 6a. Fussimanya" href="/problems/fussimanya/problem-2-boulder-15-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 2 (Boulder 15), 6a. Fussimanya" src="https://img.youtube.com/vi/FpJapDFE3mc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/problem-2-boulder-15-6a" class="table-row-name text-bold">Problem 2 (Boulder 15)</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Cantera</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Problem 3 (La Piramide), 6c (sit). Fussimanya" href="/problems/fussimanya/problem-3-la-piramide-6c-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Problem 3 (La Piramide), 6c (sit). Fussimanya" src="https://img.youtube.com/vi/KwCR6aWlqJg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/problem-3-la-piramide-6c-sit" class="table-row-name text-bold">Problem 3 (La Piramide)</a>
+						</div>
+								</td>
+								<td>6c (sit)</td>
+								<td>Granja</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Se te'n va la pinça, 6b. Fussimanya" href="/problems/fussimanya/se-te-n-va-la-pinca-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Se te'n va la pinça, 6b. Fussimanya" src="https://img.youtube.com/vi/r6KTjl5orGw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/se-te-n-va-la-pinca-6b" class="table-row-name text-bold">Se te'n va la pinça</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Bolet</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Stractor, 7b+ (sit). Fussimanya" href="/problems/fussimanya/stractor-7b-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Stractor, 7b+ (sit). Fussimanya" src="https://img.youtube.com/vi/POaxmLUgEfM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/stractor-7b-sit" class="table-row-name text-bold">Stractor</a>
+						</div>
+								</td>
+								<td>7b+ (sit)</td>
+								<td>Boix Boig</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="The Fusi experience, 6b+. Fussimanya" href="/problems/fussimanya/the-fusi-experience-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Fusi experience, 6b+. Fussimanya" src="https://img.youtube.com/vi/gudsnI27JOw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/fussimanya/the-fusi-experience-6b" class="table-row-name text-bold">The Fusi experience</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Cantera</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	

@@ -70,7 +70,7 @@ def main():
         #overview
         overview = area.get("overview", [""])[0]
         
-        template = template_env.get_template('templates/templates/area-layout.html')
+        template = template_env.get_template('templates/templates/area_page_template.html')
         output = template.render(
             problems=problems,
             sectors=sectors,
@@ -112,7 +112,7 @@ def main():
         state_name_es = state.get('name','')[1] if state else ''
         overview_es = area.get("overview", [""])[1]
 
-        template_es = template_env.get_template('templates/templates/es/area-layout.html')
+        template_es = template_env.get_template('templates/templates/es/area_page_template.html')
         output = template_es.render(
             problems=problems,
             sectors=sectors,

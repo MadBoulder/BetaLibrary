@@ -18,7 +18,7 @@ def main():
     template_env.filters['format_views'] = utils.helpers.format_views
 
     template = template_env.get_template(
-        'templates/templates/contributors_list_layout.html')
+        'templates/templates/contributors_list_page_template.html')
     output = template.render(
         contributors = contributors
     )
@@ -32,7 +32,7 @@ def main():
         
 
         template = template_env.get_template(
-            'templates/templates/contributor_layout.html')
+            'templates/templates/contributor_page_template.html')
         output = template.render(
             contributor_code = contributor,
             contributor_name = details['name'],

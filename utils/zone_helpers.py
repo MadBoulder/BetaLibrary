@@ -59,7 +59,8 @@ def get_rock_type_str(rock_type_code):
         "quar": "Quartzite",
         "iron": "Iron Rock",
         "serp": "Serpentine",
-        "grit": "Gritstone"
+        "grit": "Gritstone",
+        "diab": "Diabase"
     }
     return rock_type_mapping.get(rock_type_code.lower(), "Unknown")
     

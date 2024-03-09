@@ -48,7 +48,7 @@ def main():
                     if slugify(sector[1]) == s['sector_code']:
                         video_id = s['id']
             template = template_env.get_template(
-                'templates/templates/sector-layout.html')
+                'templates/templates/sector_page_template.html')
             output = template.render(
                 zone_code=zone_code,
                 zone_name=zone['name'],

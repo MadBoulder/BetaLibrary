@@ -8,31 +8,29 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 	
-     <title>Boulder en Pas de la Casa | MadBoulder</title>
-	 <meta name="description" content="Página sobre boulder en Pas de la Casa con lista de videos de los bloques, información sobre guías de bloque y previsión del tiempo">
+    <title>Boulder en Pas de la Casa | MadBoulder</title>
+	<meta name="description" content="Página sobre boulder en Pas de la Casa con lista de videos de los bloques, información sobre guías de bloque y previsión del tiempo">
 	
-    
-<!-- Weather Widget dependencies-->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
-integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
-crossorigin="anonymous"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
-integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
-crossorigin="anonymous"></script>
+    <!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/ca.min.js"
+	integrity="sha512-Jj2Leg+TB+LRdCEuGXUD2/sOcZcQqVH1zQ+nk1qGBoojAphBaH90oWeYfiB1xIr3va4AIRnDGQiPopGSv6ATiw=="
+	crossorigin="anonymous"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
 
-<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
-
-<!-- Table Widget dependencies-->
-<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
-<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-
-<link rel="canonical" href="https://www.madboulder.org/es/pas-de-la-casa">
-<link rel="alternate" hreflang="en" href="https://www.madboulder.org/pas-de-la-casa">
-<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/pas-de-la-casa">
-
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/es/pas-de-la-casa">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/pas-de-la-casa">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/pas-de-la-casa">
 	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
 	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
   </head>
@@ -43,15 +41,13 @@ crossorigin="anonymous"></script>
     <main>
 		<div class="zone-header">
 		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+			> 
+			<a href="/countries/andorra" class="zone-header-tree-link">Andorra</a>
 			
-	<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
-	 > 
-	<a href="/countries/andorra" class="zone-header-tree-link">Andorra</a>
-  
-
 		  </div>
           <h1 class="zone-header-title text-bold">
-             Pas de la Casa Boulder
+			Pas de la Casa
           </h1>
 		  <nav>
 			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -137,676 +133,657 @@ crossorigin="anonymous"></script>
         <div class="container" id="pageContent">
 			<div class="tab-content" id="myTabContent">
 				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
-					
-<h2 style="clear:both;display:block" class="">Estadísticas de Pas de la Casa Boulder</h2>
-<div class="container" style="padding-top: 1rem;">
-  <!-- Zone summary -->
-  <div id="zone-summary" class="row justify-content-center">
-     {% for stat in stats_list %}
-    <div class="col-md-2 col-sm-2 stats-col">
-      <div class="card mx-sm-1 p-2">
-        <div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
-          <span class="{{stat['logo']}}" aria-hidden="true"></span>
-        </div>
-        <div class="text-center mt-2">
-          <h5 class="stats-title">{{stat['text']}}</h5>
-        </div>
-        <div class="text-center mt-1 mb-0">
-          <h3 class="stats-content">{{stat['data']}}</h3>
-        </div>
-      </div>
-    </div>
-    {% endfor %} 
-  </div>
-</div>
-
-				</div>
-				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
-					
-<h2 style="clear:both;display:block" class="">Previsión del Tiempo en Pas de la Casa Boulder</h2>
-<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
-  <input type="hidden" id="lat" name="lat_val" value="42.527735" />
-  <input type="hidden" id="lng" name="lng_val" value="1.73692" />
-  <!--Weather widget html code-->
-  <div class="card mt-3" style="width:80%;">
-    <div class="card-header d-flex justify-content-center">
-      Pas de la Casa
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row mt-1 mb-1">
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <img loading="lazy" height="75" class="weather-icon"></img>
-        <div class="mx-auto text-capitalize weather-description text-center"></div>
-      </div>
-      <div class="d-flex col-2 flex-column justify-content-center">
-        <div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
-          <div class="my-auto d-flex align-items-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto">
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-wind mr-2">air</i>
-              <div class="wind-speed mb-2" style="font-size: small;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8 d-flex align-content-center flex-wrap">
-        <div id="big" class="row weather-forecast" style="margin: inherit;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
-  <!--small weather widget html code-->
-  <div class="card mt-1" style="width: 95%;">
-    <div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
-      Pas de la Casa
-      <!-- This will come from the datafile -->
-    </div>
-    <div class="row">
-      <div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
-        <img loading="lazy" height="60" class="weather-icon"></img>
-        <div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
-      </div>
-      <div class="d-flex col-6 flex-column justify-content-center">
-        <div id="current_weather_small" class="d-flex flex-column justify-content-center">
-          <div class="my-auto d-flex justify-content-center">
-            <div class="weather-temperature mb-2" style="font-size: large;"></div>
-          </div>
-          <div class="my-auto mx-auto d-flex">
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Min:&nbsp;</label>
-              <div class="weather-min-temperature" style="font-size: small;"></div>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <label style="font-size: small;">Max:&nbsp;</label>
-              <div class="weather-max-temperature" style="font-size: small;"></div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <i class="fas fa-wind mr-2">air</i>
-            <div class="wind-speed mb-2" style="font-size: small;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr style="margin-top: 0px; margin-bottom: 0px;" />
-    <div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
-    </div>
-  </div>
-</div>
-
-<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
-<!-- jQuery, the solution to all your problems -->
-
-<script>
-  $('.weather-temperature').openWeather({
-    lat: $('input#lat').val(), // From zone data
-    lng: $('input#lng').val(), // From zone data
-    iconTarget: '.weather-icon',
-    key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-    customIcons: 'images/weather_icons/',
-    minTemperatureTarget: '.weather-min-temperature',
-    maxTemperatureTarget: '.weather-max-temperature',
-    windSpeedTarget: '.wind-speed',
-    windSpeedUnit: 'km/h',
-    descriptionTarget: '.weather-description',
-    forecastTarget: 'weather-forecast',
-    lang: '{{ current_lang }}', // from zone data
-    query: 'onecall' // to get forecast
-  });
-</script>
- 
-
-				</div>
-				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
-					
-<div id="main" class="row" style="margin-bottom: 1rem;">
-	<div class="col-md-12">
-		<div class="tab-content ">
-			<div class="row">
-				<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
-					<div id="area-thumbnail" title="Foto de Pas de la Casa Boulder" style="opacity: 1; filter: saturate(100%);">
-						<picture>
-							<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
-							<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
-							<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
-							<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg" alt="Foto de Pas de la Casa Boulder">
-						</picture>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div id="general-info" class="overflow-auto d-flex flex-column">
-						
-							<div id="features_info" class="position-relative">
-								<h2>Escalada en Pas de la Casa</h2>
-								<p style="text-align: justify;">Pas de la Casa, situado en los Pirineos, es famoso por su caos de bloques de granito. Esta área de boulder ofrece una experiencia única con una variedad de características, incluyendo regletas y cantos. Los escaladores acuden a Pas de la Casa por sus impresionantes paisajes alpinos y sus desafiantes problemas. La mejor temporada para explorar esta área es a finales de la primavera y principios del verano.</p>
+					<h2>Estadísticas de Pas de la Casa Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<div id="zone-summary" class="row justify-content-center">
+							 {% for stat in stats_list %}
+							<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
 							</div>
-						
-						<div id="general_stats">
-							<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-								<b>Videos</b> 22
-								
-									<br>
-									<b>Tipo de Roca</b> Granite
-								
-								
-									<br>
-									<b>Altitud</b> 2300m
-								
-							</p>
+							</div>
+							{% endfor %} 
 						</div>
 					</div>
 				</div>
-			</div>	
-		</div>
-	</div>
-</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Previsión del Tiempo en Pas de la Casa Boulder</h2>
+					<div id="big-weather-widget" class="d-flex justify-content-center align-content-center">
+					<input type="hidden" id="lat" name="lat_val" value="42.527735" />
+					<input type="hidden" id="lng" name="lng_val" value="1.73692" />
+					<!--Weather widget html code-->
+					<div class="card mt-3" style="width:80%;">
+						<div class="card-header d-flex justify-content-center">
+						Pas de la Casa
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row mt-1 mb-1">
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<img loading="lazy" height="75" class="weather-icon"></img>
+							<div class="mx-auto text-capitalize weather-description text-center"></div>
+						</div>
+						<div class="d-flex col-2 flex-column justify-content-center">
+							<div id="current_weather" class="d-flex flex-column justify-content-center" style="margin: 0.75rem;">
+							<div class="my-auto d-flex align-items-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto">
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="d-flex align-items-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="col-8 d-flex align-content-center flex-wrap">
+							<div id="big" class="row weather-forecast" style="margin: inherit;"></div>
+						</div>
+						</div>
+					</div>
+					</div>
 
-  <div>
-    <h2>Guias de Pas de la Casa Boulder</h2>
-    
-    
-      <div class="list-group">
-        
-          <a id="generic_link" href="https://www.google.com/maps/d/viewer?hl=es&ll=42.5276825183585%2C1.734527232330123&z=15&mid=1813oTYKTjvXTexTAVQvtW7YxJULzBauI" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
-            <i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-            Guide & Map
-            
-              <button class="btn-free-madboulder text-bold">
-                Gratis
-              </button>
-            
-          </a>
-        
-      </div>
-    
-  </div>
+					<div id="small-weather-widget" class="container d-flex justify-content-center align-content-center mt-1">
+					<!--small weather widget html code-->
+					<div class="card mt-1" style="width: 95%;">
+						<div class="card-header d-flex justify-content-center" style="font-size: small; padding: 3px;">
+						Pas de la Casa
+						<!-- This will come from the datafile -->
+						</div>
+						<div class="row">
+						<div class="d-flex col-6 flex-column justify-content-center" style="font-size: small;">
+							<img loading="lazy" height="60" class="weather-icon"></img>
+							<div class="mx-auto weather-description" style="text-transform: capitalize; text-align:center; font-size: small;"></div>
+						</div>
+						<div class="d-flex col-6 flex-column justify-content-center">
+							<div id="current_weather_small" class="d-flex flex-column justify-content-center">
+							<div class="my-auto d-flex justify-content-center">
+								<div class="weather-temperature mb-2" style="font-size: large;"></div>
+							</div>
+							<div class="my-auto mx-auto d-flex">
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Min:&nbsp;</label>
+								<div class="weather-min-temperature" style="font-size: small;"></div>
+								</div>
+								<div class="col-6 d-flex justify-content-center">
+								<label style="font-size: small;">Max:&nbsp;</label>
+								<div class="weather-max-temperature" style="font-size: small;"></div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-center">
+								<i class="fas fa-wind mr-2">air</i>
+								<div class="wind-speed mb-2" style="font-size: small;"></div>
+							</div>
+							</div>
+						</div>
+						</div>
+						<hr style="margin-top: 0px; margin-bottom: 0px;" />
+						<div id="small" class="row d-flex justify-content-center weather-forecast mb-2" style="margin: inherit;">
+						</div>
+					</div>
+					</div>
 
-
+					<!-- Ideally, make a python wrapper and pass the values instead of using jQuery? -->
+					<!-- jQuery, the solution to all your problems -->
+					
+					<script>
+					$('.weather-temperature').openWeather({
+						lat: $('input#lat').val(), // From zone data
+						lng: $('input#lng').val(), // From zone data
+						iconTarget: '.weather-icon',
+						key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+						customIcons: 'images/weather_icons/',
+						minTemperatureTarget: '.weather-min-temperature',
+						maxTemperatureTarget: '.weather-max-temperature',
+						windSpeedTarget: '.wind-speed',
+						windSpeedUnit: 'km/h',
+						descriptionTarget: '.weather-description',
+						forecastTarget: 'weather-forecast',
+						lang: '{{ current_lang }}', // from zone data
+						query: 'onecall' // to get forecast
+					});
+					</script>
+					 
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Foto de Pas de la Casa Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/LAJRpyt2h3g/maxresdefault.jpg" alt="Foto de Pas de la Casa Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Escalada en Pas de la Casa</h2>
+													<p style="text-align: justify;">Pas de la Casa, situado en los Pirineos, es famoso por su caos de bloques de granito. Esta área de boulder ofrece una experiencia única con una variedad de características, incluyendo regletas y cantos. Los escaladores acuden a Pas de la Casa por sus impresionantes paisajes alpinos y sus desafiantes problemas. La mejor temporada para explorar esta área es a finales de la primavera y principios del verano.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 22
+													
+														<br>
+														<b>Tipo de Roca</b> Granite
+													
+													
+														<br>
+														<b>Altitud</b> 2300m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div>
+						<h2>Guias de Pas de la Casa Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://www.google.com/maps/d/viewer?hl=es&ll=42.5276825183585%2C1.734527232330123&z=15&mid=1813oTYKTjvXTexTAVQvtW7YxJULzBauI" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Guide & Map
+								
+								  <button class="btn-free-madboulder text-bold">
+									Gratis
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
 				</div>
 				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
-					
-<!-- Zone Map -->
-<h2 style="clear:both;display:block" class="">Mapa de Pas de la Casa Boulder</h2>
-<div class="container">
-	<div style="position: relative; padding-top: 56%;">
-		<iframe
-			src="maps/pas-de-la-casa"
-			frameborder="0"
-		  loading="lazy"
-			allowfullscreen
-			style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-		</iframe>
-	</div>
-</div>
-
+					<h2>Mapa de Pas de la Casa Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/pas-de-la-casa"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					
-<!--Sector List-->
-<h2 style="clear:both;display:block" class="">Lista de 1 Sectores de Pas de la Casa Boulder</h2>
-<div class="container">
-	<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="sectors-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">Nombre</th>
-				<th scope="col" class="sorting">Bloques</th>
-				
-			</tr>
-		</thead>
-		<tbody>
-			
-				<tr class="sector-row">
-					<td>
-						<a href="/sectors/pas-de-la-casa/unknown" class="table-row-name text-bold">Unknown</a>
-					</td>
-					<td class="text-center">22</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#sectors-table').DataTable({
-				paging: false,
-				dom: 'tr'
-			});
-			$("#search-sector").trigger("keyup");
-				
-			$("#search-sector").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".sector-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+					<h2>Lista de 1 Sectores de Pas de la Casa Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">Nombre</th>
+									<th scope="col" class="sorting">Bloques</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/pas-de-la-casa/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">22</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
 				</div>
 				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>5 Listas de Reproducción de Pas de la Casa Boulder</h2>
+					<div class="container">
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>Completa</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPh_hy0N4qCP-Z52nXLqfbc"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
 					
-<!--Playlists-->
-<h2 style="clear:both;display:block" class="">5 Listas de Reproducción de Pas de la Casa Boulder</h2>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-3 col-md-3"></div>
-    <div class="col-sm-6 col-md-6">
-      <p class="text-center">
-        
-        <b>Completa</b>
-        
-      </p>
-      <div style="position: relative; padding-top: 56.25%;">
-        <iframe
-          src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPh_hy0N4qCP-Z52nXLqfbc"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen
-          style="
-            position: absolute;
-            top: 0;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-          "
-        >
-        </iframe>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-3"></div>
-  </div>
-  
-
 				</div>
 			</div>
-			
-<!--Problem List-->
-<h2 style="clear:both;display:block" class="">Lista de 22 Bloques en Video de Pas de la Casa Boulder</h2>
-<div class="container">
-	<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-	<table id="problems-table" class="table table-hover">
-		<thead>
-			<tr>
-				
-				<th scope="col" class="sorting">Nombre</th>
-				<th scope="col" class="sorting">Grado</th>
-				<th scope="col" class="sorting">Sector</th>
-				
-			</tr>
-		</thead>
-		<tbody style="vertical-align: middle;">
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Bob Esponja, 7a+ (sit). Pas de la Casa" href="/problems/pas-de-la-casa/bob-esponja-7a-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Bob Esponja, 7a+ (sit). Pas de la Casa" src="https://img.youtube.com/vi/Pf9VyE1VdJw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/bob-esponja-7a-sit" class="table-row-name text-bold">Bob Esponja</a>
-            </div>
-					</td>
-					<td>7a+ (sit)</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Cavernícola, 7b/+. Pas de la Casa" href="/problems/pas-de-la-casa/cavernicola-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Cavernícola, 7b/+. Pas de la Casa" src="https://img.youtube.com/vi/LAJRpyt2h3g/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/cavernicola-7b" class="table-row-name text-bold">Cavernícola</a>
-            </div>
-					</td>
-					<td>7b/+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Coco Liso, 7a. Pas de la Casa" href="/problems/pas-de-la-casa/coco-liso-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Coco Liso, 7a. Pas de la Casa" src="https://img.youtube.com/vi/81wb0xNWYvY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/coco-liso-7a" class="table-row-name text-bold">Coco Liso</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Colmillo Blanco, 6c (sit). Pas de la Casa" href="/problems/pas-de-la-casa/colmillo-blanco-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Colmillo Blanco, 6c (sit). Pas de la Casa" src="https://img.youtube.com/vi/Dvz2wCEea1Q/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/colmillo-blanco-6c" class="table-row-name text-bold">Colmillo Blanco</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Bloquero Solitario, 6b. Pas de la Casa" href="/problems/pas-de-la-casa/el-bloquero-solitario-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Bloquero Solitario, 6b. Pas de la Casa" src="https://img.youtube.com/vi/mAmhLz8mfWo/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-bloquero-solitario-6b" class="table-row-name text-bold">El Bloquero Solitario</a>
-            </div>
-					</td>
-					<td>6b</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Camaleón Tuerto, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/el-camaleon-tuerto-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Camaleón Tuerto, 6c. Pas de la Casa" src="https://img.youtube.com/vi/_q3d6rkYog8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-camaleon-tuerto-6c" class="table-row-name text-bold">El Camaleón Tuerto</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Chupacabras, 6b+. Pas de la Casa" href="/problems/pas-de-la-casa/el-chupacabras-6b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Chupacabras, 6b+. Pas de la Casa" src="https://img.youtube.com/vi/mI-RGPDCMVY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-chupacabras-6b" class="table-row-name text-bold">El Chupacabras</a>
-            </div>
-					</td>
-					<td>6b+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Porroncho, 7a (sit). Pas de la Casa" href="/problems/pas-de-la-casa/el-porroncho-7a-sit" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Porroncho, 7a (sit). Pas de la Casa" src="https://img.youtube.com/vi/Y6G6yxsGmrs/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-porroncho-7a-sit" class="table-row-name text-bold">El Porroncho</a>
-            </div>
-					</td>
-					<td>7a (sit)</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Rey de la Cantina, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-rey-de-la-cantina-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Rey de la Cantina, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/DJKry-rhYC4/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-rey-de-la-cantina-6c" class="table-row-name text-bold">El Rey de la Cantina</a>
-            </div>
-					</td>
-					<td>6c+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Rubí, 7b. Pas de la Casa" href="/problems/pas-de-la-casa/el-rubi-7b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Rubí, 7b. Pas de la Casa" src="https://img.youtube.com/vi/QtR4xVp4Dvc/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-rubi-7b" class="table-row-name text-bold">El Rubí</a>
-            </div>
-					</td>
-					<td>7b</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Topacío, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-topacio-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Topacío, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/Izn6MacSqAg/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-topacio-6c" class="table-row-name text-bold">El Topacío</a>
-            </div>
-					</td>
-					<td>6c+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Yang, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-yang-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Yang, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/S6NBdHIdxCM/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-yang-6c" class="table-row-name text-bold">El Yang</a>
-            </div>
-					</td>
-					<td>6c+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Yeti, 7b (low). Pas de la Casa" href="/problems/pas-de-la-casa/el-yeti-7b-low" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Yeti, 7b (low). Pas de la Casa" src="https://img.youtube.com/vi/tP0HO4pXRoI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-yeti-7b-low" class="table-row-name text-bold">El Yeti</a>
-            </div>
-					</td>
-					<td>7b (low)</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Ying, 6a. Pas de la Casa" href="/problems/pas-de-la-casa/el-ying-6a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Ying, 6a. Pas de la Casa" src="https://img.youtube.com/vi/Z-po5rXOmWU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-ying-6a" class="table-row-name text-bold">El Ying</a>
-            </div>
-					</td>
-					<td>6a</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="El Zafiro, 7a+. Pas de la Casa" href="/problems/pas-de-la-casa/el-zafiro-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Zafiro, 7a+. Pas de la Casa" src="https://img.youtube.com/vi/JutYbpNdGPQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/el-zafiro-7a" class="table-row-name text-bold">El Zafiro</a>
-            </div>
-					</td>
-					<td>7a+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Hans Topo, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/hans-topo-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Hans Topo, 6c. Pas de la Casa" src="https://img.youtube.com/vi/WptRkFyZMPI/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/hans-topo-6c" class="table-row-name text-bold">Hans Topo</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="La Placa de Esther, 5+. Pas de la Casa" href="/problems/pas-de-la-casa/la-placa-de-esther-5" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de La Placa de Esther, 5+. Pas de la Casa" src="https://img.youtube.com/vi/uuGwFPRkPoY/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/la-placa-de-esther-5" class="table-row-name text-bold">La Placa de Esther</a>
-            </div>
-					</td>
-					<td>5+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Los Pingüinos de Pas, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/los-pinguinos-de-pas-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Los Pingüinos de Pas, 6c. Pas de la Casa" src="https://img.youtube.com/vi/WJD0PaWNcEQ/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/los-pinguinos-de-pas-6c" class="table-row-name text-bold">Los Pingüinos de Pas</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Makinen, 7a+/b. Pas de la Casa" href="/problems/pas-de-la-casa/makinen-7a-b" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Makinen, 7a+/b. Pas de la Casa" src="https://img.youtube.com/vi/3TUnVTwbQC8/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/makinen-7a-b" class="table-row-name text-bold">Makinen</a>
-            </div>
-					</td>
-					<td>7a+/b</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Quasimodo, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/quasimodo-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Quasimodo, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/R_rcJmCFGPU/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/quasimodo-6c" class="table-row-name text-bold">Quasimodo</a>
-            </div>
-					</td>
-					<td>6c+</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Rigor Mortis, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/rigor-mortis-6c" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Rigor Mortis, 6c. Pas de la Casa" src="https://img.youtube.com/vi/oA-38h8T8iw/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/rigor-mortis-6c" class="table-row-name text-bold">Rigor Mortis</a>
-            </div>
-					</td>
-					<td>6c</td>
-					<td>Unknown</td>
-				</tr>
-			
-				<tr class="problem-row">
-					<td>
-            <div class="problem-thumbnail-cell">
-              <a aria-hidden="false" aria-label="Romopatia, 7a. Pas de la Casa" href="/problems/pas-de-la-casa/romopatia-7a" tabindex="0" target="">
-                <div class="video-thumbnail-container">
-                  <img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Romopatia, 7a. Pas de la Casa" src="https://img.youtube.com/vi/6OvEVSLcb48/mqdefault.jpg">
-                </div>
-              </a>
-              <a href="/problems/pas-de-la-casa/romopatia-7a" class="table-row-name text-bold">Romopatia</a>
-            </div>
-					</td>
-					<td>7a</td>
-					<td>Unknown</td>
-				</tr>
-			
-		</tbody>
-	</table>
-	<script>
-		$(document).ready(function () {
-			$('#problems-table').DataTable({
-				paging: false,
-				dom: 'tr',
-				columnDefs: [
-					{
-						targets: [1],
-						type: 'custom-grade',
-					},
-				]
-			});
-			
-			$("#search-problem").trigger("keyup");
-				
-			$("#search-problem").keyup(function() {
-				var search_query = $.trim($(this).val());
-				var items = $(".problem-row");
-				filter_items_by_query(search_query, items)
-			});
-		});
-	</script>
-</div>
-
+			<h2>Lista de 22 Bloques en Video de Pas de la Casa Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">Nombre</th>
+							<th scope="col" class="sorting">Grado</th>
+							<th scope="col" class="sorting">Sector</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Bob Esponja, 7a+ (sit). Pas de la Casa" href="/problems/pas-de-la-casa/bob-esponja-7a-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Bob Esponja, 7a+ (sit). Pas de la Casa" src="https://img.youtube.com/vi/Pf9VyE1VdJw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/bob-esponja-7a-sit" class="table-row-name text-bold">Bob Esponja</a>
+						</div>
+								</td>
+								<td>7a+ (sit)</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Cavernícola, 7b/+. Pas de la Casa" href="/problems/pas-de-la-casa/cavernicola-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Cavernícola, 7b/+. Pas de la Casa" src="https://img.youtube.com/vi/LAJRpyt2h3g/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/cavernicola-7b" class="table-row-name text-bold">Cavernícola</a>
+						</div>
+								</td>
+								<td>7b/+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Coco Liso, 7a. Pas de la Casa" href="/problems/pas-de-la-casa/coco-liso-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Coco Liso, 7a. Pas de la Casa" src="https://img.youtube.com/vi/81wb0xNWYvY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/coco-liso-7a" class="table-row-name text-bold">Coco Liso</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Colmillo Blanco, 6c (sit). Pas de la Casa" href="/problems/pas-de-la-casa/colmillo-blanco-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Colmillo Blanco, 6c (sit). Pas de la Casa" src="https://img.youtube.com/vi/Dvz2wCEea1Q/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/colmillo-blanco-6c" class="table-row-name text-bold">Colmillo Blanco</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Bloquero Solitario, 6b. Pas de la Casa" href="/problems/pas-de-la-casa/el-bloquero-solitario-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Bloquero Solitario, 6b. Pas de la Casa" src="https://img.youtube.com/vi/mAmhLz8mfWo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-bloquero-solitario-6b" class="table-row-name text-bold">El Bloquero Solitario</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Camaleón Tuerto, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/el-camaleon-tuerto-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Camaleón Tuerto, 6c. Pas de la Casa" src="https://img.youtube.com/vi/_q3d6rkYog8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-camaleon-tuerto-6c" class="table-row-name text-bold">El Camaleón Tuerto</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Chupacabras, 6b+. Pas de la Casa" href="/problems/pas-de-la-casa/el-chupacabras-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Chupacabras, 6b+. Pas de la Casa" src="https://img.youtube.com/vi/mI-RGPDCMVY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-chupacabras-6b" class="table-row-name text-bold">El Chupacabras</a>
+						</div>
+								</td>
+								<td>6b+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Porroncho, 7a (sit). Pas de la Casa" href="/problems/pas-de-la-casa/el-porroncho-7a-sit" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Porroncho, 7a (sit). Pas de la Casa" src="https://img.youtube.com/vi/Y6G6yxsGmrs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-porroncho-7a-sit" class="table-row-name text-bold">El Porroncho</a>
+						</div>
+								</td>
+								<td>7a (sit)</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Rey de la Cantina, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-rey-de-la-cantina-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Rey de la Cantina, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/DJKry-rhYC4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-rey-de-la-cantina-6c" class="table-row-name text-bold">El Rey de la Cantina</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Rubí, 7b. Pas de la Casa" href="/problems/pas-de-la-casa/el-rubi-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Rubí, 7b. Pas de la Casa" src="https://img.youtube.com/vi/QtR4xVp4Dvc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-rubi-7b" class="table-row-name text-bold">El Rubí</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Topacío, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-topacio-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Topacío, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/Izn6MacSqAg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-topacio-6c" class="table-row-name text-bold">El Topacío</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Yang, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/el-yang-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Yang, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/S6NBdHIdxCM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-yang-6c" class="table-row-name text-bold">El Yang</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Yeti, 7b (low). Pas de la Casa" href="/problems/pas-de-la-casa/el-yeti-7b-low" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Yeti, 7b (low). Pas de la Casa" src="https://img.youtube.com/vi/tP0HO4pXRoI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-yeti-7b-low" class="table-row-name text-bold">El Yeti</a>
+						</div>
+								</td>
+								<td>7b (low)</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Ying, 6a. Pas de la Casa" href="/problems/pas-de-la-casa/el-ying-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Ying, 6a. Pas de la Casa" src="https://img.youtube.com/vi/Z-po5rXOmWU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-ying-6a" class="table-row-name text-bold">El Ying</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El Zafiro, 7a+. Pas de la Casa" href="/problems/pas-de-la-casa/el-zafiro-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El Zafiro, 7a+. Pas de la Casa" src="https://img.youtube.com/vi/JutYbpNdGPQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/el-zafiro-7a" class="table-row-name text-bold">El Zafiro</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Hans Topo, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/hans-topo-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Hans Topo, 6c. Pas de la Casa" src="https://img.youtube.com/vi/WptRkFyZMPI/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/hans-topo-6c" class="table-row-name text-bold">Hans Topo</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La Placa de Esther, 5+. Pas de la Casa" href="/problems/pas-de-la-casa/la-placa-de-esther-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de La Placa de Esther, 5+. Pas de la Casa" src="https://img.youtube.com/vi/uuGwFPRkPoY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/la-placa-de-esther-5" class="table-row-name text-bold">La Placa de Esther</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Los Pingüinos de Pas, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/los-pinguinos-de-pas-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Los Pingüinos de Pas, 6c. Pas de la Casa" src="https://img.youtube.com/vi/WJD0PaWNcEQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/los-pinguinos-de-pas-6c" class="table-row-name text-bold">Los Pingüinos de Pas</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Makinen, 7a+/b. Pas de la Casa" href="/problems/pas-de-la-casa/makinen-7a-b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Makinen, 7a+/b. Pas de la Casa" src="https://img.youtube.com/vi/3TUnVTwbQC8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/makinen-7a-b" class="table-row-name text-bold">Makinen</a>
+						</div>
+								</td>
+								<td>7a+/b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Quasimodo, 6c+. Pas de la Casa" href="/problems/pas-de-la-casa/quasimodo-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Quasimodo, 6c+. Pas de la Casa" src="https://img.youtube.com/vi/R_rcJmCFGPU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/quasimodo-6c" class="table-row-name text-bold">Quasimodo</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Rigor Mortis, 6c. Pas de la Casa" href="/problems/pas-de-la-casa/rigor-mortis-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Rigor Mortis, 6c. Pas de la Casa" src="https://img.youtube.com/vi/oA-38h8T8iw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/rigor-mortis-6c" class="table-row-name text-bold">Rigor Mortis</a>
+						</div>
+								</td>
+								<td>6c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Romopatia, 7a. Pas de la Casa" href="/problems/pas-de-la-casa/romopatia-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Romopatia, 7a. Pas de la Casa" src="https://img.youtube.com/vi/6OvEVSLcb48/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/pas-de-la-casa/romopatia-7a" class="table-row-name text-bold">Romopatia</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
         </div>
 	</main>
 	
