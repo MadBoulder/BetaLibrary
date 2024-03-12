@@ -13,7 +13,7 @@ Licensed under the MIT license
 
 ;(function($) {
 
-	$.fn.openWeather  = function(options) {
+	$.fn.openWeather = function(options) {
 
 		// return if no element was bound
 		// so chained events can continue
@@ -92,34 +92,6 @@ Licensed under the MIT license
 		}
 		// format icon function
 		const mapCustomIconToURL = function(defaultIconFileName, timeOfDay) {
-			// let iconName;
-			// // if icon is clear sky
-			// if (defaultIconFileName == '01d' || defaultIconFileName == '01n') {
-			// 	iconName = 'clear';
-			// }
-			// // if icon is clouds
-			// if (defaultIconFileName == '02d' || defaultIconFileName == '02n' || defaultIconFileName == '03d' || defaultIconFileName == '03n' || defaultIconFileName == '04d' || defaultIconFileName == '04n') {
-			// 	iconName = 'clouds';
-			// }
-			// // if icon is rain
-			// if (defaultIconFileName == '09d' || defaultIconFileName == '09n' || defaultIconFileName == '10d' || defaultIconFileName == '10n') {
-			// 	iconName = 'rain';
-			// }
-			// // if icon is thunderstorm
-			// if (defaultIconFileName == '11d' || defaultIconFileName == '11n') {
-			// 	iconName = 'storm';
-			// }
-			// // if icon is snow
-			// if (defaultIconFileName == '13d' || defaultIconFileName == '13n') {
-			// 	iconName = 'snow';
-			// }
-			// // if icon is mist
-			// if (defaultIconFileName == '50d' || defaultIconFileName == '50n') {
-			// 	iconName = 'mist';
-			// }
-			// define custom icon URL
-			// return `${s.customIcons}${timeOfDay}/${iconName}.svg`;
-			// return `${s.customIcons}${timeOfDay}/${defaultIconFileName}.svg`;
 			return `/static/${s.customIcons}${timeOfDay}/${defaultIconFileName}.svg`;
 		}
 
@@ -205,94 +177,70 @@ Licensed under the MIT license
 						sunset: `${formatTime(data.sys.sunset)} PM`
 					};
 					
-					// set temperature
 					el.html(temperature);
 
 					if(s.minTemperatureTarget != null) {
-						// set minimum temperature
 						$(s.minTemperatureTarget).text(minTemperature);
 					}
 					if(s.maxTemperatureTarget != null) {
-						// set maximum temperature
 						$(s.maxTemperatureTarget).text(maxTemperature);
 					}
-					// set weather description
 					$(s.descriptionTarget).text(weatherObj.description);
-					// if iconTarget and default weather icon aren't null
 					icon = (s.query.localeCompare('weather') == 0) ? data.weather[0].icon : data.current.weather[0].icon;
 					if (s.iconTarget != null && icon != null) {
 						let iconURL;
 						if(s.customIcons != null) {
-							// define the default icon name
 							const defaultIconFileName = icon;
 							let timeOfDay;
 							// if default icon name contains the letter 'd'
 							if(defaultIconFileName.indexOf('d') != -1) {
-								// define time of day as day
 								timeOfDay = 'day';
 							} else {
-								// define time of day as night
 								timeOfDay = 'night';
 							}
-							// append class modifier to wrapper
 							$(s.wrapperTarget).addClass(timeOfDay);
 							iconURL = mapCustomIconToURL(defaultIconFileName, timeOfDay);
 						} else {
-							// define icon URL using default icon
 							iconURL = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 						}
-						// set iconTarget src attribute as iconURL
 						$(s.iconTarget).attr('src', iconURL);
 					}
 					if(s.placeTarget != null) {
-						// set place
 						$(s.placeTarget).text(weatherObj.city);
 					}
-					// if windSpeedTarget isn't null
 					if(s.windSpeedTarget != null) {
-						// set wind speed
 						$(s.windSpeedTarget).text(weatherObj.windspeed);
 					}
-					// if humidityTarget isn't null
 					if(s.humidityTarget != null) {
-						// set humidity
 						$(s.humidityTarget).text(weatherObj.humidity);
 					}
-					// if sunriseTarget isn't null
 					if(s.sunriseTarget != null) {
-						// set sunrise
 						$(s.sunriseTarget).text(weatherObj.sunrise);
 					}
-					// if sunriseTarget isn't null
 					if(s.sunsetTarget != null) {
-						// set sunset
 						$(s.sunsetTarget).text(weatherObj.sunset);
 					}
-					// run success callback
 					s.success.call(this, weatherObj);
 				}
 
-				// handle daily forecast if the query asks to do so
 				if (s.query.localeCompare('onecall') == 0) {
 					moment.locale(s.lang);
-					var elements = document.getElementsByClassName(s.forecastTarget);
+					var elements = document.getElementById(s.widgetId).getElementsByClassName(s.forecastTarget);
 					for (let elIndex = 0; elIndex < elements.length; elIndex++) {
 						var element = elements[elIndex];
 						var daysLength = data.daily.length-1;
-						if (element.id === "small") {
-							daysLength = 4;
-						}
 						for (let day = 1; day < daysLength; day++) {
 							var main_container = document.createElement("div");
-							main_container.setAttribute('class', 'col text-center');
+							main_container.setAttribute('class', 'weather-forecast-container');
 							element.appendChild(main_container)
-							// Week day and icon
+							// Week day
 							var weekday_span = document.createElement('span');
-							weekday_span.setAttribute('style', 'font-size: small; align-self: center; text-transform: capitalize;');
+							weekday_span.setAttribute('class', 'text-capitalize');
 							const weekday = moment.unix(data.daily[day].dt).format('dd');
 							var textNode = document.createTextNode(weekday);
 							weekday_span.appendChild(textNode);
 							main_container.appendChild(weekday_span);
+							//icon
 							var weather_icon = document.createElement("div");
 							weather_icon.id = 'day_' + day.toString();
 							var img = document.createElement("img");
@@ -300,49 +248,127 @@ Licensed under the MIT license
 							if (s.customIcons != null) {
 								img.src = mapCustomIconToURL(forecast.weather[0].icon, 'day');
 							} else {
-								// img.src = `https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png`;
 								img.src = `https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`;
 							}
-							img.setAttribute("height", "40px");
-							weather_icon.setAttribute("style", "justify-content: center; display: flex;");
+							img.setAttribute("class", "weather-forecast-day-icon");
 							weather_icon.appendChild(img);
 							main_container.appendChild(weather_icon);
-							// rest of data
-							// var weekday_data_container = document.createElement("div");
+							//forecast data
+							var weekday_data_container = document.createElement("div");
+							weekday_data_container.setAttribute('class', 'weather-forecast-day-stats');
+							
 							// Min, max temps
 							var weekday_min_max = document.createElement("div");
-							weekday_min_max.setAttribute('class', 'd-flex justify-content-center');
-							var min_max_temps = document.createElement("span");
-							var textNode = document.createTextNode(mapTemp(data.daily[day].temp.min) + ", " + mapTemp(data.daily[day].temp.max));
-							min_max_temps.appendChild(textNode);
-							min_max_temps.setAttribute('style', 'font-size: small; align-self: center;');
-							weekday_min_max.appendChild(min_max_temps);
-							main_container.appendChild(weekday_min_max);
+							weekday_min_max.setAttribute('class', 'weather-forecast-day-stats-temp');
+							var min_temp = document.createElement("div");
+							min_temp.setAttribute('class', 'weather-min-temperature');
+							var minTextNode = document.createTextNode(mapTemp(data.daily[day].temp.min));
+							min_temp.appendChild(minTextNode);
+							weekday_min_max.appendChild(min_temp);
+							var max_temp = document.createElement("div");
+							max_temp.setAttribute('class', 'weather-max-temperature');
+							var maxTextNode = document.createTextNode(mapTemp(data.daily[day].temp.max));
+							max_temp.appendChild(maxTextNode);
+							weekday_min_max.appendChild(max_temp);
+							weekday_data_container.appendChild(weekday_min_max);
+
+							// humidity
+							var weekday_humidity = document.createElement("div");
+							weekday_humidity.setAttribute('class', 'weather-forecast-day-stats-item');
+							var humidity_data = document.createElement("span");
+							var humidity_icon = document.createElement("i");
+							humidity_icon.setAttribute('class', 'fas fa-droplet');
+							var textNodeHumidity = document.createTextNode('humidity');
+							humidity_icon.appendChild(textNodeHumidity);
+							var textNode = document.createTextNode(data.daily[day].humidity + '%');
+							humidity_data.appendChild(textNode);
+							weekday_humidity.appendChild(humidity_icon);
+							weekday_humidity.appendChild(humidity_data);
+							weekday_data_container.appendChild(weekday_humidity);
+
 							// wind
 							var weekday_wind = document.createElement("div");
-							weekday_wind.setAttribute('class', 'd-flex justify-content-center');
+							weekday_humidity.setAttribute('class', 'weather-forecast-day-stats-item');
 							var wind_data = document.createElement("span");
 							var wind_icon = document.createElement("i");
-							wind_icon.setAttribute('class', 'fas fa-wind mt-1 mr-1');
-							wind_icon.setAttribute('style', 'font-size: 18px;');
+							wind_icon.setAttribute('class', 'fas fa-wind');
 							var textNodeWind = document.createTextNode('air');
 							wind_icon.appendChild(textNodeWind);
 							var textNode = document.createTextNode(parseInt(mapWind(data.daily[day].wind_speed, s.windSpeedUnit)) + ' ' + s.windSpeedUnit);
 							wind_data.appendChild(textNode);
-							wind_data.setAttribute('style', 'font-size: small; align-self: center;');
 							weekday_wind.appendChild(wind_icon);
 							weekday_wind.appendChild(wind_data);
-							main_container.appendChild(weekday_wind);
+							weekday_data_container.appendChild(weekday_wind);
+
+							main_container.appendChild(weekday_data_container);
 						}
 					}
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				// run error callback
 				s.error.call(this, {
 					error: textStatus
 				});
 			}
 		});
+
+		function checkDaysSinceRain(lat, lng, key, callback) {
+			const daysToCheck = 3;
+			let daysSinceRain = 0;
+
+			const checkDay = (daysAgo) => {
+				if (daysAgo > daysToCheck) {
+					callback(daysSinceRain);
+					return;
+				}
+
+				const dateToCheck = new Date();
+				dateToCheck.setDate(dateToCheck.getDate() - daysAgo);
+				const timestamp = Math.floor(dateToCheck / 1000);
+
+				const apiUrl = `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${timestamp}&appid=${key}`;
+				$.ajax({
+					url: apiUrl,
+					method: 'GET',
+					success: function(data) {
+						let dailyPrecipitation = 0;
+
+						data.hourly.forEach(hour => {
+							if (hour.rain) {
+								dailyPrecipitation += hour.rain['1h'] ? hour.rain['1h'] : 0;
+							}
+							if (hour.snow) {
+								dailyPrecipitation += hour.snow['1h'] ? hour.snow['1h'] : 0;
+							}
+						});
+
+						if (dailyPrecipitation > 0) {
+							callback(daysSinceRain);
+						} else {
+							daysSinceRain++;
+							checkDay(daysAgo + 1);
+						}
+					},
+					error: function() {
+						console.log("Error fetching data for day", daysAgo);
+						callback(daysSinceRain);
+					}
+				});
+			};
+
+			checkDay(1);
+		}
+
+		this.each(function() {
+			const instance = $(this);
+			instance.data('openWeather', {
+				settings: options,
+				checkDaysSinceRain: function(cb) {
+					checkDaysSinceRain(options.lat, options.lng, options.key, cb);
+				}
+			});
+		});
+
+		return this;
 	}
 })(jQuery);
