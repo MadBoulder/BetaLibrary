@@ -421,12 +421,14 @@ def render_latest():
     return render_template('latest-news-and-videos.html', video_urls=get_videos_from_channel())
 
 
+@app.route('/bouldercast')
 @app.route('/weather-comparator')
-def weather_comparator():
+@app.route('/weather-forecast-comparison-tool')
+def show_bouldercast():
     zones=get_zone_data()
     default_zones_param = request.args.get('defaultZones', '')
     default_zones = default_zones_param.split(',') if default_zones_param else []
-    return render_template('weather-comparator.html',  zones=zones['items'], default_zones=default_zones)
+    return render_template('bouldercast.html',  zones=zones['items'], default_zones=default_zones)
 
 
 @app.route('/element/weather-widget.html')
