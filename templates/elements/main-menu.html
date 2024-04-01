@@ -1,58 +1,145 @@
+<script type="module" src="/static/js/firebaseInit.js"></script>
+<script type="module">
+	import { getAuth, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+	import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+	window.getAuth = getAuth;
+	window.signOut = signOut;
+	window.getDatabase = getDatabase;
+	window.ref = ref;
+	window.get = get;
+	window.child = child;
+
+	const auth = getAuth();
+	onAuthStateChanged(auth, (user) => {
+		if (user) {
+			showUserMenu(user);
+		}else{
+			hideUserMenu();
+		}
+	});
+</script>
+
 <div class="homeTopnav sticky" id="myTopnav"">
-  <a id="logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
+	<a id="logo" class="madboulder-logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
 	<img 
-	  title="MadBoulder | Climbing Videos | Bouldering"
-	  src="{{url_for('static', filename='images/logo-menu.webp')}}"
-	  alt="MadBoulder | Climbing Videos | Bouldering" 
-	  width="40px"
-	  height="40px"
-	  style="padding: 0px 0px;" 
-	  loading="lazy"
+		title="MadBoulder | Climbing Videos | Bouldering"
+		src="{{url_for('static', filename='images/logo-menu.webp')}}"
+		alt="MadBoulder | Climbing Videos | Bouldering" 
+		width="40px"
+		height="40px"
+		style="padding: 0px 0px;" 
+		loading="lazy"
 	/> 
-  </a>
-  
+	</a>
+
 	<div id="searchElement">
 		<form id="menuSearchForm" class="justify-content-center" method="post" action="/area-problem-finder">
 			<input id="searchInput" class="form-control" type="text" placeholder="Find areas, problems.." name="searchterm" style="align-self: center; border-color: black; height: calc(1.5em + 0.75rem + 6px);">
 			<div class="input-group-append">
-			  <button
+				<button
 				style="position: absolute; right: 0px; transform: translateY(-50%); top: 50%"
 				class="btn"
 				type="submit"
 				aria-label="Search in madboulder.org">
 				<i class="fa fa-search"></i>
-			  </button>
+				</button>
 			</div>
 		</form>
 	</div>
-	
-  <div id="links" style="vertical-align: middle;">
-	<div class="menuLink">
-	  <a href="/bouldering-areas-map">{{ _("MAP") }}</a>
+
+	<div id="links" style="vertical-align: middle;">
+		<div class="menuLink">
+			<a href="/bouldering-areas-map">{{ _("MAP") }}</a>
+		</div>
+		<div class="menuLink">
+			<a href="/bouldering-areas-list">{{ _("AREAS") }}</a>
+		</div>
+		<div class="menuLink">
+			<a href="/video-uploader">{{ _("UPLOAD") }}</a>
+		</div>
+		<div class="menuLink">
+			<a href="https://www.blog.madboulder.org/" target="_blank" >{{ _("BLOG") }}</a>
+		</div>
+		<div class="menuLink">
+			<a href="/about-us">{{ _("ABOUT US") }}</a>
+		</div>
+		<div class="menuLink">
+			<a href="https://shop.madboulder.org/" target="_blank" >{{ _("SHOP") }}</a>
+		</div>
 	</div>
-	<div class="menuLink">
-	  <a href="/bouldering-areas-list">{{ _("AREAS") }}</a>
+	<div style="margin-left: auto; display: flex;">
+		<button id="userMenuButton" class="icon" style="font-size: 17px;" onclick="loadUserDialog()" type="button">
+			<i class="fa fa-user"></i>
+		</button>
+		<button class="icon icon-show-small" style="font-size: 17px;" onclick="loadMenu()" type="button">
+			&#9776;
+		</button>
 	</div>
-	<div class="menuLink">
-	  <a href="/video-uploader">{{ _("UPLOAD") }}</a>
-	</div>
-	<div class="menuLink">
-	  <a href="https://www.blog.madboulder.org/" target="_blank" >{{ _("BLOG") }}</a>
-	</div>
-	<div class="menuLink">
-	  <a href="/about-us">{{ _("ABOUT US") }}</a>
-	</div>
-	<div class="menuLink">
-	  <a href="https://shop.madboulder.org/" target="_blank" >{{ _("SHOP") }}</a>
-	</div>
-  </div>
-  <button
-	class="icon"
-	style="font-size: 17px;"
-	onclick="loadMenu()"
-	type="button"
-	>&#9776;
-	</button>
+	<dialog-helper>
+		<dialog data-target="deferred-side-panel.panel" id="userMenuDialog" aria-modal="true" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-small-portrait Overlay--motion-scaleFade Overlay--placement-right SidePanel">
+			<div styles="flex-direction: row;" data-view-component="true" class="Overlay-header">
+				<div class="Overlay-headerContentWrap">
+					<div class="Overlay-titleWrap">
+						<div data-view-component="true" class="d-flex">
+							<div data-view-component="true" class="overflow-hidden d-flex width-full">
+								<div data-view-component="true" class="lh-condensed overflow-hidden d-flex flex-column flex-justify-center ml-2 f5 mr-auto width-full">
+									<span data-view-component="true" class="Truncate text-bold">
+										<span id="userMenuDialogName" data-view-component="true" class="Truncate-text">
+										</span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="Overlay-actionWrap">
+						<button onclick="closeUserDialog()" aria-label="Close" type="button" data-view-component="true" class="close-button Overlay-closeButton">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+			<scrollable-region style="overflow: auto;">
+			<div data-view-component="true" class="Overlay-body d-flex flex-column px-2">
+				<div data-view-component="true" class="d-flex flex-column mb-3">
+					<nav aria-label="User navigation" data-view-component="true" class="ActionList">
+						<nav-list data-catalyst="">
+							<ul data-target="nav-list.topLevelList" data-view-component="true" class="ActionListWrap">
+								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+									<a id="item-b644a9e2-37e8-4f58-9bc6-fd6d4fde8d0b" href="/settings/profile" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+										<i class="fa fa-user"></i>
+										<span data-view-component="true" class="ActionListItem-label">
+											Your profile
+										</span>
+									</a>
+								</li>
+								<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+									<a id="item-39c158ae-dc06-422f-9307-8325dc4552c0" href="/upload" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+										<span class="ActionListItem-visual ActionListItem-visual--leading">
+											<i class="fa fa-upload"></i>
+										</span>
+										<span data-view-component="true" class="ActionListItem-label">
+											Upload
+										</span>
+									</a>
+								</li>
+								<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+									<a id="item-logout" href="#" data-view-component="true" class="ActionListContent">
+										<span data-view-component="true" class="ActionListItem-label">
+											Sign out
+										</span>
+									</a>
+								</li>
+							</ul>
+						</nav-list>
+					</nav>
+				</div>
+			</div>
+			</scrollable-region>
+		</dialog>
+	</dialog-helper>
 </div>
 <div id="faded-background" ></div>
 <div class="modal" id="searchingModal">
@@ -72,18 +159,35 @@
 	</div>
 </div>
 <script>
-  function loadMenu() {
-	var x = document.getElementById("myTopnav");
-	if (!x.classList.contains("responsive")) {
-	  x.className += " responsive";
-	} else {
-	  if (x.classList.contains("sticky")) {
-		x.className = "homeTopnav sticky";
-	  } else {
-		x.className = "homeTopnav";
-	  }
+	function loadMenu() {
+		var x = document.getElementById("myTopnav");
+		if (!x.classList.contains("responsive")) {
+		x.className += " responsive";
+		} else {
+		if (x.classList.contains("sticky")) {
+			x.className = "homeTopnav sticky";
+		} else {
+			x.className = "homeTopnav";
+		}
+		}
 	}
-  }
+	
+	function loadUserDialog() {
+		var dialog = document.getElementById("userMenuDialog");
+		dialog.show();
+		dialog.classList.add('above-faded-background');
+		const fadedBackground = document.getElementById('faded-background');
+		fadedBackground.style.display = 'block';
+	}
+	
+	function closeUserDialog() {
+		console.log("closeUserDialog");
+		var dialog = document.getElementById("userMenuDialog");
+		dialog.close();
+		dialog.classList.remove('above-faded-background');
+		const fadedBackground = document.getElementById('faded-background');
+		fadedBackground.style.display = 'none';
+	}
   
 	const inputSearchElement = document.getElementById('searchInput');
 	inputSearchElement.addEventListener('focus', function () {
@@ -99,13 +203,73 @@
 		fadedBackground.style.display = 'none';
 	});
 	
-$('#menuSearchForm').submit(function(event) {
-	const searchElement = document.getElementById('searchElement');
-	searchElement.classList.add('above-faded-background');
-	const fadedBackground = document.getElementById('faded-background');
-	fadedBackground.style.display = 'block';
-		
-    $("#searchingModal").show();
-});
+	$('#menuSearchForm').submit(function(event) {
+		const searchElement = document.getElementById('searchElement');
+		searchElement.classList.add('above-faded-background');
+		const fadedBackground = document.getElementById('faded-background');
+		fadedBackground.style.display = 'block';
+			
+		$("#searchingModal").show();
+	});
+
+	document.getElementById('faded-background').addEventListener('click', function() {
+		closeUserDialog();
+	});
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const logoutLink = document.getElementById('item-logout');
+		logoutLink.addEventListener('click', (event) => {
+			event.preventDefault();
+			logout();
+		});
+	});
+	
+	function logout() {
+		fetch('/logout', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'}
+		})
+		.then(response => {
+			if (response.ok) {
+				console.log("Session cleared on server.");
+				//Sign out from Firebase
+				const auth = getAuth();
+				signOut(auth).then(() => {
+					console.log("Sign-out successful.");
+					window.location.reload();
+				}).catch((error) => {
+					console.error("An error happened during Firebase sign-out.", error);
+				});
+			} else {
+				console.error("Failed to clear session on server.");
+			}
+		})
+		.catch(error => {
+			console.error("Error during server logout:", error);
+		});
+	}
+
+	function showUserMenu(user){
+		const userMenuButton = document.getElementById('userMenuButton');
+		userMenuButton.style.display = 'block';
+
+		const dbRef = ref(getDatabase());
+		get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
+			if (snapshot.exists()) {
+				const userData = snapshot.val();
+				document.getElementById("userMenuDialogName").textContent = userData.username;
+			} 
+			else {
+				console.log("No data available");
+			}
+		}).catch((error) => {
+			console.error(error);
+		});
+	}
+
+	function hideUserMenu(){
+		const userMenuButton = document.getElementById('userMenuButton');
+		userMenuButton.style.display = 'none';
+	}
 
 </script>

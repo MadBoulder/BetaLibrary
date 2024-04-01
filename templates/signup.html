@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Sign up to MadBoulder</title>
+	<meta name="description" content="description">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<script type="module" src="/static/js/firebaseInit.js"></script>
+	<script type="module">
+		import { getAnalytics, setUserProperties} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js'
+		import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+		import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+	
+		const auth = getAuth();
+		window.auth = auth;
+		const database = getDatabase();
+		window.GoogleAuthProvider = GoogleAuthProvider;
+		window.signInWithPopup = signInWithPopup;
+		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+		window.setUserProperties = setUserProperties;
+		window.database = database;
+		window.ref = ref;
+		window.set = set;
+	</script>
+  </head>
+  <body>
+	<div class="page-wrapper">
+		<header class="login-header">
+			<a id="logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
+				<img  src="{{url_for('static', filename='images/logo/logo-quadrat.jpg')}}" alt="MadBoulder's Logo" width="40px" height="40px" loading="lazy">
+			</a>
+		</header>
+		<main class="main-container">
+			<section class="content-wrapper">
+				<div class="title-wrapper">
+					<h1 class="title">
+						Sign up
+					</h1>
+				</div>
+				<form method="POST" class="" data-form-primary="true" style="text-align: left;">
+					<div class="login-container">
+						<div class="input-wrapper">
+							<input class="input" id="name-input" name="name" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<label class="label" for="name-input">Name</label>
+						</div>
+						<div class="input-wrapper">
+							<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<label class="label" for="email-input">Email address</label>
+						</div>
+						<div class="input-wrapper">
+							<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<label class="label" for="email-input">Password</label>
+							<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
+								Wrong email or password
+							</span>
+						</div>
+						<div class="input-wrapper">
+							<input type="checkbox" id="contributor-checkbox" name="contributor">
+							<label>Apply as a Contributor</label>
+						</div>
+						<button id="create-btn" class="cta-btn">Create your account</button>
+						<div id="loadingSpinner" style="display: none;">
+							<img src="static/images/loading.gif" alt="Loading...">
+						  </div>
+						<p class="other-page">Already have an account? <a class="other-page-link" href="/login">Login</a></p>
+						<div hidden class="divider-wrapper">
+							<span class="divider">Or</span>
+						</div>
+						<div hidden class="social-section">
+							<button class="social-btn" onclick="signInWithGoogle()">
+								<span class="social-logo-wrapper">
+									<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
+								</span>
+								<span class="social-text">Sign up with Google</span>
+							</button>
+						</div>
+					</div>
+				</form>
+			</section>
+		</main>
+		<footer class="login-footer">
+			<a href="/madboulder-privacy_policy">Privacy Policy</a>
+		</footer>
+	</div>
+	<script>
+		function signupWithEmailPassword() {
+			const email = document.getElementById('email-input').value;
+			const password = document.getElementById('password-input').value;
+
+			document.getElementById('loadingSpinner').style.display = 'block';
+			document.getElementById('create-btn').style.display = 'none';
+
+			createUserWithEmailAndPassword(auth, email, password)
+			.then((userCredential) => {
+				const user = userCredential.user;
+      			console.log("User created successfully with email: ", user.email);
+				
+				const name = document.getElementById('name-input').value;
+				const isContributor = document.getElementById('contributor-checkbox').checked;
+				const contributor_status = isContributor ? "pending" : "non contributor";
+				writeUserData(user.uid, name, contributor_status);
+
+				userCredential.user.getIdToken().then(idToken => {
+					verifyTokenWithServer(idToken, () => {
+						window.location.href = '/settings/profile';
+					});
+				});
+			})
+			.catch((error) => {
+				displaySignUpError(error);
+			});
+		}
+
+		function writeUserData(userId, name, contributor_status) {
+			set(ref(database, 'users/' + userId), {
+				username: name,
+				contributor_status : contributor_status,
+				climber_id : ""
+			}).then(() => {
+				document.getElementById('loadingSpinner').style.display = 'none';
+
+				console.log("Data saved successfully for user: ", userId);
+
+				window.location.href = '/settings/profile';
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.error("Error saving data", errorCode, errorMessage);
+				
+				document.getElementById('loadingSpinner').style.display = 'none';
+    			document.getElementById('create-btn').style.display = 'block';
+			});
+		}
+
+		function displaySignUpError(error) {
+			const errorCode = error.code;
+				const errorMessage = error.message;
+				console.error("Error signing up with email and password", errorCode, errorMessage);
+				const errorElement = document.getElementById('error-element-password');
+				errorElement.style.display = 'block';
+				document.getElementById('password-input').classList.add('error');
+  				document.getElementById('password-input').focus();
+				
+				document.getElementById('loadingSpinner').style.display = 'none';
+    			document.getElementById('create-btn').style.display = 'block';
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			const signupButton = document.getElementById('create-btn');
+			signupButton.addEventListener('click', function(event) {
+				event.preventDefault(); // Prevent the form from submitting via the browser
+				signupWithEmailPassword();
+			});
+		});
+
+		function signInWithGoogle() {
+			const provider = new GoogleAuthProvider();
+			signInWithPopup(auth, provider).then(function (result){
+				result.user.getIdToken().then(function(idToken) {
+					// Send the ID token to your server
+					sendTokenToServer(idToken);
+					console.log("Firebase ID token obtained and sent to server");
+				});
+			}).catch(function(error) {
+				console.error("Error signing in with Google", error);
+			})
+		}
+
+		function verifyTokenWithServer(idToken, onSuccess) {
+			fetch('/verify-token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + idToken
+				}
+			})
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error('Failed to verify token');
+				}
+			})
+			.then(data => {
+				console.log(data.message);
+				if (typeof onSuccess === 'function') {
+					onSuccess();
+				}
+			})
+			.catch((error) => {
+				console.error("Error during server-side verification:", error);
+			});
+		}
+	</script>
+</html>

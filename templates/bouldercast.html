@@ -12,6 +12,30 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bouldercast.css') }}" />
 	<link rel="canonical" href="https://www.madboulder.org/bouldercast" />
+	<script type="module">
+		import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js'
+		import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js'
+		import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+		import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js'
+
+		const firebaseConfig = {
+			apiKey: "AIzaSyDgTSxuRWpfCKRLSFkurPSPx6ks8egLzME",
+			authDomain: "madboulder.firebaseapp.com",
+			databaseURL: 'https://madboulder.firebaseio.com',
+			projectId: "madboulder",
+			storageBucket: "madboulder.appspot.com",
+			messagingSenderId: "724331539515",
+			appId: "1:724331539515:web:e8b4375814f1932a58801e",
+			measurementId: "G-G8SP0G58JB"
+		};
+	
+		const app = initializeApp(firebaseConfig);
+		const auth = getAuth();
+		window.auth = auth;
+		window.GoogleAuthProvider = GoogleAuthProvider;
+		window.signInWithPopup = signInWithPopup;
+		window.onAuthStateChanged = onAuthStateChanged;
+	</script>
   </head>
   <body>
 	{% include 'elements/main-menu.html' %}
@@ -127,6 +151,64 @@
 					}
 				});
 			});
+			
+			function isLoggedIn() {
+				return new Promise((resolve, reject) => {
+					onAuthStateChanged(auth, (user) => {
+						if (user) {
+							console.log("Logged in");
+							resolve(true);
+						} else {
+							console.log("Logged out");
+							resolve(false);
+						}
+					});
+				});
+			}
+
+			async function showLogin() {
+				console.log("showLogin");
+				const provider = new GoogleAuthProvider();
+				try {
+					await signInWithPopup(auth, provider);
+					console.log("login success");
+					// After successful login, you might want to automatically close the login prompt
+					// and proceed with the action that required login
+					// For instance, you might re-trigger the zone selection popup here if needed
+					AddNewArea();
+				} catch (error) {
+					console.error("Error signing in with Google", error);
+				}
+			}
+
+			async function AddNewArea(){
+				const numberOfWidgets = document.querySelectorAll('.weather-widget').length;
+				if (numberOfWidgets >= 2) {
+					const loggedIn = await isLoggedIn(); // Await the promise here
+					if (!loggedIn) {
+						console.log("showLogin 0");
+						showLogin();
+						return; // Prevent further execution if not logged in
+					} else {
+						console.log("logged in 2");
+					}
+				}
+
+				const searchBox = document.getElementById('search-box');
+				searchBox.value = '';
+				const zoneList = document.getElementById('zone-list');
+				const lis = zoneList.getElementsByTagName('li');
+				for (let i = 0; i < lis.length; i++) {
+					lis[i].style.display = "";
+				}
+				
+				const popup = document.getElementById('zone-selector-popup');
+    			const overlay = document.getElementById('overlay');
+				popup.style.display = 'block';
+				overlay.style.display = 'block';
+
+				popup.scrollTop = 0;
+			}
 
 			$(document).ready(function() {
 				function getDefaultZonesFromURL() {
@@ -145,18 +227,7 @@
     			const overlay = document.getElementById('overlay');
 				
 				btn.addEventListener('click', function() {
-					const searchBox = document.getElementById('search-box');
-					searchBox.value = '';
-					const zoneList = document.getElementById('zone-list');
-					const lis = zoneList.getElementsByTagName('li');
-					for (let i = 0; i < lis.length; i++) {
-						lis[i].style.display = "";
-					}
-					
-					popup.style.display = 'block';
-        			overlay.style.display = 'block';
-
-					popup.scrollTop = 0;
+					AddNewArea();
 				});
 
 				popup.addEventListener('click', function(e) {

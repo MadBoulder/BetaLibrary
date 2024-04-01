@@ -1,0 +1,126 @@
+
+<script type="module" src="/static/js/firebaseInit.js"></script>
+<script type="module">
+	import { getAuth, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+
+	const auth = getAuth();
+	onAuthStateChanged(auth, (user) => {
+		if (user) {
+			user.getIdTokenResult() 
+			.then((idTokenResult) => { 
+				if (!!idTokenResult.claims.admin) { 
+					showAdminUI(); 
+				} 
+				else{ 
+					hideAdminUI();
+				} 
+			}) 
+			.catch((error) => { 
+				console.log(error); 
+			});
+		}
+	});
+</script>
+<div data-view-component="true" class="Layout-sidebar">
+	<navigation-list>
+		<div class="pr-md-4 pr-0">
+			<nav aria-label="User settings" item_classes="org-menu-item" nav_classes="org-sub-menu" data-view-component="true">
+				<nav-list data-catalyst="">
+					<ul data-target="nav-list.topLevelList" data-view-component="true" class="ActionListWrap">
+						<li data-item-id="settings_user_profile" data-targets="nav-list.items" data-view-component="true" class="ActionListItem ActionListItem--navActive">
+							<a href="/settings/profile" data-view-component="true" class="ActionListContent ActionListContent--visual16" data-turbo-frame="settings-frame" aria-current="page">
+								<span data-view-component="true" class="ActionListItem-label">
+									Public profile
+								</span>
+							</a>
+						</li>
+						<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+						<li data-view-component="true">
+							<nav-list-group data-catalyst="">
+								<action-list data-catalyst="">
+									<div data-view-component="true">
+										<div data-view-component="true" class="ActionList-sectionDivider">
+											<h2 data-view-component="true" class="ActionList-sectionDivider-title">
+												Content
+											</h2>
+										</div>
+										<ul role="list" data-view-component="true" class="ActionListWrap">
+											<li hidden data-item-id="settings_favourites" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+												<a href="/settings/favourites" data-view-component="true" class="ActionListContent">
+													<span data-view-component="true" class="ActionListItem-label">
+														Favourites
+													</span>
+												</a>
+											</li>
+											<li data-item-id="settings_upload" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+												<a href="/upload" data-view-component="true" class="ActionListContent">
+													<span data-view-component="true" class="ActionListItem-label">
+														Upload
+													</span>
+												</a>
+											</li>
+										</ul>
+									</div>
+								</action-list>
+							</nav-list-group>
+						</li>
+						<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+						<li id="settings_admin" data-view-component="true" style="visibility: hidden;">
+							<nav-list-group data-catalyst="">
+								<action-list data-catalyst="">
+									<div data-view-component="true">
+										<div data-view-component="true" class="ActionList-sectionDivider">
+											<h2 data-view-component="true" class="ActionList-sectionDivider-title">
+												Admin
+											</h2>
+										</div>
+										<ul role="list" data-view-component="true" class="ActionListWrap">
+											<li data-item-id="settings_admin_users" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+												<a href="/settings/admin/users" data-view-component="true" class="ActionListContent">
+													<span data-view-component="true" class="ActionListItem-label">
+														Users
+													</span>
+												</a>
+											</li>
+										</ul>
+										<ul role="list" data-view-component="true" class="ActionListWrap">
+											<li data-item-id="settings_admin_admins" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+												<a href="/settings/admin/admins" data-view-component="true" class="ActionListContent">
+													<span data-view-component="true" class="ActionListItem-label">
+														Admins
+													</span>
+												</a>
+											</li>
+										</ul>
+									</div>
+								</action-list>
+							</nav-list-group>
+						</li>
+					</ul>
+				</nav-list>
+			</nav>
+		</div>
+	</navigation-list>
+</div>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const currentPath = window.location.pathname;
+		document.querySelectorAll('.ActionListItem a').forEach(link => {
+		if (link.getAttribute('href') === currentPath) {
+			link.parentElement.classList.add('ActionListItem--navActive');
+		} else {
+			link.parentElement.classList.remove('ActionListItem--navActive');
+		}
+		});
+	});
+
+	function showAdminUI(){
+		console.log("showAdminUI");
+		document.getElementById('settings_admin').style.visibility="visible";
+	}
+
+	function hideAdminUI(){
+		console.log("hideAdminUI");
+		document.getElementById('settings_admin').style.visibility="hidden";
+	}
+</script>

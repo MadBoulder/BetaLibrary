@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<header class="d-md-flex flex-items-center flex-justify-between mt-1 mb-4" aria-labelledby="settings-header">
+					<div class="d-flex flex-items-center mb-2 mb-md-0">
+						<div class="flex-auto">
+							<h1 id="settings-header" class="h3 lh-condensed">
+								{{ user_data.username }}
+							</h1>
+						</div>
+					</div>
+				</header>
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div data-view-component="true" class="Subhead mt-0 mb-0">
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">Public profile</h2>
+								</div>  
+								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
+									<div class="col-12 col-md-8">
+										<waiting-form data-catalyst="">
+											<form class="edit_user" id="edit_user_34898093" aria-labelledby="public-profile-heading" data-target="waiting-form.form" accept-charset="UTF-8" method="post">
+												<div>
+													<dl class="form-group">
+														<dt>
+															<label for="user_profile_name">Name</label>
+														</dt>
+														<dd>
+															<input disabled class="form-control" type="text" name="user[profile_name]" id="user_profile_name" value="{{ user_data.username }}">
+														</dd>
+													</dl>
+													<dl class="form-group">
+														<dt>
+															<label for="user_email">Email</label>
+														</dt>
+														<dd>
+															<input disabled class="form-control" type="text" id="user_email" value="{{ user_data.email }}">
+														</dd>
+													</dl>
+													<dl class="form-group">
+														<dt>
+															<label for="user_status">Contributor Status</label>
+														</dt>
+														<dd>
+															<div  style="display: flex; flex-wrap: wrap; flex-direction: row;">
+																{% if user_data.contributor_status in ['declined', 'non_contributor'] %}
+																	{% if user_data.contributor_status == 'declined' %}
+																		<input disabled class="form-control status-{{ user_data.contributor_status }}" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+																	{% endif %}
+																	<button class="Button--primary Button--medium Button" onclick="applyAsContributor('{{ user_data.uid }}')">Apply as Contributor</button>
+																{% elif user_data.contributor_status == 'pending' %}
+																	<input disabled class="form-control status-pending" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+																	<button class="btn btn-danger" onclick="cancelContributorSubmission('{{ user_data.uid }}')">Cancel</button>
+																{% elif user_data.contributor_status == 'approved' %}
+																	<input disabled class="form-control status-approved" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+																	<button class="btn btn-danger" onclick="removeFromContributor('{{ user_data.uid }}')">Remove</button>
+																{% endif %}
+															</div>
+														</dd>
+													</dl>
+													{% if user_data.contributor_status == 'approved' %}
+														<dl class="form-group">
+															<dt>
+																<label for="user_climber_name">Climber Id</label>
+															</dt>
+															<dd>
+																<input disabled class="form-control" type="text" id="user_climber_name" value="{{ user_data.climber_id }}">
+																<div class="note">
+																	Your climber Id may appear around MadBoulder where you contribute or are mentioned.
+																</div>
+															</dd>
+														</dl>
+													{% endif %}
+													<p hidden class="note mb-2">
+														All of the fields on this page are optional and can be deleted at any
+														time, and by filling them out, you're giving us consent to share this
+														data wherever your user profile appears. Please see our
+														<a href="/madboulder-privacy-policy" data-view-component="true" class="Link--inTextBlock Link">privacy statement</a>
+														to learn more about how we use this information.
+													</p>
+													<p>
+														<button hidden data-target="waiting-form.submit" data-action="click:waiting-form#submitPolitely" type="submit" data-view-component="true" class="Button--primary Button--medium Button">
+															<span class="Button-content">
+																<span class="Button-label">Update profile</span>
+															</span>
+														</button>
+													</p>
+												</div>
+											</form>
+										</waiting-form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function applyAsContributor(userId) {
+			console.log("applyAsContributor");
+			updateContributorStatus(userId, 'pending', null);
+		}
+		
+		function cancelContributorSubmission(userId) {
+			if(confirm("Are you sure you want to cancel your contributor submission?")) {
+				updateContributorStatus(userId, 'non_contributor', null);
+			}
+		}
+		
+		function removeFromContributor(userId) {
+			if(confirm("Are you sure you want to remove yourself as contributor?")) {
+				updateContributorStatus(userId, 'non_contributor', null);
+			}
+		}
+		
+		function updateContributorStatus(userId, newStatus, climberId) {
+			console.log("updateContributorStatus");
+			fetch('/update_user', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					uid: userId,
+					contributor_status: newStatus,
+					climber_id: climberId || ""  // If climberId is null, send an empty string
+				})
+			})
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error('Failed to update user');
+				}
+			})
+			.then(data => {
+				console.log(data.message);
+				//window.location.reload();  // Reload the page to reflect the changes
+			})
+			.catch((error) => {
+				console.error("Error updating user:", error);
+			});
+		}
+	</script>
+</html>

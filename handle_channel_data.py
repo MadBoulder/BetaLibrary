@@ -13,12 +13,15 @@ from tempfile import mkstemp
 from os import fdopen, remove
 from shutil import move, copymode
 from slugify import slugify
+from dotenv import load_dotenv
 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
 from googleapiclient.discovery import build
+
+load_dotenv()
 
 ENCODING = 'utf-8'
 MAX_ITEMS_API_QUERY = 50
@@ -456,7 +459,31 @@ def process_zone_data_local(
             json.dump({'date': str(date.today()),
                        'items': zones_data}, f, indent=4)
    
-   
+
+def process_contributors_list(root):
+    video_data = get_video_data_local()
+
+    contributors = {}
+    slug_cache = {}
+    for video in video_data['items']:
+        climber_name = video['climber']
+
+        if climber_name in slug_cache:
+            climber_code = slug_cache[climber_name]
+        else:
+            climber_code = slugify(climber_name)
+            slug_cache[climber_name] = climber_code
+
+        if climber_code not in contributors:
+            contributors[climber_code] = {'name': climber_name, 'videos': [video], 'view_count': int(video['stats']['viewCount'])}
+        else:
+            contributors[climber_code]['videos'].append(video)
+            contributors[climber_code]['view_count'] += int(video['stats']['viewCount'])
+    
+    root.child('contributors').set(contributors)
+    root.child('contributor_count').set(len(contributors))
+
+
 def get_playlist_thumbnail(thumbnails):
     thumbnailUrl = None
 
@@ -548,8 +575,7 @@ def regenerate_firebase_data(is_update=True):
     country_data = get_boulder_data_local()
     root.child('boulder_data').set(country_data)
     
-    num_climbers = len(list({slugify(video['climber']) for video in video_data['items']}))
-    root.child('contributor_count').set(num_climbers)
+    process_contributors_list(root)
     
     num_videos = len(video_data['items'])
     root.child('video_count').set(num_videos)
@@ -563,6 +589,10 @@ def get_video_data_search_optimized():
 
 def get_contributors_count():
     return get_element_from_firebase('contributor_count')
+
+def get_contributors_list():
+    print("get_contributors_list")
+    return get_element_from_firebase('contributors')
 
 def get_video_count():
     return get_element_from_firebase('video_count')

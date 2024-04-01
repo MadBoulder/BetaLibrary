@@ -7,6 +7,8 @@ from flask import Flask, render_template, send_from_directory, request, abort, s
 from flask_caching import Cache
 from flask_babel import Babel, _
 from flask_mail import Mail,  Message
+import firebase_admin
+from firebase_admin import credentials, auth, db, exceptions
 from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader
 import datetime
@@ -19,6 +21,8 @@ import handle_channel_data
 import re
 import time
 from slugify import slugify
+from functools import wraps
+from dotenv import load_dotenv
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -36,12 +40,24 @@ EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
 MAILERLITE_API_KEY = os.environ['MAILERLITE_API_KEY']
 
+load_dotenv()  # Take environment variables from .env.  
+
 # create and configure the application object
 app = Flask(__name__, static_folder='static')
 app.config.from_pyfile('config.py')
-app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
+if os.environ.get('FLASK_ENV') == 'production':
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+    )
+app.secret_key = bytes.fromhex(os.environ.get('SECRET_KEY'))
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+cred = credentials.Certificate('madboulder.json')
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://madboulder.firebaseio.com'
+})
 
 
 current_progress = 0
@@ -380,17 +396,205 @@ def register_new_subscriber(email):
         print("new email subscribed")
 
 
-
-
 @app.route('/progress', methods=['GET'])
 def get_progress():
     return jsonify({'progress': current_progress})
 
-    
+
 @app.route('/upload-completed', methods=['GET'])
 def upload_completed():
     return render_template('thanks-for-uploading.html')
+
+
+@app.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({"message": "Session cleared on server."}), 200
+
+
+@app.route('/verify-token', methods=['POST'])
+def verify_token():
     
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({'error': 'Authorization token is missing or invalid.'}), 401
+    id_token = auth_header.split(' ')[1]
+
+    try:
+        uid = get_user_uid(id_token)
+        session['uid'] = uid
+        session['is_admin'] = check_admin_privileges(uid)
+
+        return jsonify({"message": "Token verified", "uid": uid}), 200
+    except Exception as e:
+        print(f"Error verifying token: {e}")
+        return jsonify({"error": str(e)}), 401
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'uid' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        @login_required
+        def inner(*args, **kwargs):
+            if not session.get('is_admin', False):
+                return jsonify({'error': 'Access denied. Admin privileges required.'}), 403
+                # For web pages maybe use a redirect:
+                # return redirect(url_for('some_route_name'))
+            return f(*args, **kwargs)
+        return inner(*args, **kwargs)
+    return decorated_function
+
+
+def check_admin_privileges(uid):
+    user = auth.get_user(uid)
+    if user.custom_claims:
+        return user.custom_claims.get('admin', False)
+    else:
+        return False
+
+
+@app.route('/settings/profile', methods=['GET', 'POST'])
+@login_required
+def settings_profile():
+    user_uid = session.get('uid')
+    user_data = {}
+
+    if user_uid:
+        user_record = auth.get_user(user_uid)
+        user_data['uid'] = user_uid
+        user_data['email'] = user_record.email
+        user_data['username'] = user_record.display_name
+        
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details = user_details_ref.get()
+        user_data.update(user_details)
+
+    return render_template('settings-profile.html', user_data=user_data)
+
+
+@app.route('/settings/admin/users', methods=['GET'])
+@admin_required
+def settings_admin_users():
+    users_list, admins_list = get_all_users()
+    contributors = handle_channel_data.get_contributors_list()
+    return render_template('settings-admin-users.html', users_list=users_list, contributors=contributors)
+
+
+@app.route('/settings/admin/admins', methods=['GET'])
+@admin_required
+def settings_admin_admins():
+    users_list, admins_list = get_all_users()
+    return render_template('settings-admin-admins.html', users_list=users_list, admins_list=admins_list)
+
+
+def get_all_users():
+    users_list = []
+    admins_list = []
+
+    page = auth.list_users()
+    while page:
+        for user_record in page.users:
+            uid = user_record.uid
+            email = user_record.email
+            user_details_ref = db.reference(f'users/{uid}')
+            user_details = user_details_ref.get()
+            if user_details:
+                user_info = {
+                    'uid': uid,
+                    'email': email,
+                    'username': user_details.get('username', 'N/A'),
+                    'contributor_status': user_details.get('contributor_status', 'N/A'),
+                    'climber_id': user_details.get('climber_id', 'N/A'),
+                }
+                users_list.append(user_info)
+            if check_admin_privileges(uid):
+                admins_list.append(user_info)
+        page = page.get_next_page()
+    return users_list, admins_list
+
+
+def get_user_uid(id_token):
+    decoded_token = auth.verify_id_token(id_token)
+    uid = decoded_token['uid']
+    return uid
+
+
+@app.route('/set-admin-claim/<userid>', methods=['POST'])
+@admin_required
+def add_admin_privileges(userid):
+    try:
+        auth.set_custom_user_claims(userid, {'admin': True})
+        return jsonify({'status': 'success', 'message': 'Admin privileges added successfully.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+@app.route('/revoke-admin-claim/<userid>', methods=['POST'])
+@admin_required
+def revoke_admin_privileges(userid):
+    try:
+        auth.set_custom_user_claims(userid, None)
+        return jsonify({'status': 'success', 'message': 'Admin privileges revoked successfully.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+@app.route('/signup', methods=['GET'])
+def signup():
+    return render_template('signup.html')
+
+
+
+@app.route('/update_user', methods=['POST'])
+@login_required
+def update_user():
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
+    uid = data.get('uid')
+    contributor_status = data.get('contributor_status')
+    climber_id = data.get('climber_id')
+
+    user_details_ref = db.reference(f'users/{uid}')
+    user_details_ref.update({
+        'contributor_status': contributor_status,
+        'climber_id': climber_id,
+    })
+
+    if request.is_json:
+        return jsonify({'status': 'success', 'message': 'User updated successfully'})
+
+
+@app.route('/remove_user/<userId>', methods=['POST'])
+@login_required
+def remove_user(userId):
+    try:
+        firebase_admin.auth.delete_user(userId)
+
+        user_ref = db.reference(f'users/{userId}')
+        user_ref.delete()
+
+        return jsonify({"success": True}), 200
+    except firebase_admin.exceptions.FirebaseError as e:
+        print(f"Error removing user: {e}")
+        return jsonify({"error": "Failed to remove user"}), 500
+
 
 @app.route('/<string:sitemap_name>.xml')
 def sitemap_file(sitemap_name):
@@ -634,7 +838,6 @@ def get_area_page_stats():
 
     return data
 
-        
 
 @app.route('/problems/<string:page>/<string:problem_name>')
 @app.route('/templates/problems/<string:page>/<string:problem_name>.html')

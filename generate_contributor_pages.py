@@ -1,5 +1,6 @@
 from collections import Counter
 from jinja2 import Environment, FileSystemLoader
+import handle_channel_data
 import utils.helpers
 from slugify import slugify
 
@@ -11,7 +12,7 @@ def main():
     dir_path = 'templates/contributors'
     utils.helpers.empty_and_create_dir(dir_path)
 
-    contributors = utils.helpers.get_contributors_list()
+    contributors = handle_channel_data.get_contributors_list()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
