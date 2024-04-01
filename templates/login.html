@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Log in to MadBoulder</title>
+	<meta name="description" content="description">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<script type="module" src="/static/js/firebaseInit.js"></script>
+	<script type="module">
+		import { getAuth, sendPasswordResetEmail , GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+		
+		const auth = getAuth();
+		window.auth = auth;
+		window.GoogleAuthProvider = GoogleAuthProvider;
+		window.signInWithPopup = signInWithPopup;
+		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+		window.sendPasswordResetEmail = sendPasswordResetEmail;
+	</script>
+  </head>
+  <body>
+	<div class="page-wrapper">
+		<header class="login-header">
+			<a id="logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
+				<img  src="{{url_for('static', filename='images/logo/logo-quadrat.jpg')}}" alt="MadBoulder's Logo" width="40px" height="40px" loading="lazy">
+			</a>
+		</header>
+		<main class="main-container">
+			<section class="content-wrapper">
+				<div class="title-wrapper">
+					<h1 class="title">
+						Login to your account
+					</h1>
+				</div>
+				<form method="POST" class="" data-form-primary="true" style="text-align: left;">
+					<div class="login-container">
+						<div class="input-wrapper">
+							<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+							<label class="label" for="email-input">Email address</label>
+						</div>
+						<div class="input-wrapper">
+							<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+							<label class="label" for="email-input">Password</label>
+							<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
+								Wrong email or password
+							</span>
+						</div>
+						<button id="login-btn" class="cta-btn">Login</button>
+						<p class="other-page">Don't have an account? <a class="other-page-link" href="/signup">Create one</a></p>
+						<div class="pwd-lost">
+							<div id="pwd-lost-question" class="other-page hidden">
+								Lost your password?
+								<a class="other-page-link" href="#" onclick="togglePasswordRecovery()">Click here to recover.</a>
+							</div>
+							<div id="pwd-lost-form" class="hidden">
+								<p class="other-page">Enter your email address and you will receive a link to reset your password.</p>
+								<form novalidate="novalidate" accept-charset="UTF-8" method="post">
+									<div class="input-wrapper">
+										<input class="input" inputmode="email" type="email" id="email-input-recovery" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+										<label class="label" for="email-input-recovery">Email address</label>
+									</div>
+									<input id="recover-password-btn" type="submit" value="Send" class="cta-btn">
+								</form>
+							</div>
+						</div>
+						<div hidden class="divider-wrapper">
+							<span class="divider">Or</span>
+						</div>
+						<div hidden class="social-section">
+							<button class="social-btn" onclick="signInWithGoogle()">
+								<span class="social-logo-wrapper">
+									<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
+								</span>
+								<span class="social-text">Continue with Google</span>
+							</button>
+						</div>
+					</div>
+				</form>
+			</section>
+		</main>
+		<footer class="login-footer">
+			<a href="/madboulder-privacy_policy">Privacy Policy</a>
+		</footer>
+	</div>
+	<script>
+		function loginWithEmailPassword() {
+			const email = document.getElementById('email-input').value;
+			const password = document.getElementById('password-input').value;
+
+			signInWithEmailAndPassword(auth, email, password)
+			.then((userCredential) => {
+				const user = userCredential.user;
+				console.log("User signed in:", user.email);
+				userCredential.user.getIdToken().then(idToken => {
+					verifyTokenWithServer(idToken, () => {
+						window.location.href = '/settings/profile';
+					});
+				});
+			})
+			.catch((error) => {
+				displaySignInError(error);
+			});
+		}
+
+		function verifyTokenWithServer(idToken, onSuccess) {
+			fetch('/verify-token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + idToken
+				}
+			})
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error('Failed to verify token');
+				}
+			})
+			.then(data => {
+				console.log(data.message);
+				if (typeof onSuccess === 'function') {
+					onSuccess();
+				}
+			})
+			.catch((error) => {
+				console.error("Error during server-side verification:", error);
+			});
+		}
+
+		function displaySignInError(error) {
+			console.error("Error signing in with email and password", error.code, error.message);
+			const errorElement = document.getElementById('error-element-password');
+			errorElement.style.display = 'block';
+			document.getElementById('password-input').classList.add('error');
+			document.getElementById('password-input').value = '';
+			document.getElementById('password-input').focus();
+		}
+
+		function togglePasswordRecovery() {
+			document.getElementById('pwd-lost-question').classList.toggle('hidden');
+			document.getElementById('pwd-lost-form').classList.toggle('hidden');
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			const loginButton = document.getElementById('login-btn');
+			loginButton.addEventListener('click', function(event) {
+				event.preventDefault(); // Prevent the form from submitting via the browser
+				loginWithEmailPassword();
+			});
+
+			const recoverPasswordButton = document.getElementById('recover-password-btn');
+			recoverPasswordButton.addEventListener('click', function(event) {
+				event.preventDefault(); // Prevent the form from submitting via the browser
+				recoverPassword();
+			});
+			
+			document.getElementById('pwd-lost-question').classList.toggle('hidden');
+		});
+
+		function recoverPassword(){
+			const email = document.getElementById('email-input-recovery').value;
+			var actionCodeSettings = {
+				url: window.location.origin + '/login',
+				handleCodeInApp: false
+			};
+			sendPasswordResetEmail(auth, email, actionCodeSettings)
+				.then(() => {
+					console.log("Password reset email sent!");
+					window.location.href = '/';
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+				console.error("Error sending password reset email: ", errorCode, errorMessage);
+			});
+		}
+
+		function signInWithGoogle() {
+			const provider = new GoogleAuthProvider();
+			signInWithPopup(auth, provider).then(function (result){
+				result.user.getIdToken().then(function(idToken) {
+					sendTokenToServer(idToken);
+					console.log("Firebase ID token obtained and sent to server");
+				});
+			}).catch(function(error) {
+				console.error("Error signing in with Google", error);
+			})
+		}
+
+		function sendTokenToServer(token) {
+			fetch('/verify-token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + idToken
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Token verified', data);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		}
+	</script>
+</html>

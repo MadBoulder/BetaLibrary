@@ -26,7 +26,7 @@ def create_sitemap(xml_filename, html_files):
                 url = html_file.replace("\\", "/")  # Replace backslashes with slashes for URLs
                 print(url)
                 f.write(f'  <url>\n')
-                f.write(f'    <loc>http://madboulder.org/{url}</loc>\n')
+                f.write(f'    <loc>https://madboulder.org/{url}</loc>\n')
                 last_modified_date = datetime.fromtimestamp(os.path.getmtime(html_file)).date()
                 last_modified_date_str = last_modified_date.strftime('%Y-%m-%d')
                 f.write(f'    <lastmod>{last_modified_date_str}</lastmod>\n')

@@ -280,24 +280,6 @@ def get_number_of_videos_for_zone(zone_name):
     return 0
 
 
-def get_contributors_list():
-    print("get_contributors_list")
-    video_data = handle_channel_data.get_video_data()
-
-    contributors = {}
-    for video in video_data['items']:
-        climber_name = video['climber']
-        climber_code = slugify(climber_name)
-        if climber_code not in contributors:
-            contributors[climber_code] = {'name': climber_name, 'videos': [], 'view_count': 0}
-            
-        contributors[climber_code]['name'] = climber_name
-        contributors[climber_code]['videos'].append(video)
-        contributors[climber_code]['view_count'] += int(video['stats']['viewCount'])
-
-    return contributors
-
-
 def format_views(number):
     if number >= 1_000_000:
         formatted_number = number / 1_000_000

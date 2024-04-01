@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+		<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div data-view-component="true" class="Subhead mt-0 mb-0">
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">
+										User's List
+									</h2>
+								</div>  
+								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
+									<div class="table-responsive">
+										<table id="users-table" class="table table-hover">
+											<thead style="vertical-align: middle;">
+												<tr>
+													<th>Email</th>
+													<th>Username</th>
+													<th>Contributor Status</th>
+													<th>Climber ID</th>
+													<th></th>
+												</tr>
+											</thead>
+											<tbody style="vertical-align: middle;">
+												{% for user in users_list %}
+													<tr>
+														<td>{{ user.email }}</td>
+														<td>{{ user.username }}</td>
+														<td class="{{ 'status-' + user.contributor_status.lower().replace(' ', '-') }}">{{ user.contributor_status }}</td>
+														<td>{{ user.climber_id }}</td>
+														<td>
+															<div class="context-menu-container">
+																<button class="context-menu-trigger" onclick="toggleContextMenu(event, '{{ user.uid }}')">&#8942;</button>
+																<div id="context-menu-{{ user.uid }}" class="context-menu" style="display: none;">
+																	{% if user.contributor_status == 'pending'%}
+																		<button class="context-menu-option" onclick="acceptUser('{{ user.uid }}')">Accept User</button>
+																	{% endif %}
+																	{% if user.contributor_status == 'pending' or user.contributor_status == 'approved'%}
+																		<button class="context-menu-option" onclick="declineUser('{{ user.uid }}')">Decline User</button>
+																	{% endif %}
+																	<button class="context-menu-option" onclick="removeUser('{{ user.uid }}')">Remove User</button>
+																</div>
+															</div>
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+										<script>
+											$(document).ready(function () {
+												$('#users-table').DataTable({
+													paging: false,
+													dom: 'tr',
+													order:[[0, 'desc']],
+													columnDefs: [{ 
+														orderable: false,
+														targets: -1
+													}]
+												});
+											});
+										</script>
+									</div>
+									<div id="climberIdModal" class="modal">
+										<div class="modal-content-user-selector">
+											<span class="close-button" onclick="closeModal()">&times;</span>
+											<h2>Select Climber ID</h2>
+											<select id="climberIdSelect">
+												<option value="" selected disabled hidden>Choose here</option>
+												{% for code, contributor in contributors.items() %}
+													<option value="{{ contributor.name }}">
+													{{ contributor.name }}
+													</option>
+												{% endfor %}
+											</select>
+											<button class="Button--primary Button--medium Button" onclick="submitClimberId()">
+												<span class="Button-content"> 
+													<span class="Button-label">
+														Submit
+													</span> 
+												</span> 
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function toggleContextMenu(event, userId) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var contextMenu = document.getElementById('context-menu-' + userId);
+			if (contextMenu.style.display === 'block') {
+				contextMenu.style.display = 'none';
+			} else {
+				document.querySelectorAll('.context-menu').forEach(function(menu) {
+					menu.style.display = 'none';
+				});
+				contextMenu.style.display = 'block';
+			}
+		}
+
+		// Event listener for clicking outside any context menu to close it
+		document.addEventListener('click', function(event) {
+			document.querySelectorAll('.context-menu').forEach(function(menu) {
+				menu.style.display = 'none';
+			});
+		});
+
+		function readUserData(user) {
+			user.getIdTokenResult()
+			.then((idTokenResult) => {
+				if (!!idTokenResult.claims.admin) {
+					showAdminUI();
+				}
+				else{
+					window.location.href = '/settings/profile';
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+		}
+
+		function acceptUser(userId) {
+			const climberIdSelect = document.getElementById('climberIdSelect');
+			document.getElementById('climberIdModal').setAttribute('data-user-id', userId);
+			document.getElementById('climberIdModal').style.display = 'block';
+		}
+
+		function submitClimberId() {
+			const modal = document.getElementById('climberIdModal');
+			const userId = modal.getAttribute('data-user-id');
+			const climberId = document.getElementById('climberIdSelect').value;
+			updateUserStatus(userId, 'approved', climberId);
+
+			closeModal();
+		}
+
+		window.onclick = function(event) {
+			const modal = document.getElementById('climberIdModal');
+			if (event.target == modal) {
+				closeModal();
+			}
+		}
+
+		function closeModal(){
+			document.getElementById('climberIdModal').style.display = 'none';
+		}
+
+		function declineUser(userId) {
+			if(confirm("Are you sure you want to decline this user contributor submission?")) {
+				updateUserStatus(userId, 'declined');
+			}
+		}
+
+		function updateUserStatus(userId, status, climberId = null) {
+			fetch('/update_user', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					uid: userId,
+					contributor_status: status,
+					climber_id: climberId,
+				}),
+			})
+			.then(response => response.json())
+			.then(message => {
+				console.log('Success:', message);
+				window.location.reload();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		}
+
+		function removeUser(userId) {
+			if(confirm("Are you sure you want to remove this user?")) {
+				fetch(`/remove_user/${userId}`, { method: 'POST' })
+				.then(response => response.json()) 
+				.then(data => {
+					if(data.success) {
+						console.log("User removed successfully.");
+						window.location.reload();
+					} else {
+						alert("Failed to remove user: " + data.error);
+					}
+				})
+				.catch(error => {
+					console.error("Error removing user:", error);
+				});
+			}
+		}
+	</script>
+</html>
