@@ -12,7 +12,7 @@
 		{% include 'elements/main-menu.html' %}
 		<main>
 			<div class="pt-4 container-xl p-responsive clearfix">
-				<header class="d-md-flex flex-items-center flex-justify-between mt-1 mb-4" aria-labelledby="settings-header">
+				<header class="d-md-flex flex-items-center flex-justify-between mt-1 mb-2" aria-labelledby="settings-header">
 					<div class="d-flex flex-items-center mb-2 mb-md-0">
 						<div class="flex-auto">
 							<h1 id="settings-header" class="h3 lh-condensed">
@@ -30,23 +30,23 @@
 									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">Profile</h2>
 								</div>  
 								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
-									<div class="col-12 col-md-8">
+									<div class="col-12">
 										<dl class="form-group">
 											<dt>
 												<label for="user_status">Contributor Status</label>
 											</dt>
 											<dd>
-												<div  style="display: flex; flex-wrap: wrap; flex-direction: row;">
+												<div style="display: flex; flex-wrap: wrap; flex-direction: row;">
 													{% if user_data.contributor_status in ['declined', 'non_contributor'] %}
 														{% if user_data.contributor_status == 'declined' %}
-															<input disabled class="form-control status-{{ user_data.contributor_status }}" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+															<input disabled class="form-control shortest status-{{ user_data.contributor_status }}" type="text" id="user_status" value="{{ user_data.contributor_status }}">
 														{% endif %}
 														<button class="Button--primary Button--medium Button" onclick="applyAsContributor()">Apply as Contributor</button>
 													{% elif user_data.contributor_status == 'pending' %}
-														<input disabled class="form-control status-pending" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+														<input disabled class="form-control shortest status-pending" type="text" id="user_status" value="{{ user_data.contributor_status }}">
 														<button class="btn btn-danger" onclick="cancelContributorSubmission()">Cancel</button>
 													{% elif user_data.contributor_status == 'approved' %}
-														<input disabled class="form-control status-approved" type="text" id="user_status" value="{{ user_data.contributor_status }}">
+														<input disabled class="form-control shortest status-approved" type="text" id="user_status" value="{{ user_data.contributor_status }}">
 														<button class="btn btn-danger" onclick="removeFromContributor()">Remove</button>
 													{% endif %}
 												</div>
@@ -58,7 +58,7 @@
 													<label for="user_climber_name">Climber Id</label>
 												</dt>
 												<dd>
-													<input disabled class="form-control" type="text" id="user_climber_name" value="{{ user_data.climber_id }}">
+													<input disabled class="form-control short" type="text" id="user_climber_name" value="{{ user_data.climber_id }}">
 													<div class="note">
 														Your climber Id may appear around MadBoulder where you contribute or are mentioned. If you want to opt out or change it, send a request to madboulderteam@gmail.com. Please see our
 														<a href="/madboulder-privacy-policy" data-view-component="true" class="Link--inTextBlock Link">privacy statement</a>
@@ -72,20 +72,9 @@
 												<label for="user_profile_name">Name</label>
 											</dt>
 											<dd>
-												<input class="form-control" type="text" name="user[profile_name]" id="user_profile_name" value="{{ user_data.displayName }}">
+												<input class="form-control short" type="text" name="user[profile_name]" id="user_profile_name" value="{{ user_data.displayName }}">
 												<div class="note">
 													This value is private and only shown to you. You may change it at any time.
-												</div>
-											</dd>
-										</dl>
-										<dl class="form-group">
-											<dt>
-												<label for="user_email">Email</label>
-											</dt>
-											<dd>
-												<input disabled class="form-control" type="text" id="user_email" value="{{ user_data.email }}">
-												<div class="note">
-													This value is private and only shown to you.
 												</div>
 											</dd>
 										</dl>
@@ -151,10 +140,8 @@
 
 		function updateUserProfile(userId){
 			const name = document.getElementById('user_profile_name').value;
-			const email = document.getElementById('user_email').value;
 			const userData = {
-				displayName: name,
-				email: email,
+				displayName: name
 			};
 
 			fetch('/update_user', {

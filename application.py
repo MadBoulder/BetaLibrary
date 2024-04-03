@@ -387,14 +387,16 @@ def register_new_subscriber(email):
     'api_key': MAILERLITE_API_KEY
     })
 
+    subscriber_exists = False
     try:
-        existing_subscriber = mailerlite.subscribers.get_subscriber_by_email(email)
-    except:
-        existing_subscriber = None
+        existing_subscriber = mailerlite.subscribers.get(email)
+        if existing_subscriber.get('data') or ('message' not in existing_subscriber):
+            subscriber_exists = True
+    except Exception as e:
+        print(f"Error checking for existing subscriber: {str(e)}")
 
-    if not existing_subscriber:
+    if not subscriber_exists:
         mailerlite.subscribers.create(email=email)
-        print("new email subscribed")
 
 
 @app.route('/progress', methods=['GET'])
@@ -410,6 +412,11 @@ def upload_completed():
 @app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
+
+
+@app.route('/signup', methods=['GET'])
+def signup():
+    return render_template('signup.html')
 
 
 @app.route('/logout', methods=['POST'])
@@ -435,6 +442,22 @@ def verify_token():
     except Exception as e:
         print(f"Error verifying token: {e}")
         return jsonify({"error": str(e)}), 401
+    
+    
+@app.route('/register-subscriber', methods=['POST'])
+def register_subscriber():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        if email:
+            register_new_subscriber(email)
+            return jsonify({"message": "New Subscriber registered successfully"}), 200
+        else:
+            return jsonify({"error": "No email provided"}), 400
+    except Exception as e:
+        print(f"Registration failed: {str(e)}")
+        return jsonify({"error": "Internal server error occurred"}), 500
+    
 
 
 def login_required(f):
@@ -477,7 +500,6 @@ def settings_profile():
     if user_uid:
         user_record = auth.get_user(user_uid)
         user_data['uid'] = user_uid
-        user_data['email'] = user_record.email
         user_data['displayName'] = user_record.display_name
         
         user_details_ref = db.reference(f'users/{user_uid}')
@@ -485,6 +507,21 @@ def settings_profile():
         user_data.update(user_details)
 
     return render_template('settings/settings-profile.html', user_data=user_data)
+
+
+@app.route('/settings/account', methods=['GET', 'POST'])
+@login_required
+def settings_account():
+    user_uid = session.get('uid')
+    user_data = {}
+
+    if user_uid:
+        user_record = auth.get_user(user_uid)
+        user_data['uid'] = user_uid
+        user_data['email'] = user_record.email
+        user_data['displayName'] = user_record.display_name
+
+    return render_template('settings/settings-account.html', user_data=user_data)
 
 
 @app.route('/settings/my-videos', methods=['GET'])
@@ -577,12 +614,6 @@ def revoke_admin_privileges(userid):
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-@app.route('/signup', methods=['GET'])
-def signup():
-    return render_template('signup.html')
-
-
-
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
@@ -648,16 +679,90 @@ def update_user_details_protected():
 
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
+    
+@app.route('/check-subscription-status', methods=['POST'])
+@login_required
+def check_subscription_status():
+    user_uid = session.get('uid')
+
+    try:
+        user_record = auth.get_user(user_uid)
+        print(user_record)
+        mailerlite = MailerLite.Client({'api_key': MAILERLITE_API_KEY})
+
+        subscriber = mailerlite.subscribers.get(user_record.email)
+        subscriber_data = subscriber.get('data', {})
+        if subscriber_data.get('status') == 'active':
+            return jsonify({"subscribed": True}), 200
+        else:
+            return jsonify({"subscribed": False}), 200
+    except Exception as e:
+        print(f"Error checking subscription status: {str(e)}")
+        return jsonify({"error": "Internal server error occurred"}), 500
+
+
+@app.route('/unsubscribe', methods=['POST'])
+@login_required
+def unsubscribe():
+    print("unsubscribe")
+    data = request.get_json()
+    user_email = data.get('email')
+    try:
+        unsubscribed = unsubscribe(user_email)
+        if unsubscribed:
+            return jsonify({"message": "Successfully unsubscribed from newsletter"}), 200
+        else:
+            return jsonify({"message": "Email not found in subscription list"}), 200
+    except Exception as e:
+        print(f"Unsubscribe failed: {str(e)}")
+        return jsonify({"error": "Internal server error occurred"}), 500
+
+
+def unsubscribe(email):
+    print(email)
+    mailerlite = MailerLite.Client({'api_key': MAILERLITE_API_KEY})
+
+    subscriber = mailerlite.subscribers.get(email)
+    print(subscriber)
+    if subscriber:
+        subscriber_data = subscriber.get('data', {})
+        mailerlite.subscribers.delete(int(subscriber_data.get('id')))
+        return True
+    return False
+
+
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    user_uid = session.get('uid')
+    try:
+        data = request.get_json()
+        unsubscribe_newsletter = data.get('unsubscribeNewsletter', True)
+        if unsubscribe_newsletter:
+            user_record = auth.get_user(user_uid)
+            unsubscribe(user_record.email)
+
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details_ref.delete()
+        auth.delete_user(user_uid)
+
+        session.clear()
+
+        return jsonify({'status': 'success', 'message': 'Your account has been successfully deleted.'})
+    except Exception as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': 'Failed to delete account.'}), 500
 
 
 @app.route('/remove_user/<userId>', methods=['POST'])
 @admin_required
 def remove_user(userId):
     try:
-        firebase_admin.auth.delete_user(userId)
-
+        user_record = auth.get_user(userId)
+        unsubscribe(user_record.email)
         user_ref = db.reference(f'users/{userId}')
         user_ref.delete()
+        firebase_admin.auth.delete_user(userId)
 
         return jsonify({"success": True}), 200
     except firebase_admin.exceptions.FirebaseError as e:

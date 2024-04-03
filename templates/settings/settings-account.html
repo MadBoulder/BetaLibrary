@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<header class="d-md-flex flex-items-center flex-justify-between mt-1 mb-2" aria-labelledby="settings-header">
+					<div class="d-flex flex-items-center mb-2 mb-md-0">
+						<div class="flex-auto">
+							<h1 id="settings-header" class="h3 lh-condensed">
+								{{ user_data.displayName }}
+							</h1>
+						</div>
+					</div>
+				</header>
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div class="col-12">
+									<div data-view-component="true" class="Subhead">
+										<h3 data-view-component="true" class="Subhead-heading Subhead-heading--large">Login details</h3>
+									</div>  
+									<dl class="form-group">
+										<dt>
+											<label for="user_email">Email</label>
+										</dt>
+										<dd>
+											<div style="display: flex; flex-wrap: wrap; flex-direction: row;">
+												<input disabled class="form-control short" type="text" id="user_email" value="{{ user_data.email }}">
+												<button disabled class="btn" onclick="updateEmail()">Change Email</button>
+											</div>
+											<div class="note">
+												This value is private and only shown to you.
+											</div>
+										</dd>
+									</dl>
+									<div data-view-component="true" class="Subhead  Subhead--spacious">
+										<h3 data-view-component="true" class="Subhead-heading Subhead-heading--large">Newsletter</h3>
+									</div>  
+									<div class="form-checkbox mt-0">
+											<input type="checkbox" name="newsletter_checkbox" id="newsletter_checkbox">
+											<label for="newsletter_checkbox">I wish to subscribe to MadBoulder's Newsletter.</label>
+										</div>
+										<button onclick="updateNewsletterPreference()" data-view-component="true" class="btn">
+											Update preference
+										</button>
+									<div data-view-component="true" class="Subhead Subhead--spacious">
+										<h3 data-view-component="true" class="Subhead-heading Subhead-heading--large Subhead-heading--danger">Delete Account</h3>
+									</div>  
+									<p>
+										<button onclick="deleteAccount()" data-view-component="true" class="btn btn-danger">
+											<span class="Button-content">
+												<span class="Button-label">Delete</span>
+											</span>
+										</button>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function checkNewsletterSubscription() {
+			fetch('/check-subscription-status', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				document.getElementById('newsletter_checkbox').checked = data.subscribed;
+			})
+			.catch(error => {
+				console.error("Error checking newsletter subscription:", error);
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', checkNewsletterSubscription);
+
+		function deleteAccount() {
+			const userWantsToDelete = confirm("Are you sure you want to permanently delete your account? This action cannot be undone.");
+        	if(userWantsToDelete) {
+				const unsubscribeCheckbox = document.createElement('input');
+				unsubscribeCheckbox.type = 'checkbox';
+				unsubscribeCheckbox.id = 'unsubscribe-newsletter';
+				unsubscribeCheckbox.checked = true; // Set checked by default
+				const unsubscribeLabel = document.createElement('label');
+				unsubscribeLabel.htmlFor = 'unsubscribe-newsletter';
+				unsubscribeLabel.textContent = 'Also unsubscribe from the newsletter';
+
+				if (document.getElementById('newsletter_checkbox').checked) {
+					if(confirm(unsubscribeLabel.textContent)) {
+						unsubscribeCheckbox.checked = true;
+					} else {
+						unsubscribeCheckbox.checked = false;
+					}
+				} else {
+					unsubscribeCheckbox.checked = false;
+				}
+				
+				fetch('/delete_account', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+        			body:JSON.stringify({unsubscribeNewsletter: isUnsubscribed})
+				})
+				.then(response => {
+					if(response.ok) {
+						return response.json();
+					} else {
+						throw new Error('Failed to delete account.');
+					}
+				})
+				.then(data => {
+					console.log(data.message);
+					alert('Your account has been successfully deleted.');
+					window.location.href = '/';
+				})
+				.catch(error => {
+					console.error("Error deleting account:", error);
+					alert('Error deleting account: ' + error.message);
+				});
+			}
+		}
+
+		function updateNewsletterPreference() {
+			const newsletterCheckbox = document.getElementById('newsletter_checkbox');
+			const userEmail = document.getElementById('user_email').value;
+			
+			if (newsletterCheckbox.checked) {
+				subscribeToNewsletter(userEmail);
+			} else {
+				unsubscribeFromNewsletter(userEmail);
+			}
+		}
+
+		function subscribeToNewsletter(email) {
+			fetch('/register-subscriber', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({email: email})
+			})
+			.then(handleResponse)
+    		.then(() => alert('You have successfully subscribed to the newsletter.'))
+			.catch(handleError);
+		}
+
+		function unsubscribeFromNewsletter(email) {
+			fetch('/unsubscribe', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({email: email})
+			})
+			.then(handleResponse)
+    		.then(() => alert('You have successfully unsubscribed from the newsletter.'))
+			.catch(handleError);
+		}
+
+		function handleResponse(response) {
+			if(response.ok) {
+				return response.json();
+			} else {
+				throw new Error('Failed to update newsletter preference.');
+			}
+		}
+
+		function handleError(error) {
+			console.error("Error updating newsletter preference:", error);
+			alert('Error: ' + error.message);
+		}
+	</script>
+</html>
