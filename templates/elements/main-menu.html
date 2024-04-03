@@ -1,14 +1,9 @@
 <script type="module" src="/static/js/firebaseInit.js"></script>
 <script type="module">
 	import { getAuth, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
-	import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 	window.getAuth = getAuth;
 	window.signOut = signOut;
-	window.getDatabase = getDatabase;
-	window.ref = ref;
-	window.get = get;
-	window.child = child;
 
 	const auth = getAuth();
 	onAuthStateChanged(auth, (user) => {
@@ -252,19 +247,9 @@
 	function showUserMenu(user){
 		const userMenuButton = document.getElementById('userMenuButton');
 		userMenuButton.style.display = 'block';
-
-		const dbRef = ref(getDatabase());
-		get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
-			if (snapshot.exists()) {
-				const userData = snapshot.val();
-				document.getElementById("userMenuDialogName").textContent = userData.username;
-			} 
-			else {
-				console.log("No data available");
-			}
-		}).catch((error) => {
-			console.error(error);
-		});
+		if (user.displayName) {
+			document.getElementById("userMenuDialogName").textContent = user.displayName;
+		}
 	}
 
 	function hideUserMenu(){

@@ -9,6 +9,7 @@ from flask_babel import Babel, _
 from flask_mail import Mail,  Message
 import firebase_admin
 from firebase_admin import credentials, auth, db, exceptions
+from firebase_admin.exceptions import FirebaseError
 from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader
 import datetime
@@ -477,13 +478,37 @@ def settings_profile():
         user_record = auth.get_user(user_uid)
         user_data['uid'] = user_uid
         user_data['email'] = user_record.email
-        user_data['username'] = user_record.display_name
+        user_data['displayName'] = user_record.display_name
         
         user_details_ref = db.reference(f'users/{user_uid}')
         user_details = user_details_ref.get()
         user_data.update(user_details)
 
-    return render_template('settings-profile.html', user_data=user_data)
+    return render_template('settings/settings-profile.html', user_data=user_data)
+
+
+@app.route('/settings/my-videos', methods=['GET'])
+@login_required
+def settings_my_videos():
+    user_uid = session.get('uid')
+    user_data = {}
+
+    if user_uid:
+        user_record = auth.get_user(user_uid)
+        user_data['uid'] = user_uid
+        user_data['email'] = user_record.email
+        user_data['displayName'] = user_record.display_name
+        
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details = user_details_ref.get()
+        user_data.update(user_details)
+
+    climber_id = user_data.get('climber_id')
+    if(climber_id):
+        url = "/contributors/" + slugify(climber_id)
+        return redirect(url)
+    else:
+        return redirect("/settings/profile")
 
 
 @app.route('/settings/admin/users', methods=['GET'])
@@ -491,14 +516,14 @@ def settings_profile():
 def settings_admin_users():
     users_list, admins_list = get_all_users()
     contributors = handle_channel_data.get_contributors_list()
-    return render_template('settings-admin-users.html', users_list=users_list, contributors=contributors)
+    return render_template('settings/settings-admin-users.html', users_list=users_list, contributors=contributors)
 
 
 @app.route('/settings/admin/admins', methods=['GET'])
 @admin_required
 def settings_admin_admins():
     users_list, admins_list = get_all_users()
-    return render_template('settings-admin-admins.html', users_list=users_list, admins_list=admins_list)
+    return render_template('settings/settings-admin-admins.html', users_list=users_list, admins_list=admins_list)
 
 
 def get_all_users():
@@ -509,14 +534,13 @@ def get_all_users():
     while page:
         for user_record in page.users:
             uid = user_record.uid
-            email = user_record.email
             user_details_ref = db.reference(f'users/{uid}')
             user_details = user_details_ref.get()
             if user_details:
                 user_info = {
                     'uid': uid,
-                    'email': email,
-                    'username': user_details.get('username', 'N/A'),
+                    'email': user_record.email,
+                    'displayName': user_record.display_name,
                     'contributor_status': user_details.get('contributor_status', 'N/A'),
                     'climber_id': user_details.get('climber_id', 'N/A'),
                 }
@@ -567,22 +591,67 @@ def update_user():
     else:
         data = request.form
 
-    uid = data.get('uid')
-    contributor_status = data.get('contributor_status')
-    climber_id = data.get('climber_id')
+    user_uid = session.get('uid')
+    try:
+        if 'displayName' in data:
+            auth.update_user(user_uid, display_name=data['displayName'])
 
-    user_details_ref = db.reference(f'users/{uid}')
-    user_details_ref.update({
-        'contributor_status': contributor_status,
-        'climber_id': climber_id,
-    })
+    except FirebaseError as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    if request.is_json:
+        return jsonify({'status': 'success', 'message': 'User updated successfully'})
+
+
+@app.route('/update_user_details', methods=['POST'])
+@login_required
+def update_user_details():
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+        
+    user_uid = session.get('uid')
+
+    updates = {}
+    if 'contributor_status' in data and data['contributor_status'] != 'approved':
+        updates['contributor_status'] = data['contributor_status']
+
+    if updates:
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details_ref.update(updates)
+
+    if request.is_json:
+        return jsonify({'status': 'success', 'message': 'User updated successfully'})
+
+
+@app.route('/update_user_details_protected', methods=['POST'])
+@admin_required
+def update_user_details_protected():
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
+    uid = data.get('uid')
+
+    updates = {}
+    if 'contributor_status' in data:
+        updates['contributor_status'] = data['contributor_status']
+
+    if 'climber_id' in data:
+        updates['climber_id'] = data['climber_id']
+
+    if updates:
+        user_details_ref = db.reference(f'users/{uid}')
+        user_details_ref.update(updates)
 
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
 
 
 @app.route('/remove_user/<userId>', methods=['POST'])
-@login_required
+@admin_required
 def remove_user(userId):
     try:
         firebase_admin.auth.delete_user(userId)

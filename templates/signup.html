@@ -5,12 +5,12 @@
     <title>Sign up to MadBoulder</title>
 	<meta name="description" content="description">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+	<link rel="canonical" href="https://www.madboulder.org/signup" />
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
 	<script type="module" src="/static/js/firebaseInit.js"></script>
 	<script type="module">
-		import { getAnalytics, setUserProperties} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js'
-		import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
+		import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
 		import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 	
 		const auth = getAuth();
@@ -19,7 +19,7 @@
 		window.GoogleAuthProvider = GoogleAuthProvider;
 		window.signInWithPopup = signInWithPopup;
 		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-		window.setUserProperties = setUserProperties;
+		window.updateProfile = updateProfile;
 		window.database = database;
 		window.ref = ref;
 		window.set = set;
@@ -94,19 +94,15 @@
 
 			createUserWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
-				const user = userCredential.user;
-      			console.log("User created successfully with email: ", user.email);
-				
 				const name = document.getElementById('name-input').value;
-				const isContributor = document.getElementById('contributor-checkbox').checked;
 				const contributor_status = isContributor ? "pending" : "non contributor";
-				writeUserData(user.uid, name, contributor_status);
 
-				userCredential.user.getIdToken().then(idToken => {
-					verifyTokenWithServer(idToken, () => {
-						window.location.href = '/settings/profile';
-					});
-				});
+				return updateProfile(userCredential.user, { displayName: name })
+                .then(() => writeUserData(userCredential.user.uid, name, contributor_status))
+                .then(() => userCredential.user.getIdToken())
+                .then(idToken => verifyTokenWithServer(idToken, () => {
+                    window.location.href = '/settings/profile';
+                }));
 			})
 			.catch((error) => {
 				displaySignUpError(error);
@@ -114,24 +110,29 @@
 		}
 
 		function writeUserData(userId, name, contributor_status) {
-			set(ref(database, 'users/' + userId), {
+			return set(ref(database, 'users/' + userId), {
 				username: name,
-				contributor_status : contributor_status,
-				climber_id : ""
-			}).then(() => {
-				document.getElementById('loadingSpinner').style.display = 'none';
+				contributor_status: contributor_status,
+				climber_id: ""
+			});
+		}
 
-				console.log("Data saved successfully for user: ", userId);
-
-				window.location.href = '/settings/profile';
+		function verifyTokenWithServer(idToken, callback) {
+			fetch('/verify-token', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken }
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data && data.message === "Token verified") {
+					console.log(data.message);
+					callback();
+				} else {
+					throw new Error(data.error || 'Unverified token');
+				}
 			})
 			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.error("Error saving data", errorCode, errorMessage);
-				
-				document.getElementById('loadingSpinner').style.display = 'none';
-    			document.getElementById('create-btn').style.display = 'block';
+				console.error("Error during server-side verification:", error);
 			});
 		}
 
@@ -167,32 +168,6 @@
 			}).catch(function(error) {
 				console.error("Error signing in with Google", error);
 			})
-		}
-
-		function verifyTokenWithServer(idToken, onSuccess) {
-			fetch('/verify-token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': 'Bearer ' + idToken
-				}
-			})
-			.then(response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					throw new Error('Failed to verify token');
-				}
-			})
-			.then(data => {
-				console.log(data.message);
-				if (typeof onSuccess === 'function') {
-					onSuccess();
-				}
-			})
-			.catch((error) => {
-				console.error("Error during server-side verification:", error);
-			});
 		}
 	</script>
 </html>
