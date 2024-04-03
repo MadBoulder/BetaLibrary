@@ -92,6 +92,7 @@
 		function signupWithEmailPassword() {
 			const email = document.getElementById('email-input').value;
 			const password = document.getElementById('password-input').value;
+    		const wantsNewsletter = document.getElementById('newsletter-checkbox').checked;
 
 			document.getElementById('loadingSpinner').style.display = 'block';
 			document.getElementById('create-btn').style.display = 'none';
@@ -99,10 +100,16 @@
 			createUserWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				const name = document.getElementById('name-input').value;
+				const isContributor = document.getElementById('contributor-checkbox').checked;
 				const contributor_status = isContributor ? "pending" : "non contributor";
 
 				return updateProfile(userCredential.user, { displayName: name })
                 .then(() => writeUserData(userCredential.user.uid, name, contributor_status))
+				.then(() => {
+					if (wantsNewsletter) {
+						return subscribeToNewsletter(email); // Add this line
+					}
+				})
                 .then(() => userCredential.user.getIdToken())
                 .then(idToken => verifyTokenWithServer(idToken, () => {
                     window.location.href = '/settings/profile';
@@ -118,6 +125,23 @@
 				username: name,
 				contributor_status: contributor_status,
 				climber_id: ""
+			});
+		}
+
+		function subscribeToNewsletter(email) {
+			return fetch('/register-subscriber', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email: email })
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Failed to subscribe to the newsletter.');
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log('Subscribed to newsletter:', data.message);
 			});
 		}
 

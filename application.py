@@ -382,23 +382,6 @@ def empty_google_drive():
     drive_service.files().emptyTrash().execute()
 
 
-def register_new_subscriber(email):
-    mailerlite = MailerLite.Client({
-    'api_key': MAILERLITE_API_KEY
-    })
-
-    subscriber_exists = False
-    try:
-        existing_subscriber = mailerlite.subscribers.get(email)
-        if existing_subscriber.get('data') or ('message' not in existing_subscriber):
-            subscriber_exists = True
-    except Exception as e:
-        print(f"Error checking for existing subscriber: {str(e)}")
-
-    if not subscriber_exists:
-        mailerlite.subscribers.create(email=email)
-
-
 @app.route('/progress', methods=['GET'])
 def get_progress():
     return jsonify({'progress': current_progress})
@@ -457,6 +440,23 @@ def register_subscriber():
     except Exception as e:
         print(f"Registration failed: {str(e)}")
         return jsonify({"error": "Internal server error occurred"}), 500
+
+
+def register_new_subscriber(email):
+    mailerlite = MailerLite.Client({
+    'api_key': MAILERLITE_API_KEY
+    })
+
+    subscriber_exists = False
+    try:
+        existing_subscriber = mailerlite.subscribers.get(email)
+        if existing_subscriber.get('data') or ('message' not in existing_subscriber):
+            subscriber_exists = True
+    except Exception as e:
+        print(f"Error checking for existing subscriber: {str(e)}")
+
+    if not subscriber_exists:
+        mailerlite.subscribers.create(email=email)
     
 
 
@@ -504,7 +504,8 @@ def settings_profile():
         
         user_details_ref = db.reference(f'users/{user_uid}')
         user_details = user_details_ref.get()
-        user_data.update(user_details)
+        if(user_details):
+            user_data.update(user_details)
 
     return render_template('settings/settings-profile.html', user_data=user_data)
 
