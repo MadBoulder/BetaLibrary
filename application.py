@@ -24,6 +24,7 @@ import time
 from slugify import slugify
 from functools import wraps
 from dotenv import load_dotenv
+import traceback
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -92,11 +93,6 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
 @cache.cached(timeout=900, key_prefix='videos_from_channel')
 def get_videos_from_channel():
     return utils.helpers.get_videos_from_channel()
-
-
-@cache.memoize(timeout=3600)
-def get_zone_video_count(page):
-    return utils.helpers.get_number_of_videos_for_zone(page)
 
 
 @cache.cached(
@@ -966,7 +962,7 @@ def render_page(page):
         page_path = 'zones/' + language_extension + slugify(page) + EXTENSION
         print(page_path)
 
-        return render_template(page_path, current_url=page, stats_list=get_area_page_stats())
+        return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
     except:
         abort(404)
 
@@ -977,15 +973,18 @@ def render_page(page):
 def render_page_es(page):
     try:
         page_path = 'zones/' + 'es/' + slugify(page) + EXTENSION
-        return render_template(page_path, current_url=page, stats_list=get_area_page_stats())
+        return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
     except:
         abort(404)
 
 
-def get_area_page_stats():
+def get_area_page_stats(page):
     try:
-        views_count = utils.zone_helpers.get_zone_view_count_from_zone_code(slugify(page))
-        video_count = get_zone_video_count(slugify(page))
+        zone_problems = utils.zone_helpers.get_problems_from_zone_code(slugify(page))
+
+        views_count = utils.zone_helpers.get_view_count_from_problems(zone_problems)
+        contributor_count = utils.zone_helpers.get_contributor_count_from_problems(zone_problems)
+        video_count = len(zone_problems)
         sector_count = utils.helpers.count_sectors_in_zone(page)
         data = [
             {
@@ -999,12 +998,18 @@ def get_area_page_stats():
                 'data': views_count
             },
             {
+                'logo': 'fas fa-user',
+                'text': _('Contributors'),
+                'data': contributor_count
+            },
+            {
                 'logo': 'fa fa-map-marked',
                 'text': _('Sectors'),
                 'data': sector_count
             }]
-    except:
-        data = []
+    except Exception as e:
+        print("An error occurred:", str(e))
+        traceback.print_exc()
 
     return data
 

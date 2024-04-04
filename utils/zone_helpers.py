@@ -8,14 +8,24 @@ def get_problems_from_zone_code(zone_code):
         data = json.load(f)
     problems = [p for p in data['items'] if p['zone_code'] == zone_code]
     return problems
-    
-    
+
+
 def get_zone_view_count_from_zone_code(zone_code):
     problems = get_problems_from_zone_code(zone_code)
     total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
     return total_views
-    
-    
+
+
+def get_view_count_from_problems(problems):
+    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
+    return total_views
+
+
+def get_contributor_count_from_problems(problems):
+    contributors = {problem['climber_code'] for problem in problems}
+    return len(contributors)
+
+
 def get_problems_from_sector(problems_zone, sector_code):
     problems = []
     for p in problems_zone:
