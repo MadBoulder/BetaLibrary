@@ -1,2 +1,2 @@
 LANGUAGES = ['en', 'es']
-COUNTRIES = ['in', 'gb', 'at', 'pt', 'se', 'mx', 'za', 'br', 'us', 'ch', 'fr', 'es', 'de', 'ad', 'ar', 'au', 'cz', 'ca', 'it', 'eg']
+COUNTRIES = ['de', 'fi', 'br', 'at', 'fr', 'gb', 'se', 'th', 'ca', 'es', 'ar', 'in', 'ad', 'cz', 'pt', 'us', 'mx', 'au', 'ch', 'za', 'eg', 'it']

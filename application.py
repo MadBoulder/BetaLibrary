@@ -898,11 +898,6 @@ def cookies():
     return render_template('policy/madboulder-cookie-policy.html')
 
 
-@app.route('/bouldering')
-def bouldering():
-    return render_template('bouldering.html')
-
-
 @app.route('/subscribe')
 def subscribe():
     return render_template('subscribe.html')
