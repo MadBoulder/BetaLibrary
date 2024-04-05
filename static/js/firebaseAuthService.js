@@ -1,4 +1,4 @@
-import { getAuth, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 export const completeUserProfile = (name, isContributor, wantsNewsletter) => {
     return fetch('/complete-profile-info', {
@@ -17,6 +17,44 @@ export const completeUserProfile = (name, isContributor, wantsNewsletter) => {
         throw error;
     });
 }
+
+
+
+export const signupWithEmailPassword = (email, password, name, isContributor, wantsNewsletter, profileCompleteUrl) => {
+	const auth = getAuth();
+	return createUserWithEmailAndPassword(auth, email, password)
+		.then(userCredential => userCredential.user.getIdToken())
+        .then(idToken => verifyTokenWithServer(idToken))
+		.then(() => completeUserProfile(name, isContributor, wantsNewsletter))
+		.then((data) => {
+			window.location.href = profileCompleteUrl;
+		})
+		.catch((error) => {
+			throw error;
+		});
+	}
+
+
+export const loginWithEmailPassword = (email, password, profileCompleteUrl	) => {
+	const auth = getAuth();
+    return signInWithEmailAndPassword(auth, email, password)
+		.then(userCredential => userCredential.user.getIdToken())
+        .then(idToken => verifyTokenWithServer(idToken))
+        .then(() => {
+			window.location.href = profileCompleteUrl;
+        });
+}
+
+
+export const recoverPassword = (email) => {
+    var actionCodeSettings = {
+        url: window.location.origin + '/login',
+        handleCodeInApp: false
+    };
+	const auth = getAuth();
+    return sendPasswordResetEmail(auth, email, actionCodeSettings);
+}
+
 
 export const signInWithGoogle = (profileCompleteUrl) => {
     const provider = new GoogleAuthProvider();

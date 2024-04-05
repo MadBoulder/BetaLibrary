@@ -33,25 +33,26 @@
 					</h1>
 				</div>
 				<div class="login-container">
-					<form method="POST" class="" data-form-primary="true" style="text-align: left;">
+					<form method="POST" id="form-login" data-form-primary="true" style="text-align: left;">
 							<div class="input-wrapper">
-								<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+								<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 								<label class="label" for="email-input">Email address</label>
 							</div>
 							<div class="input-wrapper">
-								<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+								<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 								<label class="label" for="email-input">Password</label>
-								<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
-									Wrong email or password
+							</div>
+							<div class="input-wrapper">
+								<span id="error-element" class="input-error-message">
 								</span>
 							</div>
 							<button id="login-btn" class="cta-btn">Login</button>
 					</form>
 					<p class="other-page">Don't have an account? <a class="other-page-link" href="/signup">Create one</a></p>
 					<div class="pwd-lost">
-						<div id="pwd-lost-question" class="other-page hidden">
+						<div id="pwd-lost-question" class="other-page">
 							Lost your password?
-							<a class="other-page-link" href="#" onclick="togglePasswordRecovery()">Click here to recover.</a>
+							<a id="toggle-password-recover" class="other-page-link" href="#" >Click here to recover.</a>
 						</div>
 						<div id="pwd-lost-form" class="hidden">
 							<p class="other-page">Enter your email address and you will receive a link to reset your password.</p>
@@ -82,58 +83,42 @@
 			<a href="/madboulder-privacy_policy">Privacy Policy</a>
 		</footer>
 	</div>
-	<script>
-		function loginWithEmailPassword() {
+	<script type="module">
+		import { loginWithEmailPassword, signInWithGoogle, recoverPassword } from '/static/js/firebaseAuthService.js';
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const loginForm = document.getElementById('form-login');
+			loginForm.addEventListener('submit', function(event) {
+				event.preventDefault();
+				loginClick()
+			});
+
+			const recoverPasswordButton = document.getElementById('recover-password-btn');
+			recoverPasswordButton.addEventListener('click', function(event) {
+				event.preventDefault();
+				recoverPasswordClick();
+			});
+
+			const passwordRecoverToggler = document.getElementById('toggle-password-recover');
+			passwordRecoverToggler.addEventListener('click', function(event) {
+				event.preventDefault();
+				togglePasswordRecovery();
+			});
+
+			const googleSignInButton = document.querySelector('.social-btn');
+			googleSignInButton.addEventListener('click', (event) => {
+				event.preventDefault();
+				googleSigninClick();
+			});
+		});
+
+		function loginClick() {
+			clearErrorMessages();
+
 			const email = document.getElementById('email-input').value;
 			const password = document.getElementById('password-input').value;
-
-			signInWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
-				const user = userCredential.user;
-				console.log("User signed in:", user.email);
-				userCredential.user.getIdToken().then(idToken => {
-					verifyTokenWithServer(idToken, () => {
-						window.location.href = '/settings/profile';
-					});
-				});
-			})
-			.catch((error) => {
-				displaySignInError(error);
-			});
-		}
-
-		function verifyTokenWithServer(idToken, onSuccess) {
-			fetch('/verify-token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': 'Bearer ' + idToken
-				}
-			})
-			.then(response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					throw new Error('Failed to verify token');
-				}
-			})
-			.then(data => {
-				if (typeof onSuccess === 'function') {
-					onSuccess();
-				}
-			})
-			.catch((error) => {
-				console.error("Error during server-side verification:", error);
-			});
-		}
-
-		function displaySignInError(error) {
-			console.error("Error signing in with email and password", error.code, error.message);
-			const errorElement = document.getElementById('error-element-password');
-			errorElement.style.display = 'block';
-			document.getElementById('password-input').classList.add('error');
-			document.getElementById('password-input').value = '';
-			document.getElementById('password-input').focus();
+			loginWithEmailPassword(email, password, '/settings/profile')
+			.catch(error => displayLoginError(error));
 		}
 
 		function togglePasswordRecovery() {
@@ -141,53 +126,60 @@
 			document.getElementById('pwd-lost-form').classList.toggle('hidden');
 		}
 
-		document.addEventListener('DOMContentLoaded', function() {
-			const loginButton = document.getElementById('login-btn');
-			loginButton.addEventListener('click', function(event) {
-				event.preventDefault(); // Prevent the form from submitting via the browser
-				loginWithEmailPassword();
-			});
-
-			const recoverPasswordButton = document.getElementById('recover-password-btn');
-			recoverPasswordButton.addEventListener('click', function(event) {
-				event.preventDefault(); // Prevent the form from submitting via the browser
-				recoverPassword();
-			});
-			
-			document.getElementById('pwd-lost-question').classList.toggle('hidden');
-		});
-
-		function recoverPassword(){
+		function recoverPasswordClick() {
 			const email = document.getElementById('email-input-recovery').value;
-			var actionCodeSettings = {
-				url: window.location.origin + '/login',
-				handleCodeInApp: false
-			};
-			sendPasswordResetEmail(auth, email, actionCodeSettings)
-				.then(() => {
-					console.log("Password reset email sent!");
-					window.location.href = '/';
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
+			recoverPassword(email)
+			.then(() => {
+				console.log("Password reset email sent!");
+				window.location.href = '/';
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
 				console.error("Error sending password reset email: ", errorCode, errorMessage);
 			});
 		}
-	</script>
-	<script type="module">
-		import { signInWithGoogle } from '/static/js/firebaseAuthService.js';
-	
-		document.addEventListener('DOMContentLoaded', () => {
-			const googleSignInButton = document.querySelector('.social-btn');
-			googleSignInButton.addEventListener('click', (event) => {
-				event.preventDefault();
-				
-				signInWithGoogle('/settings/profile').catch(error => {
-					console.error("Error during the sign-in process:", error);
-					// Handle errors, such as showing a message to the user
-				});
+
+		function googleSigninClick() {
+			signInWithGoogle('/settings/profile')
+			.catch(error => {
+				console.error("Error during the sign-in process:", error);
+				// Handle errors, such as showing a message to the user
 			});
-		});
+		}
+
+		function displayLoginError(error) {
+			console.error("Error login in with email and password", error.code, error.message);
+			
+			let errorMessage = '';
+			const emailInput = document.getElementById('email-input');
+			const passwordInput = document.getElementById('password-input');
+			switch (error.code) {
+				case 'auth/invalid-credential':
+					errorMessage = 'Wrong email or password.';
+					passwordInput.classList.add('error');
+					break;
+				default:
+					errorMessage = 'An error occurred. Please try again.';
+					break;
+			}
+
+			const errorElement = document.getElementById('error-element');
+			errorElement.innerText = errorMessage;
+			errorElement.style.display = 'block';
+
+			if (emailInput.classList.contains('error')) {
+				emailInput.focus();
+			} else if (passwordInput.classList.contains('error')) {
+				document.getElementById('password-input').value = '';
+				passwordInput.focus();
+			}
+		}
+
+		function clearErrorMessages() {
+			document.getElementById('error-element').style.display = 'none';
+			document.getElementById('email-input').classList.remove('error');
+			document.getElementById('password-input').classList.remove('error');
+		}
 	</script>
 </html>

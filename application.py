@@ -455,8 +455,12 @@ def register_new_subscriber(email):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print(f"login_required: Checking login for access to {f.__name__}")
         if 'uid' not in session:
+            print("login_required: No user ID in session, redirecting to login")
             return redirect(url_for('login'))
+        
+        print(f"login_required: User ID found in session")
         return f(*args, **kwargs)
     return decorated_function
 
@@ -466,6 +470,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         @login_required
         def inner(*args, **kwargs):
+            print(f"admin_required: Checking admin privileges")
             if not session.get('is_admin', False):
                 return jsonify({'error': 'Access denied. Admin privileges required.'}), 403
                 # For web pages maybe use a redirect:
@@ -595,19 +600,28 @@ def get_all_users():
     while page:
         for user_record in page.users:
             uid = user_record.uid
+
+            user_info = {
+                'uid': uid,
+                'email': user_record.email,
+                'displayName': user_record.display_name,
+                'contributor_status': 'N/A',  # Default value
+                'climber_id': 'N/A',  # Default value
+                'profile_completed': False
+            }
+
             user_details_ref = db.reference(f'users/{uid}')
             user_details = user_details_ref.get()
             if user_details:
-                user_info = {
-                    'uid': uid,
-                    'email': user_record.email,
-                    'displayName': user_record.display_name,
-                    'contributor_status': user_details.get('contributor_status', 'N/A'),
-                    'climber_id': user_details.get('climber_id', 'N/A'),
-                }
-                users_list.append(user_info)
+                user_info['contributor_status'] = user_details.get('contributor_status', 'N/A')
+                user_info['climber_id'] = user_details.get('climber_id', 'N/A')
+                user_info['profile_completed'] = True
+
+            users_list.append(user_info)
+
             if check_admin_privileges(uid):
                 admins_list.append(user_info)
+
         page = page.get_next_page()
     return users_list, admins_list
 
@@ -780,10 +794,10 @@ def unsubscribe():
 
 def unsubscribe(email):
     subscriber = mailerlite.subscribers.get(email)
-    print(subscriber)
     if subscriber:
         subscriber_data = subscriber.get('data', {})
-        mailerlite.subscribers.delete(int(subscriber_data.get('id')))
+        if subscriber_data:
+            mailerlite.subscribers.delete(int(subscriber_data.get('id')))
         return True
     return False
 

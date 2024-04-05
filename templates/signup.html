@@ -9,21 +9,6 @@
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
 	<script type="module" src="/static/js/firebaseInit.js"></script>
-	<script type="module">
-		import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
-		import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-	
-		const auth = getAuth();
-		window.auth = auth;
-		const database = getDatabase();
-		window.GoogleAuthProvider = GoogleAuthProvider;
-		window.signInWithPopup = signInWithPopup;
-		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-		window.updateProfile = updateProfile;
-		window.database = database;
-		window.ref = ref;
-		window.set = set;
-	</script>
   </head>
   <body>
 	<div class="page-wrapper">
@@ -40,20 +25,24 @@
 					</h1>
 				</div>
 				<div class="login-container">
-					<form method="POST" class="" data-form-primary="true" style="text-align: left;">
+					<form method="POST" id="form-create-acount" data-form-primary="true" style="text-align: left;">
 						<div class="input-wrapper">
 							<input class="input" id="name-input" name="name" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 							<label class="label" for="name-input">Name</label>
 						</div>
 						<div class="input-wrapper">
-							<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<input required class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 							<label class="label" for="email-input">Email address</label>
+							</span>
 						</div>
 						<div class="input-wrapper">
-							<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<input required class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 							<label class="label" for="email-input">Password</label>
-							<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
-								Wrong email or password
+							<span id="error-element-password" class="input-error-message">
+							</span>
+						</div>
+						<div class="input-wrapper">
+							<span id="error-element" class="input-error-message">
 							</span>
 						</div>
 						<div class="input-wrapper">
@@ -78,7 +67,7 @@
 							<span class="social-logo-wrapper">
 								<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
 							</span>
-							<span class="social-text">Sign ip with Google</span>
+							<span class="social-text">Sign up with Google</span>
 						</button>
 					</div>
 				</div>
@@ -88,117 +77,96 @@
 			<a href="/madboulder-privacy_policy">Privacy Policy</a>
 		</footer>
 	</div>
-	<script>
-		function signupWithEmailPassword() {
+	<script type="module">
+		import { signInWithGoogle, signupWithEmailPassword } from '/static/js/firebaseAuthService.js';
+	
+		document.addEventListener('DOMContentLoaded', () => {
+			const signupButton = document.getElementById('form-create-acount');
+			signupButton.addEventListener('submit', function(event) {
+				event.preventDefault(); // Prevent the form from submitting via the browser
+				signupWithEmailPasswordClick();
+			});
+
+			const googleSignInButton = document.querySelector('.social-btn');
+			googleSignInButton.addEventListener('click', (event) => {
+				event.preventDefault();
+				googleSigninClick()
+			});
+		});
+
+		
+		function signupWithEmailPasswordClick() {
+			clearErrorMessages();
+
 			const email = document.getElementById('email-input').value;
 			const password = document.getElementById('password-input').value;
     		const wantsNewsletter = document.getElementById('newsletter-checkbox').checked;
+			const name = document.getElementById('name-input').value;
+			const isContributor = document.getElementById('contributor-checkbox').checked;
 
 			document.getElementById('loadingSpinner').style.display = 'block';
 			document.getElementById('create-btn').style.display = 'none';
 
-			createUserWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
-				const name = document.getElementById('name-input').value;
-				const isContributor = document.getElementById('contributor-checkbox').checked;
-				const contributor_status = isContributor ? "pending" : "non contributor";
-
-				return updateProfile(userCredential.user, { displayName: name })
-                .then(() => writeUserData(userCredential.user.uid, name, contributor_status))
-				.then(() => {
-					if (wantsNewsletter) {
-						return subscribeToNewsletter(email);
-					}
-				})
-                .then(() => userCredential.user.getIdToken())
-                .then(idToken => verifyTokenWithServer(idToken, () => {
-                    window.location.href = '/settings/profile';
-                }));
-			})
+			signupWithEmailPassword(email, password, name, isContributor, wantsNewsletter, '/settings/profile')
 			.catch((error) => {
 				displaySignUpError(error);
 			});
 		}
 
-		function writeUserData(userId, name, contributor_status) {
-			return set(ref(database, 'users/' + userId), {
-				username: name,
-				contributor_status: contributor_status,
-				climber_id: ""
-			});
-		}
-
-		function subscribeToNewsletter(email) {
-			return fetch('/register-subscriber', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: email })
-			})
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Failed to subscribe to the newsletter.');
-				}
-				return response.json();
-			})
-			.then(data => {
-				console.log('Subscribed to newsletter:', data.message);
-			});
-		}
-
-		function verifyTokenWithServer(idToken, callback) {
-			console.log(idToken);
-			fetch('/verify-token', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken }
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data && data.message === "Token verified") {
-					console.log(data.message);
-					callback();
-				} else {
-					throw new Error(data.error || 'Unverified token');
-				}
-			})
-			.catch((error) => {
-				console.error("Error during server-side verification:", error);
+		function googleSigninClick() {
+			signInWithGoogle('/settings/profile')
+			.catch(error => {
+				console.error("Error during the sign-in process:", error);
+				// Handle errors, such as showing a message to the user
 			});
 		}
 
 		function displaySignUpError(error) {
-			const errorCode = error.code;
-				const errorMessage = error.message;
-				console.error("Error signing up with email and password", errorCode, errorMessage);
-				const errorElement = document.getElementById('error-element-password');
-				errorElement.style.display = 'block';
-				document.getElementById('password-input').classList.add('error');
-  				document.getElementById('password-input').focus();
-				
-				document.getElementById('loadingSpinner').style.display = 'none';
-    			document.getElementById('create-btn').style.display = 'block';
+			console.error("Error signup:", error.code, error.message);		
+
+			let errorMessage = '';
+			const emailInput = document.getElementById('email-input');
+			const passwordInput = document.getElementById('password-input');
+			switch (error.code) {
+				case 'auth/invalid-email':
+					errorMessage = 'The email address is not valid.';
+					emailInput.classList.add('error');
+					break;
+				case 'auth/email-already-in-use':
+					errorMessage = 'Email already in use.';
+					emailInput.classList.add('error');
+					break;
+				case 'auth/weak-password':
+					errorMessage = 'Password should be at least 6 characters.';
+					passwordInput.classList.add('error');
+					break;
+				case 'auth/wrong-password':
+					errorMessage = 'Wrong password.';
+					passwordInput.classList.add('error');
+					break;
+				default:
+					errorMessage = 'An error occurred. Please try again.';
+					break;
+			}
+
+			const errorElement = document.getElementById('error-element');
+			errorElement.innerText = errorMessage;
+			errorElement.style.display = 'block';
+
+			if (emailInput.classList.contains('error')) {
+				emailInput.focus();
+			} else if (passwordInput.classList.contains('error')) {
+				passwordInput.focus();
+			}
+
+			document.getElementById('loadingSpinner').style.display = 'none';
+			document.getElementById('create-btn').style.display = 'block';
 		}
 
-		document.addEventListener('DOMContentLoaded', function() {
-			const signupButton = document.getElementById('create-btn');
-			signupButton.addEventListener('click', function(event) {
-				event.preventDefault(); // Prevent the form from submitting via the browser
-				signupWithEmailPassword();
-			});
-		});
-	</script>
-	<script type="module">
-		import { signInWithGoogle } from '/static/js/firebaseAuthService.js';
-	
-		document.addEventListener('DOMContentLoaded', () => {
-			const googleSignInButton = document.querySelector('.social-btn');
-			googleSignInButton.addEventListener('click', (event) => {
-				event.preventDefault();
-				
-				signInWithGoogle('/settings/profile').catch(error => {
-					console.error("Error during the sign-in process:", error);
-					// Handle errors, such as showing a message to the user
-				});
-			});
-		});
+		function clearErrorMessages() {
+			document.getElementById('error-element').style.display = 'none';
+			document.getElementById('email-input').classList.remove('error');
+			document.getElementById('password-input').classList.remove('error');
+		}
 	</script>
 </html>
