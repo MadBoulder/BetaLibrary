@@ -40,7 +40,6 @@ from google.oauth2 import service_account
 EXTENSION = '.html'
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
-MAILERLITE_API_KEY = os.environ['MAILERLITE_API_KEY']
 
 load_dotenv()  # Take environment variables from .env.  
 
@@ -59,6 +58,9 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 cred = credentials.Certificate('madboulder.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://madboulder.firebaseio.com'
+})
+mailerlite = MailerLite.Client({
+    'api_key': os.environ['MAILERLITE_API_KEY']
 })
 
 
@@ -406,7 +408,6 @@ def logout():
 
 @app.route('/verify-token', methods=['POST'])
 def verify_token():
-    
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
         return jsonify({'error': 'Authorization token is missing or invalid.'}), 401
@@ -439,10 +440,6 @@ def register_subscriber():
 
 
 def register_new_subscriber(email):
-    mailerlite = MailerLite.Client({
-    'api_key': MAILERLITE_API_KEY
-    })
-
     subscriber_exists = False
     try:
         existing_subscriber = mailerlite.subscribers.get(email)
@@ -453,7 +450,6 @@ def register_new_subscriber(email):
 
     if not subscriber_exists:
         mailerlite.subscribers.create(email=email)
-    
 
 
 def login_required(f):
@@ -485,6 +481,38 @@ def check_admin_privileges(uid):
         return user.custom_claims.get('admin', False)
     else:
         return False
+
+
+@app.route('/check-profile-completion', methods=['POST'])
+@login_required
+def check_profile_completion():
+    try:
+        user_uid = session.get('uid')
+        user_record = auth.get_user(user_uid)
+
+        try:
+            existing_subscriber = mailerlite.subscribers.get(user_record.email)
+            is_in_database = bool(existing_subscriber and existing_subscriber.get('data'))
+        except Exception as e:
+            print(f"Error fetching subscriber information: {str(e)}")
+            is_in_database = False
+
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details = user_details_ref.get()
+
+        required_fields = ['contributor_status'] 
+        is_complete = user_details and all(field in user_details for field in required_fields) and is_in_database
+
+        return jsonify({'isComplete': is_complete}), 200
+    except Exception as e:
+        print(f"Error checking profile completion: {str(e)}")
+        return jsonify({'error': 'Could not check profile completion'}), 500
+
+
+@app.route('/complete-profile', methods=['GET'])
+@login_required
+def complete_profile():
+    return render_template('complete-profile.html')
 
 
 @app.route('/settings/profile', methods=['GET', 'POST'])
@@ -677,6 +705,44 @@ def update_user_details_protected():
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
     
+
+@app.route('/complete-profile-info', methods=['POST'])
+@login_required
+def complete_profile_info():
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+        
+    user_uid = session.get('uid')
+    data = request.get_json()
+    name = data.get('name', '')
+    isContributor = data.get('isContributor', False)
+    wantsNewsletter = data.get('wantsNewsletter', False)
+
+    try:
+        auth.update_user(user_uid, display_name=name)
+
+        updates = {}
+        if isContributor:
+            updates['contributor_status'] = "pending"
+        else:
+            updates['contributor_status'] = "non contributor"
+            
+        if updates:
+            user_details_ref = db.reference(f'users/{user_uid}')
+            user_details_ref.update(updates)
+
+        if wantsNewsletter:
+            user_record = auth.get_user(user_uid)
+            register_new_subscriber(user_record.email)
+
+        return jsonify({'message': 'Profile updated successfully'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Failed to update profile'}), 500
+    
+    
 @app.route('/check-subscription-status', methods=['POST'])
 @login_required
 def check_subscription_status():
@@ -685,8 +751,6 @@ def check_subscription_status():
     try:
         user_record = auth.get_user(user_uid)
         print(user_record)
-        mailerlite = MailerLite.Client({'api_key': MAILERLITE_API_KEY})
-
         subscriber = mailerlite.subscribers.get(user_record.email)
         subscriber_data = subscriber.get('data', {})
         if subscriber_data.get('status') == 'active':
@@ -716,9 +780,6 @@ def unsubscribe():
 
 
 def unsubscribe(email):
-    print(email)
-    mailerlite = MailerLite.Client({'api_key': MAILERLITE_API_KEY})
-
     subscriber = mailerlite.subscribers.get(email)
     print(subscriber)
     if subscriber:

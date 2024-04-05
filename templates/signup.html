@@ -39,8 +39,8 @@
 						Sign up
 					</h1>
 				</div>
-				<form method="POST" class="" data-form-primary="true" style="text-align: left;">
-					<div class="login-container">
+				<div class="login-container">
+					<form method="POST" class="" data-form-primary="true" style="text-align: left;">
 						<div class="input-wrapper">
 							<input class="input" id="name-input" name="name" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 							<label class="label" for="name-input">Name</label>
@@ -67,21 +67,21 @@
 						<button id="create-btn" class="cta-btn">Create your account</button>
 						<div id="loadingSpinner" style="display: none;">
 							<img src="static/images/loading.gif" alt="Loading...">
-						  </div>
-						<p class="other-page">Already have an account? <a class="other-page-link" href="/login">Login</a></p>
-						<div hidden class="divider-wrapper">
-							<span class="divider">Or</span>
 						</div>
-						<div hidden class="social-section">
-							<button class="social-btn" onclick="signInWithGoogle()">
-								<span class="social-logo-wrapper">
-									<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
-								</span>
-								<span class="social-text">Sign up with Google</span>
-							</button>
-						</div>
+					</form>
+					<p class="other-page">Already have an account? <a class="other-page-link" href="/login">Login</a></p>
+					<div class="divider-wrapper">
+						<span class="divider">Or</span>
 					</div>
-				</form>
+					<div class="social-section">
+						<button class="social-btn" onclick="signInWithGoogle()">
+							<span class="social-logo-wrapper">
+								<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
+							</span>
+							<span class="social-text">Sign ip with Google</span>
+						</button>
+					</div>
+				</div>
 			</section>
 		</main>
 		<footer class="login-footer">
@@ -107,7 +107,7 @@
                 .then(() => writeUserData(userCredential.user.uid, name, contributor_status))
 				.then(() => {
 					if (wantsNewsletter) {
-						return subscribeToNewsletter(email); // Add this line
+						return subscribeToNewsletter(email);
 					}
 				})
                 .then(() => userCredential.user.getIdToken())
@@ -146,6 +146,7 @@
 		}
 
 		function verifyTokenWithServer(idToken, callback) {
+			console.log(idToken);
 			fetch('/verify-token', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken }
@@ -187,15 +188,39 @@
 
 		function signInWithGoogle() {
 			const provider = new GoogleAuthProvider();
-			signInWithPopup(auth, provider).then(function (result){
-				result.user.getIdToken().then(function(idToken) {
-					// Send the ID token to your server
-					sendTokenToServer(idToken);
-					console.log("Firebase ID token obtained and sent to server");
+			signInWithPopup(auth, provider).then((userCredential) => {
+				userCredential.user.getIdToken().then((idToken) => {
+					console.log(idToken); // This should now log the actual token
+					verifyTokenWithServer(idToken, () => {
+						checkUserProfileCompletion(userCredential.user.uid)
+						.then(isComplete => {
+							if (isComplete) {
+								window.location.href = '/settings/profile';
+							} else {
+								window.location.href = `/complete-profile`;
+							}
+						});
+					});
 				});
 			}).catch(function(error) {
 				console.error("Error signing in with Google", error);
+			});
+		}
+
+		function checkUserProfileCompletion(userId) {
+			return fetch('/check-profile-completion', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
 			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Failed to check profile completion.');
+				}
+				return response.json();
+			})
+			.then(data => {
+				return data.isComplete;
+			});
 		}
 	</script>
 </html>

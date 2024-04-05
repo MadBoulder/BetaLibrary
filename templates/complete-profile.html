@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Sign up to MadBoulder</title>
+	<meta name="description" content="description">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+	<link rel="canonical" href="https://www.madboulder.org/signup" />
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+  </head>
+  <body>
+	<div class="page-wrapper">
+		<header class="login-header">
+			<a id="logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
+				<img  src="{{url_for('static', filename='images/logo/logo-quadrat.jpg')}}" alt="MadBoulder's Logo" width="40px" height="40px" loading="lazy">
+			</a>
+		</header>
+		<main class="main-container">
+			<section class="content-wrapper">
+				<div class="title-wrapper">
+					<h1 class="title">
+						Complete User Signup
+					</h1>
+				</div>
+				<form method="POST" id="complete-profile-form" class="" data-form-primary="true" style="text-align: left;">
+					<div class="login-container">
+						<div class="input-wrapper">
+							<input class="input" id="name-input" name="name" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
+							<label class="label" for="name-input">Name</label>
+						</div>
+						<div class="input-wrapper">
+							<input type="checkbox" id="contributor-checkbox" name="contributor">
+							<label>Apply as a Contributor</label>
+						</div>
+						<div class="input-wrapper">
+							<input type="checkbox" id="newsletter-checkbox" name="newsletter" checked>
+							<label>{{ _("I wish to subscribe to MadBoulder's newsletter") }}</label>
+						</div>
+						<button id="create-btn" type="submit" class="cta-btn">Continue</button>
+						<div id="loadingSpinner" style="display: none;">
+							<img src="static/images/loading.gif" alt="Loading...">
+						</div>
+					</div>
+				</form>
+			</section>
+		</main>
+		<footer class="login-footer">
+			<a href="/madboulder-privacy_policy">Privacy Policy</a>
+		</footer>
+	</div>
+	<script type="module">
+		import { completeUserProfile } from '/static/js/firebaseAuthService.js';
+
+		document.getElementById('complete-profile-form').addEventListener('submit', function(event) {
+			event.preventDefault();
+
+			const name = document.getElementById('name-input').value;
+			const isContributor = document.getElementById('contributor-checkbox').checked;
+			const wantsNewsletter = document.getElementById('newsletter-checkbox').checked;
+
+			completeUserProfile(name, isContributor, wantsNewsletter)
+			.then(data => {
+				console.log('Profile completion successful:', data.message);
+				window.location.href = '/settings/profile';
+			})
+			.catch(error => {
+				console.error("Error completing profile:", error);
+			});
+		});
+	</script>
+</html>

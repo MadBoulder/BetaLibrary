@@ -34,50 +34,50 @@
 						Login to your account
 					</h1>
 				</div>
-				<form method="POST" class="" data-form-primary="true" style="text-align: left;">
-					<div class="login-container">
-						<div class="input-wrapper">
-							<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
-							<label class="label" for="email-input">Email address</label>
-						</div>
-						<div class="input-wrapper">
-							<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
-							<label class="label" for="email-input">Password</label>
-							<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
-								Wrong email or password
-							</span>
-						</div>
-						<button id="login-btn" class="cta-btn">Login</button>
-						<p class="other-page">Don't have an account? <a class="other-page-link" href="/signup">Create one</a></p>
-						<div class="pwd-lost">
-							<div id="pwd-lost-question" class="other-page hidden">
-								Lost your password?
-								<a class="other-page-link" href="#" onclick="togglePasswordRecovery()">Click here to recover.</a>
+				<div class="login-container">
+					<form method="POST" class="" data-form-primary="true" style="text-align: left;">
+							<div class="input-wrapper">
+								<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+								<label class="label" for="email-input">Email address</label>
 							</div>
-							<div id="pwd-lost-form" class="hidden">
-								<p class="other-page">Enter your email address and you will receive a link to reset your password.</p>
-								<form novalidate="novalidate" accept-charset="UTF-8" method="post">
-									<div class="input-wrapper">
-										<input class="input" inputmode="email" type="email" id="email-input-recovery" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
-										<label class="label" for="email-input-recovery">Email address</label>
-									</div>
-									<input id="recover-password-btn" type="submit" value="Send" class="cta-btn">
-								</form>
-							</div>
-						</div>
-						<div hidden class="divider-wrapper">
-							<span class="divider">Or</span>
-						</div>
-						<div hidden class="social-section">
-							<button class="social-btn" onclick="signInWithGoogle()">
-								<span class="social-logo-wrapper">
-									<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
+							<div class="input-wrapper">
+								<input class="input password" type="password" id="password-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+								<label class="label" for="email-input">Password</label>
+								<span id="error-element-password" class="input-error-message" data-error-code="wrong-email-credentials">
+									Wrong email or password
 								</span>
-								<span class="social-text">Continue with Google</span>
-							</button>
+							</div>
+							<button id="login-btn" class="cta-btn">Login</button>
+					</form>
+					<p class="other-page">Don't have an account? <a class="other-page-link" href="/signup">Create one</a></p>
+					<div class="pwd-lost">
+						<div id="pwd-lost-question" class="other-page hidden">
+							Lost your password?
+							<a class="other-page-link" href="#" onclick="togglePasswordRecovery()">Click here to recover.</a>
+						</div>
+						<div id="pwd-lost-form" class="hidden">
+							<p class="other-page">Enter your email address and you will receive a link to reset your password.</p>
+							<form novalidate="novalidate" accept-charset="UTF-8" method="post">
+								<div class="input-wrapper">
+									<input class="input" inputmode="email" type="email" id="email-input-recovery" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required="" placeholder=" ">
+									<label class="label" for="email-input-recovery">Email address</label>
+								</div>
+								<input id="recover-password-btn" type="submit" value="Send" class="cta-btn">
+							</form>
 						</div>
 					</div>
-				</form>
+					<div class="divider-wrapper">
+						<span class="divider">Or</span>
+					</div>
+					<div class="social-section">
+						<button class="social-btn" onclick="signInWithGoogle()">
+							<span class="social-logo-wrapper">
+								<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
+							</span>
+							<span class="social-text">Continue with Google</span>
+						</button>
+					</div>
+				</div>
 			</section>
 		</main>
 		<footer class="login-footer">
@@ -120,7 +120,6 @@
 				}
 			})
 			.then(data => {
-				console.log(data.message);
 				if (typeof onSuccess === 'function') {
 					onSuccess();
 				}
@@ -180,30 +179,37 @@
 
 		function signInWithGoogle() {
 			const provider = new GoogleAuthProvider();
-			signInWithPopup(auth, provider).then(function (result){
-				result.user.getIdToken().then(function(idToken) {
-					sendTokenToServer(idToken);
-					console.log("Firebase ID token obtained and sent to server");
+			signInWithPopup(auth, provider).then((userCredential) => {
+				userCredential.user.getIdToken().then((idToken) => {
+					verifyTokenWithServer(idToken, () => {
+						checkUserProfileCompletion(userCredential.user.uid)
+						.then(isComplete => {
+							if (isComplete) {
+								window.location.href = '/settings/profile';
+							} else {
+								window.location.href = `/complete-profile`;
+							}
+						});
+					});
 				});
 			}).catch(function(error) {
 				console.error("Error signing in with Google", error);
-			})
+			});
 		}
 
-		function sendTokenToServer(token) {
-			fetch('/verify-token', {
+		function checkUserProfileCompletion(userId) {
+			return fetch('/check-profile-completion', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': 'Bearer ' + idToken
+				headers: { 'Content-Type': 'application/json' }
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Failed to check profile completion.');
 				}
+				return response.json();
 			})
-			.then(response => response.json())
 			.then(data => {
-				console.log('Token verified', data);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
+				return data.isComplete;
 			});
 		}
 	</script>
