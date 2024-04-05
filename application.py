@@ -502,7 +502,6 @@ def check_profile_completion():
 
         required_fields = ['contributor_status'] 
         is_complete = user_details and all(field in user_details for field in required_fields) and is_in_database
-
         return jsonify({'isComplete': is_complete}), 200
     except Exception as e:
         print(f"Error checking profile completion: {str(e)}")
@@ -728,7 +727,7 @@ def complete_profile_info():
             updates['contributor_status'] = "pending"
         else:
             updates['contributor_status'] = "non contributor"
-            
+
         if updates:
             user_details_ref = db.reference(f'users/{user_uid}')
             user_details_ref.update(updates)

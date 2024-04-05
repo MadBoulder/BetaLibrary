@@ -74,7 +74,7 @@
 						<span class="divider">Or</span>
 					</div>
 					<div class="social-section">
-						<button class="social-btn" onclick="signInWithGoogle()">
+						<button class="social-btn">
 							<span class="social-logo-wrapper">
 								<img class="social-logo" src="static/images/icons/google-logo.svg" alt="Google logo">
 							</span>
@@ -185,42 +185,20 @@
 				signupWithEmailPassword();
 			});
 		});
-
-		function signInWithGoogle() {
-			const provider = new GoogleAuthProvider();
-			signInWithPopup(auth, provider).then((userCredential) => {
-				userCredential.user.getIdToken().then((idToken) => {
-					console.log(idToken); // This should now log the actual token
-					verifyTokenWithServer(idToken, () => {
-						checkUserProfileCompletion(userCredential.user.uid)
-						.then(isComplete => {
-							if (isComplete) {
-								window.location.href = '/settings/profile';
-							} else {
-								window.location.href = `/complete-profile`;
-							}
-						});
-					});
+	</script>
+	<script type="module">
+		import { signInWithGoogle } from '/static/js/firebaseAuthService.js';
+	
+		document.addEventListener('DOMContentLoaded', () => {
+			const googleSignInButton = document.querySelector('.social-btn');
+			googleSignInButton.addEventListener('click', (event) => {
+				event.preventDefault();
+				
+				signInWithGoogle('/settings/profile').catch(error => {
+					console.error("Error during the sign-in process:", error);
+					// Handle errors, such as showing a message to the user
 				});
-			}).catch(function(error) {
-				console.error("Error signing in with Google", error);
 			});
-		}
-
-		function checkUserProfileCompletion(userId) {
-			return fetch('/check-profile-completion', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' }
-			})
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Failed to check profile completion.');
-				}
-				return response.json();
-			})
-			.then(data => {
-				return data.isComplete;
-			});
-		}
+		});
 	</script>
 </html>
