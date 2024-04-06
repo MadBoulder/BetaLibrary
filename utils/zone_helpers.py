@@ -1,10 +1,11 @@
 import json
 from slugify import slugify
 import handle_channel_data
+from functools import lru_cache
 
 
 def get_problems_from_zone_code(zone_code):
-    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
+    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f: #TODO: Call to firebase
         data = json.load(f)
     problems = [p for p in data['items'] if p['zone_code'] == zone_code]
     return problems
@@ -24,6 +25,13 @@ def get_view_count_from_problems(problems):
 def get_contributor_count_from_problems(problems):
     contributors = {problem['climber_code'] for problem in problems}
     return len(contributors)
+
+
+def get_contributor_data(contributor_id):
+    contributor = None
+    if contributor_id:
+        contributor = handle_channel_data.get_contributors_list().get(slugify(contributor_id), None)
+    return contributor
 
 
 def get_problems_from_sector(problems_zone, sector_code):
@@ -143,3 +151,67 @@ def get_state_from_code(state_code):
             
     return state
 
+
+@lru_cache(maxsize=10)
+def calculate_contributor_stats(climber_id):
+    climber_id = slugify(climber_id)
+    contributor_data = get_contributor_data(climber_id)
+    videos = contributor_data['videos']
+    unique_areas = set()
+    grades = []
+    area_counts = {}
+
+    for video in videos:
+        area = video['zone']
+        grade = video['grade']
+        unique_areas.add(area)
+
+        if area in area_counts:
+            area_counts[area] += 1
+        else:
+            area_counts[area] = 1
+
+    total_unique_areas = len(unique_areas)
+    if total_unique_areas <= 5:
+        top_n = 3
+    elif total_unique_areas <= 10:
+        top_n = 5
+    elif total_unique_areas <= 30:
+        top_n = 10
+    else:
+        top_n = 10  # Or any other logic for more than 30 areas
+
+    top_areas = sorted(area_counts.items(), key=lambda x: x[1], reverse=True)[:top_n]
+    
+    video_rankings, view_rankings = calculate_rankings()
+    user_video_rank = video_rankings.get(climber_id, "Not ranked")
+    total_views_rank = view_rankings.get(climber_id, "Not ranked")
+
+    contributor_stats = {
+        'num_videos': len(videos),
+        'user_video_rank': user_video_rank,
+        'total_views': sum(int(video['stats']['viewCount']) for video in videos),
+        'total_views_rank': total_views_rank,
+        'unique_areas': len(unique_areas),
+        'top_areas': [{'area': area, 'videos': count} for area, count in top_areas]
+    }
+
+    return contributor_stats
+
+
+@lru_cache(maxsize=10)
+def calculate_rankings():
+    contributors = handle_channel_data.get_contributors_list()
+    all_stats = [
+        {'climber_id': climber_code, 'name': data['name'], 'video_count': len(data['videos']), 'view_count': data['view_count']}
+        for climber_code, data in contributors.items()
+    ]
+    
+    rankings_by_videos = sorted(all_stats, key=lambda x: x['video_count'], reverse=True)
+    rankings_by_views = sorted(all_stats, key=lambda x: x['view_count'], reverse=True)
+
+    video_rankings = {stat['climber_id']: rank+1 for rank, stat in enumerate(rankings_by_videos)}
+    view_rankings = {stat['climber_id']: rank+1 for rank, stat in enumerate(rankings_by_views)}
+    
+
+    return video_rankings, view_rankings

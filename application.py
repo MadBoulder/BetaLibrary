@@ -53,6 +53,7 @@ if os.environ.get('FLASK_ENV') == 'production':
         SESSION_COOKIE_SAMESITE='Lax',
     )
 app.secret_key = bytes.fromhex(os.environ.get('SECRET_KEY'))
+app.jinja_env.filters['format_views'] = utils.helpers.format_views
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 cred = credentials.Certificate('madboulder.json')
@@ -575,6 +576,38 @@ def settings_my_videos():
         return redirect(url)
     else:
         return redirect("/settings/profile")
+    
+    
+
+
+@app.route('/settings/stats', methods=['GET'])
+@login_required
+def settings_stats():
+    user_uid = session.get('uid')
+    user_data = {}
+
+    if user_uid:
+        user_record = auth.get_user(user_uid)
+        user_data['uid'] = user_uid
+        user_data['email'] = user_record.email
+        user_data['displayName'] = user_record.display_name
+
+        account_creation_timestamp = user_record.user_metadata.creation_timestamp / 1000 # Convert from milliseconds to seconds
+        account_creation_date = datetime.datetime.fromtimestamp(account_creation_timestamp)
+        user_data['dateCreated'] = account_creation_date.strftime('%Y-%m-%d')
+
+        time_since_creation = datetime.datetime.now() - account_creation_date
+        user_data['timeSinceCreation'] = str(time_since_creation.days) + " days"
+        
+        user_details_ref = db.reference(f'users/{user_uid}')
+        user_details = user_details_ref.get()
+        user_data.update(user_details)
+
+        contributor_stats = utils.zone_helpers.calculate_contributor_stats(user_data['climber_id'])
+        user_data['contributor_stats'] = contributor_stats
+        user_data['total_contributors'] = handle_channel_data.get_contributors_count()
+
+    return render_template("/settings/settings-stats.html", user_data=user_data)
 
 
 @app.route('/settings/admin/users', methods=['GET'])

@@ -14,6 +14,7 @@ from os import fdopen, remove
 from shutil import move, copymode
 from slugify import slugify
 from dotenv import load_dotenv
+from functools import lru_cache
 
 import firebase_admin
 from firebase_admin import credentials
@@ -580,7 +581,7 @@ def regenerate_firebase_data(is_update=True):
     num_videos = len(video_data['items'])
     root.child('video_count').set(num_videos)
 
-
+@lru_cache(maxsize=10)
 def get_video_data():
     return get_element_from_firebase('video_data')
     
@@ -590,6 +591,7 @@ def get_video_data_search_optimized():
 def get_contributors_count():
     return get_element_from_firebase('contributor_count')
 
+@lru_cache(maxsize=10)
 def get_contributors_list():
     print("get_contributors_list")
     return get_element_from_firebase('contributors')
@@ -597,9 +599,11 @@ def get_contributors_list():
 def get_video_count():
     return get_element_from_firebase('video_count')
 
+@lru_cache(maxsize=10)
 def get_playlist_data():
     return get_element_from_firebase('playlist_data')
 
+@lru_cache(maxsize=10)
 def get_zone_data():
     return get_element_from_firebase('zone_data')
 
