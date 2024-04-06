@@ -25,6 +25,7 @@ from slugify import slugify
 from functools import wraps
 from dotenv import load_dotenv
 import traceback
+import requests
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -35,6 +36,10 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
+
+from google.cloud import recaptchaenterprise_v1
+from google.cloud.recaptchaenterprise_v1 import Assessment
+
 
 
 EXTENSION = '.html'
@@ -63,6 +68,11 @@ firebase_admin.initialize_app(cred, {
 mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']
 })
+
+
+SERVICE_ACCOUNT_FILE = 'madboulder-f1887f0310ec.env'
+credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+recaptcha_client = recaptchaenterprise_v1.RecaptchaEnterpriseServiceClient(credentials=credentials)
 
 
 current_progress = 0
@@ -578,8 +588,6 @@ def settings_my_videos():
         return redirect("/settings/profile")
     
     
-
-
 @app.route('/settings/stats', methods=['GET'])
 @login_required
 def settings_stats():
@@ -925,17 +933,22 @@ def render_map():
     return render_template('bouldering-areas-map.html')
 
 
-@app.route('/about-us', methods=['GET', 'POST'])
-@app.route('/about_us', methods=['GET', 'POST'])
-def render_about_us():
-    if request.method == 'POST':
+@app.route('/submit-support-form', methods=['POST'])
+def submit_form():
+    print("submit_form")
+    recaptcha_token = request.form['g-recaptcha-response']
+    project_id = 'madboulder'
+    recaptcha_site_key = '6LcVBLIpAAAAAJZUryjl1eqk9x_QhBmOGoIpVSGa'
+    recaptcha_action = 'submit_support_form'
+    
+    assessment = create_assessment(project_id, recaptcha_site_key, recaptcha_token, recaptcha_action)
+    if assessment:
         try:
-            # build email text/body
             feedback_data = request.form['feedback']
             sender_email = request.form['email']
             msg_body = 'Sender: {}\nMessage: {}'.format(
                 sender_email, feedback_data)
-            # build email
+            
             msg = Message(
                 subject='madboulder.org feedback',
                 sender=app.config.get('MAIL_USERNAME'),
@@ -943,9 +956,64 @@ def render_about_us():
                 body=msg_body)
             mail.send(msg)
             return render_template('thanks-for-joining.html')
-        except:
-            abort(404)
-            
+        except Exception as e:
+            print(str(e))  # Log the error for debugging
+            abort(500, 'Internal Server Error') 
+
+     
+def create_assessment(
+    project_id: str, recaptcha_key: str, token: str, recaptcha_action: str
+) -> Assessment:
+    """Create an assessment to analyze the risk of a UI action.
+    Args:
+        project_id: Your Google Cloud Project ID.
+        recaptcha_key: The reCAPTCHA key associated with the site/app
+        token: The generated token obtained from the client.
+        recaptcha_action: Action name corresponding to the token.
+    """
+
+    # Set the properties of the event to be tracked.
+    event = recaptchaenterprise_v1.Event()
+    event.site_key = recaptcha_key
+    event.token = token
+
+    assessment = recaptchaenterprise_v1.Assessment()
+    assessment.event = event
+
+    project_name = f"projects/{project_id}"
+
+    # Build the assessment request.
+    request = recaptchaenterprise_v1.CreateAssessmentRequest()
+    request.assessment = assessment
+    request.parent = project_name
+
+    response = recaptcha_client.create_assessment(request)
+
+    if not response.token_properties.valid:
+        print(
+            "The CreateAssessment call failed because the token was "
+            + "invalid for the following reasons: "
+            + str(response.token_properties.invalid_reason)
+        )
+        abort(400, 'The reCAPTCHA token was invalid.')
+
+    if recaptcha_action and response.token_properties.action != recaptcha_action:
+        print("The action attribute did not match the expected action.")
+        abort(400, 'The reCAPTCHA action did not match the expected action.')
+
+    score = response.risk_analysis.score
+    print(f"The reCAPTCHA score for this token is: {score}")
+
+    threshold_score = 0.5
+    if score < threshold_score:
+        print("The reCAPTCHA score was below the threshold for trustworthiness.")
+        abort(400, 'The reCAPTCHA score indicated the submission was not trustworthy.')
+
+    return response
+
+
+@app.route('/about-us', methods=['GET'])
+def render_about_us():
     zone_data = handle_channel_data.get_zone_data()
     stats_list = [
         {
@@ -962,6 +1030,7 @@ def render_about_us():
         }
     ]
     return render_template('about-us.html', stats_list=stats_list)
+    
     
 @app.route('/join-us', methods=['GET', 'POST'])
 @app.route('/join_us', methods=['GET', 'POST'])

@@ -15,6 +15,7 @@
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slick/slick-theme.css') }}" />
 
 		<script src="/static/slick/slick.min.js" ></script>
+		<script src="https://www.google.com/recaptcha/enterprise.js?render=6LcVBLIpAAAAAJZUryjl1eqk9x_QhBmOGoIpVSGa"></script>
 		{% include 'scripts/cookie-scripts.html' %}
     </head>
     <body id="page-top">
@@ -203,12 +204,7 @@
 					<div class="text-center">
 						<h2 class="section-heading text-uppercase text-bold">{{ _("Stay Connected") }}</h2>
 					</div>
-					<form
-					  id="stayConnectedForm"
-					  action="/about_us"
-					  method="POST"
-					  enctype="multipart/form-data"
-					>
+					<form id="stayConnectedForm"  action="/submit-support-form" method="POST" enctype="multipart/form-data">
 						<div class="row align-items-stretch mb-5">
 							<div class="col-md-6">
 								<div class="form-group section-subheading">
@@ -225,9 +221,17 @@
 							</div>
 						</div>
 						<div class="text-center">
-							<button class="btn btn-primary-madboulder btn-xl text-uppercase" id="submitButton" type="submit">{{ _("Send Message") }}</button>
+							<button class="btn btn-primary-madboulder btn-xl text-uppercase g-recaptcha" data-sitekey="6LcVBLIpAAAAAJZUryjl1eqk9x_QhBmOGoIpVSGa" data-callback='onSubmit' data-action='submit_support_form'>
+								{{ _("Send Message") }}
+							</button>
 						</div>
 					</form>
+					<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+					<script>
+						function onSubmit(token) {
+							document.getElementById("stayConnectedForm").submit();
+						}
+					</script>
 				</div>
 			</section>
 		</main>
