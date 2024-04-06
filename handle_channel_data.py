@@ -269,7 +269,7 @@ def process_all_data(infile=None, data=None):
     video_data = load_data(infile, data)
     for video in video_data:
         video['name'] = get_problem_name(video)
-        video['secure'] = slugify(video['name']) + '-'+ slugify(video['grade_with_info'])
+        video['secure'] = slugify(video['name'] + '-'+ video['grade_with_info'])
         video['zone_code'] = slugify(video['zone'])
         video['sector_code'] = slugify(video['sector'])
         video['climber_code'] = slugify(video['climber'])
