@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithRedirect, signInWithPopup, getRedirectResult, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 export const completeUserProfile = (name, isContributor, wantsNewsletter) => {
     return fetch('/complete-profile-info', {
@@ -59,7 +59,12 @@ export const recoverPassword = (email) => {
 export const signInWithGoogle = (profileCompleteUrl) => {
     const provider = new GoogleAuthProvider();
 	const auth = getAuth();
-    return signInWithPopup(auth, provider)
+
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+
+    return signInWithPopup(auth, provider) 
         .then(userCredential => userCredential.user.getIdToken())
         .then(idToken => verifyTokenWithServer(idToken))
         .then(() => checkUserProfileCompletion())

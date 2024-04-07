@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Port de Vielha | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Port de Vielha with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/port-de-vielha">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/port-de-vielha">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/port-de-vielha">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+			
+				> 
+				<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Port de Vielha
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Port de Vielha Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+					<!-- Zone summary -->
+					<div id="zone-summary" class="row justify-content-center">
+						 {% for stat in stats_list %}
+						<div class="col-md-2 col-sm-2 stats-col">
+							<div class="card mx-sm-1 p-2">
+								<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+								<span class="{{stat['logo']}}" aria-hidden="true"></span>
+								</div>
+								<div class="text-center mt-2">
+								<h5 class="stats-title">{{stat['text']}}</h5>
+								</div>
+								<div class="text-center mt-1 mb-0">
+								<h3 class="stats-content">{{stat['data']}}</h3>
+								</div>
+							</div>
+						</div>
+						{% endfor %} 
+					</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Port de Vielha Boulder</h2>
+					
+						<div class="weather-widget weatherElement" data-zone-code="">
+	<div id="weather-widget-port-de-vielha" class="weather-container dark">
+		<div class="weather-title-container" title="Port de Vielha">
+			<i class="fas fa-location-dot">location</i>
+			<div class="weather-title">
+				Port de Vielha
+			</div>
+		</div>
+		<div class="weather-info">
+			<div class="current-weather">
+				<div class="current-weather-icon">
+					<img loading="lazy" class="weather-icon"></img>
+				</div>
+				<div class="current-weather-desc">
+					<div class="current-weather-temperature weather-temperature"></div>
+					<div class="current-weather-description weather-description text-capitalize"></div>
+				</div>
+				<div class="current_weather-stats">
+					<div class="current_weather-stats-temp">
+						<div class="weather-max-temperature"></div>
+						<div class="weather-min-temperature"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-droplet mr-2">humidity</i>
+						<div class="weather-humidity"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-wind">air</i>
+						<div class="wind-speed"></div>
+					</div>
+				</div>
+			</div>
+			<div class="weather-forecast"></div>
+		</div>
+	</div>
+	<script>
+		$('#weather-widget-port-de-vielha .weather-temperature').openWeather({
+			widgetId: 'weather-widget-port-de-vielha',
+			lat: '42.618449',
+			lng: '0.76333',
+			iconTarget: '#weather-widget-port-de-vielha .weather-icon',
+			key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+			customIcons: 'images/weather_icons/',
+			minTemperatureTarget: '#weather-widget-port-de-vielha .weather-min-temperature',
+			maxTemperatureTarget: '#weather-widget-port-de-vielha .weather-max-temperature',
+			humidityTarget: '#weather-widget-port-de-vielha .weather-humidity',
+			windSpeedTarget: '#weather-widget-port-de-vielha .wind-speed',
+			windSpeedUnit: 'km/h',
+			descriptionTarget: '#weather-widget-port-de-vielha .weather-description',
+			forecastTarget: 'weather-forecast',
+			lang: '',
+			query: 'onecall'
+		});
+	</script>
+</div>
+					
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?defaultZones=port-de-vielha">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							$('.weather-temperature').each(function() {
+								const openWeatherData = $(this).data('openWeather');
+								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+									openWeatherData.checkDaysSinceRain(function(days) {
+										let message;
+										if (days > 3) {
+											message = "It's been more than 3 days since it last rained.";
+										} else {
+											message = `It has been ${days} day(s) since it last rained.`;
+										}
+										$('#days-since-last-rain').text(message);
+									});
+								}
+							});
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Port de Vielha Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/mUeMw2u8Bmg/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/mUeMw2u8Bmg/maxresdefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/mUeMw2u8Bmg/maxresdefault.jpg">
+												<img loading="lazy" class="img-fluid d-block" src="https://i.ytimg.com/vi/mUeMw2u8Bmg/maxresdefault.jpg" alt="Photo of Port de Vielha Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Port de Vielha</h2>
+													<p style="text-align: justify;">The Port de Vielha Bouldering Aera, located at the southern entrance of the Tunnel del Port de Vielha, unfolds as a serene expanse of forest dotted with granite boulders. This little crag in Catalonia remains largely untapped and offers more than just climbing, it invites explorers and seekers of tranquility to discover its secrets. The absence of widespread information adds to its allure, making it a pristine spot for those looking to escape the well-trodden path and immerse themselves in a peaceful climbing experience amidst the beauty of nature.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 6
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 1605m
+													
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Port de Vielha Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/port-de-vielha"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 1 Sectors of Port de Vielha Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/port-de-vielha/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">6</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of 5 Playlists of Port de Vielha Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPkhB_EVxlFLFaX0TcFKNVm"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<h2>List of 6 Problems in Video of Port de Vielha Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Albertito el de la unha Grande, 7a. Port de Vielha" href="/problems/port-de-vielha/albertito-el-de-la-unha-grande-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Albertito el de la unha Grande, 7a. Port de Vielha" src="https://img.youtube.com/vi/cAgforWieqw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/albertito-el-de-la-unha-grande-7a" class="table-row-name text-bold">Albertito el de la unha Grande</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La niña de bossost, 6a. Port de Vielha" href="/problems/port-de-vielha/la-nina-de-bossost-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La niña de bossost, 6a. Port de Vielha" src="https://img.youtube.com/vi/mUeMw2u8Bmg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/la-nina-de-bossost-6a" class="table-row-name text-bold">La niña de bossost</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="La pleta del condado, 6c+/7a. Port de Vielha" href="/problems/port-de-vielha/la-pleta-del-condado-6c-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La pleta del condado, 6c+/7a. Port de Vielha" src="https://img.youtube.com/vi/mQp6lRGepSc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/la-pleta-del-condado-6c-7a" class="table-row-name text-bold">La pleta del condado</a>
+						</div>
+								</td>
+								<td>6c+/7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Lance a la nheu, 6a. Port de Vielha" href="/problems/port-de-vielha/lance-a-la-nheu-6a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Lance a la nheu, 6a. Port de Vielha" src="https://img.youtube.com/vi/FR6WHGy6SIg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/lance-a-la-nheu-6a" class="table-row-name text-bold">Lance a la nheu</a>
+						</div>
+								</td>
+								<td>6a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pantumaca, 7b. Port de Vielha" href="/problems/port-de-vielha/pantumaca-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pantumaca, 7b. Port de Vielha" src="https://img.youtube.com/vi/RxlPOWkWhEg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/pantumaca-7b" class="table-row-name text-bold">Pantumaca</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Plaquita bagergue, 6b. Port de Vielha" href="/problems/port-de-vielha/plaquita-bagergue-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Plaquita bagergue, 6b. Port de Vielha" src="https://img.youtube.com/vi/0pQtAsvx8us/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/port-de-vielha/plaquita-bagergue-6b" class="table-row-name text-bold">Plaquita bagergue</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
