@@ -117,7 +117,9 @@
 
 			const email = document.getElementById('email-input').value;
 			const password = document.getElementById('password-input').value;
-			loginWithEmailPassword(email, password, '/settings/profile')
+			const nextUrl = "{{ session.get('nextUrl', '/settings/profile') }}";
+			fetch('/reset-next-url');
+			loginWithEmailPassword(email, password, nextUrl)
 			.catch(error => displayLoginError(error));
 		}
 
@@ -141,7 +143,9 @@
 		}
 
 		function googleSigninClick() {
-			signInWithGoogle('/settings/profile')
+			const nextUrl = "{{ session.get('nextUrl', '/settings/profile') }}";
+			fetch('/reset-next-url');
+			signInWithGoogle(nextUrl)
 			.catch(error => {
 				console.error("Error during the sign-in process:", error);
 				// Handle errors, such as showing a message to the user

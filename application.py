@@ -469,6 +469,7 @@ def login_required(f):
         print(f"login_required: Checking login for access to {f.__name__}")
         if 'uid' not in session:
             print("login_required: No user ID in session, redirecting to login")
+            session['nextUrl'] = request.url
             return redirect(url_for('login'))
         
         print(f"login_required: User ID found in session")
@@ -497,6 +498,11 @@ def check_admin_privileges(uid):
         return user.custom_claims.get('admin', False)
     else:
         return False
+    
+@app.route('/reset-next-url')
+def reset_next_url():
+    session.pop('nextUrl', None)
+    return ('', 204)
 
 
 @app.route('/check-profile-completion', methods=['POST'])

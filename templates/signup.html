@@ -107,14 +107,21 @@
 			document.getElementById('loadingSpinner').style.display = 'block';
 			document.getElementById('create-btn').style.display = 'none';
 
-			signupWithEmailPassword(email, password, name, isContributor, wantsNewsletter, '/settings/profile')
+			
+			const nextUrl = "{{ session.get('nextUrl', '/settings/profile') }}";
+			fetch('/reset-next-url');
+
+			signupWithEmailPassword(email, password, name, isContributor, wantsNewsletter, nextUrl)
 			.catch((error) => {
 				displaySignUpError(error);
 			});
 		}
 
 		function googleSigninClick() {
-			signInWithGoogle('/settings/profile')
+			const nextUrl = "{{ session.get('nextUrl', '/settings/profile') }}";
+			fetch('/reset-next-url');
+
+			signInWithGoogle(nextUrl)
 			.catch(error => {
 				console.error("Error during the sign-in process:", error);
 				// Handle errors, such as showing a message to the user
