@@ -778,6 +778,12 @@ def update_user_details_protected():
         user_details_ref = db.reference(f'users/{uid}')
         user_details_ref.update(updates)
 
+    if data['contributor_status'] == 'approved':
+        if 'climber_id' in data:
+            climber_id = data['climber_id']
+            user_record = auth.get_user(uid)
+            contributor_approved_notification(user_record.email, climber_id)
+
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
     
@@ -959,7 +965,7 @@ def remove_problem_from_projects():
     
 
 def new_pending_contributor_notification(email):
-    msg_body = 'New Contributor Submission pending to approve from user: {}\n Approve the request in https://www.madboulder.org/settings/admin/users'.format(email)
+    msg_body = 'New Contributor Submission pending to approve from user: {}\n\nApprove the request in https://www.madboulder.org/settings/admin/users'.format(email)
         
     msg = Message(
         subject='MadBoulder New Contributor Submission',
@@ -967,7 +973,16 @@ def new_pending_contributor_notification(email):
         recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
         body=msg_body)
     mail.send(msg)
+    
 
+def contributor_approved_notification(email, climber_id):
+    msg_body = 'Your Contributor Submission has been accepted and associated with the following climber id: {}\n\nYou can review it in https://www.madboulder.org/settings/profile'.format(climber_id)       
+    msg = Message(
+        subject='Contributor Submission Accepted!',
+        sender=app.config.get('MAIL_USERNAME'),
+        recipients=[email],
+        body=msg_body)
+    mail.send(msg)
 
 
 @app.route('/<string:sitemap_name>.xml')
