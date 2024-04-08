@@ -69,7 +69,6 @@ mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']
 })
 
-
 SERVICE_ACCOUNT_FILE = 'madboulder-f1887f0310ec.env'
 credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
 recaptcha_client = recaptchaenterprise_v1.RecaptchaEnterpriseServiceClient(credentials=credentials)
@@ -329,6 +328,8 @@ def upload_file():
                 sender=app.config.get('MAIL_USERNAME'),
                 recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
                 body=msg_body)
+            
+            print("send email")
             mail.send(msg)
             return jsonify({"message": "File uploaded and processed successfully"}), 200
         except Exception as e:
@@ -339,10 +340,8 @@ def upload_file():
 
 
 def upload_to_google_drive(file):
+    print("upload_to_google_drive")
     try:
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-        SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
-        credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
         drive_service = build('drive', 'v3', credentials=credentials)
         if drive_service:
             CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
@@ -374,21 +373,39 @@ def upload_to_google_drive(file):
     except Exception as e:
         raise Exception(e)
         
+
+def bytes_to_mb(bytes_value):
+    """Convert bytes to megabytes."""
+    return bytes_value / (1024 * 1024)
         
+
 def empty_google_drive():
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = 'madboulder-file-uploader-5b2b9d6798b5.env'
-    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    drive_service = build('drive', 'v3', credentials=credentials)
-    # Get the list of all files in Google Drive
-    file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
+    try:
+        drive_service = build('drive', 'v3', credentials=credentials)
 
-    # Delete each file
-    for file in file_list:
-        drive_service.files().delete(fileId=file['id']).execute()
+        about_info_before = drive_service.about().get(fields='storageQuota').execute()
+        used_before_mb = bytes_to_mb(int(about_info_before['storageQuota']['usage']))
+        total_space_mb = bytes_to_mb(int(about_info_before['storageQuota']['limit']))
+        available_space_mb = total_space_mb - used_before_mb
+        print(f"Drive space used before emptying: {used_before_mb:.2f} MB")
+        print(f"Total drive space: {total_space_mb:.2f} MB")
+        print(f"Available drive space before emptying: {available_space_mb:.2f} MB")
+        
+        
+        file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
 
-    # Empty the trash
-    drive_service.files().emptyTrash().execute()
+        for file in file_list:
+            print(file)
+            drive_service.files().delete(fileId=file['id']).execute()
+
+        drive_service.files().emptyTrash().execute()
+
+        about_info_after = drive_service.about().get(fields='storageQuota').execute()
+        used_after_mb = bytes_to_mb(int(about_info_after['storageQuota']['usage']))
+        print(f"Drive space used after emptying: {used_after_mb:.2f} MB")
+    
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 @app.route('/progress', methods=['GET'])
@@ -451,6 +468,7 @@ def register_subscriber():
 
 
 def register_new_subscriber(email):
+    print("register_new_subscriber")
     subscriber_exists = False
     try:
         existing_subscriber = mailerlite.subscribers.get(email)
