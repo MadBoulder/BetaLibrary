@@ -15,62 +15,109 @@
 	
 	
     
-  </head>
-  <body>
-	
-	{% include 'elements/main-menu.html' %}
-	
-	<main>
-		<div class="zone-header">
-			<div class="container zone-header-tree">
-				<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-				
-				> 
-				<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-				
-				> 
-				<a href="/states/aragon" class="zone-header-tree-link">Aragon</a>
-				
-				> 
-				<a href="/alcaniz" class="zone-header-tree-link">Alcañiz</a>
-				> 
-				<a href="/sectors/alcaniz/la-badina" class="zone-header-tree-link">La Badina</a>
-				
-				> 
-				<a href="/boulders/alcaniz/" class="zone-header-tree-link">Analogique</a>
-				
-				
+	</head>
+	<body>
+		
+		{% include 'elements/main-menu.html' %}
+		
+		<main>
+			<div class="zone-header">
+				<div class="container zone-header-tree">
+					<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+					
+					> 
+					<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+					
+					> 
+					<a href="/states/aragon" class="zone-header-tree-link">Aragon</a>
+					
+					> 
+					<a href="/alcaniz" class="zone-header-tree-link">Alcañiz</a>
+					> 
+					<a href="/sectors/alcaniz/la-badina" class="zone-header-tree-link">La Badina</a>
+					
+					> 
+					<a href="/boulders/alcaniz/" class="zone-header-tree-link">Analogique</a>
+					
+					
+				</div>
+				<h1 class="zone-header-title text-bold">
+					Analogique, 8a. Alcañiz
+				</h1>
 			</div>
-			<h1 class="zone-header-title text-bold">
-				Analogique, 8a. Alcañiz
-			</h1>
-		</div>
-		<div class="container" id="mainContainer">
-			<div class="video-container" >
-				<iframe src="https://www.youtube.com/embed/AIpvtrxVje4" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-			</div>
-			
-			<div class="text-and-map-container">
-				<div class="text-container">
-					<p> {{ _("Name") }}: Analogique </p>
-					<p> {{ _("Grade") }}: 8a </p>
-					
-						<p> {{ _("Zone") }}: <a href="/alcaniz">Alcañiz</a></p>
-						<p> {{ _("Sector") }}: <a href="/sectors/alcaniz/la-badina">La Badina</a></p>
-					
-					
-						
-							<p> {{ _("Boulder") }}: Analogique</p>
-						
-					
-					<p> {{ _("Climber") }}: <a href="/contributors/thomas-collignon">Thomas Collignon</a></p>
+			<div class="container" id="mainContainer">
+				<div class="video-container" >
+					<iframe src="https://www.youtube.com/embed/AIpvtrxVje4" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 				</div>
 				
+				<div class="text-and-map-container">
+					<div class="text-container">
+						<p> {{ _("Name") }}: Analogique </p>
+						<p> {{ _("Grade") }}: 8a </p>
+						
+							<p> {{ _("Zone") }}: <a href="/alcaniz">Alcañiz</a></p>
+							<p> {{ _("Sector") }}: <a href="/sectors/alcaniz/la-badina">La Badina</a></p>
+						
+						
+							
+								<p> {{ _("Boulder") }}: Analogique</p>
+							
+						
+						<p> {{ _("Climber") }}: <a href="/contributors/thomas-collignon">Thomas Collignon</a></p>
+						{% if session['uid'] %}
+							<div class="d-flex mt-3 mb-3 log">
+								<div class="ml-auto btn-group mb-auto " style="position: relative; display: inline-flex; vertical-align: middle; justify-content: center;">
+									<button id="addToProjectsButton" type="button" class="btn btn-sm btn-default" 
+										
+										onclick="addToProjects('analogique-8a', 'Analogique', '8a', 'alcaniz', 'Alcañiz')" style="margin-left: -1px;
+											border-color: #ccc;
+											background: #fff;
+											color: #333;
+											padding: .25rem .5rem;
+											font-size: .875rem;
+											line-height: 1.5;
+											border-radius: .2rem;
+											display: inline-block;
+											font-weight: 400
+											text-align: center;
+											vertical-align: middle;
+											-webkit-user-select: none;
+											user-select: none;
+											padding: .375rem .75rem;
+											font-size: 1rem;
+											line-height: 1.5;">
+										Add to Projects
+									</button>
+								</div>
+							</div>
+						{% endif %}
+					</div>
+					
+				</div>
 			</div>
-        </div>
-	</main>
-	
-	{% include 'elements/footer.html' %}
-	
-  </body>
+		</main>
+		
+		{% include 'elements/footer.html' %}
+		
+	</body>
+	<script>
+	function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
+		fetch('/add-problem-to-projects', {
+			method: 'POST',
+			body: JSON.stringify({ 'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area,  'problem_area_name': problem_area_name}),
+			headers: {'Content-Type': 'application/json'}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data.status === 'success') {
+				let button = document.getElementById('addToProjectsButton');
+				button.innerText = 'Added';
+				button.setAttribute('disabled', true);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	}
+	</script>
 </html>

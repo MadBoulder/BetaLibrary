@@ -15,55 +15,102 @@
 	
 	
     
-  </head>
-  <body>
-	
-	{% include 'elements/main-menu.html' %}
-	
-	<main>
-		<div class="zone-header">
-			<div class="container zone-header-tree">
-				<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-				
-				> 
-				<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
-				
-				> 
-				<a href="/states/california" class="zone-header-tree-link">California</a>
-				
-				> 
-				<a href="/tramway" class="zone-header-tree-link">Tramway</a>
-				> 
-				<a href="/sectors/tramway/unknown" class="zone-header-tree-link">Unknown</a>
-				
-				
+	</head>
+	<body>
+		
+		{% include 'elements/main-menu.html' %}
+		
+		<main>
+			<div class="zone-header">
+				<div class="container zone-header-tree">
+					<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+					
+					> 
+					<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+					
+					> 
+					<a href="/states/california" class="zone-header-tree-link">California</a>
+					
+					> 
+					<a href="/tramway" class="zone-header-tree-link">Tramway</a>
+					> 
+					<a href="/sectors/tramway/unknown" class="zone-header-tree-link">Unknown</a>
+					
+					
+				</div>
+				<h1 class="zone-header-title text-bold">
+					Paul Rocks, V4. Tramway
+				</h1>
 			</div>
-			<h1 class="zone-header-title text-bold">
-				Paul Rocks, V4. Tramway
-			</h1>
-		</div>
-		<div class="container" id="mainContainer">
-			<div class="video-container" >
-				<iframe src="https://www.youtube.com/embed/YuJUuHZaJuI" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-			</div>
-			
-			<div class="text-and-map-container">
-				<div class="text-container">
-					<p> {{ _("Name") }}: Paul Rocks </p>
-					<p> {{ _("Grade") }}: V4 </p>
-					
-						<p> {{ _("Zone") }}: <a href="/tramway">Tramway</a></p>
-						<p> {{ _("Sector") }}: <a href="/sectors/tramway/unknown">Unknown</a></p>
-					
-					
-					<p> {{ _("Climber") }}: <a href="/contributors/sierra-rose-knott">Sierra Rose Knott</a></p>
+			<div class="container" id="mainContainer">
+				<div class="video-container" >
+					<iframe src="https://www.youtube.com/embed/YuJUuHZaJuI" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 				</div>
 				
+				<div class="text-and-map-container">
+					<div class="text-container">
+						<p> {{ _("Name") }}: Paul Rocks </p>
+						<p> {{ _("Grade") }}: V4 </p>
+						
+							<p> {{ _("Zone") }}: <a href="/tramway">Tramway</a></p>
+							<p> {{ _("Sector") }}: <a href="/sectors/tramway/unknown">Unknown</a></p>
+						
+						
+						<p> {{ _("Climber") }}: <a href="/contributors/sierra-rose-knott">Sierra Rose Knott</a></p>
+						{% if session['uid'] %}
+							<div class="d-flex mt-3 mb-3 log">
+								<div class="ml-auto btn-group mb-auto " style="position: relative; display: inline-flex; vertical-align: middle; justify-content: center;">
+									<button id="addToProjectsButton" type="button" class="btn btn-sm btn-default" 
+										
+										onclick="addToProjects('paul-rocks-v4', 'Paul Rocks', 'V4', 'tramway', 'Tramway')" style="margin-left: -1px;
+											border-color: #ccc;
+											background: #fff;
+											color: #333;
+											padding: .25rem .5rem;
+											font-size: .875rem;
+											line-height: 1.5;
+											border-radius: .2rem;
+											display: inline-block;
+											font-weight: 400
+											text-align: center;
+											vertical-align: middle;
+											-webkit-user-select: none;
+											user-select: none;
+											padding: .375rem .75rem;
+											font-size: 1rem;
+											line-height: 1.5;">
+										Add to Projects
+									</button>
+								</div>
+							</div>
+						{% endif %}
+					</div>
+					
+				</div>
 			</div>
-        </div>
-	</main>
-	
-	{% include 'elements/footer.html' %}
-	
-  </body>
+		</main>
+		
+		{% include 'elements/footer.html' %}
+		
+	</body>
+	<script>
+	function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
+		fetch('/add-problem-to-projects', {
+			method: 'POST',
+			body: JSON.stringify({ 'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area,  'problem_area_name': problem_area_name}),
+			headers: {'Content-Type': 'application/json'}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data.status === 'success') {
+				let button = document.getElementById('addToProjectsButton');
+				button.innerText = 'Added';
+				button.setAttribute('disabled', true);
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	}
+	</script>
 </html>

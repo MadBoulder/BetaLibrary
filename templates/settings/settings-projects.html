@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account - Project's List</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div data-view-component="true" class="Subhead mt-0 mb-0">
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">My Projects</h2>
+								</div>  
+								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
+									<div class="col-12">
+										<dl class="form-group">
+											<dd>
+												<ul>
+													{% for project in projects %}
+														<li>
+															<a href="{{ project.url }}">
+																{{ project.problem_name }} - {{ project.problem_grade }} - {{ project.problem_area_name }}
+															</a>
+															<i onclick="removeFromProjects('{{ project.problem_id }}')" class="fas fa-times remove-project-icon" style=" cursor: pointer; color: #cc0000; margin-left: 10px;"></i>
+														</li>
+													{% else %}
+														<li>No projects added yet.</li>
+													{% endfor %}
+												</ul>
+											</dd>
+										</dl>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function removeFromProjects(problemId) {
+			fetch('/remove-problem-from-projects', {
+				method: 'POST',
+				body: JSON.stringify({ 'problem_id': problemId }),
+				headers: {'Content-Type': 'application/json'},
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.status === 'success') {
+					window.location.reload();
+				} else {
+					console.error('Error removing project:', data.message);
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+	</script>
+</html>

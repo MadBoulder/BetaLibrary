@@ -618,6 +618,19 @@ def settings_stats():
     return render_template("/settings/settings-stats.html", user_data=user_data)
 
 
+@app.route('/settings/projects', methods=['GET'])
+@login_required
+def settings_projects():
+    user_uid = session.get('uid')
+    user_projects_ref = db.reference(f'users/{user_uid}/projects')
+    projects = user_projects_ref.get() if user_projects_ref.get() else {}
+
+    for project_id, project_details in projects.items():
+        project_details['url'] = f"/problems/{project_details['problem_area']}/{project_id}"
+
+    return render_template("/settings/settings-projects.html", projects=projects.values())
+
+
 @app.route('/settings/admin/users', methods=['GET'])
 @admin_required
 def settings_admin_users():
@@ -880,6 +893,57 @@ def remove_user(userId):
     except firebase_admin.exceptions.FirebaseError as e:
         print(f"Error removing user: {e}")
         return jsonify({"error": "Failed to remove user"}), 500
+    
+
+@app.route('/add-problem-to-projects', methods=['POST'])
+@login_required
+def add_problem_to_projects():
+    user_uid = session.get('uid')
+    data = request.get_json()
+    problem_details = {
+        'problem_id': data.get('problem_id'),
+        'problem_name': data.get('problem_name'),
+        'problem_grade': data.get('problem_grade'),
+        'problem_area': data.get('problem_area'),
+        'problem_area_name': data.get('problem_area_name'),
+    }
+    
+    try:
+        problem_id = request.json.get('problem_id')
+        if not problem_id:
+            raise ValueError('No problem ID provided')
+
+        user_projects_ref = db.reference(f'users/{user_uid}/projects')
+        
+        existing_projects = user_projects_ref.get() or {}
+        if problem_details['problem_id'] in existing_projects:
+            return jsonify({'status': 'error', 'message': 'Problem already in Projects'}), 409
+
+        user_projects_ref.child(problem_details['problem_id']).set(problem_details)
+        return jsonify({'status': 'success', 'message': 'Problem added to Projects'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+
+@app.route('/remove-problem-from-projects', methods=['POST'])
+@login_required
+def remove_problem_from_projects():
+    user_uid = session.get('uid')
+    data = request.get_json()
+    problem_id = data.get('problem_id')
+
+    try:
+        if not problem_id:
+            raise ValueError('No problem ID provided')
+
+        print(problem_id)
+        user_projects_ref = db.reference(f'users/{user_uid}/projects/{problem_id}')
+        print(user_projects_ref)
+        user_projects_ref.delete()
+
+        return jsonify({'status': 'success', 'message': 'Problem removed from Projects'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/<string:sitemap_name>.xml')
@@ -1053,7 +1117,8 @@ def join_us():
             msg.attach(resume.filename, 'application/octet-stream', resume.read())
             mail.send(msg)
             return render_template('thanks-for-joining.html')
-        except:
+        except Exception as e:
+            print("An error occurred:", e)
             abort(404)
     return render_template('join-us.html')
 
@@ -1140,7 +1205,8 @@ def render_page(page):
         print(page_path)
 
         return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1151,7 +1217,8 @@ def render_page_es(page):
     try:
         page_path = 'zones/' + 'es/' + slugify(page) + EXTENSION
         return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1196,12 +1263,26 @@ def get_area_page_stats(page):
 @app.route('/problems/<string:page>/<string:problem_name>.html')
 @app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
+    print("load_problem")
     try:
-        return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html')
-    except:
+        user_uid = session.get('uid')
+        if user_uid:
+            problem_in_projects = is_problem_in_projects(user_uid, problem_name)
+        else:
+            print("no uid")
+            problem_in_projects = False
+
+        return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html', problem_in_projects=problem_in_projects)
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
-    
+
+def is_problem_in_projects(user_id, problem_id):
+    user_projects_ref = db.reference(f'users/{user_id}/projects/{problem_id}')
+    problem = user_projects_ref.get()
+    return problem is not None
+
     
 @app.route('/sectors/<string:page>/<string:sector_name>')
 @app.route('/templates/sectors/<string:page>/<string:sector_name>.html')
@@ -1210,7 +1291,8 @@ def load_problem(page, problem_name):
 def load_sector(page, sector_name):
     try:
         return render_template(f'sectors/{slugify(page)}/{slugify(sector_name)}.html')
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1220,7 +1302,8 @@ def load_sector(page, sector_name):
 def load_boulder(page, boulder_code):
     try:
         return render_template(f'boulders/{slugify(page)}/{slugify(boulder_code)}.html')
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1237,7 +1320,8 @@ def load_country(country_name):
         print(page_path)
 
         return render_template(page_path)
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1246,7 +1330,8 @@ def load_country(country_name):
 def load_country_es(country_name):
     try:
         return render_template(f'countries/es/{slugify(country_name)}.html')
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1255,7 +1340,8 @@ def load_country_es(country_name):
 def load_state(state_name):
     try:
         return render_template(f'states/{slugify(state_name)}.html')
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1264,7 +1350,8 @@ def load_state(state_name):
 def load_contributor(contributor_name):
     try:
         return render_template(f'contributors/{slugify(contributor_name)}.html')
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1278,7 +1365,8 @@ def load_contributor(contributor_name):
 def render_area(area):
     try:
         return render_template('maps/' + area + EXTENSION)
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
@@ -1287,7 +1375,8 @@ def download_file(path=None, filename=None):
     try:
         download_path = os.path.join(app.root_path, 'data/zones/' + path) + '/' + filename
         return send_file(download_path, as_attachment=False)
-    except:
+    except Exception as e:
+        print("An error occurred:", e)
         abort(404)
 
 
