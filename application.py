@@ -739,6 +739,9 @@ def update_user_details():
     updates = {}
     if 'contributor_status' in data and data['contributor_status'] != 'approved':
         updates['contributor_status'] = data['contributor_status']
+        if data['contributor_status'] == 'pending':
+            user_record = auth.get_user(user_uid)
+            new_pending_contributor_notification(user_record.email)
 
     if updates:
         user_details_ref = db.reference(f'users/{user_uid}')
@@ -793,6 +796,9 @@ def complete_profile_info():
         updates = {}
         if isContributor:
             updates['contributor_status'] = "pending"
+
+            user_record = auth.get_user(user_uid)
+            new_pending_contributor_notification(user_record.email)
         else:
             updates['contributor_status'] = "non contributor"
 
@@ -944,6 +950,18 @@ def remove_problem_from_projects():
         return jsonify({'status': 'success', 'message': 'Problem removed from Projects'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+
+def new_pending_contributor_notification(email):
+    msg_body = 'New Contributor Submission pending to approve from user: {}\n Approve the request in https://www.madboulder.org/settings/admin/users'.format(email)
+        
+    msg = Message(
+        subject='MadBoulder New Contributor Submission',
+        sender=app.config.get('MAIL_USERNAME'),
+        recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
+        body=msg_body)
+    mail.send(msg)
+
 
 
 @app.route('/<string:sitemap_name>.xml')
