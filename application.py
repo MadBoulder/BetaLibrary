@@ -609,6 +609,7 @@ def settings_my_videos():
         url = "/contributors/" + slugify(climber_id)
         return redirect(url)
     else:
+        print("Error loading my videos: No climber_id found")
         return redirect("/settings/profile")
     
     

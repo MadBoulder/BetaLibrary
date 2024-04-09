@@ -6,6 +6,12 @@
 		<meta name="description" content="description">
 		{% include 'elements/head-resources.html' %}
 		{% include 'scripts/cookie-scripts.html' %}
+		<!-- Table Widget dependencies-->
+		<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+		<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+		<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+		<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
 	</head>
 	<body>
@@ -19,27 +25,46 @@
 							<div data-view-component="true" class="container-xl">
 								<div data-view-component="true" class="Subhead mt-0 mb-0">
 									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">My Projects</h2>
-								</div>  
-								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
-									<div class="col-12">
-										<dl class="form-group">
-											<dd>
-												<ul>
-													{% for project in projects %}
-														<li>
-															<a href="{{ project.url }}">
-																{{ project.problem_name }} - {{ project.problem_grade }} - {{ project.problem_area_name }}
-															</a>
-															<i onclick="removeFromProjects('{{ project.problem_id }}')" class="fas fa-times remove-project-icon" style=" cursor: pointer; color: #cc0000; margin-left: 10px;"></i>
-														</li>
-													{% else %}
-														<li>No projects added yet.</li>
-													{% endfor %}
-												</ul>
-											</dd>
-										</dl>
-										
-									</div>
+								</div>
+								<div class="table-responsive">
+									<table id="users-table" class="table table-hover">
+										<thead style="vertical-align: middle;">
+											<tr>
+												<th>Name</th>
+												<th>Grade</th>
+												<th>Area</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody style="vertical-align: middle;">
+											{% for project in projects %}
+												<tr>
+													<td><a href="{{project.url}}" class="table-row-name text-bold">{{ project.problem_name }}</a></td>
+													<td>{{ project.problem_grade }}</td>
+													<td>{{ project.problem_area_name }}</td>
+													<td>
+														<i onclick="removeFromProjects('{{ project.problem_id }}')" class="fas fa-times remove-project-icon"></i>
+													</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+									<script>
+										$(document).ready(function () {
+											$('#users-table').DataTable({
+												paging: false,
+												dom: 'tr',
+												order:[[0, 'desc']],
+												columnDefs: [{ 
+													orderable: false,
+													targets: -1
+												}],
+												language: {
+													emptyTable: "No projects added yet."
+												}
+											});
+										});
+									</script>
 								</div>
 							</div>
 						</div>

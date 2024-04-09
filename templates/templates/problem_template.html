@@ -38,7 +38,7 @@
 					<a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone }}</a>
 					> 
 					<a href="/sectors/{{zone_code}}/{{sector_code}}" class="zone-header-tree-link">{{ sector }}</a>
-					{% if boulder_name and boulder_name != 'Unknown' %}
+					{% if boulder_name and boulder_name != 'Unknown' and boulder_code%}
 					> 
 					<a href="/boulders/{{zone_code}}/{{boulder_code}}" class="zone-header-tree-link">{{ boulder_name }}</a>
 					{% endif %}
@@ -74,26 +74,10 @@
 						<p> {% raw %}{{ _("Climber") }}{% endraw %}: <a href="/contributors/{{climber_code}}">{{ climber }}</a></p>
 						{% raw %}{% if session['uid'] %}{% endraw %}
 							<div class="d-flex mt-3 mb-3 log">
-								<div class="ml-auto btn-group mb-auto " style="position: relative; display: inline-flex; vertical-align: middle; justify-content: center;">
-									<button id="addToProjectsButton" type="button" class="btn btn-sm btn-default" 
+								<div class="ml-auto btn-group mb-auto">
+									<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
 										{% if problem_in_projects %}disabled{% endif %}
-										onclick="addToProjects('{{ file_name }}', '{{ name }}', '{{ grade }}', '{{ zone_code }}', '{{ zone }}')" style="margin-left: -1px;
-											border-color: #ccc;
-											background: #fff;
-											color: #333;
-											padding: .25rem .5rem;
-											font-size: .875rem;
-											line-height: 1.5;
-											border-radius: .2rem;
-											display: inline-block;
-											font-weight: 400
-											text-align: center;
-											vertical-align: middle;
-											-webkit-user-select: none;
-											user-select: none;
-											padding: .375rem .75rem;
-											font-size: 1rem;
-											line-height: 1.5;">
+										onclick='addToProjects({{ file_name|tojson }}, {{ name|tojson }}, {{ grade|tojson }}, {{ zone_code|tojson }}, {{ zone|tojson }})'>
 										{% if problem_in_projects %}Added{% else %}Add to Projects{% endif %}
 									</button>
 								</div>
@@ -146,7 +130,7 @@
 	function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
 		fetch('/add-problem-to-projects', {
 			method: 'POST',
-			body: JSON.stringify({ 'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area,  'problem_area_name': problem_area_name}),
+			body: JSON.stringify({'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area, 'problem_area_name': problem_area_name}),
 			headers: {'Content-Type': 'application/json'}
 		})
 		.then(response => response.json())
@@ -158,7 +142,7 @@
 			}
 		})
 		.catch(error => {
-			console.error('Error:', error);
+			console.error('Error adding problem to projects:', error);
 		});
 	}
 	</script>
