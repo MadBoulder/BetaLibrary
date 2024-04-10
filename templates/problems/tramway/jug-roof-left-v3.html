@@ -8,13 +8,14 @@
 	{% include 'scripts/tracking-tools-scripts.html' %}
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/tramway/jug-roof-left-v3">
 	
 	
-    
 	</head>
 	<body>
 		
@@ -38,39 +39,107 @@
 					
 					
 				</div>
-				<h1 class="zone-header-title text-bold">
-					Jug Roof Left, V3. Tramway
-				</h1>
+				<div style="display: flex; justify-content: center;">
+					<h1 class="zone-header-title text-bold">
+						Jug Roof Left V3
+					</h1>
+					<div id="ratingContainer" style="display: {{ 'none' if ratings.total_votes < 3 else 'flex' }};">
+						<div id="globalRating"></div>
+						  <div id="rating-stats" class="small text-muted"></div>
+					</div>
+				</div>
 			</div>
 			<div class="container" id="mainContainer">
-				<div class="video-container" >
-					<iframe src="https://www.youtube.com/embed/rDoOTtHHoxI" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+				<div class="video-wrapper">
+					<div class="video-container" >
+						<iframe src="https://www.youtube.com/embed/rDoOTtHHoxI" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+					</div>
+					<div class="video-caption">
+						<p> {{ _("Climber") }}: <a href="/contributors/bailey-schmidt">Bailey Schmidt</a></p>
+					</div>
+				</div>
+				<div class="user-container">
+					{% if session['uid'] %}
+						<div class="d-flex mt-3 mb-3 log">
+							<div class="ml-auto btn-group mb-auto">
+								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
+									
+									onclick='addToProjects("jug-roof-left-v3", "Jug Roof Left", "V3", "tramway", "Tramway")'>
+									Add to Projects
+								</button>
+							</div>
+						</div>
+						<div id="ratingContainer">
+							
+								<span>{{ 'Your rating: ' if ratings.has_rated else 'Rate this problem: ' }}</span>
+							
+							<i id="trashRating" onclick="submitRating(0);" class="fas fa-trash" title="Trash rating"></i>
+							<div id="userRating"></div>
+							<div id="rating-text"></div>
+							<i id="deleteRating" onclick="deleteRating()" class="fas fa-times"></i>
+						</div>
+					{% endif %}
+				</div>
+				<div hidden id="comments-section" class="comments-section">
+					<div class="comments-header">
+						<h2>
+							
+							{% if num_comments == 1 %}
+								1 Comment
+							{% else %}
+								{{ comments|length }} Comments
+							{% endif %}
+							
+						</h2>
+					</div>
+					<div class="comment-box">
+						<div class="comment-form-container">
+							
+							{% if session['uid'] %}
+								<form id="comment-form" class="comment-form" method="post">
+									<textarea id="comment-input" name="comment" placeholder="Add a comment..." maxlength="6000" required></textarea>
+									<div id="char-count" class="form-char-count">6,000 characters</div>
+									<button id="comment-submit" type="submit" class="btn btn-primary-madboulder ">Submit Comment</button>
+								</form>
+							{% else %}
+								<p><a href="{{ url_for('login', caller_url=request.url) }}">Log in</a> to add a comment.</p>
+							{% endif %}
+							
+						</div>
+					</div>
+					{% if comments %}
+						<table id="commentsTable" class="table-sm">
+							<thead>
+								<tr>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody class="small">
+								
+								{% for comment in comments %}
+								<tr>
+									<td>{{ comment.user_name }}</td>
+									<td class="text-nowrap" data-iso-date="{{ comment.date }}"></td>
+									<td class="comment d-none d-md-table-cell">{{ comment.text }}</td>
+									<td>
+										{% if session['uid'] == comment.user_id %}
+											<i onclick='deleteComment("{{ comment.id }}")' class="fas fa-times remove-project-icon" style="cursor: pointer;"></i>
+										{% endif %}
+									</td>
+								</tr>
+								<tr class="d-table-row d-md-none">
+									<td colspan="4" style="border-top:0; padding-left: 10px;">{{ comment.text }}</td>
+								</tr>
+								{% endfor %}
+								
+							</tbody>
+						</table>
+					{% endif %}
 				</div>
 				
-				<div class="text-and-map-container">
-					<div class="text-container">
-						<p> {{ _("Name") }}: Jug Roof Left </p>
-						<p> {{ _("Grade") }}: V3 </p>
-						
-							<p> {{ _("Zone") }}: <a href="/tramway">Tramway</a></p>
-							<p> {{ _("Sector") }}: <a href="/sectors/tramway/unknown">Unknown</a></p>
-						
-						
-						<p> {{ _("Climber") }}: <a href="/contributors/bailey-schmidt">Bailey Schmidt</a></p>
-						{% if session['uid'] %}
-							<div class="d-flex mt-3 mb-3 log">
-								<div class="ml-auto btn-group mb-auto">
-									<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
-										
-										onclick='addToProjects("jug-roof-left-v3", "Jug Roof Left", "V3", "tramway", "Tramway")'>
-										Add to Projects
-									</button>
-								</div>
-							</div>
-						{% endif %}
-					</div>
-					
-				</div>
 			</div>
 		</main>
 		
@@ -78,23 +147,226 @@
 		
 	</body>
 	<script>
-	function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
-		fetch('/add-problem-to-projects', {
-			method: 'POST',
-			body: JSON.stringify({'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area, 'problem_area_name': problem_area_name}),
-			headers: {'Content-Type': 'application/json'}
-		})
-		.then(response => response.json())
-		.then(data => {
-			if(data.status === 'success') {
-				let button = document.getElementById('addToProjectsButton');
-				button.innerText = 'Added';
-				button.setAttribute('disabled', true);
+		
+		
+		{% if session['uid'] %}
+			document.getElementById('comment-form').addEventListener('submit', function(e) {
+				e.preventDefault();
+				const problemId = '{{ file_name }}';
+				const commentInput = document.getElementById('comment-input');
+				submitComment(problemId, commentInput);
+			});
+		{% endif %}
+		
+
+		function submitComment(problemId, comment) {
+			const commentText = comment.value.trim();
+			if (commentText) {
+				const requestData = {
+					method: 'POST',
+					body: JSON.stringify({ problem_id: problemId, comment: commentText }),
+					headers: {'Content-Type': 'application/json'}
+				};
+
+				fetch(`/submit-comment`, requestData)
+					.then(response => response.json())
+					.then(data => {
+						if (data.status === 'success') {
+							window.location.reload();
+						} else {
+							console.error('Error adding comment:', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error adding comment:', error);
+					});
+			} else {
+				alert('Your comment cannot be empty.');
 			}
-		})
-		.catch(error => {
-			console.error('Error adding problem to projects:', error);
+		}
+
+		function deleteComment(comment_id) {
+			const problemId = 'jug-roof-left-v3';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/delete-comment`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding comment:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding comment:', error);
+				});
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			initRatings()
+
+			document.querySelectorAll('td[data-iso-date]').forEach(function(td) {
+				var isoDateString = td.getAttribute('data-iso-date');
+				var formattedDate = formatDate(isoDateString);
+				td.textContent = formattedDate;
+			});
+
+			var commentInput = document.getElementById('comment-input');
+			var submitButton = document.getElementById('comment-submit');
+			var charCount = document.getElementById('char-count');
+
+			commentInput.addEventListener('focus', function() {
+				submitButton.style.display = 'block';
+				charCount.style.display = 'block';
+			});
+
+			commentInput.addEventListener('blur', function() {
+				if (commentInput.value.length === 0) {
+					submitButton.style.display = 'none';
+					charCount.style.display = 'none';
+				}
+			});
 		});
-	}
+
+		function formatDate(isoString) {
+			var date = new Date(isoString);
+			var options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+			return date.toLocaleDateString(undefined, options);
+		}
+
+		function initRatings() {
+			
+			const userRatingValue = {{ ratings.user_rating|tojson }};
+			const hasRated = {{ ratings.has_rated|tojson|lower }};
+
+			$("#globalRating").rateYo({
+				starWidth: "24px",
+		        rating: {{ ratings.average_rating }},
+				numStars: 3,
+				readOnly: true
+			});
+
+			const ratingStatsText = `{{ ratings.total_votes }} votes`;
+    		document.getElementById('rating-stats').textContent = ratingStatsText;
+
+			{% if session['uid'] %}
+			$("#userRating").rateYo({
+				starWidth: "24px",
+				rating: userRatingValue || 0,
+				numStars: 4,
+				fullStar: true,
+				readOnly: hasRated,
+				onSet: function (rating, rateYoInstance) {
+					submitRating(rating)
+				},
+
+				onChange: function (rating, rateYoInstance) {
+					if (rating) {
+						console.log(rating);
+						$("#rating-text").text(getRatingText(Math.floor(rating))).show(); // Show text on hover
+					} else {
+						$("#rating-text").hide(); // Hide text when not hovering over a star
+					}
+				},
+
+				onLeave: function () {
+					$("#rating-text").hide(); // Ensure text is hidden when mouse leaves the rating area
+				}
+			});
+
+			$("#trashRating").hover(
+				function() { $("#rating-text").text("Crap").show(); },
+				function() { $("#rating-text").hide(); }
+			);
+
+			if (hasRated) {
+				document.getElementById('deleteRating').style.display = 'inline';
+				document.getElementById('trashRating').style.display = 'none';
+			} else {
+				document.getElementById('deleteRating').style.display = 'none';
+			}
+			{% endif %}
+			
+		}
+
+		function getRatingText(rating) {
+			const descriptions = {
+				0: "Crap",
+				1: "Don't bother",
+				2: "Average",
+				3: "Good",
+				4: "Great",
+				5: "Excellent"
+			};
+			return descriptions[rating] || descriptions[0];
+		}
+
+		function submitRating(rating) {
+			const problemId = 'jug-roof-left-v3';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({ problem_id: problemId, rating: rating }),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/submit-rating`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding rating:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding rating:', error);
+				});
+		}
+
+		function deleteRating() {
+			const problemId = 'jug-roof-left-v3';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({problem_id: problemId}),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/delete-rating`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding comment:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding comment:', error);
+				});
+		}
+
+		function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
+			fetch('/add-problem-to-projects', {
+				method: 'POST',
+				body: JSON.stringify({'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area, 'problem_area_name': problem_area_name}),
+				headers: {'Content-Type': 'application/json'}
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data.status === 'success') {
+					let button = document.getElementById('addToProjectsButton');
+					button.innerText = 'Added';
+					button.setAttribute('disabled', true);
+				}
+			})
+			.catch(error => {
+				console.error('Error adding problem to projects:', error);
+			});
+		}
 	</script>
 </html>

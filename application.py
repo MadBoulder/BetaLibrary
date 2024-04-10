@@ -26,6 +26,7 @@ from functools import wraps
 from dotenv import load_dotenv
 import traceback
 import requests
+import pytz
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -420,6 +421,9 @@ def upload_completed():
 
 @app.route('/login', methods=['GET'])
 def login():
+    caller_url = request.args.get('caller_url', None)
+    if caller_url:
+        session['nextUrl'] = caller_url
     return render_template('login.html')
 
 
@@ -845,6 +849,102 @@ def complete_profile_info():
     except Exception as e:
         print(e)
         return jsonify({'error': 'Failed to update profile'}), 500
+    
+    
+@app.route('/submit-rating', methods=['POST'])
+@login_required
+def submit_rating():
+    try:
+        user_uid = session.get('uid')  # Get user ID from session
+
+        data = request.get_json()
+        problem_id = data.get('problem_id')
+        rating = data.get('rating')
+
+        if not problem_id or rating is None:
+            return jsonify({'status': 'error', 'message': 'Missing problem ID or rating'}), 400
+        
+        if not (0 <= rating <= 5):
+            return jsonify({'status': 'error', 'message': 'Rating must be a number between 0 and 5'}), 400
+
+        rating_ref = db.reference(f'problems/{problem_id}/ratings/{user_uid}')
+        rating_ref.set({
+            'rating': rating
+        })
+
+        return jsonify({"status": "success", "message": "Rating submitted"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/delete-rating', methods=['POST'])
+@login_required
+def delete_rating():
+    user_uid = session.get('uid')
+    data = request.get_json()
+    problem_id = data.get('problem_id')
+
+    if not problem_id or not user_uid:
+        return jsonify({'status': 'error', 'message': 'Missing problem ID or user ID'}), 400
+
+    rating_ref = db.reference(f'problems/{problem_id}/ratings/{user_uid}')
+    rating_ref.delete()
+
+    return jsonify({'status': 'success', 'message': 'Rating deleted successfully'}), 200
+    
+    
+@app.route('/submit-comment', methods=['POST'])
+@login_required
+def submit_comment():
+    try:
+        user_uid = session.get('uid')  # Get user ID from session
+
+        data = request.get_json()
+        problem_id = data.get('problem_id')
+        comment = data.get('comment')
+        utc_now = datetime.datetime.now(pytz.utc).isoformat()
+
+        if not problem_id or not comment:
+            return jsonify({'status': 'error', 'message': 'Missing problem ID or comment text'}), 400
+
+        comments_ref = db.reference(f'problems/{problem_id}/comments')
+        
+        new_comment_ref = comments_ref.push()
+        new_comment_id = new_comment_ref.key
+        new_comment_ref.set({
+            'user_id': user_uid,
+            'text': comment,
+            'date': utc_now
+        })
+
+        return jsonify({"status": "success", 'comment_id': new_comment_id, "message": "Comment submitted"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+
+@app.route('/delete-comment', methods=['POST'])
+@login_required
+def delete_comment():
+    data = request.get_json()
+    user_id = session.get('uid')
+    problem_id = data.get('problem_id')
+    comment_id = data.get('comment_id')
+
+    if not user_id or not problem_id or not comment_id:
+        return jsonify({'status': 'error', 'message': 'Missing data'}), 400
+
+    comment_ref = db.reference(f'problems/{problem_id}/comments/{comment_id}')
+
+    comment = comment_ref.get()
+    if comment is None:
+        return jsonify({'status': 'error', 'message': 'Comment not found'}), 404
+
+    if comment.get('user_id') != user_id:
+        return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+    comment_ref.delete()
+
+    return jsonify({'status': 'success', 'message': 'Comment deleted successfully'}), 200
     
     
 @app.route('/check-subscription-status', methods=['POST'])
@@ -1321,18 +1421,20 @@ def get_area_page_stats(page):
 @app.route('/problems/<string:page>/<string:problem_name>.html')
 @app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
-    print("load_problem")
     try:
         user_uid = session.get('uid')
         if user_uid:
             problem_in_projects = is_problem_in_projects(user_uid, problem_name)
         else:
-            print("no uid")
             problem_in_projects = False
 
-        return render_template(f'problems/{slugify(page)}/{slugify(problem_name)}.html', problem_in_projects=problem_in_projects)
+        problem_id = slugify(problem_name)
+        ratings = get_ratings_for_problem(problem_id, user_uid)
+        comments = get_comments_for_problem(problem_id)
+
+        return render_template(f'problems/{slugify(page)}/{problem_id}.html', problem_in_projects=problem_in_projects, ratings=ratings, comments=comments)
     except Exception as e:
-        print("An error occurred:", e)
+        print("An error occurred loading problem:", e)
         abort(404)
 
 
@@ -1341,7 +1443,52 @@ def is_problem_in_projects(user_id, problem_id):
     problem = user_projects_ref.get()
     return problem is not None
 
+
+def get_ratings_for_problem(problem_id, user_uid=None):
+    ratings_ref = db.reference(f'problems/{problem_id}/ratings')
+    ratings = ratings_ref.get()
+
+    if not ratings:
+        return {'average_rating': 0, 'total_votes': 0, 'user_rating': None, 'has_rated': False}
+
+    total_rating = sum(float(rating['rating']) for rating in ratings.values())
+    total_votes = len(ratings)
+    average_rating = total_rating / total_votes
+
+    user_rating = None
+    has_rated = False
+
+    if user_uid and user_uid in ratings:
+        user_rating_entry = ratings.get(user_uid)
+        if user_rating_entry and 'rating' in user_rating_entry:
+            user_rating = float(user_rating_entry['rating'])
+            has_rated = True
+
+    return {
+        'average_rating': average_rating,
+        'total_votes': total_votes,
+        'user_rating': user_rating,
+        'has_rated': has_rated
+    }
+
+
+def get_comments_for_problem(problem_id):
+    comments_ref = db.reference(f'problems/{problem_id}/comments')
+    comments = comments_ref.get()
+
+    if comments is None:
+        return []
+    else:
+        for comment_id, comment in comments.items():
+            comment['user_name'] = get_user_display_name(comment['user_id'])
+        return [{'id': key, **value} for key, value in comments.items()]
     
+
+def get_user_display_name(user_uid):
+    user_record = auth.get_user(user_uid)
+    return user_record.display_name
+    
+
 @app.route('/sectors/<string:page>/<string:sector_name>')
 @app.route('/templates/sectors/<string:page>/<string:sector_name>.html')
 @app.route('/sectors/<string:page>/<string:sector_name>.html')
