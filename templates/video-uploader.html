@@ -7,83 +7,88 @@
 	<meta name="description" content="Upload your climbing video and contribute to the climbing community | MadBoulder">
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/uploader.css') }}" />
 	<link rel="canonical" href="https://www.madboulder.org/video-uploader" />
-	<style>
-        /* Style for the loading indicator */
-        .loading {
-            display: none;
-            font-size: 16px;
-            color: #333;
-        }
-    </style>
 </head>
 
 <body>
 	{% include 'elements/main-menu.html' %}
 	<main>
+		<div class="zone-header">
+			<div style="display: flex; justify-content: center;">
+				<h1 class="zone-header-title text-bold">
+					Upload Your Beta
+				</h1>
+			</div>
+		</div>
 		<div class="container">
 			<div id="upload-container" class="form-container">
-				<form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data">
-					<h3>{{_("Upload Form")}}</h3>
-					<div>
-						<label class="form-label">{{ _("Climber") }}*:</label>
-						<input type="text" name="climber" required>
+				<form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data" class="shadow-lg mx-auto">
+					<div class="form-section full-width" >
+						<label class="text-bold">{{ _("Climber") }}*</label>
+						<input type="text" name="climber" value="{{ user_data.climber_id if user_data and user_data.climber_id else '' }}" required>
 					</div>
-					<div>
-						<label class="form-label">{{ _("Email") }}:</label>
-						<input type="email" name="email">
-					</div>
-					<div>
-						<label class="form-label">{{ _("Problem") }}*:</label>
+					{% if not user_data %}
+						<div class="form-section full-width">
+							<label class="text-bold">{{ _("Email") }}</label>
+							<input type="email" name="email">
+						</div>
+					{% endif %}
+					<div class="form-section full-width" >
+						<label class="text-bold">{{ _("Problem") }}*</label>
 						<input type="text" name="name" required>
 					</div>
-					<div>
-						<label class="form-label">{{ _("Area") }}*:</label>
+					<div class="form-section full-width" >
+						<label class="text-bold">{{ _("Area") }}*</label>
 						<input type="text" name="zone" required>
 					</div>
-					<div>
-						<label class="form-label">{{ _("Grade") }}:</label>
+					<div class="form-section" style="grid-column: span 1 / span 1;">
+						<label class="text-bold">{{ _("Grade") }}</label>
 						<input type="text" name="grade">
 					</div>
-					<div>
-						<label class="form-label">{{ _("Sector") }}:</label>
+					<div class="form-section" style="grid-column: span 1 / span 1;">
+						<label class="text-bold">{{ _("Sector") }}</label>
 						<input type="text" name="sector">
 					</div>
-					<div style="display: flex;">
-						<label class="form-label">{{ _("Notes") }}:</label>
-						<textarea id="message" name="notes" rows="3" style="width: 100%;" required> </textarea>
+					<div  class="form-section full-width">
+						<label class="text-bold">{{ _("Notes") }}</label>
+						<textarea id="message" name="notes" rows="3" required> </textarea>
 					</div>
-					<div style="padding: 5px;">
+					<div  class="form-section full-width"  style="padding: 5px;">
 						<input type="file" name="file" accept="video/*" onchange="updateFileSizeMessage(this)" required >
-						<div style="display: inline;">
-							<progress id="upload-progress" max="100" value="0"></progress>
-							<span id="progress-label">0%</span>
-							<div id="warning-alert" class="alert alert-warning alert-dismissible show d-none" style="margin-top: 10px;">
-								{{ _("File size exceeds the maximum allowed (2GB). Please choose a smaller file.") }}
-							</div>
-							<div id="uploading-alert" class="alert alert-dark alert-dismissible show d-none" style="margin-top: 10px;">
-								<strong id="uploading-text">placeholder</strong> {{ _("Please wait until the process is complete and success message appears.") }}
-							</div>
-							<div id="error-alert" class="alert alert-danger alert-dismissible show d-none" style="margin-top: 10px;">
-								<h4 class="alert-heading"><i class="bi-exclamation-octagon-fill"></i> <strong>Error!</strong> <span id="error-message"></span> </h4>
-								<p>{{ _("Please try again or use alternative method:") }} <a href="/video-uploader-not-working">{{ _("here") }}</a></p>
-							</div>
+					</div>
+					<div class="form-section section-checkbox full-width">
+						<input type="checkbox" id="notify-checkbox" name="permission" required {{ "checked" if user_data }}>
+						<label class="text-xs">{{ _("I grant permission to MadBoulder to use the submitted video and name for public display.") }} *</label>
+					</div>
+					{% if not user_data %}
+						<div class="form-section section-checkbox full-width" >
+							<input type="checkbox" id="newsletter-checkbox" name="permission-newsletter" {{ "checked" if not user_data }}>
+							<label class="text-xs">{{ _("I wish to subscribe to MadBoulder's newsletter") }}</label>
 						</div>
+					{% endif %}
+					<div class="form-section full-width">
+						<input id="uploadButton" class="btn btn-primary-madboulder mx-auto" type="submit" value="Upload Video">
 					</div>
-					<div>
-						<input type="checkbox" id="notify-checkbox" name="permission" required>
-						<label >{{ _("I grant permission to MadBoulder to use the submitted video on YouTube for public display.") }} *</label>
+					<div id="progress-container" class="form-section section-checkbox full-width">
+						<progress id="upload-progress" max="100" value="0"></progress>
+						<span id="progress-label">0%</span>
 					</div>
-					<div>
-						<input type="checkbox" id="newsletter-checkbox" name="permission-newsletter" checked>
-						<label >{{ _("I wish to subscribe to MadBoulder's newsletter") }}</label>
-					</div>
-					<div style="text-align: Center;">
-						<input id="uploadButton" class="mad-button" type="submit" value="Upload">
+					<div class="form-section section-checkbox full-width">
+						<div id="warning-alert" class="alert alert-warning alert-dismissible show d-none">
+							{{ _("File size exceeds the maximum allowed (2GB). Please choose a smaller file.") }}
+						</div>
+						<div id="uploading-alert" class="alert alert-dark alert-dismissible show d-none">
+							<strong id="uploading-text">placeholder</strong> {{ _("Please wait until the process is complete and success message appears.") }}
+						</div>
+						<div id="error-alert" class="alert alert-danger alert-dismissible show d-none">
+							<h4 class="alert-heading"><i class="bi-exclamation-octagon-fill"></i> <strong>Error!</strong> <span id="error-message"></span> </h4>
+							<p>{{ _("Please try again or use alternative method:") }} <a href="/video-uploader-not-working">{{ _("here") }}</a></p>
+						</div>
 					</div>
 				</form>
 				<br />
-				<div style="width:75%; margin: 0 auto;">
+				<div style="width:75%; margin: 0 auto; font-size:10px">
 				{{ _(
 				  "MadBoulder reserves the right to not publish a video. Possible reasons are, but are not limited to:
 				  poor video quality, poor camera angle and wrong or repeated line. Please note that there might be a
@@ -94,6 +99,8 @@
 				
 				<script>
 					const form = document.getElementById('upload-form');
+					const progressContainer = document.getElementById('progress-container');
+					progressContainer.style.display = "none";
 					const progressBar = document.getElementById('upload-progress');
 					const progressLabel = document.getElementById('progress-label');
 					const statusDiv = document.getElementById('status');
@@ -165,6 +172,7 @@
 					
 					function uploadStarted(){
 						progressBar.value = 0;
+						progressContainer.style.display = "block";
 						//pollProgress(); 
 						disableUploadButton();
 						showUploadingAlert();
@@ -181,6 +189,7 @@
 					}
 					
 					function uploadFailed(message) {
+						progressContainer.style.display = "none";
 						hideUploadingAlert();
 						//clearTimeout(timeout);
 						showErrorAlert(message);

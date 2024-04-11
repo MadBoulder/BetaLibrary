@@ -289,17 +289,21 @@ def search():
 @app.route('/video-uploader-not-working', methods=['GET', 'POST'])
 def video_uploader_not_working():
     return render_template('video-uploader-not-working.html')
-    
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 @app.route('/video-uploader', methods=['GET', 'POST'])
 def video_uploader():
-    return render_template('video-uploader.html')
-    
-    
+    user_uid = session.get('uid')
+    user_data = getUserData(user_uid)
+    return render_template('video-uploader.html', user_data=user_data)
+
+
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
 def video_uploader_test():
     return render_template('video-uploader.html')
-    
+
+
 @app.route('/upload-file', methods=['GET', 'POST'])
 def upload_file():
     uploaded_file = request.files['file']
@@ -562,8 +566,13 @@ def complete_profile():
 @login_required
 def settings_profile():
     user_uid = session.get('uid')
-    user_data = {}
+    user_data = getUserData(user_uid)
 
+    return render_template('settings/settings-profile.html', user_data=user_data)
+
+
+def getUserData(user_uid):
+    user_data = {}
     if user_uid:
         user_record = auth.get_user(user_uid)
         user_data['uid'] = user_uid
@@ -574,7 +583,7 @@ def settings_profile():
         if(user_details):
             user_data.update(user_details)
 
-    return render_template('settings/settings-profile.html', user_data=user_data)
+    return user_data
 
 
 @app.route('/settings/account', methods=['GET', 'POST'])
