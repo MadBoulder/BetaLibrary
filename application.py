@@ -1149,8 +1149,28 @@ def render_latest():
 def show_weather_forecast_comparator():
     zones=get_zone_data()
     default_zones_param = request.args.get('defaultZones', '')
+    if default_zones_param == '':
+        default_zones_param = request.args.get('default', '')
+
     default_zones = default_zones_param.split(',') if default_zones_param else []
-    return render_template('weather-forecast-comparator.html',  zones=zones['items'], default_zones=default_zones)
+    
+    if get_locale() == 'es':
+       url = 'es/comparador-pronostico-tiempo.html'
+    else:
+        url = 'weather-forecast-comparator.html'
+
+
+    return render_template(url, zones=zones['items'], default_zones=default_zones)
+
+
+@app.route('/es/comparador-pronostico-tiempo')
+@app.route('/comparador-pronostico-tiempo')
+def comparador_pronostico_tiempo():
+    zones=get_zone_data()
+    default_zones_param = request.args.get('default', '')
+
+    default_zones = default_zones_param.split(',') if default_zones_param else []
+    return render_template('/es/comparador-pronostico-tiempo.html', zones=zones['items'], default_zones=default_zones)
 
 
 @app.route('/element/weather-widget.html')
@@ -1431,15 +1451,17 @@ def get_area_page_stats(page):
 @app.route('/<string:page>/problem/<string:problem_name>') #deprecated
 def load_problem(page, problem_name):
     try:
+        problem_id = slugify(problem_name)
+
         user_uid = session.get('uid')
         if user_uid:
             problem_in_projects = is_problem_in_projects(user_uid, problem_name)
+            ratings = get_ratings_for_problem(problem_id, user_uid)
+            comments = get_comments_for_problem(problem_id)
         else:
+            ratings = {}
+            comments = []
             problem_in_projects = False
-
-        problem_id = slugify(problem_name)
-        ratings = get_ratings_for_problem(problem_id, user_uid)
-        comments = get_comments_for_problem(problem_id)
 
         return render_template(f'problems/{slugify(page)}/{problem_id}.html', problem_in_projects=problem_in_projects, ratings=ratings, comments=comments)
     except Exception as e:

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Rêve - errance 7a+ (sit) Boulder Problem in Targasonne | MadBoulder</title>
+    <title>Rêve - errance 7a+ (sit) {{ _("Boulder problem in") }} Targasonne | MadBoulder</title>
 	<meta name="description" content="Video of Rêve - errance Boulder Problem in Targasonne climbed by Joan Roig | MadBoulder">
 	
 	
@@ -62,13 +62,13 @@
 								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
 									
 									onclick='addToProjects("reve-errance-7a-sit", "R\u00eave - errance", "7a+ (sit)", "targasonne", "Targasonne")'>
-									Add to Projects
+									{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}
 								</button>
 							</div>
 						</div>
 						<div id="ratingContainer">
 							
-								<span>{{ 'Your rating: ' if ratings.has_rated else 'Rate this problem: ' }}</span>
+								<span> {% if ratings.has_rated %} {{ _("Your rating: ") }}{% else %}{{ _("Rate this problem: ") }}{% endif %}</span>
 							
 							<i id="trashRating" onclick="submitRating(0);" class="fas fa-trash" title="Trash rating"></i>
 							<div id="userRating"></div>
@@ -82,9 +82,9 @@
 						<h2>
 							
 							{% if num_comments == 1 %}
-								1 Comment
+								{{ _("1 Comment") }}
 							{% else %}
-								{{ comments|length }} Comments
+								{{ comments|length }} {{ _("Comments") }}
 							{% endif %}
 							
 						</h2>
@@ -96,10 +96,10 @@
 								<form id="comment-form" class="comment-form" method="post">
 									<textarea id="comment-input" name="comment" placeholder="Add a comment..." maxlength="6000" required></textarea>
 									<div id="char-count" class="form-char-count">6,000 characters</div>
-									<button id="comment-submit" type="submit" class="btn btn-primary-madboulder ">Submit Comment</button>
+									<button id="comment-submit" type="submit" class="btn btn-primary-madboulder ">{{ _("Submit comment") }}</button>
 								</form>
 							{% else %}
-								<p><a href="{{ url_for('login', caller_url=request.url) }}">Log in</a> to add a comment.</p>
+								<p><a href="{{ url_for('login', caller_url=request.url) }}">{{ _("Log in") }}</a> {{ _("to add a comment.") }}</p>
 							{% endif %}
 							
 						</div>
@@ -247,14 +247,14 @@
 				readOnly: true
 			});
 
-			const ratingStatsText = `{{ ratings.total_votes }} votes`;
+			const ratingStatsText = `{{ ratings.total_votes }} {{ _("votes") }}`;
     		document.getElementById('rating-stats').textContent = ratingStatsText;
 
 			{% if session['uid'] %}
 			$("#userRating").rateYo({
 				starWidth: "24px",
 				rating: userRatingValue || 0,
-				numStars: 4,
+				numStars: 5,
 				fullStar: true,
 				readOnly: hasRated,
 				onSet: function (rating, rateYoInstance) {
@@ -276,7 +276,7 @@
 			});
 
 			$("#trashRating").hover(
-				function() { $("#rating-text").text("Crap").show(); },
+				function() { $("#rating-text").text("{{ _('Crap') }}").show(); },
 				function() { $("#rating-text").hide(); }
 			);
 
@@ -292,12 +292,14 @@
 
 		function getRatingText(rating) {
 			const descriptions = {
-				0: "Crap",
-				1: "Don't bother",
-				2: "Average",
-				3: "Good",
-				4: "Great",
-				5: "Excellent"
+				
+				0: "{{ _('Crap') }}",
+				1: "{{ _('Meh') }}",
+				2: "{{ _('Average') }}",
+				3: "{{ _('Good') }}",
+				4: "{{ _('Great') }}",
+				5: "{{ _('Excellent') }}"
+				
 			};
 			return descriptions[rating] || descriptions[0];
 		}

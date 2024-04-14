@@ -171,18 +171,7 @@ def calculate_contributor_stats(climber_id):
         else:
             area_counts[area] = 1
 
-    total_unique_areas = len(unique_areas)
-    if total_unique_areas <= 5:
-        top_n = 3
-    elif total_unique_areas <= 10:
-        top_n = 5
-    elif total_unique_areas <= 30:
-        top_n = 10
-    else:
-        top_n = 10  # Or any other logic for more than 30 areas
-
-    top_areas = sorted(area_counts.items(), key=lambda x: x[1], reverse=True)[:top_n]
-    
+    top_areas = sorted(area_counts.items(), key=lambda x: x[1], reverse=True)
     video_rankings, view_rankings = calculate_rankings()
     user_video_rank = video_rankings.get(climber_id, "Not ranked")
     total_views_rank = view_rankings.get(climber_id, "Not ranked")

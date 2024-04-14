@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Comparador de Pronóstico del Tiempo para Bouldering de MadBoulder</title>
+	<meta name="description" content="Toma decisiones informadas para tu próxima aventura de escalada con el Comparador de Pronóstico del Tiempo de MadBoulder. Esta herramienta te permite comparar fácilmente el pronóstico del tiempo de múltiples zonas de boulder, asegurando que escoges el sitio perfecto con las mejores condiciones.">
+	<link rel="canonical" href="https://www.madboulder.org/es/comparador-prevision-tiempo">
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bouldercast.css') }}" />
+  </head>
+  <body>
+	{% include 'elements/main-menu.html' %}
+	<main>
+        <div>
+			<div class="container" id="mainContainer">
+				<div id="weather-widget-container">
+					<!-- Weather widgets will be loaded here -->
+				</div>
+				<div id="area-selection">
+					<button id="zone-selector-btn"><i class="fas fa-plus"></i> Selecciona una zona de Boulder</button>
+				</div>
+			</div>
+			<div class="bouldercast-blocks">
+				<div class="bouldercast-block-wide-bg">
+					<div id="bouldercast-desc" class="max-width">
+						<div>
+							<h2>El Comparador de Pronóstico de Tiempo de MadBoulder</h2>
+							<p>
+								Esta herramienta de pronóstico del tiempo está diseñada específicamente para escaladores y aficionados al aire libre. Con una interfaz intuitiva, proporciona pronósticos del tiempo detallados y en tiempo real, adaptados a las necesidades específicas de quienes practican boulder y escalada en roca. El Comparador de Pronósticos del Tiempo para Boulder ofrece datos meteorológicos precisos y específicos para cada ubicación, incluyendo temperatura, velocidad del viento y humedad.<br><br>Más allá de simples pronósticos, MadBoulder ofrece una característica comparativa que permite a los escaladores evaluar y comparar las condiciones meteorológicas en múltiples zonas de boulder. Esto asegura que siempre puedas encontrar el lugar perfecto con las mejores condiciones posibles para tus aventuras de boulder.
+							</p>
+						</div>
+						<img src="/static/images/bouldercast.webp" alt="Bouldering Weather Forecast Comparator">
+					</div>
+				</div>
+				<article class="block-padding max-width">
+					<h2>¿Cómo escoger el Mejor Dia de Esclada?</h2>
+					<p>
+						MadBoulder simplifica tu planificación con la interfaz intuitiva de esta herramienta, ofreciéndote pronósticos del tiempo completos diseñados específicamente para escaladores. Se acabaron los días de alternar entre múltiples pestañas y aplicaciones. Con solo unos pocos clics, puedes añadir o eliminar zonas de boulder de tu lista de comparación, ver pronósticos detallados que incluyen temperatura, viento, precipitación y más para cada zona seleccionada. Esto te permite comparar visualmente y contrastar las condiciones de diferentes lugares de escalada lado a lado, asegurándote de elegir la mejor ubicación posible para tu día de escalada.
+					</p>
+				</article>
+				<hr>
+				<div class="block-padding max-width">
+					<h2>¿Por qué elegir el Comparador de Pronóstico del Tiempo de MadBoulder?</h2>
+					<p>
+						Aquí te presentamos varias razones por las cuales nuestros usuarios prefieren la herramienta de MadBoulder en lugar de las fuentes de pronóstico del tiempo tradicionales y otras herramientas de pronóstico para escaladores.
+					</p>
+					<div id="bouldercast-features">
+						<div class="item">
+							<h3>Gratuito	</h3>
+							<p>
+								MadBoulder está comprometido con la accesibilidad. Nuestros servicios básicos de pronóstico son completamente gratuitos, sin cargos ocultos. Proporcionamos información meteorológica detallada y permitimos comparaciones entre numerosas áreas de escalada sin costo alguno.
+							</p>
+						</div>
+						<div class="item">
+							<h3>En Línea</h3>
+							<p>
+								Accede a pronósticos del tiempo en tiempo real y toma decisiones informadas sobre la marcha, desde cualquier dispositivo. Ya sea que estés verificando las condiciones en un escritorio en casa o comparando pronósticos en tu smartphone en el sector, el Comparador de Pronóstico del Tiempo para Boulder asegura que tienes la información que necesitas, cuando y donde la necesitas.
+							</p>
+						</div>
+						<div class="item">
+							<h3>Precisión</h3>
+							<p>
+								La herramienta de Pronóstico del Tiempo de MadBoulder revoluciona la planificación al aire libre con precisión puntual. A diferencia de los servicios meteorológicos genéricos que se centran en ciudades cercanas, nosotros apuntamos a la ubicación exacta de tu zona de boulder. Esto significa que obtienes pronósticos meteorológicos precisos adaptados a tu aventura al aire libre específica, asegurando que estés preparado para las condiciones que enfrentarás.
+							</p>
+						</div>
+						<div class="item">
+							<h3>Cobertura Global</h3>
+							<p>
+								MadBoulder se destaca por su cobertura global sin precedentes de zonas de boulder. Desde destinos icónicos hasta joyas ocultas, el Comparador de Pronóstico del Tiempo para Boulder trae predicciones meteorológicas detalladas para zonas de boulder de todo el mundo. Esta herramienta asegura que todos los escaladores tengan pronósticos confiables y precisos, adaptados a las condiciones climáticas únicas de su ubicación elegida.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="zone-selector-popup" class="zone-selector-popup">
+				<input type="text" id="search-box" placeholder="Busca una zona..." />
+				<ul id="zone-list">
+					{% for zone in zones %}
+						<li data-value="{{ zone.latitude }},{{ zone.longitude }},{{ zone.name }},{{ zone.zone_code }}">{{ zone.name }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+        </div>
+		<script>
+			async function createWeatherWidget(latitude, longitude, zoneName, zoneCode) {
+				var uniqueId = 'weather-widget-' + zoneCode + '-' + Date.now();
+				try {
+					const response = await fetch('element/weather-widget.html');
+					let template = await response.text();
+
+					{% raw %}
+					let widgetHtml = template.replace(/{{ uniqueId }}/g, uniqueId);
+					widgetHtml = widgetHtml.replace(/{{ zone }}/g, zoneName);
+					widgetHtml = widgetHtml.replace(/{{ zone_code }}/g, zoneCode);
+					widgetHtml = widgetHtml.replace(/{{ lat }}/g, latitude);
+					widgetHtml = widgetHtml.replace(/{{ lng }}/g, longitude);
+					{% endraw %}
+
+					$('#weather-widget-container').append(widgetHtml);
+					var widget = document.getElementById(uniqueId)
+					var removeButton = document.createElement("button");
+					removeButton.setAttribute('class', 'remove-weather-widget-btn');
+					removeButton.innerHTML = '<i class="fas fa-times"></i>'
+
+					widget.appendChild(removeButton)
+
+				} catch (error) {
+					console.error('Failed to load weather widget template:', error);
+				}
+				updateURLWithVisibleWidgets()
+			}
+
+			function updateURLWithVisibleWidgets() {
+				const zoneListItems = document.querySelectorAll('#zone-list > li');
+				const visibleZoneCodes = Array.from(zoneListItems).filter(item => {
+					const zoneCode = item.getAttribute('data-value').split(',')[3]; // Get zone code from data-value
+					return document.querySelector(`[data-zone-code="${zoneCode}"]`);
+				}).map(item => item.getAttribute('data-value').split(',')[3]); // Map to zone codes
+				console.log(visibleZoneCodes);
+				const newURL = `${location.pathname}?defaultZones=${visibleZoneCodes.join(',')}`;
+				console.log(newURL);
+				window.history.pushState({ path: newURL }, '', newURL);
+			}
+
+			document.addEventListener('DOMContentLoaded', function() {
+				var defaultZones = {{ default_zones | tojson | safe }};
+				const zoneListItems  = document.querySelectorAll('#zone-list > li');
+
+				zoneListItems.forEach(item  => {
+					const dataValue = item.getAttribute('data-value');
+        			const [latitude, longitude, name, zoneCode] = dataValue.split(',');
+					if (defaultZones.includes(zoneCode)) {
+						createWeatherWidget(latitude, longitude, name, zoneCode);
+					}
+				});
+			});
+
+			async function AddNewArea(){
+				const searchBox = document.getElementById('search-box');
+				searchBox.value = '';
+				const zoneList = document.getElementById('zone-list');
+				const lis = zoneList.getElementsByTagName('li');
+				for (let i = 0; i < lis.length; i++) {
+					lis[i].style.display = "";
+				}
+				
+				const popup = document.getElementById('zone-selector-popup');
+    			const overlay = document.getElementById('overlay');
+				popup.style.display = 'block';
+				overlay.style.display = 'block';
+
+				popup.scrollTop = 0;
+			}
+
+			$(document).ready(function() {
+				function getDefaultZonesFromURL() {
+					const urlParams = new URLSearchParams(window.location.search);
+					const defaultZones = urlParams.get('defaultZones');
+					return defaultZones ? defaultZones.split(',') : [];
+				}
+
+				$('#weather-widget-container').on('click', '.remove-weather-widget-btn', function() {
+					$(this).closest('.weather-widget').remove();
+					updateURLWithVisibleWidgets();
+				});
+
+				const popup = document.getElementById('zone-selector-popup');
+				const btn = document.getElementById('zone-selector-btn');
+    			const overlay = document.getElementById('overlay');
+				
+				btn.addEventListener('click', function() {
+					AddNewArea();
+				});
+
+				popup.addEventListener('click', function(e) {
+					if (e.target.tagName === 'LI') {
+						const selectedValue = e.target.getAttribute('data-value');
+						const [latitude, longitude, name, zoneCode] = selectedValue.split(',');
+						createWeatherWidget(latitude, longitude, name, zoneCode);
+						popup.style.display = 'none';
+						overlay.style.display = 'none';
+					}
+				});
+				
+				overlay.addEventListener('click', function() {
+					popup.style.display = 'none';
+					this.style.display = 'none';
+				});
+
+				const searchBox = document.getElementById('search-box');
+				searchBox.addEventListener('keyup', function() {
+					const filter = this.value.toUpperCase();
+					const zoneList = document.getElementById('zone-list').getElementsByTagName('li');
+					for (let i = 0; i < zoneList.length; i++) {
+						const li = zoneList[i];
+						const txtValue = li.textContent || li.innerText;
+						if (txtValue.toUpperCase().indexOf(filter) > -1) {
+							li.style.display = "";
+						} else {
+							li.style.display = "none";
+						}
+					}
+				});
+			});
+		</script>
+	</main>
+	{% include 'elements/footer.html' %}
+	<div id="overlay" class="overlay"></div>
+  </body>
+</html>

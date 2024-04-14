@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		{% include 'scripts/tracking-tools-scripts.html' %}
-		<title>MadBoulder Account</title>
+		<title>{{ _("MadBoulder Account - Profile Settings") }}</title>
 		<meta name="description" content="description">
 		{% include 'elements/head-resources.html' %}
 		{% include 'scripts/cookie-scripts.html' %}
@@ -27,13 +27,13 @@
 						<div data-view-component="true" class="Layout-main-centered-xl">
 							<div data-view-component="true" class="container-xl">
 								<div data-view-component="true" class="Subhead mt-0 mb-0">
-									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">Profile</h2>
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">{{ _("Profile") }}</h2>
 								</div>  
 								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
 									<div class="col-12">
 										<dl class="form-group">
 											<dt>
-												<label for="user_status">Contributor Status</label>
+												<label for="user_status">{{ _("Contributor Status") }}</label>
 											</dt>
 											<dd>
 												<div style="display: flex; flex-wrap: wrap; flex-direction: row;">
@@ -41,13 +41,13 @@
 														{% if user_data.contributor_status == 'declined' %}
 															<input disabled class="form-control shortest status-{{ user_data.contributor_status }}" type="text" id="user_status" value="{{ user_data.contributor_status }}">
 														{% endif %}
-														<button class="Button--primary Button--medium Button" onclick="applyAsContributor()">Apply as Contributor</button>
+														<button class="Button--primary Button--medium Button" onclick="applyAsContributor()">{{ _("Apply as Contributor") }}</button>
 													{% elif user_data.contributor_status == 'pending' %}
 														<input disabled class="form-control shortest status-pending" type="text" id="user_status" value="{{ user_data.contributor_status }}">
-														<button class="btn btn-danger" onclick="cancelContributorSubmission()">Cancel</button>
+														<button class="btn btn-danger" onclick="cancelContributorSubmission()">{{ _("Cancel") }}</button>
 													{% elif user_data.contributor_status == 'approved' %}
 														<input disabled class="form-control shortest status-approved" type="text" id="user_status" value="{{ user_data.contributor_status }}">
-														<button class="btn btn-danger" onclick="removeFromContributor()">Remove</button>
+														<button class="btn btn-danger" onclick="removeFromContributor()">{{ _("Remove") }}</button>
 													{% endif %}
 												</div>
 											</dd>
@@ -55,33 +55,33 @@
 										{% if user_data.contributor_status == 'approved' %}
 											<dl class="form-group">
 												<dt>
-													<label for="user_climber_name">Climber Id</label>
+													<label for="user_climber_name">{{ _("Climber Id") }}</label>
 												</dt>
 												<dd>
 													<input disabled class="form-control short" type="text" id="user_climber_name" value="{{ user_data.climber_id }}">
 													<div class="note">
-														Your climber Id may appear around MadBoulder where you contribute or are mentioned. If you want to opt out or change it, send a request to madboulderteam@gmail.com. Please see our
-														<a href="/madboulder-privacy-policy" data-view-component="true" class="Link--inTextBlock Link">privacy statement</a>
-														to learn more about how we use this information.
+														{{ _("Your climber Id may appear around MadBoulder where you contribute or are mentioned. If you want to opt out or change it, send a request to madboulderteam@gmail.com. Please see our") }}
+														<a href="/madboulder-privacy-policy" data-view-component="true" class="Link--inTextBlock Link">{{ _("privacy statement") }}</a>
+														{{ _("to learn more about how we use this information.") }}
 													</div>
 												</dd>
 											</dl>
 										{% endif %}
 										<dl class="form-group">
 											<dt>
-												<label for="user_profile_name">Name</label>
+												<label for="user_profile_name">{{ _("Name") }}</label>
 											</dt>
 											<dd>
 												<input class="form-control short" type="text" name="user[profile_name]" id="user_profile_name" value="{{ user_data.displayName }}">
 												<div class="note">
-													This value is private and only shown to you. You may change it at any time.
+													{{ _("This value may appear around MadBoulder where you contribute. You may change it at any time.") }}
 												</div>
 											</dd>
 										</dl>
 										<p>
 											<button onclick="updateUserProfile()" data-view-component="true" class="Button--primary Button--medium Button">
 												<span class="Button-content">
-													<span class="Button-label">Update profile</span>
+													<span class="Button-label">{{ _("Update profile") }}</span>
 												</span>
 											</button>
 										</p>
@@ -102,13 +102,13 @@
 		}
 		
 		function cancelContributorSubmission() {
-			if(confirm("Are you sure you want to cancel your contributor submission?")) {
+			if(confirm("{{ _('Are you sure you want to cancel your contributor submission?') }}"))
 				updateContributorStatus('non contributor', null);
 			}
 		}
 		
 		function removeFromContributor() {
-			if(confirm("Are you sure you want to remove yourself as contributor?")) {
+			if(confirm("{{ _('Are you sure you want to remove yourself as contributor?') }}")) {
 				updateContributorStatus('non contributor', null);
 			}
 		}
@@ -158,13 +158,13 @@
 			})
 			.then(data => {
 				console.log(data.message);
-				alert('Profile updated successfully.');
+				alert('{{ _("Profile updated successfully.") }}');
 				
 				window.location.reload();
 			})
 			.catch((error) => {
 				console.error("Error updating user profile:", error);
-				alert('Error updating profile: ' + error.message);
+				alert('{{ _("Error updating profile: ") }}' + error.message);
 			});
 		}
 	</script>
