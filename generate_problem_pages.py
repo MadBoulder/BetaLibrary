@@ -3,9 +3,9 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
 import handle_channel_data
+import utils.database
 from slugify import slugify
 
-LINK_FIELD = 'url'
 CLIMBER_FIELD = 'climber'
 CLIMBER_CODE_FIELD = 'climber_code'
 TITLE_FIELD = 'title'
@@ -19,8 +19,10 @@ SECTOR_CODE_FIELD = 'sector_code'
 BOULDER_FIELD = 'boulder'
 BOULDER_CODE_FIELD = 'boulder_code'
 
-def get_embed_url(full_url):
-    return f'https://www.youtube.com/embed/{full_url.split("/")[-1].replace("watch?v=", "")}'
+
+
+def get_embed_url(videoId):
+    return f'https://www.youtube.com/embed/{videoId}'
 
 def main():
     """
@@ -30,7 +32,7 @@ def main():
     zones_data = handle_channel_data.get_zone_data()
     all_areas_list = utils.helpers.get_all_areas_list()
     
-    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in handle_channel_data.get_boulder_data()['items']}
+    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in handle_channel_data.get_boulder_data()}
 
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -43,7 +45,7 @@ def main():
         zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
         zone_added = zone_data is not None
 
-        problems = utils.zone_helpers.get_problems_from_zone_code(zone_code)
+        problems = utils.database.getVideoDataFromZone(zone_code)
 
         #country
         country_name = ''
@@ -70,7 +72,7 @@ def main():
             
             boulder_name = problem.get(BOULDER_FIELD, '')
 
-            file_name = problem['secure']
+            file_name = problem['secure_slug']
             template = template_env.get_template(
                 'templates/templates/problem_template.html')
             output = template.render(
@@ -83,7 +85,7 @@ def main():
                 zone_code=zone_code,
                 sector=problem[SECTOR_FIELD],
                 sector_code=problem[SECTOR_CODE_FIELD],
-                video_url=get_embed_url(problem[LINK_FIELD]),
+                video_url=get_embed_url(problem['id']),
                 country_code=country_code,
                 country_name=country_name,
                 state_code=state_code,
@@ -97,7 +99,7 @@ def main():
             if not os.path.exists(f'templates/problems/{zone_code}'):
                 os.mkdir(f'templates/problems/{zone_code}')
 
-            with open(f'templates/problems/{zone_code}/{file_name}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/problems/{file_name}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 

@@ -16,6 +16,8 @@ import datetime
 import utils.helpers
 import utils.js_helpers
 import utils.zone_helpers
+import utils.database
+import utils.MadBoulderDatabase
 import dashboard
 import dashboard_videos
 import handle_channel_data
@@ -26,7 +28,6 @@ from functools import wraps
 from dotenv import load_dotenv
 import traceback
 import requests
-import pytz
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -197,10 +198,10 @@ def zones():
     country_data = handle_channel_data.get_country_data()
     return render_template(
         'bouldering-areas-list.html',
-        zones=zones['items'],
-        playlists=playlists['items'],
+        zones=zones,
+        playlists=playlists,
         countries=app.config['COUNTRIES'],
-        country_data=country_data['items'])
+        country_data=country_data)
 
 
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
@@ -240,7 +241,7 @@ def search():
             search_problem_elapsed_time = time.time() - search_problem_start_time
             print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
             for p in search_results['problems']:
-                p['secure'] = slugify(p['name']) + '-'+ slugify(p['grade_with_info'])
+                p['secure_slug'] = p['zone_code'] + '/' + slugify(p['name'] + '-'+ p['grade_with_info'])
 
         def search_beta():
             search_beta_start_time = time.time()
@@ -276,7 +277,7 @@ def search():
             problems=search_results.get('problems', []),
             videos=search_results.get('videos', []),
             search_term=query,
-            playlists=playlists['items']
+            playlists=playlists
         )
     return render_template(
         'area-problem-finder.html',
@@ -660,13 +661,20 @@ def settings_stats():
 @login_required
 def settings_projects():
     user_uid = session.get('uid')
-    user_projects_ref = db.reference(f'users/{user_uid}/projects')
-    projects = user_projects_ref.get() if user_projects_ref.get() else {}
+    projectIds = utils.MadBoulderDatabase.getProjects(user_uid)
+    projectsList = []
+    print(projectIds)
 
-    for project_id, project_details in projects.items():
-        project_details['url'] = f"/problems/{project_details['problem_area']}/{project_id}"
+    if projectIds:
+        for problemId in projectIds:
+            videoData = utils.database.getNestedChild('video_data', problemId)
+            if videoData:
+                projectsList.append(videoData)
+            else:
+                print(f"Data for problem ID {problemId} not found.")
+    print(projectsList)
 
-    return render_template("/settings/settings-projects.html", projects=projects.values())
+    return render_template("/settings/settings-projects.html", projects=projectsList)
 
 
 @app.route('/settings/admin/users', methods=['GET'])
@@ -863,6 +871,7 @@ def complete_profile_info():
 @app.route('/submit-rating', methods=['POST'])
 @login_required
 def submit_rating():
+    print("submit_rating")
     try:
         user_uid = session.get('uid')  # Get user ID from session
 
@@ -876,10 +885,7 @@ def submit_rating():
         if not (0 <= rating <= 5):
             return jsonify({'status': 'error', 'message': 'Rating must be a number between 0 and 5'}), 400
 
-        rating_ref = db.reference(f'problems/{problem_id}/ratings/{user_uid}')
-        rating_ref.set({
-            'rating': rating
-        })
+        utils.MadBoulderDatabase.submitRating(problem_id, user_uid, rating)
 
         return jsonify({"status": "success", "message": "Rating submitted"}), 200
     except Exception as e:
@@ -896,9 +902,7 @@ def delete_rating():
     if not problem_id or not user_uid:
         return jsonify({'status': 'error', 'message': 'Missing problem ID or user ID'}), 400
 
-    rating_ref = db.reference(f'problems/{problem_id}/ratings/{user_uid}')
-    rating_ref.delete()
-
+    utils.MadBoulderDatabase.deleteRating(problem_id, user_uid)
     return jsonify({'status': 'success', 'message': 'Rating deleted successfully'}), 200
     
     
@@ -911,21 +915,11 @@ def submit_comment():
         data = request.get_json()
         problem_id = data.get('problem_id')
         comment = data.get('comment')
-        utc_now = datetime.datetime.now(pytz.utc).isoformat()
 
         if not problem_id or not comment:
             return jsonify({'status': 'error', 'message': 'Missing problem ID or comment text'}), 400
-
-        comments_ref = db.reference(f'problems/{problem_id}/comments')
         
-        new_comment_ref = comments_ref.push()
-        new_comment_id = new_comment_ref.key
-        new_comment_ref.set({
-            'user_id': user_uid,
-            'text': comment,
-            'date': utc_now
-        })
-
+        new_comment_id = utils.MadBoulderDatabase.submitComment(problem_id, user_uid, comment)
         return jsonify({"status": "success", 'comment_id': new_comment_id, "message": "Comment submitted"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -935,24 +929,14 @@ def submit_comment():
 @login_required
 def delete_comment():
     data = request.get_json()
-    user_id = session.get('uid')
+    user_uid = session.get('uid')
     problem_id = data.get('problem_id')
     comment_id = data.get('comment_id')
 
-    if not user_id or not problem_id or not comment_id:
+    if not user_uid or not problem_id or not comment_id:
         return jsonify({'status': 'error', 'message': 'Missing data'}), 400
 
-    comment_ref = db.reference(f'problems/{problem_id}/comments/{comment_id}')
-
-    comment = comment_ref.get()
-    if comment is None:
-        return jsonify({'status': 'error', 'message': 'Comment not found'}), 404
-
-    if comment.get('user_id') != user_id:
-        return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
-
-    comment_ref.delete()
-
+    utils.MadBoulderDatabase.deleteComment(problem_id, user_uid, comment_id)
     return jsonify({'status': 'success', 'message': 'Comment deleted successfully'}), 200
     
     
@@ -1046,26 +1030,12 @@ def remove_user(userId):
 def add_problem_to_projects():
     user_uid = session.get('uid')
     data = request.get_json()
-    problem_details = {
-        'problem_id': data.get('problem_id'),
-        'problem_name': data.get('problem_name'),
-        'problem_grade': data.get('problem_grade'),
-        'problem_area': data.get('problem_area'),
-        'problem_area_name': data.get('problem_area_name'),
-    }
-    
     try:
         problem_id = request.json.get('problem_id')
         if not problem_id:
             raise ValueError('No problem ID provided')
-
-        user_projects_ref = db.reference(f'users/{user_uid}/projects')
         
-        existing_projects = user_projects_ref.get() or {}
-        if problem_details['problem_id'] in existing_projects:
-            return jsonify({'status': 'error', 'message': 'Problem already in Projects'}), 409
-
-        user_projects_ref.child(problem_details['problem_id']).set(problem_details)
+        utils.MadBoulderDatabase.addProject(user_uid, problem_id)
         return jsonify({'status': 'success', 'message': 'Problem added to Projects'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
@@ -1081,12 +1051,8 @@ def remove_problem_from_projects():
     try:
         if not problem_id:
             raise ValueError('No problem ID provided')
-
-        print(problem_id)
-        user_projects_ref = db.reference(f'users/{user_uid}/projects/{problem_id}')
-        print(user_projects_ref)
-        user_projects_ref.delete()
-
+        
+        utils.MadBoulderDatabase.deleteProject(user_uid, problem_id)
         return jsonify({'status': 'success', 'message': 'Problem removed from Projects'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
@@ -1160,7 +1126,7 @@ def show_weather_forecast_comparator():
         url = 'weather-forecast-comparator.html'
 
 
-    return render_template(url, zones=zones['items'], default_zones=default_zones)
+    return render_template(url, zones=zones, default_zones=default_zones)
 
 
 @app.route('/es/comparador-pronostico-tiempo')
@@ -1170,7 +1136,7 @@ def comparador_pronostico_tiempo():
     default_zones_param = request.args.get('default', '')
 
     default_zones = default_zones_param.split(',') if default_zones_param else []
-    return render_template('/es/comparador-pronostico-tiempo.html', zones=zones['items'], default_zones=default_zones)
+    return render_template('/es/comparador-pronostico-tiempo.html', zones=zones, default_zones=default_zones)
 
 
 @app.route('/element/weather-widget.html')
@@ -1270,7 +1236,7 @@ def render_about_us():
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zone_data['items'])
+            'data': len(zone_data)
         },
         {
             'text': _('Contributors'),
@@ -1411,7 +1377,7 @@ def render_page_es(page):
 
 def get_area_page_stats(page):
     try:
-        zone_problems = utils.zone_helpers.get_problems_from_zone_code(slugify(page))
+        zone_problems = utils.database.getVideoDataFromZone(slugify(page))
 
         views_count = utils.zone_helpers.get_view_count_from_problems(zone_problems)
         contributor_count = utils.zone_helpers.get_contributor_count_from_problems(zone_problems)
@@ -1445,55 +1411,59 @@ def get_area_page_stats(page):
     return data
 
 
-@app.route('/problems/<string:page>/<string:problem_name>')
-@app.route('/templates/problems/<string:page>/<string:problem_name>.html')
-@app.route('/problems/<string:page>/<string:problem_name>.html')
-@app.route('/<string:page>/problem/<string:problem_name>') #deprecated
-def load_problem(page, problem_name):
+@app.route('/problems/<string:area>/<string:problem_name>')
+@app.route('/problems/<string:area>/<string:problem_name>.html')
+def load_problem(area, problem_name):
+    print("load problem", area, problem_name)
     try:
-        problem_id = slugify(problem_name)
+        videoData = utils.MadBoulderDatabase.getVideoData(area, problem_name)
+        if videoData:
+            print(videoData)
+            problem_id = videoData['secure_slug']
 
-        user_uid = session.get('uid')
-        if user_uid:
-            problem_in_projects = is_problem_in_projects(user_uid, problem_name)
+            user_uid = session.get('uid')
+            if user_uid:
+                problem_in_projects = is_problem_in_projects(user_uid, problem_id)
+                comments = get_comments_for_problem(problem_id)
+            else:
+                comments = []
+                problem_in_projects = False
+            
             ratings = get_ratings_for_problem(problem_id, user_uid)
-            comments = get_comments_for_problem(problem_id)
-        else:
-            ratings = {}
-            comments = []
-            problem_in_projects = False
 
-        return render_template(f'problems/{slugify(page)}/{problem_id}.html', problem_in_projects=problem_in_projects, ratings=ratings, comments=comments)
+            url = "problems/" + videoData['secure_slug'] + ".html"
+            return render_template(url, problem_in_projects=problem_in_projects, ratings=ratings, comments=comments)
+        else:
+            print("Problem not found:", area + '/' + problem_name)
+            abort(404)
+
+
     except Exception as e:
         print("An error occurred loading problem:", e)
         abort(404)
 
 
 def is_problem_in_projects(user_id, problem_id):
-    user_projects_ref = db.reference(f'users/{user_id}/projects/{problem_id}')
-    problem = user_projects_ref.get()
-    return problem is not None
+    print("is_problem_in_projects")
+    project = utils.MadBoulderDatabase.getProject(user_id, problem_id)
+    print(project is not None)
+    return project is not None
 
 
 def get_ratings_for_problem(problem_id, user_uid=None):
-    ratings_ref = db.reference(f'problems/{problem_id}/ratings')
-    ratings = ratings_ref.get()
+    print("get_ratings_for_problem")
+    ratings = utils.MadBoulderDatabase.getRatings(problem_id)
+    print(ratings)
 
     if not ratings:
         return {'average_rating': 0, 'total_votes': 0, 'user_rating': None, 'has_rated': False}
 
-    total_rating = sum(float(rating['rating']) for rating in ratings.values())
+    total_rating = sum(float(rating) for rating in ratings.values())
     total_votes = len(ratings)
-    average_rating = total_rating / total_votes
+    average_rating = total_rating / total_votes if total_votes else 0
 
-    user_rating = None
-    has_rated = False
-
-    if user_uid and user_uid in ratings:
-        user_rating_entry = ratings.get(user_uid)
-        if user_rating_entry and 'rating' in user_rating_entry:
-            user_rating = float(user_rating_entry['rating'])
-            has_rated = True
+    user_rating = ratings.get(user_uid) if user_uid in ratings else None
+    has_rated = user_uid in ratings
 
     return {
         'average_rating': average_rating,
@@ -1504,14 +1474,14 @@ def get_ratings_for_problem(problem_id, user_uid=None):
 
 
 def get_comments_for_problem(problem_id):
-    comments_ref = db.reference(f'problems/{problem_id}/comments')
-    comments = comments_ref.get()
+    print("get_comments_for_problem")
+    comments = utils.MadBoulderDatabase.getComments(problem_id)
 
     if comments is None:
         return []
     else:
         for comment_id, comment in comments.items():
-            comment['user_name'] = get_user_display_name(comment['user_id'])
+            comment['user_name'] = get_user_display_name(comment['user_uid'])
         return [{'id': key, **value} for key, value in comments.items()]
     
 

@@ -2,6 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
+import utils.database
 import handle_channel_data
 from slugify import slugify
 
@@ -21,7 +22,7 @@ def main():
     zones_data = handle_channel_data.get_zone_data()
     all_areas_list = utils.helpers.get_all_areas_list()
     
-    all_areas_with_boulders = handle_channel_data.get_boulder_data()['items']
+    all_areas_with_boulders = handle_channel_data.get_boulder_data()
 
     dir_path_countries = 'templates/boulders'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -35,7 +36,7 @@ def main():
         zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
         zone_added = zone_data is not None
 
-        problems = utils.zone_helpers.get_problems_from_zone_code(zone_code)
+        problems = utils.database.getVideoDataFromZone(zone_code)
 
         boulders = next((item['boulders'] for item in all_areas_with_boulders if item['area_code'] == zone_code), None)
         if boulders:

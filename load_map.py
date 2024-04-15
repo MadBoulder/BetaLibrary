@@ -244,7 +244,7 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
-    for zone in zone_data['items']:
+    for zone in zone_data:
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id

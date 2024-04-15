@@ -2,6 +2,7 @@ from collections import Counter
 from jinja2 import Environment, FileSystemLoader
 import handle_channel_data
 import utils.helpers
+import utils.MadBoulderDatabase
 from slugify import slugify
 
 
@@ -28,16 +29,13 @@ def main():
         template.write(output)
 
     for contributor, details in contributors.items():
-        contributor_code=contributor
         print("generating contributor page: " + contributor)
-        
 
-        template = template_env.get_template(
-            'templates/templates/contributor_page_template.html')
+        template = template_env.get_template('templates/templates/contributor_page_template.html')
         output = template.render(
             contributor_code = contributor,
             contributor_name = details['name'],
-            problems = details['videos']
+            problems = details['videos'].values()
         )
 
         with open(f'templates/contributors/{contributor}.html', 'w', encoding='utf-8') as template:

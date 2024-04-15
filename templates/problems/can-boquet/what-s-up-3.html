@@ -69,8 +69,8 @@
 						<div class="d-flex mt-3 mb-3 log">
 							<div class="ml-auto btn-group mb-auto">
 								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
-									
-									onclick='addToProjects("what-s-up-3", "What\u0027s up!!!", "3", "can-boquet", "Can Boquet")'>
+									{% if problem_in_projects %}disabled{% endif %}
+									onclick='addToProjects("can-boquet/what-s-up-3", "What\u0027s up!!!", "3", "can-boquet", "Can Boquet")'>
 									{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}
 								</button>
 							</div>
@@ -131,7 +131,7 @@
 									<td class="text-nowrap" data-iso-date="{{ comment.date }}"></td>
 									<td class="comment d-none d-md-table-cell">{{ comment.text }}</td>
 									<td>
-										{% if session['uid'] == comment.user_id %}
+										{% if session['uid'] == comment.user_uid %}
 											<i onclick='deleteComment("{{ comment.id }}")' class="fas fa-times remove-project-icon" style="cursor: pointer;"></i>
 										{% endif %}
 									</td>
@@ -170,7 +170,7 @@
 						});
 					
 						var marker = L.marker([41.529435, 2.346675], {icon: customIcon}).addTo(mymap);
-						marker.bindPopup("<b>Gandalf {{ _(Boulder Location) }}</b><br><a href='https://www.google.com/maps?q=41.529435,2.346675' target='_blank'>{{ _(Open in Google Maps) }}</a>").openPopup();
+						marker.bindPopup("<b>Gandalf {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.529435,2.346675' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();
 					
 						var baseLayers = {
 							"Street Map": streetMap,
@@ -192,7 +192,7 @@
 		 {% if session['uid'] %} 
 			document.getElementById('comment-form').addEventListener('submit', function(e) {
 				e.preventDefault();
-				const problemId = 'what-s-up-3';
+				const problemId = 'can-boquet/what-s-up-3';
 				const commentInput = document.getElementById('comment-input');
 				submitComment(problemId, commentInput);
 			});
@@ -225,7 +225,7 @@
 		}
 
 		function deleteComment(comment_id) {
-			const problemId = 'what-s-up-3';
+			const problemId = 'can-boquet/what-s-up-3';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
@@ -348,7 +348,7 @@
 		}
 
 		function submitRating(rating) {
-			const problemId = 'what-s-up-3';
+			const problemId = 'can-boquet/what-s-up-3';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({ problem_id: problemId, rating: rating }),
@@ -370,7 +370,7 @@
 		}
 
 		function deleteRating() {
-			const problemId = 'what-s-up-3';
+			const problemId = 'can-boquet/what-s-up-3';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({problem_id: problemId}),
@@ -401,7 +401,7 @@
 			.then(data => {
 				if(data.status === 'success') {
 					let button = document.getElementById('addToProjectsButton');
-					button.innerText = 'Added';
+					button.innerText = "{{ _('Added to Projects') }}";
 					button.setAttribute('disabled', true);
 				}
 			})

@@ -7,12 +7,12 @@ from collections import Counter
 
 def main():
     zones_data = handle_channel_data.get_zone_data()
-    existing_zone_codes = {zone['zone_code'] for zone in zones_data['items']}
+    existing_zone_codes = {zone['zone_code'] for zone in zones_data}
 
     video_data = handle_channel_data.get_video_data()
 
     zone_code_counts = Counter()
-    for video in video_data['items']:
+    for video in video_data:
         zone_code = video['zone_code']
         if zone_code not in existing_zone_codes:
             zone_code_counts[video['zone_code']] += 1

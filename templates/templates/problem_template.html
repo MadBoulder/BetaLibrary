@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	{% endraw %}
 
-	<link rel="canonical" href="https://www.madboulder.org/problems/{{zone_code}}/{{file_name}}">
+	<link rel="canonical" href="https://www.madboulder.org/problems/{{file_name}}">
 	{% if coordinates %}
 		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -69,7 +69,7 @@
 						<div class="d-flex mt-3 mb-3 log">
 							<div class="ml-auto btn-group mb-auto">
 								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
-									{% if problem_in_projects %}disabled{% endif %}
+									{% raw %}{% if problem_in_projects %}disabled{% endif %}{% endraw %}
 									onclick='addToProjects({{ file_name|tojson }}, {{ name|tojson }}, {{ grade|tojson }}, {{ zone_code|tojson }}, {{ zone|tojson }})'>
 									{% raw %}{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}{% endraw %}
 								</button>
@@ -131,7 +131,7 @@
 									<td class="text-nowrap" data-iso-date="{{ comment.date }}"></td>
 									<td class="comment d-none d-md-table-cell">{{ comment.text }}</td>
 									<td>
-										{% if session['uid'] == comment.user_id %}
+										{% if session['uid'] == comment.user_uid %}
 											<i onclick='deleteComment("{{ comment.id }}")' class="fas fa-times remove-project-icon" style="cursor: pointer;"></i>
 										{% endif %}
 									</td>
@@ -170,7 +170,7 @@
 						});
 					
 						var marker = L.marker([{{ coordinates.latitude }}, {{ coordinates.longitude }}], {icon: customIcon}).addTo(mymap);
-						marker.bindPopup("<b>{{ boulder_name }} {% raw %}{{ _(Boulder Location) }}{% endraw %}</b><br><a href='https://www.google.com/maps?q={{ coordinates.latitude }},{{ coordinates.longitude }}' target='_blank'>{% raw %}{{ _(Open in Google Maps) }}{% endraw %}</a>").openPopup();
+						marker.bindPopup("<b>{{ boulder_name }} {% raw %}{{ _('Boulder Location') }}{% endraw %}</b><br><a href='https://www.google.com/maps?q={{ coordinates.latitude }},{{ coordinates.longitude }}' target='_blank'>{% raw %}{{ _('Open in Google Maps') }}{% endraw %}</a>").openPopup();
 					
 						var baseLayers = {
 							"Street Map": streetMap,
@@ -401,7 +401,7 @@
 			.then(data => {
 				if(data.status === 'success') {
 					let button = document.getElementById('addToProjectsButton');
-					button.innerText = 'Added';
+					button.innerText = "{% raw %}{{ _('Added to Projects') }}{% endraw %}";
 					button.setAttribute('disabled', true);
 				}
 			})

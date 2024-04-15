@@ -2,18 +2,11 @@ from enum import Enum
 import json
 import re
 import math
+import handle_channel_data
 
-def get_data_local():
-    """
-    Get data from local files
-    """
-    video_data = {}
-    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
-        video_data = json.load(f)['items']
-    return video_data
 
 if __name__ == '__main__':
-    video_data = get_data_local()
+    video_data = handle_channel_data.get_video_data()
     
     unique_zones = set()
     unique_climbers = set()

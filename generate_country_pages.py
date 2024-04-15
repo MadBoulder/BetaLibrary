@@ -20,7 +20,7 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for country in country_data['items']:
+    for country in country_data:
         country_code=country['code']
         print("generating country: " + country_code)
         country_name = country.get("name", [""])[0]
@@ -44,7 +44,7 @@ def main():
             country_name=country_name,
             states=states,
             areas=areas,
-            playlists=playlists['items'],
+            playlists=playlists,
             overview=overview
         )
 
@@ -60,7 +60,7 @@ def main():
             country_name=country_name_es,
             states=states,
             areas=areas,
-            playlists=playlists['items'],
+            playlists=playlists,
             overview=overview_es
         )
 
@@ -80,7 +80,7 @@ def main():
                 state_code=state_code,
                 state_name=state_name,
                 areas=state_areas,
-                playlists=playlists['items']
+                playlists=playlists
             )
 
             with open(f'templates/states/{state_code}.html', 'w', encoding='utf-8') as state_template:

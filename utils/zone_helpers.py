@@ -1,24 +1,18 @@
 import json
 from slugify import slugify
 import handle_channel_data
+import utils.database
 from functools import lru_cache
 
 
-def get_problems_from_zone_code(zone_code):
-    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f: #TODO: Call to firebase
-        data = json.load(f)
-    problems = [p for p in data['items'] if p['zone_code'] == zone_code]
-    return problems
-
-
 def get_zone_view_count_from_zone_code(zone_code):
-    problems = get_problems_from_zone_code(zone_code)
-    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
+    problems = utils.database.getVideoDataFromZone(zone_code)
+    total_views = sum(int(problem['viewCount']) for problem in problems)
     return total_views
 
 
 def get_view_count_from_problems(problems):
-    total_views = sum(int(problem['stats']['viewCount']) for problem in problems)
+    total_views = sum(int(problem['viewCount']) for problem in problems)
     return total_views
 
 
@@ -44,7 +38,7 @@ def get_problems_from_sector(problems_zone, sector_code):
     
     
 def get_sectors_from_zone(zone_code):
-    problems = get_problems_from_zone_code(zone_code)
+    problems = utils.database.getVideoDataFromZone(zone_code)
     sectors = []
     for p in problems:
         alreadyAdded=False
@@ -96,7 +90,7 @@ def get_playlists_from_zone(zone_code):
     playlist_data = handle_channel_data.get_playlist_data()
 
     playlists = []
-    for item in playlist_data['items']:
+    for item in playlist_data:
         if item['zone_code'] == zone_code:
             playlists = item
             break
@@ -108,7 +102,7 @@ def get_areas_from_country(country_code):
     zone_data = handle_channel_data.get_zone_data()
 
     areas = []
-    for item in zone_data['items']:
+    for item in zone_data:
         if item['country'] == country_code:
             areas.append(item)
             
@@ -119,7 +113,7 @@ def get_areas_from_state(state_code):
     zone_data = handle_channel_data.get_zone_data()
 
     areas = []
-    for item in zone_data['items']:
+    for item in zone_data:
         if item.get('state','') == state_code:
             areas.append(item)
             
@@ -130,7 +124,7 @@ def get_country_from_code(country_code):
     country_data = handle_channel_data.get_country_data()
 
     country = {}
-    for item in country_data['items']:
+    for item in country_data:
         if item['reduced_code'] == country_code:
             country = item
             break
@@ -142,7 +136,7 @@ def get_state_from_code(state_code):
     country_data = handle_channel_data.get_country_data()
 
     state = {}
-    for item in country_data['items']:
+    for item in country_data:
         states = item.get('states', [])
         for item2 in states:
             if item2['code'] == state_code:
@@ -158,10 +152,9 @@ def calculate_contributor_stats(climber_id):
     contributor_data = get_contributor_data(climber_id)
     videos = contributor_data['videos']
     unique_areas = set()
-    grades = []
     area_counts = {}
 
-    for video in videos:
+    for video in videos.values():
         area = video['zone']
         grade = video['grade']
         unique_areas.add(area)
@@ -179,7 +172,7 @@ def calculate_contributor_stats(climber_id):
     contributor_stats = {
         'num_videos': len(videos),
         'user_video_rank': user_video_rank,
-        'total_views': sum(int(video['stats']['viewCount']) for video in videos),
+        'total_views': sum(int(video['viewCount']) for video in videos.values()),
         'total_views_rank': total_views_rank,
         'unique_areas': len(unique_areas),
         'top_areas': [{'area': area, 'videos': count} for area, count in top_areas]

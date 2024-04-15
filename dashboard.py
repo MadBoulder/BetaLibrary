@@ -72,21 +72,13 @@ def prepare_barchart_data(data, axis):
     return processed_data
 
 
-def get_dashboard(local_data=False):
+def get_dashboard():
     """
     Assemble the dashboard. Define the layout, controls and 
     its callbacks, as well as data sources.
     """
     # Load data
-    video_data = {}
-    if local_data:
-        data = pd.json_normalize(pd.read_json(
-            'data/channel/processed_data.json')['items'])
-        with open('data/channel/processed_data.json', 'r') as f:
-            data = json.load(f)
-            video_data = data['items']
-    else:
-        video_data = handle_channel_data.get_video_data()['items']
+    video_data = handle_channel_data.get_video_data()
 
     # X axis categories
     x_axis_map = {

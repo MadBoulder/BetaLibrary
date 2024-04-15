@@ -37,17 +37,9 @@ def get_last_dashboard_update():
     return handle_channel_data.get_last_update_date()
 
 
-def get_dashboard(local_data=False):
+def get_dashboard():
     # Load data
-    video_data = {}
-    if local_data:
-        data = pd.json_normalize(pd.read_json(
-            'data/channel/processed_data.json')['items'])
-        with open('data/channel/processed_data.json', 'r') as f:
-            data = json.load(f)
-            video_data = data['items']
-    else:
-        video_data = handle_channel_data.get_video_data()['items']
+    video_data = handle_channel_data.get_video_data()
 
     # X axis categories
     x_axis_map = {

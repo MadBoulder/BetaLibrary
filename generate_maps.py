@@ -16,7 +16,7 @@ def main():
     """
     generate_ids = IDGenerator()
     zone_data = handle_channel_data.get_zone_data()
-    for zone in zone_data['items']:
+    for zone in zone_data:
         print(zone['zone_code'])
         with open('templates/maps/'+zone['zone_code']+'.html', 'w', encoding='utf-8') as template:
             template.write(

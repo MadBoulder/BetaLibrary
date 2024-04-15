@@ -45,7 +45,7 @@ class bidict(dict):
 def load_sectors():
     playlist_data = handle_channel_data.get_playlist_data()
     sectors = []
-    for item in playlist_data['items']:
+    for item in playlist_data:
         for sector in item.get('sectors', []):
             sector['zone_code'] = item['zone_code']
             sector['zone_name'] = item['title']
@@ -156,7 +156,7 @@ def measure_similarity(query, zone):
 
 def search_zone(query, max_score=0):
     zone_data = handle_channel_data.get_zone_data()
-    return search(query, zone_data['items'], max_score)
+    return search(query, zone_data, max_score)
 
 
 def search_sector(query, max_score=0):
@@ -166,7 +166,7 @@ def search_sector(query, max_score=0):
 
 def search_problem(query, max_score=0):
     data = handle_channel_data.get_video_data_search_optimized()
-    return search(query, data['items'], max_score)
+    return search(query, data, max_score)
 
     
 def simple_search(query, items, max_score=0):
@@ -273,7 +273,7 @@ def get_number_of_videos_for_zone(zone_name):
     """
     playlist_data = handle_channel_data.get_playlist_data()
 
-    for item in playlist_data['items']:
+    for item in playlist_data:
         if item['zone_code'] == zone_name:
             return item['video_count']
             
@@ -295,14 +295,15 @@ def get_all_areas_list():
     print("get_all_areas_list")
     video_data = handle_channel_data.get_video_data()
 
-    all_areas = list({video['zone_code'] for video in video_data['items']})
+    all_areas = set()
+    for video in video_data.values():
+        zone_code = video['zone_code']
+        all_areas.add(zone_code)
 
-    return all_areas
+    return list(all_areas)
 
 
-def find_item(json_data, key, value):
-    items = json_data.get('items', [])
-    
+def find_item(items, key, value):
     for item in items:
         if item.get(key) == value:
             return item

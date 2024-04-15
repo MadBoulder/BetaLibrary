@@ -2,7 +2,6 @@ from enum import Enum
 import urllib.request
 import urllib.parse
 import json
-import threading
 import subprocess
 from datetime import date
 import re
@@ -15,21 +14,17 @@ from shutil import move, copymode
 from slugify import slugify
 from dotenv import load_dotenv
 from functools import lru_cache
-
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
-
-from googleapiclient.discovery import build
+import datetime
+import utils.channel
+import utils.database
+import utils.MadBoulderDatabase
+import logging
 
 load_dotenv()
 
 ENCODING = 'utf-8'
-MAX_ITEMS_API_QUERY = 50
 CONFIG_FILE = 'config.py'
-YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY_HANDLE_DATA']
 
-firebase_lock = threading.Lock()
 
 class Case(Enum):
     lower = 1
@@ -37,261 +32,231 @@ class Case(Enum):
     none = 3
 
 
-def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
-    """
-    Get the info of a YouTube channel from the channel's id
-    """
-    query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
-        channel_id, YOUTUBE_API_KEY)
-    inp = urllib.request.urlopen(query_url)
-    return json.load(inp)
+def retrieveVideosFromChannel(lastUpdate=None):
+    print("Retrieving videos from channel")
+    
+    try:
+        videoNum = utils.channel.fetchChannelTotalVideoCount()
+        uploadPLaylistId = utils.channel.getUploadPlaylistId()
+        videos = {}
+        page_token=None
+
+        while True:
+            print(str(round((len(videos)/videoNum)*100, 2))+'%')
+
+            if lastUpdate:
+                searchResp = utils.channel.fetchVideoByDate(lastUpdate, page_token)
+                videoIds = [item['id']['videoId'] for item in searchResp['items']]
+            else:
+                searchResp = utils.channel.fetchAllVideoIds(uploadPLaylistId, page_token)
+                videoIds = [item['contentDetails']['videoId'] for item in searchResp['items']]
+
+            if videoIds:
+                videosResponse = utils.channel.fetchVideoDetails(videoIds)
+                for item in videosResponse['items']:
+                    videoId = item['id']
+                    title = item['snippet']['title']
+                    description = item['snippet']['description']
+                    videoInfo = ExtractInfoFromDescription(title, description)
+                    videos[encodeSlug(videoInfo['secure_slug'])] = {
+                        'title': title,
+                        'id': videoId,
+                        'date': item['snippet']['publishedAt'],
+                        'viewCount': item['statistics'].get('viewCount', '0'),
+                        **videoInfo
+                    }
+
+            page_token = searchResp.get('nextPageToken')
+            if not page_token:
+                break
+
+        return videos
+    except Exception as e:
+        logging.error(f"Failed to retrieve videos: {str(e)}")
+        return None
+    
+
+def encodeSlug(key):
+    return key.replace('/', '___')
+
+def decodeSlug(key):
+    return key.replace('___', '/')
 
 
-def get_video_info(id):
-    """
-    Get the details of a YouTube video from its id
-    """
-    query_url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'.format(
-        id, YOUTUBE_API_KEY)
-    inp = urllib.request.urlopen(query_url)
-    return json.load(inp)
-
-
-def update_video_stats(video_data):
-    """
-    Update the stats of the channel videos
-    """
-    print("update_video_stats")
-    total = len(video_data)
-    current = 0
-    for video in video_data:
-        print(current * 100 / total)
-        v_stats = get_video_info(video['id'])
-        video['stats'] = v_stats['items'][0]['statistics']
-        current += 1
-    return video_data
-
-
-def retrieve_all_videos():
-    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
-    return retrieve_videos_from_channel(video_num=total_video_count)
-
-
-def retrieve_missing_videos(
-    data=None
-):
-    video_data = data['items']
-    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
-    missing_videos = total_video_count - len(video_data)
-    video_ids = [v['id'] for v in video_data]
-    return retrieve_videos_from_channel(video_num=missing_videos, video_ids=video_ids)
-
-
-def retrieve_videos_from_channel(
-    channel_id='UCX9ok0rHnvnENLSK7jdnXxA',
-    page_token=None,
-    video_ids=[],
-    video_num=-1
-):
-    """
-    Get the title, description and id of all the videos uploaded to a channel
-    """
-    print("retrieve_videos_from_channel")
-    url = 'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={}&key={}'.format(
-        channel_id, YOUTUBE_API_KEY
-    )
-    inp = urllib.request.urlopen(url)
-    resp = json.load(inp)
-    upload_playlist = resp['items'][0]['contentDetails']['relatedPlaylists']['uploads']
-
-    max_iters = math.ceil(video_num/MAX_ITEMS_API_QUERY)
-    current_iter = 0
-    videos = []
-
-    while len(videos) < video_num and current_iter < max_iters:
-        print(str(round((len(videos)/video_num)*100, 2))+'%')
-
-        get_videos_url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults={}&playlistId={}&key={}'.format(
-            MAX_ITEMS_API_QUERY, upload_playlist, YOUTUBE_API_KEY
-        )
-        if page_token:
-            get_videos_url += '&pageToken=' + resp['nextPageToken']
-
-        inp = urllib.request.urlopen(get_videos_url)
-        resp = json.load(inp)
-        for video in resp['items']:
-            if video['snippet']['resourceId']['videoId'] not in video_ids:
-                v_data = {}
-                v_data['title'] = video['snippet']['title']
-                v_data['date'] = video['snippet']['publishedAt']
-                v_data['description'] = video['snippet']['description']
-                v_data['id'] = video['snippet']['resourceId']['videoId']
-                v_data['url'] = get_video_url_from_id(v_data['id'])
-                v_stats = get_video_info(v_data['id'])
-                v_data['stats'] = v_stats['items'][0]['statistics']
-                videos.append(v_data)
-            
-        current_iter += 1
-
-        if resp.get('nextPageToken', False):
-            page_token = resp.get('nextPageToken')
-        else:
-            page_token = None
-
-    return videos
-
-
-def retrieve_playlists_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
-    youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
-
+def retrieve_playlists_from_channel():
     playlists = []
     next_page_token = None
 
     while True:
-        response = youtube.playlists().list(
-            part="snippet, contentDetails",
-            channelId=channel_id,
-            maxResults=50,  # You can change this number as per your requirement
-            pageToken=next_page_token
-        ).execute()
-
+        response = utils.channel.fetchPlaylists(next_page_token)
         playlists.extend(response["items"])
 
         next_page_token = response.get("nextPageToken")
         if not next_page_token:
             break
-      
+
+    print('Playlists retrieved: ' + str(len(playlists)))
     return playlists
 
 
-def update_videos_from_channel(
-    data=None
-):
-    """
-    If there are new videos, add them to the database
-    Update the list of videos uploaded to the channel. 
-    """
-    new_videos = []
-    
-    total_video_count = int(get_channel_info()['items'][0]['statistics']['videoCount'])
-    video_data = data['items']
-    missing_videos = total_video_count - len(video_data)
-    if missing_videos > 0:
-        new_videos = retrieve_missing_videos(data=data)
+def updateVideosFromChannel():
+    updatedVideos = updateVideoDatabase()
+
+    dateSinceLastUpdate = getLastDatabaseVideoUpdateDate().isoformat() + "Z"
+    newVideos = retrieveVideosFromChannel(dateSinceLastUpdate)
         
-    updated_data = update_video_stats(new_videos + video_data)
-    return updated_data
+    allVideos = {**updatedVideos, **newVideos}
+    return allVideos
 
 
-def get_video_url_from_id(video_id):
-    """
-    Given the ID of a video, return its URL
-    """
-    return 'https://www.youtube.com/watch?v={}'.format(video_id)
+def updateVideoDatabase():
+    print("updateVideoDatabase")
+
+    videos = get_video_data()
+    if not videos:
+        print("No videos found in database.")
+        return None
+    
+    print("video count", len(videos))
+    updatedVideos = {}
+
+    video_ids = [video['id'] for video in videos.values()]
+    chunks = [video_ids[i:i + 50] for i in range(0, len(video_ids), 50)]
+
+    for chunk_index, chunk in enumerate(chunks):
+        print(f"Processing batch {chunk_index+1}/{len(chunks)}")
+        
+        videoResponses = utils.channel.fetchVideoDetails(chunk)
+        
+        for videoResponse in videoResponses.get('items', []):
+            videoId = videoResponse['id']
+            videoDetails = videoResponse
+            status = videoDetails['status']['privacyStatus']
+
+            corresponding_video = next((v for v in videos.values() if v['id'] == videoId), None)
+            if not corresponding_video:
+                continue
+
+            videoSlug = corresponding_video['secure_slug']
+
+            if(status == 'public'):
+                title = videoDetails['snippet']['title']
+                description = videoDetails['snippet']['description']
+                newVideoInfo = ExtractInfoFromDescription(title, description)
+
+                if videoSlug != newVideoInfo['secure_slug']:
+                    print(videoSlug)
+                    print(newVideoInfo['secure_slug'])
+                    print(f"Video with ID {videoId} has changed its url.")
+                    deprecateSlug(videoSlug, newVideoInfo['secure_slug'])
+
+                updatedVideo = {
+                    'title': title,
+                    'id': videoId,
+                    'date': videoDetails['snippet']['publishedAt'],
+                    'viewCount': videoDetails['statistics'].get('viewCount', '0'),
+                    **newVideoInfo
+                }
+                updatedVideos[encodeSlug(newVideoInfo['secure_slug'])] = updatedVideo
+            else:
+                print(f"Video with ID {videoId} not public.")
+                disableSlug(videoSlug)
+                updatedVideos[videoSlug] = None
+        
+        
+    print(f"Updated videos count: {len(updatedVideos)}")
+    return updatedVideos
 
 
-def load_data(infile=None, data=None):
-    """
-    Load current video data stored in the project folder
-    """
-    video_data = []
-    if infile:
-        # load from file
-        with open(infile, 'r', encoding='utf-8') as f:
-            try:
-                video_data = json.load(f)['items']
-            except:
-                pass
-    if data:
-        video_data = data
-    return video_data
+def getLastDatabaseVideoUpdateDate():
+    print("getLastDatabaseVideoUpdateDate")
+    lastUpdate = utils.database.getValue('video_data/date')
+    print(lastUpdate)       
+    if lastUpdate: 
+        return datetime.datetime.strptime(lastUpdate, '%Y-%m-%d')
+    else:
+        return datetime.datetime.now()
 
 
-def match_regex_and_add_field(pattern, infield, outfield, video_data, case=Case.none):
+def ExtractFieldFromStr(pattern, sourceStr, case=Case.none):
     """
     Given a regex pattern and a field, find the sequence that matches
     the regex in the specified video field. Add the matched sequence as
     the specified new video field
     """
     reg_pattern = re.compile(pattern)
-    for video in video_data:
-        matches = reg_pattern.findall(video[infield])
+    resultStr = ''
+    if sourceStr:
+        matches = reg_pattern.findall(sourceStr)
         if not matches:
-            video[outfield] = 'Unknown'
+            resultStr = 'Unknown'
         elif case == Case.upper:
-            video[outfield] = matches[0].upper()
+            resultStr = matches[0].upper()
         elif case == Case.lower:
-            video[outfield] = matches[0].lower()
+            resultStr = matches[0].lower()
         else:
-            video[outfield] = matches[0]
-    return video_data
+            resultStr = matches[0]
+    return resultStr
 
 
-def process_name_data(infile=None, data=None):
-    video_data = load_data(infile, data)
+def ExtractInfoFromDescription(title, description):
+    videoInfo = {
+        'name': ExtractName(description),
+        'grade': ExtractGrade(description),
+        'grade_with_info': ExtractGradeWithInfo(description),
+        'climber': ExtractClimber(description),
+        'zone': ExtractZone(description),
+        'sector': ExtractSector(description),
+        'boulder': ExtractBoulder(description),
+    }
+
+    videoInfo['name'] = getProblemName(title, videoInfo['name'], videoInfo['grade'], videoInfo['zone'])
+    videoInfo['zone_code'] = slugify(videoInfo['zone'])
+    videoInfo['secure_slug'] = videoInfo['zone_code'] + '/' + slugify(videoInfo['name'] + '-'+ videoInfo['grade_with_info'])
+    videoInfo['sector_code'] = slugify(videoInfo['sector'])
+    videoInfo['climber_code'] = slugify(videoInfo['climber'])
+    videoInfo['boulder_code'] = slugify(videoInfo['boulder'])
+
+    return videoInfo
+
+def ExtractName(sourceStr):
     name_regex = r'Name: \s*?(.*?)(?:\n|$)'
-    return match_regex_and_add_field(name_regex, 'description', 'name', video_data)
+    return ExtractFieldFromStr(name_regex, sourceStr)
+
+def ExtractGrade(sourceStr):
+    regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractGradeWithInfo(sourceStr):
+    regex = r'Grade: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractClimber(sourceStr):
+    regex = r'Climber: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractZone(sourceStr):
+    regex = r'Zone: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractSector(sourceStr):
+    regex = r'Sector: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractBoulder(sourceStr):
+    regex = r'\bBoulder:\s*([^\n]+)'
+    return ExtractFieldFromStr(regex, sourceStr)
 
 
-def process_grade_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    grade_with_info_regex = r'Grade: \s*?(.*?)(?:\n|$)'
-    video_data = match_regex_and_add_field(grade_with_info_regex, 'description', 'grade_with_info', video_data)
-    grade_regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
-    return match_regex_and_add_field(grade_regex, 'description', 'grade', video_data, Case.upper)
-
-
-def process_climber_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    climber_regex = r'Climber: \s*?(.*?)(?:\n|$)'
-    return match_regex_and_add_field(climber_regex, 'description', 'climber', video_data)
-
-
-def process_zone_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    zone_regex = r'Zone: \s*?(.*?)(?:\n|$)'
-    return  match_regex_and_add_field(zone_regex, 'description', 'zone', video_data)
-
-
-def process_sector_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    sector_regex = r'Sector: \s*?(.*?)(?:\n|$)'
-    return match_regex_and_add_field(sector_regex, 'description', 'sector', video_data)
-
-
-def process_boulder_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    sector_regex = r'\bBoulder:\s*([^\n]+)'
-    return match_regex_and_add_field(sector_regex, 'description', 'boulder', video_data)
-
-
-def process_all_data(infile=None, data=None):
-    video_data = load_data(infile, data)
-    for video in video_data:
-        video['name'] = get_problem_name(video)
-        video['secure'] = slugify(video['name'] + '-'+ video['grade_with_info'])
-        video['zone_code'] = slugify(video['zone'])
-        video['sector_code'] = slugify(video['sector'])
-        video['climber_code'] = slugify(video['climber'])
-        video['boulder_code'] = slugify(video['boulder'])
-
-    return video_data
-
-
-def get_problem_name(problem_data):
-    """
-    Ugly function to remove pieces from the video 
-    title until we are left with the problem name
-    """
-    # remove grade from title?
-    name = problem_data['name']
+def getProblemName(title, nameDescription, grade, zone):
+    name = nameDescription
     if name == 'Unknown':
-        name = problem_data['title'].replace(
-            problem_data.get('zone', ''), ''
+        name = title.replace(
+            zone, ''
         ).replace(
-            problem_data.get('grade', '').lower(), ''
+            grade.lower(), ''
         ).replace(
-            problem_data.get('grade', '').upper(), ''
+            grade.upper(), ''
         ).replace(
             '(sit)',
             ''
@@ -310,106 +275,69 @@ def get_problem_name(problem_data):
     return name
 
 
-def update_local_database(
+def updateData(
     retrieve_data_from_channel=True
 ):
     if retrieve_data_from_channel:
-        retrieve_and_update_video_data_raw_local(is_update=False)
-        retrieve_and_update_playlist_data_raw_local()
-    process_video_data_local()
-    process_playlist_data_local()
-    process_zone_data_local()
-    update_countries_list()
+        retrieveAndUpdateVideoData(resetDatabase=False)
+        createOptimizedVideoData()
+        retrieveAndUpdatePlaylistData()
+    updateZoneData()
+    updateCountries()
+    updateBoulderData()
+    updateContributorsList()
 
 
-def retrieve_and_update_video_data_raw_local(
-    outfile='data/channel/raw_video_data.json',
-    infile='data/channel/raw_video_data.json',
-    is_update=True
-):
+def retrieveAndUpdateVideoData(resetDatabase=False):
     video_data = []
-    if is_update:
-        print("Updating raw_video_data.json file")
-        raw_video_data_local = []
-        with open(infile, 'r', encoding='utf-8') as f:
-            try:
-                raw_video_data_local = json.load(f)
-            except:
-                pass
-        video_data = update_videos_from_channel(data=raw_video_data_local)
+    if resetDatabase:
+        print("Regenerating video database")
+        video_data = retrieveVideosFromChannel()
     else:
-        print("Regenerating raw_video_data.json file")
-        video_data = retrieve_all_videos()
+        print("Updating video databse")
+        video_data = updateVideosFromChannel()
 
-    with open(outfile, 'w', encoding='utf-8') as f:
-        print('Videos retrieved: ' + str(len(video_data)))
-        json.dump({'date': str(date.today()),
-                   'items': video_data}, f, indent=4)
-                   
-                   
-def retrieve_and_update_playlist_data_raw_local(
-    outfile='data/channel/raw_playlist_data.json'
-):
-    print("Regenerating raw_playlist_data.json file")
-    playlists = retrieve_playlists_from_channel()
-                   
-    with open(outfile, 'w', encoding='utf-8') as f:
-        print('Playlists retrieved: ' + str(len(playlists)))
-        json.dump({'date': str(date.today()),
-                   'items': playlists}, f, indent=4)
+    if video_data:
+        print("Videos Retrived: ", len(video_data))
+        utils.database.updateNodeWithItems('video_data', video_data, reset=resetDatabase)
+        utils.database.updateNode('video_count', len(video_data))
+        
+        saveDebugJson('video_data.json', video_data)
 
 
-def process_video_data_local(
-    infile='data/channel/raw_video_data.json',
-    outfile='data/channel/processed_data.json'
-):
-    print("Processing local data: Regenerating processed_data.json file")
-    processed_data = process_name_data(infile=infile)
-    processed_data = process_grade_data(data=processed_data)
-    processed_data = process_climber_data(data=processed_data)
-    processed_data = process_zone_data(data=processed_data)
-    processed_data = process_sector_data(data=processed_data)
-    processed_data = process_boulder_data(data=processed_data)
-    processed_data = process_all_data(data=processed_data)
-    
-    with open(outfile, 'w', encoding='utf-8') as f:
-        json.dump({'date': str(date.today()),
-                   'items': processed_data}, f, indent=4)
-                   
-    processed_data_search_optimized = processed_data
-    processed_data_search_optimized = [video for video in processed_data_search_optimized if video['name'] != 'Unknown']
+def createOptimizedVideoData():
+    print("createOptimizedVideoData")
+
+    videoData = get_video_data()
+    if not videoData:
+        print("No video data found.")
+        return []
+
+    processed_data_search_optimized = [video for video in videoData.values() if video.get('name') != 'Unknown']
     for video in processed_data_search_optimized:
-        del video['stats']
-        del video['description']
-        del video['id']
-        del video['secure']
+        del video['viewCount']
+        del video['date']
         del video['zone_code']
         del video['climber_code']
         del video['sector_code']
         del video['boulder_code']
     
-    with open('data/channel/processed_data_search_optimized.json', 'w', encoding='utf-8') as f:
-        json.dump({'date': str(date.today()),
-                   'items': processed_data_search_optimized}, f, indent=4)
+    utils.database.updateNodeWithItems('video_data_search_optimized', processed_data_search_optimized, reset=True)
+
+    saveDebugJson('processed_data_search_optimized.json', processed_data_search_optimized)
 
          
-def process_playlist_data_local(
-    infile='data/channel/raw_playlist_data.json',
-    outfile='data/channel/processed_playlist_data.json'
-):
-    print("Processing local data: Regenerating processed_zone_data.json file")
+def retrieveAndUpdatePlaylistData():
+    print("retrieveAndUpdatePlaylistData")
     
-    raw_playlist_data = []
-    with open(infile, 'r', encoding='utf-8') as f:
-        try:
-            raw_playlist_data = json.load(f)
-        except:
-            pass
+    playlists = retrieve_playlists_from_channel()
+                   
+    saveDebugJson('raw_playlist_data.json', playlists)
     
     processed_playlist_data = []
-    print("Processing local data: processing raw playlist data")
-    for i in raw_playlist_data['items']:
-        title = i['snippet']['title']
+    print("retrieveAndUpdatePlaylistData Processing..")
+    for playlist in playlists:
+        title = playlist['snippet']['title']
         is_sector = 'Sector' in title
         zone_name, sector_name = title.split(': Sector ') if is_sector else (title, None)
             
@@ -425,24 +353,22 @@ def process_playlist_data_local(
             
         if not is_sector:
             playlist_json_object['zone_code'] = slugify(zone_name)
-            playlist_json_object['id'] = i['id']
-            playlist_json_object['video_count'] = i['contentDetails']['itemCount']
-            playlist_json_object['thumbnail'] = get_playlist_thumbnail(i['snippet']['thumbnails'])
+            playlist_json_object['id'] = playlist['id']
+            playlist_json_object['video_count'] = playlist['contentDetails']['itemCount']
+            playlist_json_object['thumbnail'] = get_playlist_thumbnail(playlist['snippet']['thumbnails'])
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
                                                     "sector_code": slugify(sector_name), 
-                                                    "id": i['id'],
-                                                    "video_count": i['contentDetails']['itemCount']})
-    
-    with open(outfile, 'w', encoding='utf-8') as f:
-        json.dump({'date': str(date.today()),
-                   'items': processed_playlist_data}, f, indent=4)
-                   
-         
-def process_zone_data_local(
-    outfile='data/channel/zone_data.json'
-):
-    print("Processing local data: Generating zone_data.json file")
+                                                    "id": playlist['id'],
+                                                    "video_count": playlist['contentDetails']['itemCount']})
+
+    utils.database.updateNodeWithItems('playlist_data', processed_playlist_data, reset=True)
+
+    saveDebugJson('processed_playlist_data.json', processed_playlist_data)
+
+
+def updateZoneData():
+    print("updateZoneData")
     
     if os.path.exists('data/zones'):
         zones = next(os.walk('data/zones/'))[1]
@@ -456,18 +382,20 @@ def process_zone_data_local(
                 zone_data['altitude'] = get_altitude_from_coordinates(zone_data['latitude'], zone_data['longitude'])
                 zones_data.append(zone_data)
         
-        with open(outfile, 'w', encoding='utf-8') as f:
-            json.dump({'date': str(date.today()),
-                       'items': zones_data}, f, indent=4)
+        utils.database.updateNodeWithItems('zone_data', zones_data, reset=True)
+
+        saveDebugJson('zone_data.json', zones_data)
    
 
-def process_contributors_list(root):
-    video_data = get_video_data_local()
+def updateContributorsList():
+    print("updateContributorsList")
+    video_data = get_video_data()
 
     contributors = {}
     slug_cache = {}
-    for video in video_data['items']:
-        climber_name = video['climber']
+    for video, videoInfo in video_data.items():
+        print(video)
+        climber_name = videoInfo['climber']
 
         if climber_name in slug_cache:
             climber_code = slug_cache[climber_name]
@@ -476,13 +404,13 @@ def process_contributors_list(root):
             slug_cache[climber_name] = climber_code
 
         if climber_code not in contributors:
-            contributors[climber_code] = {'name': climber_name, 'videos': [video], 'view_count': int(video['stats']['viewCount'])}
+            contributors[climber_code] = {'name': climber_name, 'videos': {video: videoInfo}, 'view_count': int(videoInfo['viewCount'])}
         else:
-            contributors[climber_code]['videos'].append(video)
-            contributors[climber_code]['view_count'] += int(video['stats']['viewCount'])
+            contributors[climber_code]['videos'][video] = videoInfo
+            contributors[climber_code]['view_count'] += int(videoInfo['viewCount'])
     
-    root.child('contributors').set(contributors)
-    root.child('contributor_count').set(len(contributors))
+    utils.database.updateNodeWithItems('contributors', contributors, reset=True)
+    utils.database.updateNode('contributor_count', len(contributors))
 
 
 def get_playlist_thumbnail(thumbnails):
@@ -543,156 +471,59 @@ def get_zone_code_from_name(zone_name, path = 'data/zones'):
     return None
 
 
-def regenerate_firebase_data(is_update=True):
-    """
-    Load current data from local database and copy it to firebase database
-    """
-    print('Regenerating Firebase Data')
-    
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-
-    root = db.reference()
-    
-    video_data = get_video_data_local()
-    root.child('video_data').set(video_data)
-    
-    video_data_search_optimized = get_video_data_local_search_optimized()
-    root.child('video_data_search_optimized').set(video_data_search_optimized)
-    
-    playlist_data = get_playlist_data_local()
-    root.child('playlist_data').set(playlist_data)
-    
-    zone_data = get_zone_data_local()
-    root.child('zone_data').set(zone_data)
-    
-    country_data = get_country_data_local()
-    root.child('country_data').set(country_data)
-    
-    country_data = get_boulder_data_local()
-    root.child('boulder_data').set(country_data)
-    
-    process_contributors_list(root)
-    
-    num_videos = len(video_data['items'])
-    root.child('video_count').set(num_videos)
-
-@lru_cache(maxsize=10)
 def get_video_data():
-    return get_element_from_firebase('video_data')
+    return utils.database.getValue('video_data/items')
     
 def get_video_data_search_optimized():
-    return get_element_from_firebase('video_data_search_optimized')
+    return utils.database.getValue('video_data_search_optimized/items')
 
 def get_contributors_count():
-    return get_element_from_firebase('contributor_count')
+    return utils.database.getValue('contributor_count')
 
-@lru_cache(maxsize=10)
 def get_contributors_list():
     print("get_contributors_list")
-    return get_element_from_firebase('contributors')
+    return utils.database.getValue('contributors/items')
 
 def get_video_count():
-    return get_element_from_firebase('video_count')
+    return utils.database.getValue('video_count')
 
-@lru_cache(maxsize=10)
 def get_playlist_data():
-    return get_element_from_firebase('playlist_data')
+    return utils.database.getValue('playlist_data/items')
 
-@lru_cache(maxsize=10)
 def get_zone_data():
-    return get_element_from_firebase('zone_data')
+    return utils.database.getValue('zone_data/items')
 
 def get_country_data():
-    return get_element_from_firebase('country_data')
+    return utils.database.getValue('country_data/items')
 
 def get_boulder_data():
-    return get_element_from_firebase('boulder_data')
-    
-def get_element_from_firebase(element_name):
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-
-    root = db.reference()
-    return root.child(element_name).get()
+    return utils.database.getValue('boulder_data/items')
 
 
-def get_last_update_date():
-    """
-    Retrieve the date when the data was last updated
-    """
-    with firebase_lock:
-        if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
-            })
-
-    root = db.reference()
-    return root.child('video_data/date').get()
-    
-
-def get_video_data_local_search_optimized():
-    video_data = {}
-    with open('data/channel/processed_data_search_optimized.json', 'r', encoding='utf-8') as f:
-        video_data = json.load(f)
-    return video_data
-    
-def get_video_data_local():
-    video_data = {}
-    with open('data/channel/processed_data.json', 'r', encoding='utf-8') as f:
-        video_data = json.load(f)
-    return video_data
-    
-
-def get_playlist_data_local():
-    zone_data = {}
-    with open('data/channel/processed_playlist_data.json', 'r', encoding='utf-8') as f:
-        zone_data = json.load(f)
-    return zone_data
-    
-
-def get_zone_data_local():
-    zone_data = {}
-    with open('data/channel/zone_data.json', 'r', encoding='utf-8') as f:
-        zone_data = json.load(f)
-    return zone_data
-    
-
-def get_country_data_local():
-    zone_data = {}
+def updateCountries():
+    print("updateCountries")
+    countries = {}
     with open('data/countries.json', 'r', encoding='utf-8') as f:
-        zone_data = json.load(f)
-    return zone_data
-    
+        countries = json.load(f)['items']
 
-def get_boulder_data_local():
-    zone_data = {}
+    utils.database.updateNodeWithItems('country_data', countries, reset=True)
+    updateCountriesConfig()
+
+
+def updateBoulderData():
+    print("updateBoulders")
+    boulders = {}
     with open('data/channel/boulder_data.json', 'r', encoding='utf-8') as f:
-        zone_data = json.load(f)
-    return zone_data
+        boulders = json.load(f)['items']
+
+    utils.database.updateNodeWithItems('boulder_data', boulders, reset=True)
 
 
+def updateCountriesConfig():
+    zone_data = get_zone_data()
 
-def update_countries_list(input_file=CONFIG_FILE):
-    """
-    Update the current list of countries where 
-    we have bouldering zones
-    """
-    # TODO: If a location has no country set, 
-    # this function should fallback and compute it
-    # Update contries list
-    zone_data = get_zone_data_local()
     countries_list = [f'\'{c}\'' for c in set(
-        [z['country'] for z in zone_data['items']])]
+        [z['country'] for z in zone_data])]
     countries_updated = 'COUNTRIES = ['
     for z in countries_list:
         if z != countries_list[-1]:
@@ -700,14 +531,10 @@ def update_countries_list(input_file=CONFIG_FILE):
         else:
             countries_updated += z
     countries_updated += ']'
-    replace_in_file(input_file, 'COUNTRIES', countries_updated)
+    replace_in_file(CONFIG_FILE, 'COUNTRIES', countries_updated)
 
 
 def replace_in_file(file_path, pattern, new_line):
-    """
-    Replace a line in a file if the line contains
-    the pattern
-    """
     # create temp file
     fh, abs_path = mkstemp()
     with fdopen(fh, 'w') as new_file:
@@ -722,9 +549,21 @@ def replace_in_file(file_path, pattern, new_line):
     remove(file_path)
     move(abs_path, file_path)
 
+
+def deprecateSlug(oldSlug, newSlug):
+    utils.MadBoulderDatabase.deprecateSlug(oldSlug, newSlug)
+
+def disableSlug(oldSlug):
+    utils.MadBoulderDatabase.disableSlug(oldSlug)
+
+
+def saveDebugJson(fileName, data):
+    with open(f'/data/debug/{fileName}', 'w', encoding='utf-8') as f:
+        json.dump({'date': str(date.today()),
+                  'items': data}, f, indent=4)
+        
+
 if __name__ == '__main__':
     dry_run=False
-    update_local_database()
 
-    if not dry_run:
-        regenerate_firebase_data()
+    updateData()

@@ -63,8 +63,8 @@
 						<div class="d-flex mt-3 mb-3 log">
 							<div class="ml-auto btn-group mb-auto">
 								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
-									
-									onclick='addToProjects("bulder-del-kueka-direct-7b", "Bulder del Kueka Direct", "7b", "la-comarca", "La Comarca")'>
+									{% if problem_in_projects %}disabled{% endif %}
+									onclick='addToProjects("la-comarca/bulder-del-kueka-direct-7b", "Bulder del Kueka Direct", "7b", "la-comarca", "La Comarca")'>
 									{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}
 								</button>
 							</div>
@@ -125,7 +125,7 @@
 									<td class="text-nowrap" data-iso-date="{{ comment.date }}"></td>
 									<td class="comment d-none d-md-table-cell">{{ comment.text }}</td>
 									<td>
-										{% if session['uid'] == comment.user_id %}
+										{% if session['uid'] == comment.user_uid %}
 											<i onclick='deleteComment("{{ comment.id }}")' class="fas fa-times remove-project-icon" style="cursor: pointer;"></i>
 										{% endif %}
 									</td>
@@ -152,7 +152,7 @@
 		 {% if session['uid'] %} 
 			document.getElementById('comment-form').addEventListener('submit', function(e) {
 				e.preventDefault();
-				const problemId = 'bulder-del-kueka-direct-7b';
+				const problemId = 'la-comarca/bulder-del-kueka-direct-7b';
 				const commentInput = document.getElementById('comment-input');
 				submitComment(problemId, commentInput);
 			});
@@ -185,7 +185,7 @@
 		}
 
 		function deleteComment(comment_id) {
-			const problemId = 'bulder-del-kueka-direct-7b';
+			const problemId = 'la-comarca/bulder-del-kueka-direct-7b';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
@@ -308,7 +308,7 @@
 		}
 
 		function submitRating(rating) {
-			const problemId = 'bulder-del-kueka-direct-7b';
+			const problemId = 'la-comarca/bulder-del-kueka-direct-7b';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({ problem_id: problemId, rating: rating }),
@@ -330,7 +330,7 @@
 		}
 
 		function deleteRating() {
-			const problemId = 'bulder-del-kueka-direct-7b';
+			const problemId = 'la-comarca/bulder-del-kueka-direct-7b';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({problem_id: problemId}),
@@ -361,7 +361,7 @@
 			.then(data => {
 				if(data.status === 'success') {
 					let button = document.getElementById('addToProjectsButton');
-					button.innerText = 'Added';
+					button.innerText = "{{ _('Added to Projects') }}";
 					button.setAttribute('disabled', true);
 				}
 			})

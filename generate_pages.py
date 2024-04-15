@@ -3,6 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import utils.helpers
 import utils.zone_helpers
+import utils.database
 import handle_channel_data
 from slugify import slugify
 
@@ -32,7 +33,7 @@ def main():
     template_env = Environment(loader=template_loader)
 
     playlists = {}
-    for area in areas['items']:
+    for area in areas:
         print("Creating zone map of " + area[NAME_FIELD])
         # get external links
         links = [link for link in area.get(LINKS_FIELD, []) if link.get(LINK_FIELD)]
@@ -49,7 +50,7 @@ def main():
         guides = [guide for guide in guides if guide.get(LINK_FIELD)]
 
         # problems
-        problems = utils.zone_helpers.get_problems_from_zone_code(area[ZONE_CODE_FIELD])
+        problems = utils.database.getVideoDataFromZone(area[ZONE_CODE_FIELD])
         problems.sort(key= lambda x: x['name'])
             
         # sectors

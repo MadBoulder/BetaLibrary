@@ -2,6 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
+import utils.database
 import handle_channel_data
 from slugify import slugify
 
@@ -21,11 +22,11 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for zone in zone_data['items']:
+    for zone in zone_data:
         print("generating zone: " + zone['name'])
         zone_code = zone['zone_code']  
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
-        problems_zone = utils.zone_helpers.get_problems_from_zone_code(zone_code)
+        problems_zone = utils.database.getVideoDataFromZone(zone_code)
         playlists = utils.zone_helpers.get_playlists_from_zone(zone_code)
         
         #country
@@ -39,8 +40,6 @@ def main():
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
-            for p in problems:
-                p['secure'] = slugify(p['name']) + '-'+ slugify(p['grade_with_info'])
                
             video_id = ""
             if 'sectors' in playlists:
