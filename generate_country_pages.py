@@ -14,8 +14,8 @@ def main():
     dir_path_states = 'templates/states'
     utils.helpers.empty_and_create_dir(dir_path_states)
 
-    country_data = handle_channel_data.get_country_data()
-    playlists = handle_channel_data.get_playlist_data()
+    country_data = utils.MadBoulderDatabase.get_country_data()
+    playlists = utils.MadBoulderDatabase.get_playlist_data()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)

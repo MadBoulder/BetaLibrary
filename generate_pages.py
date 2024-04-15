@@ -3,8 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import utils.helpers
 import utils.zone_helpers
-import utils.database
-import handle_channel_data
+import utils.MadBoulderDatabase
 from slugify import slugify
 
 LINK_FIELD = 'link'
@@ -27,7 +26,7 @@ def main():
     Generate html map templates for all the areas located inside the data folder
     as well as a general map that contains all the areas
     """
-    areas = handle_channel_data.get_zone_data()
+    areas = utils.MadBoulderDatabase.get_zone_data()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
@@ -50,7 +49,7 @@ def main():
         guides = [guide for guide in guides if guide.get(LINK_FIELD)]
 
         # problems
-        problems = utils.database.getVideoDataFromZone(area[ZONE_CODE_FIELD])
+        problems = utils.MadBoulderDatabase.getVideoDataFromZone(area[ZONE_CODE_FIELD])
         problems.sort(key= lambda x: x['name'])
             
         # sectors

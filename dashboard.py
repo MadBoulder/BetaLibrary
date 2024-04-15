@@ -13,7 +13,7 @@ from bokeh.plotting import figure
 
 from bokeh.models.callbacks import CustomJS
 
-import handle_channel_data
+import utils.MadBoulderDatabase
 
 NUM_RESULTS = 50
 JS_NUM_RESULTS = f'const num_results = {NUM_RESULTS};'
@@ -44,7 +44,7 @@ SORT_FUNCTION = """
 """
 
 def get_last_dashboard_update():
-    return handle_channel_data.get_last_update_date()
+    return utils.MadBoulderDatabase.get_video_data_date()
 
 
 def prepare_barchart_data(data, axis):
@@ -78,7 +78,7 @@ def get_dashboard():
     its callbacks, as well as data sources.
     """
     # Load data
-    video_data = handle_channel_data.get_video_data()
+    video_data = utils.MadBoulderDatabase.get_video_data()
 
     # X axis categories
     x_axis_map = {

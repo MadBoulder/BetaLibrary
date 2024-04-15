@@ -2,11 +2,11 @@ from enum import Enum
 import json
 import re
 import math
-import handle_channel_data
+import utils.MadBoulderDatabase
 
 
 if __name__ == '__main__':
-    video_data = handle_channel_data.get_video_data()
+    video_data = utils.MadBoulderDatabase.get_video_data()
     
     unique_zones = set()
     unique_climbers = set()

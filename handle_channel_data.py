@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 from functools import lru_cache
 import datetime
 import utils.channel
-import utils.database
 import utils.MadBoulderDatabase
 import logging
 
@@ -112,7 +111,7 @@ def updateVideosFromChannel():
 def updateVideoDatabase():
     print("updateVideoDatabase")
 
-    videos = get_video_data()
+    videos = utils.MadBoulderDatabase.get_video_data()
     if not videos:
         print("No videos found in database.")
         return None
@@ -170,7 +169,7 @@ def updateVideoDatabase():
 
 def getLastDatabaseVideoUpdateDate():
     print("getLastDatabaseVideoUpdateDate")
-    lastUpdate = utils.database.getValue('video_data/date')
+    lastUpdate = utils.MadBoulderDatabase.get_video_data_date()
     print(lastUpdate)       
     if lastUpdate: 
         return datetime.datetime.strptime(lastUpdate, '%Y-%m-%d')
@@ -299,8 +298,7 @@ def retrieveAndUpdateVideoData(resetDatabase=False):
 
     if video_data:
         print("Videos Retrived: ", len(video_data))
-        utils.database.updateNodeWithItems('video_data', video_data, reset=resetDatabase)
-        utils.database.updateNode('video_count', len(video_data))
+        utils.MadBoulderDatabase.setVideoData(video_data, reset=resetDatabase)
         
         saveDebugJson('video_data.json', video_data)
 
@@ -308,7 +306,7 @@ def retrieveAndUpdateVideoData(resetDatabase=False):
 def createOptimizedVideoData():
     print("createOptimizedVideoData")
 
-    videoData = get_video_data()
+    videoData = utils.MadBoulderDatabase.get_video_data()
     if not videoData:
         print("No video data found.")
         return []
@@ -322,7 +320,7 @@ def createOptimizedVideoData():
         del video['sector_code']
         del video['boulder_code']
     
-    utils.database.updateNodeWithItems('video_data_search_optimized', processed_data_search_optimized, reset=True)
+    utils.MadBoulderDatabase.setVideoDataSearchOptimized(processed_data_search_optimized)
 
     saveDebugJson('processed_data_search_optimized.json', processed_data_search_optimized)
 
@@ -362,7 +360,7 @@ def retrieveAndUpdatePlaylistData():
                                                     "id": playlist['id'],
                                                     "video_count": playlist['contentDetails']['itemCount']})
 
-    utils.database.updateNodeWithItems('playlist_data', processed_playlist_data, reset=True)
+    utils.MadBoulderDatabase.setPlaylistData(processed_playlist_data)
 
     saveDebugJson('processed_playlist_data.json', processed_playlist_data)
 
@@ -382,14 +380,14 @@ def updateZoneData():
                 zone_data['altitude'] = get_altitude_from_coordinates(zone_data['latitude'], zone_data['longitude'])
                 zones_data.append(zone_data)
         
-        utils.database.updateNodeWithItems('zone_data', zones_data, reset=True)
+        utils.MadBoulderDatabase.setAreaData(zones_data)
 
         saveDebugJson('zone_data.json', zones_data)
    
 
 def updateContributorsList():
     print("updateContributorsList")
-    video_data = get_video_data()
+    video_data = utils.MadBoulderDatabase.get_video_data()
 
     contributors = {}
     slug_cache = {}
@@ -409,8 +407,7 @@ def updateContributorsList():
             contributors[climber_code]['videos'][video] = videoInfo
             contributors[climber_code]['view_count'] += int(videoInfo['viewCount'])
     
-    utils.database.updateNodeWithItems('contributors', contributors, reset=True)
-    utils.database.updateNode('contributor_count', len(contributors))
+    utils.MadBoulderDatabase.setContributorData(contributors)
 
 
 def get_playlist_thumbnail(thumbnails):
@@ -471,33 +468,13 @@ def get_zone_code_from_name(zone_name, path = 'data/zones'):
     return None
 
 
-def get_video_data():
-    return utils.database.getValue('video_data/items')
-    
-def get_video_data_search_optimized():
-    return utils.database.getValue('video_data_search_optimized/items')
+def updateBoulderData():
+    print("updateBoulders")
+    boulders = {}
+    with open('data/channel/boulder_data.json', 'r', encoding='utf-8') as f:
+        boulders = json.load(f)['items']
 
-def get_contributors_count():
-    return utils.database.getValue('contributor_count')
-
-def get_contributors_list():
-    print("get_contributors_list")
-    return utils.database.getValue('contributors/items')
-
-def get_video_count():
-    return utils.database.getValue('video_count')
-
-def get_playlist_data():
-    return utils.database.getValue('playlist_data/items')
-
-def get_zone_data():
-    return utils.database.getValue('zone_data/items')
-
-def get_country_data():
-    return utils.database.getValue('country_data/items')
-
-def get_boulder_data():
-    return utils.database.getValue('boulder_data/items')
+    utils.MadBoulderDatabase.setBoulderData(boulders)
 
 
 def updateCountries():
@@ -506,21 +483,12 @@ def updateCountries():
     with open('data/countries.json', 'r', encoding='utf-8') as f:
         countries = json.load(f)['items']
 
-    utils.database.updateNodeWithItems('country_data', countries, reset=True)
+    utils.MadBoulderDatabase.setCountryData(countries)
     updateCountriesConfig()
 
 
-def updateBoulderData():
-    print("updateBoulders")
-    boulders = {}
-    with open('data/channel/boulder_data.json', 'r', encoding='utf-8') as f:
-        boulders = json.load(f)['items']
-
-    utils.database.updateNodeWithItems('boulder_data', boulders, reset=True)
-
-
 def updateCountriesConfig():
-    zone_data = get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
 
     countries_list = [f'\'{c}\'' for c in set(
         [z['country'] for z in zone_data])]

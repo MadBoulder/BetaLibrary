@@ -6,10 +6,7 @@ import os
 import os.path
 import shutil
 import utils.zone_helpers
-from googleapiclient.discovery import build
-from werkzeug.utils import secure_filename
-import handle_channel_data
-from slugify import slugify
+import utils.MadBoulderDatabase
 
 
 MAX_ITEMS_API_QUERY = 50
@@ -43,7 +40,7 @@ class bidict(dict):
 
 
 def load_sectors():
-    playlist_data = handle_channel_data.get_playlist_data()
+    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
     sectors = []
     for item in playlist_data:
         for sector in item.get('sectors', []):
@@ -155,7 +152,7 @@ def measure_similarity(query, zone):
 
 
 def search_zone(query, max_score=0):
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
     return search(query, zone_data, max_score)
 
 
@@ -165,7 +162,7 @@ def search_sector(query, max_score=0):
 
 
 def search_problem(query, max_score=0):
-    data = handle_channel_data.get_video_data_search_optimized()
+    data = utils.MadBoulderDatabase.get_video_data_search_optimized()
     return search(query, data, max_score)
 
     
@@ -271,7 +268,7 @@ def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    playlist_data = handle_channel_data.get_playlist_data()
+    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
 
     for item in playlist_data:
         if item['zone_code'] == zone_name:
@@ -293,7 +290,7 @@ def format_views(number):
 
 def get_all_areas_list():
     print("get_all_areas_list")
-    video_data = handle_channel_data.get_video_data()
+    video_data = utils.MadBoulderDatabase.get_video_data()
 
     all_areas = set()
     for video in video_data.values():

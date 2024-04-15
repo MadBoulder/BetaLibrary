@@ -2,8 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
-import utils.database
-import handle_channel_data
+import utils.MadBoulderDatabase
 from slugify import slugify
 
 
@@ -17,7 +16,7 @@ def main():
     dir_path_countries = 'templates/sectors'
     utils.helpers.empty_and_create_dir(dir_path_countries)
 
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
@@ -26,7 +25,7 @@ def main():
         print("generating zone: " + zone['name'])
         zone_code = zone['zone_code']  
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
-        problems_zone = utils.database.getVideoDataFromZone(zone_code)
+        problems_zone = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
         playlists = utils.zone_helpers.get_playlists_from_zone(zone_code)
         
         #country

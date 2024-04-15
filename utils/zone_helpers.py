@@ -1,12 +1,11 @@
 import json
 from slugify import slugify
-import handle_channel_data
-import utils.database
+import utils.MadBoulderDatabase
 from functools import lru_cache
 
 
 def get_zone_view_count_from_zone_code(zone_code):
-    problems = utils.database.getVideoDataFromZone(zone_code)
+    problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
     total_views = sum(int(problem['viewCount']) for problem in problems)
     return total_views
 
@@ -24,7 +23,7 @@ def get_contributor_count_from_problems(problems):
 def get_contributor_data(contributor_id):
     contributor = None
     if contributor_id:
-        contributor = handle_channel_data.get_contributors_list().get(slugify(contributor_id), None)
+        contributor = utils.MadBoulderDatabase.get_contributors_list().get(slugify(contributor_id), None)
     return contributor
 
 
@@ -38,7 +37,7 @@ def get_problems_from_sector(problems_zone, sector_code):
     
     
 def get_sectors_from_zone(zone_code):
-    problems = utils.database.getVideoDataFromZone(zone_code)
+    problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
     sectors = []
     for p in problems:
         alreadyAdded=False
@@ -87,7 +86,7 @@ def get_playlist_url_from_sector(zone_code, sector):
     
     
 def get_playlists_from_zone(zone_code):
-    playlist_data = handle_channel_data.get_playlist_data()
+    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
 
     playlists = []
     for item in playlist_data:
@@ -99,7 +98,7 @@ def get_playlists_from_zone(zone_code):
 
 
 def get_areas_from_country(country_code):
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
 
     areas = []
     for item in zone_data:
@@ -110,7 +109,7 @@ def get_areas_from_country(country_code):
 
 
 def get_areas_from_state(state_code):
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
 
     areas = []
     for item in zone_data:
@@ -121,7 +120,7 @@ def get_areas_from_state(state_code):
 
 
 def get_country_from_code(country_code):
-    country_data = handle_channel_data.get_country_data()
+    country_data = utils.MadBoulderDatabase.get_country_data()
 
     country = {}
     for item in country_data:
@@ -133,7 +132,7 @@ def get_country_from_code(country_code):
 
 
 def get_state_from_code(state_code):
-    country_data = handle_channel_data.get_country_data()
+    country_data = utils.MadBoulderDatabase.get_country_data()
 
     state = {}
     for item in country_data:
@@ -183,7 +182,7 @@ def calculate_contributor_stats(climber_id):
 
 @lru_cache(maxsize=10)
 def calculate_rankings():
-    contributors = handle_channel_data.get_contributors_list()
+    contributors = utils.MadBoulderDatabase.get_contributors_list()
     all_stats = [
         {'climber_id': climber_code, 'name': data['name'], 'video_count': len(data['videos']), 'view_count': data['view_count']}
         for climber_code, data in contributors.items()

@@ -1,15 +1,15 @@
 import json
-import handle_channel_data
+import utils.MadBoulderDatabase
 import utils.helpers
 from slugify import slugify
 from collections import Counter
 
 
 def main():
-    zones_data = handle_channel_data.get_zone_data()
+    zones_data = utils.MadBoulderDatabase.get_zone_data()
     existing_zone_codes = {zone['zone_code'] for zone in zones_data}
 
-    video_data = handle_channel_data.get_video_data()
+    video_data = utils.utils.MadBoulderDatabase.get_video_data()
 
     zone_code_counts = Counter()
     for video in video_data:

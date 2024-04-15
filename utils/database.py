@@ -119,16 +119,16 @@ def delete(element_name):
     return db.reference(element_name).delete()
 
 
-def getVideoDataFromZone(zone_code):
+def getDataByFieldValue(referencePath, fieldName, fieldValue):
     init()
 
-    ref = db.reference('video_data/items')
-    query = ref.order_by_child('zone_code').equal_to(zone_code)
+    ref = db.reference(referencePath)
+    query = ref.order_by_child(fieldName).equal_to(fieldValue)
     results = query.get()
     
     if not results:
-        print("No problems found for zone:", zone_code)
+        print(f"No data found for {fieldName}: {fieldValue}")
         return []
 
-    problems = [data for data in results.values()]
-    return problems
+    dataList = [data for data in results.values()]
+    return dataList

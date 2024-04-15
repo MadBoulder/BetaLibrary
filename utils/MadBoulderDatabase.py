@@ -2,6 +2,62 @@ import utils.database
 import pytz
 import datetime
 
+def get_video_data():
+    return utils.database.getValue('video_data/items')
+
+def get_video_data_date():
+    return utils.database.getValue('video_data/date')
+
+def get_video_count():
+    return utils.database.getValue('video_count')
+
+def setVideoData(videoData, reset=False):
+        utils.database.updateNodeWithItems('video_data', videoData, reset)
+        utils.database.updateNode('video_count', len(videoData))
+    
+def get_video_data_search_optimized():
+    return utils.database.getValue('video_data_search_optimized/items')
+
+def setVideoDataSearchOptimized(videoData):
+    utils.database.updateNodeWithItems('video_data_search_optimized', videoData, reset=True)
+
+def get_contributors_count():
+    return utils.database.getValue('contributor_count')
+
+def get_contributors_list():
+    print("get_contributors_list")
+    return utils.database.getValue('contributors/items')
+
+def setContributorData(contributors):
+    utils.database.updateNodeWithItems('contributors', contributors, reset=True)
+    utils.database.updateNode('contributor_count', len(contributors))
+
+
+def get_playlist_data():
+    return utils.database.getValue('playlist_data/items')
+
+def setPlaylistData(playlists):
+    utils.database.updateNodeWithItems('playlist_data', playlists, reset=True)
+
+def get_zone_data():
+    return utils.database.getValue('zone_data/items')
+
+def setAreaData(areas):
+    utils.database.updateNodeWithItems('zone_data', areas, reset=True)
+
+def get_country_data():
+    return utils.database.getValue('country_data/items')
+
+def setCountryData(countries):
+    utils.database.updateNodeWithItems('country_data', countries, reset=True)
+
+def get_boulder_data():
+    return utils.database.getValue('boulder_data/items')
+
+def setBoulderData(boulders):
+    utils.database.updateNodeWithItems('boulder_data', boulders, reset=True)
+
+
 #Ratings
 def getRatings(problem_id):
     encodedProblemId = utils.database.encodeSlug(problem_id)
@@ -90,6 +146,9 @@ def getVideoDataWithSlug(encodedSlug):
             videoData = utils.database.getNestedChild('video_data', encodedNewUrl)
     return videoData
 
+
+def getVideoDataFromZone(zone_code):
+    return utils.database.getDataByFieldValue('video_data/items', 'zone_code', zone_code)
 
 
 def disableSlug(oldSlug):

@@ -2,8 +2,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
-import handle_channel_data
-import utils.database
+import utils.MadBoulderDatabase
 from slugify import slugify
 
 CLIMBER_FIELD = 'climber'
@@ -29,10 +28,10 @@ def main():
     Generate html templates for all the problems listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
-    zones_data = handle_channel_data.get_zone_data()
+    zones_data = utils.MadBoulderDatabase.get_zone_data()
     all_areas_list = utils.helpers.get_all_areas_list()
     
-    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in handle_channel_data.get_boulder_data()}
+    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in utils.MadBoulderDatabase.get_boulder_data()}
 
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -45,7 +44,7 @@ def main():
         zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
         zone_added = zone_data is not None
 
-        problems = utils.database.getVideoDataFromZone(zone_code)
+        problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
 
         #country
         country_name = ''

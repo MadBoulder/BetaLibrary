@@ -16,11 +16,9 @@ import datetime
 import utils.helpers
 import utils.js_helpers
 import utils.zone_helpers
-import utils.database
 import utils.MadBoulderDatabase
 import dashboard
 import dashboard_videos
-import handle_channel_data
 import re
 import time
 from slugify import slugify
@@ -114,9 +112,9 @@ def get_videos_from_channel():
     key_prefix='mad_zones'
 )
 def get_zone_data():
-    return handle_channel_data.get_zone_data()
+    return utils.MadBoulderDatabase.get_zone_data()
 def get_playlist_data():
-    return handle_channel_data.get_playlist_data()
+    return utils.MadBoulderDatabase.get_playlist_data()
 
 # Set language
 @app.route('/language/<language>')
@@ -195,7 +193,7 @@ def zones():
     # each zone has: link, name, num.videos
     zones = get_zone_data()
     playlists = get_playlist_data()
-    country_data = handle_channel_data.get_country_data()
+    country_data = utils.MadBoulderDatabase.get_country_data()
     return render_template(
         'bouldering-areas-list.html',
         zones=zones,
@@ -652,7 +650,7 @@ def settings_stats():
 
         contributor_stats = utils.zone_helpers.calculate_contributor_stats(user_data['climber_id'])
         user_data['contributor_stats'] = contributor_stats
-        user_data['total_contributors'] = handle_channel_data.get_contributors_count()
+        user_data['total_contributors'] = utils.MadBoulderDatabase.get_contributors_count()
 
     return render_template("/settings/settings-stats.html", user_data=user_data)
 
@@ -667,7 +665,7 @@ def settings_projects():
 
     if projectIds:
         for problemId in projectIds:
-            videoData = utils.database.getNestedChild('video_data', problemId)
+            videoData = utils.MadBoulderDatabase.getVideoDataWithSlug(problemId)
             if videoData:
                 projectsList.append(videoData)
             else:
@@ -681,7 +679,7 @@ def settings_projects():
 @admin_required
 def settings_admin_users():
     users_list, admins_list = get_all_users()
-    contributors = handle_channel_data.get_contributors_list()
+    contributors = utils.MadBoulderDatabase.get_contributors_list()
     return render_template('settings/settings-admin-users.html', users_list=users_list, contributors=contributors)
 
 
@@ -1232,7 +1230,7 @@ def create_assessment(
 
 @app.route('/about-us', methods=['GET'])
 def render_about_us():
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
     stats_list = [
         {
             'text': _('Zones'),
@@ -1240,11 +1238,11 @@ def render_about_us():
         },
         {
             'text': _('Contributors'),
-            'data': handle_channel_data.get_contributors_count()
+            'data': utils.MadBoulderDatabase.get_contributors_count()
         },
         {
             'text': _('Videos'),
-            'data': handle_channel_data.get_video_count()
+            'data': utils.MadBoulderDatabase.get_video_count()
         }
     ]
     return render_template('about-us.html', stats_list=stats_list)
@@ -1377,7 +1375,7 @@ def render_page_es(page):
 
 def get_area_page_stats(page):
     try:
-        zone_problems = utils.database.getVideoDataFromZone(slugify(page))
+        zone_problems = utils.MadBoulderDatabase.getVideoDataFromZone(slugify(page))
 
         views_count = utils.zone_helpers.get_view_count_from_problems(zone_problems)
         contributor_count = utils.zone_helpers.get_contributor_count_from_problems(zone_problems)

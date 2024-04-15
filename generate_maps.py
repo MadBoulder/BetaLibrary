@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.js_helpers
 from utils.id_generator import IDGenerator
-import handle_channel_data
+import utils.MadBoulderDatabase
 
 ZONES_PATH = 'data/zones/'
 
@@ -15,7 +15,7 @@ def main():
     as well as a general map that contains all the areas
     """
     generate_ids = IDGenerator()
-    zone_data = handle_channel_data.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.get_zone_data()
     for zone in zone_data:
         print(zone['zone_code'])
         with open('templates/maps/'+zone['zone_code']+'.html', 'w', encoding='utf-8') as template:
