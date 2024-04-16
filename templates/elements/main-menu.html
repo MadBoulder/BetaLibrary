@@ -1,20 +1,12 @@
-<script type="module" src="/static/js/firebaseInit.js"></script>
-<script type="module">
-	import { getAuth, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js'
-
-	window.getAuth = getAuth;
-	window.signOut = signOut;
-
-	const auth = getAuth();
-	onAuthStateChanged(auth, (user) => {
-		if (user) {
-			showUserMenu(user);
-		}else{
-			hideUserMenu();
-		}
-	});
-</script>
-
+{% if session['uid'] %}
+	<script type="module" src="/static/js/firebaseInit.js"></script>
+	<script type="module"> 
+		import { getAuth, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js' 
+	 
+		window.getAuth = getAuth;
+		window.signOut = signOut;
+	</script> 
+{% endif %}
 <div class="homeTopnav sticky" id="myTopnav"">
 	<a id="logo" class="madboulder-logo" href="/" style="display: -webkit-inline-box; padding: 7px 16px;">
 	<img 
@@ -64,85 +56,89 @@
 		</div>
 	</div>
 	<div style="margin-left: auto; display: flex;">
-		<button id="userMenuButton" class="icon" style="font-size: 17px;" onclick="loadUserDialog()" type="button">
-			<i class="fa fa-user"></i>
-		</button>
+		{% if session['uid'] %}
+			<button id="userMenuButton" class="icon" style="font-size: 17px;" onclick="loadUserDialog()" type="button">
+				<i class="fa fa-user"></i>
+			</button>
+		{% endif %}
 		<button class="icon icon-show-small" style="font-size: 17px;" onclick="loadMenu()" type="button">
 			&#9776;
 		</button>
 	</div>
-	<dialog-helper>
-		<dialog data-target="deferred-side-panel.panel" id="userMenuDialog" aria-modal="true" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-small-portrait Overlay--motion-scaleFade Overlay--placement-right SidePanel">
-			<div styles="flex-direction: row;" data-view-component="true" class="Overlay-header">
-				<div class="Overlay-headerContentWrap">
-					<div class="Overlay-titleWrap">
-						<div data-view-component="true" class="d-flex">
-							<div data-view-component="true" class="overflow-hidden d-flex width-full">
-								<div data-view-component="true" class="lh-condensed overflow-hidden d-flex flex-column flex-justify-center ml-2 f5 mr-auto width-full">
-									<span data-view-component="true" class="Truncate text-bold">
-										<span id="userMenuDialogName" data-view-component="true" class="Truncate-text">
+	{% if session['uid'] %}
+		<dialog-helper>
+			<dialog data-target="deferred-side-panel.panel" id="userMenuDialog" aria-modal="true" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-small-portrait Overlay--motion-scaleFade Overlay--placement-right SidePanel">
+				<div styles="flex-direction: row;" data-view-component="true" class="Overlay-header">
+					<div class="Overlay-headerContentWrap">
+						<div hidden class="Overlay-titleWrap">
+							<div data-view-component="true" class="d-flex">
+								<div data-view-component="true" class="overflow-hidden d-flex width-full">
+									<div data-view-component="true" class="lh-condensed overflow-hidden d-flex flex-column flex-justify-center ml-2 f5 mr-auto width-full">
+										<span data-view-component="true" class="Truncate text-bold">
+											<span id="userMenuDialogName" data-view-component="true" class="Truncate-text">
+											</span>
 										</span>
-									</span>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="Overlay-actionWrap">
-						<button onclick="closeUserDialog()" aria-label="Close" type="button" data-view-component="true" class="close-button Overlay-closeButton">
-							<i class="fa fa-times"></i>
-						</button>
+						<div class="Overlay-actionWrap">
+							<button onclick="closeUserDialog()" aria-label="Close" type="button" data-view-component="true" class="close-button Overlay-closeButton">
+								<i class="fa fa-times"></i>
+							</button>
+						</div>
 					</div>
 				</div>
-			</div>
-			<scrollable-region style="overflow: auto;">
-			<div data-view-component="true" class="Overlay-body d-flex flex-column px-2">
-				<div data-view-component="true" class="d-flex flex-column mb-3">
-					<nav aria-label="User navigation" data-view-component="true" class="ActionList">
-						<nav-list data-catalyst="">
-							<ul data-target="nav-list.topLevelList" data-view-component="true" class="ActionListWrap">
-								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-									<a href="/settings/profile" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-										<i class="fa fa-user"></i>
-										<span data-view-component="true" class="ActionListItem-label">
-											{{ _("Your profile") }}
-										</span>
-									</a>
-								</li>
-								<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-									<a href="/upload" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-										<span class="ActionListItem-visual ActionListItem-visual--leading">
-											<i class="fa fa-upload"></i>
-										</span>
-										<span data-view-component="true" class="ActionListItem-label">
-											{{ _("Upload") }}
-										</span>
-									</a>
-								</li>
-								<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-									<a href="/settings/projects" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-										<span data-view-component="true" class="ActionListItem-label">
-											{{ _("My Projects") }}
-										</span>
-									</a>
-								</li>
-								<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-								<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-									<a id="item-logout" href="#" data-view-component="true" class="ActionListContent">
-										<span data-view-component="true" class="ActionListItem-label">
-											{{ _("Sign out") }}
-										</span>
-									</a>
-								</li>
-							</ul>
-						</nav-list>
-					</nav>
+				<scrollable-region style="overflow: auto;">
+				<div data-view-component="true" class="Overlay-body d-flex flex-column px-2">
+					<div data-view-component="true" class="d-flex flex-column mb-3">
+						<nav aria-label="User navigation" data-view-component="true" class="ActionList">
+							<nav-list data-catalyst="">
+								<ul data-target="nav-list.topLevelList" data-view-component="true" class="ActionListWrap">
+									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+										<a href="/settings/profile" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+											<i class="fa fa-user"></i>
+											<span data-view-component="true" class="ActionListItem-label">
+												{{ _("Your profile") }}
+											</span>
+										</a>
+									</li>
+									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+										<a href="/upload" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+											<span class="ActionListItem-visual ActionListItem-visual--leading">
+												<i class="fa fa-upload"></i>
+											</span>
+											<span data-view-component="true" class="ActionListItem-label">
+												{{ _("Upload") }}
+											</span>
+										</a>
+									</li>
+									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+										<a href="/settings/projects" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+											<span data-view-component="true" class="ActionListItem-label">
+												{{ _("My Projects") }}
+											</span>
+										</a>
+									</li>
+									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
+									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
+										<a id="item-logout" href="#" data-view-component="true" class="ActionListContent">
+											<span data-view-component="true" class="ActionListItem-label">
+												{{ _("Sign out") }}
+											</span>
+										</a>
+									</li>
+								</ul>
+							</nav-list>
+						</nav>
+					</div>
 				</div>
-			</div>
-			</scrollable-region>
-		</dialog>
-	</dialog-helper>
+				</scrollable-region>
+			</dialog>
+		</dialog-helper>
+	{% endif %}
 </div>
 <div id="faded-background" ></div>
 <div class="modal" id="searchingModal">
@@ -252,12 +248,13 @@
 		});
 	}
 
-	function showUserMenu(user){
+	function showUserMenu(){
 		const userMenuButton = document.getElementById('userMenuButton');
 		userMenuButton.style.display = 'block';
-		if (user.displayName) {
-			document.getElementById("userMenuDialogName").textContent = user.displayName;
-		}
+		//Disabled for now to avoid having to retrieve the user element
+		//if (user.displayName) {
+			//document.getElementById("userMenuDialogName").textContent = user.displayName;
+		//}
 	}
 
 	function hideUserMenu(){

@@ -1410,7 +1410,6 @@ def load_problem(area, problem_name):
     try:
         videoData = utils.MadBoulderDatabase.getVideoData(area, problem_name)
         if videoData:
-            print(videoData)
             problem_id = videoData['secure_slug']
 
             user_uid = session.get('uid')
