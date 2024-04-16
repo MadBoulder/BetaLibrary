@@ -3,6 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.zone_helpers
 import utils.MadBoulderDatabase
+import utils.channel
 from slugify import slugify
 
 CLIMBER_FIELD = 'climber'
@@ -18,10 +19,6 @@ SECTOR_CODE_FIELD = 'sector_code'
 BOULDER_FIELD = 'boulder'
 BOULDER_CODE_FIELD = 'boulder_code'
 
-
-
-def get_embed_url(videoId):
-    return f'https://www.youtube.com/embed/{videoId}'
 
 def main():
     """
@@ -84,7 +81,7 @@ def main():
                 zone_code=zone_code,
                 sector=problem[SECTOR_FIELD],
                 sector_code=problem[SECTOR_CODE_FIELD],
-                video_url=get_embed_url(problem['id']),
+                video_url=utils.channel.getEmbedUrl(problem['id']),
                 country_code=country_code,
                 country_name=country_name,
                 state_code=state_code,

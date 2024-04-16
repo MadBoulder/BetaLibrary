@@ -101,11 +101,6 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
         wait_seconds = (next_time - now).seconds
     return wait_seconds
 
-# Cached functions
-@cache.cached(timeout=900, key_prefix='videos_from_channel')
-def get_videos_from_channel():
-    return utils.helpers.get_videos_from_channel()
-
 
 @cache.cached(
     timeout=_get_seconds_to_next_time(hour=11, minute=10, second=00),
@@ -239,12 +234,11 @@ def search():
             search_problem_elapsed_time = time.time() - search_problem_start_time
             print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
             for p in search_results['problems']:
-                p['secure_slug'] = p['zone_code'] + '/' + slugify(p['name'] + '-'+ p['grade_with_info'])
+                p['secure_slug'] = slugify(p['zone']) + '/' + slugify(p['name'] + '-'+ p['grade_with_info'])
 
         def search_beta():
             search_beta_start_time = time.time()
-            search_results['videos'] = utils.helpers.get_video_from_channel(
-                query, results=5)
+            search_results['videos'] = utils.helpers.searchVideosInChanel(query, results=5)
             search_beta_elapsed_time = time.time() - search_beta_start_time
             print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
 
@@ -1103,7 +1097,7 @@ def random_zone():
 
 @app.route('/latest-news-and-videos')
 def render_latest():
-    return render_template('latest-news-and-videos.html', video_urls=get_videos_from_channel())
+    return render_template('latest-news-and-videos.html', video_urls=utils.helpers.getLastVideosFromChannel())
 
 
 @app.route('/weather-forecast-comparator')

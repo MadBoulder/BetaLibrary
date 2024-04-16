@@ -41,6 +41,17 @@ def fetchVideoByDate(publishedAfter, pageToken=None):
     return response
 
 
+def fetchLastPublishedVideos(numVideos=6):
+    response = youtube.search().list(
+        part='snippet,id',
+        channelId=channelId,
+        maxResults=numVideos,
+        order='date',
+        type='video'
+    ).execute()
+    return response
+
+
 def fetchAllVideoIds(uploadPlaylistId, pageToken=None):
     response = youtube.playlistItems().list(
         part='contentDetails',
@@ -70,3 +81,22 @@ def fetchVideoDetails(videoIds):
         id=','.join(videoIds)
     ).execute()
     return response
+
+
+def searchForVideosByName(videoName, results=5):
+    response = youtube.search().list(
+        q=videoName,
+        part='snippet',
+        channelId=channelId,
+        maxResults=results,
+        type='video'
+    ).execute()
+    return response
+
+
+def getEmbedUrl(id):
+    return f"//www.youtube.com/embed/{id}"
+
+
+def getUrl(id):
+    return f"https://www.youtube.com/watch?v={id}"

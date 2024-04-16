@@ -7,13 +7,9 @@ import os.path
 import shutil
 import utils.zone_helpers
 import utils.MadBoulderDatabase
+import utils.channel
 
-
-MAX_ITEMS_API_QUERY = 50
-DATA_ZONES_PATH = 'data/zones/'
 NAME = 'name'
-ENCODING = 'utf-8'
-YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 class bidict(dict):
     """
@@ -207,60 +203,21 @@ def search(query, items, max_score=0):
     return itemps_to_show
 
 
-def get_videos_from_channel(channel_id='UCX9ok0rHnvnENLSK7jdnXxA', num_videos=6):
-    """
-    Obtain the num_videos latest videos from MadBoulder's youtube channel
-    """
-    base_video_url = '//www.youtube.com/embed/'
-    base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
-
-    url = base_search_url + \
-        'key={}&channelId={}&part=snippet,id&order=date&maxResults={}&type=video'.format(
-            YOUTUBE_API_KEY, channel_id, str(num_videos))
-
-    video_links = []
-    inp = urllib.request.urlopen(url)
-    resp = json.load(inp)
-    for i in resp['items']:
-        i['snippet']['title'] = html.unescape(i['snippet']['title'])
-        if i['id']['kind'] == 'youtube#video':
-            video_links.append(base_video_url + i['id']['videoId'])
+def getLastVideosFromChannel(num_videos=6):
+    response = utils.channel.fetchLastPublishedVideos(num_videos)
+    video_links = [utils.channel.getEmbedUrl(item['id']['videoId']) for item in response['items']]
     return video_links
 
 
-def get_channel_info(channel_id='UCX9ok0rHnvnENLSK7jdnXxA'):
-    """
-    Get the info of a youtube channel from the channel's id
-    """
-    query_url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}'.format(
-        channel_id, YOUTUBE_API_KEY)
-    inp = urllib.request.urlopen(query_url)
-    return json.load(inp)
+def searchVideosInChanel(videoName, results=5):
+    response = utils.channel.searchForVideosByName(videoName, results)
+    videos = [{
+        'title': html.unescape(item['snippet']['title']),
+        'video_url': utils.channel.getEmbedUrl(item['id']['videoId']),
+        'url': utils.channel.getUrl(item['id']['videoId'])
+    } for item in response['items']]
 
-
-def get_video_from_channel(video_name, channel_id='UCX9ok0rHnvnENLSK7jdnXxA', results=5):
-    """
-    API query format:
-    https://www.googleapis.com/youtube/v3/search?q=%TEXT%27&part=snippet&type=video&channelId=CHANNEL_ID&key=API_KEY
-    """
-    try:
-        base_video_url = '//www.youtube.com/embed/'  # to embed video
-        query_url = "https://www.googleapis.com/youtube/v3/search?q=%27{}%27&part=snippet&type=video&channelId={}&key={}".format(
-            urllib.parse.quote(video_name), channel_id, YOUTUBE_API_KEY)
-        inp = urllib.request.urlopen(query_url)
-        resp = json.load(inp)
-        for i in resp['items']:
-            if i['id']['kind'] == 'youtube#video':
-                i['snippet']['title'] = html.unescape(i['snippet']['title'])
-                i['video_url'] = base_video_url + i['id']['videoId']
-                i['url'] = 'https://www.youtube.com/watch?v=' + i['id']['videoId']
-        return resp['items'][0:results]
-    except urllib.error.HTTPError as e:
-        print(f"HTTPError: {e}")
-        return []
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return []
+    return videos
 
 
 def get_number_of_videos_for_zone(zone_name):
