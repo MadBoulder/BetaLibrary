@@ -30,10 +30,14 @@ def main():
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
+    templatePage = template_env.get_template('templates/templates/area_page_template.html')
+    templatePage_es = template_env.get_template('templates/templates/es/area_page_template.html')
 
     playlists = {}
-    for area in areas:
-        print("Creating zone map of " + area[NAME_FIELD])
+    total_areas = len(areas)
+    for index, area in enumerate(areas, start=1):
+        print(f"Creating zone map of {area[NAME_FIELD]} ({index}/{total_areas})")
+        
         # get external links
         links = [link for link in area.get(LINKS_FIELD, []) if link.get(LINK_FIELD)]
         # get external guides
@@ -70,8 +74,7 @@ def main():
         #overview
         overview = area.get("overview", [""])[0]
         
-        template = template_env.get_template('templates/templates/area_page_template.html')
-        output = template.render(
+        output = templatePage.render(
             problems=problems,
             sectors=sectors,
             area_code=area[ZONE_CODE_FIELD],
@@ -97,8 +100,6 @@ def main():
         with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
-
-
         guides_es = [
             {
                 "name": guide["name"],
@@ -112,8 +113,7 @@ def main():
         state_name_es = state.get('name','')[1] if state else ''
         overview_es = area.get("overview", [""])[1]
 
-        template_es = template_env.get_template('templates/templates/es/area_page_template.html')
-        output = template_es.render(
+        output = templatePage_es.render(
             problems=problems,
             sectors=sectors,
             area_code=area[ZONE_CODE_FIELD],

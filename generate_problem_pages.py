@@ -36,8 +36,9 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for zone_code in all_areas_list:
-        print("Generating Problems for " + zone_code)
+    for index, zone_code in enumerate(all_areas_list, start=1):
+        print(f"Generating Problems for {zone_code} ({index}/{len(all_areas_list)})")
+        
         zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
         zone_added = zone_data is not None
 

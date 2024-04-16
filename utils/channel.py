@@ -95,7 +95,7 @@ def searchForVideosByName(videoName, results=5):
 
 
 def getEmbedUrl(id):
-    return f"//www.youtube.com/embed/{id}"
+    return f"https://www.youtube.com/embed/{id}"
 
 
 def getUrl(id):

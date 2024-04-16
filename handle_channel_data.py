@@ -277,14 +277,14 @@ def getProblemName(title, nameDescription, grade, zone):
 def updateData(
     retrieve_data_from_channel=True
 ):
-    if retrieve_data_from_channel:
-        retrieveAndUpdateVideoData(resetDatabase=False)
-        createOptimizedVideoData()
+    #if retrieve_data_from_channel:
+        #retrieveAndUpdateVideoData(resetDatabase=False)
+        #createOptimizedVideoData()
         retrieveAndUpdatePlaylistData()
-    updateZoneData()
-    updateCountries()
-    updateBoulderData()
-    updateContributorsList()
+    #updateZoneData()
+    #updateCountries()
+    #updateBoulderData()
+    #updateContributorsList()
 
 
 def retrieveAndUpdateVideoData(resetDatabase=False):
@@ -353,7 +353,7 @@ def retrieveAndUpdatePlaylistData():
             playlist_json_object['zone_code'] = slugify(zone_name)
             playlist_json_object['id'] = playlist['id']
             playlist_json_object['video_count'] = playlist['contentDetails']['itemCount']
-            playlist_json_object['thumbnail'] = get_playlist_thumbnail(playlist['snippet']['thumbnails'])
+            playlist_json_object['thumbnails'] = get_playlist_thumbnails(playlist['snippet']['thumbnails'])
         else:
             playlist_json_object['sectors'].append({"name": sector_name, 
                                                     "sector_code": slugify(sector_name), 
@@ -410,21 +410,14 @@ def updateContributorsList():
     utils.MadBoulderDatabase.setContributorData(contributors)
 
 
-def get_playlist_thumbnail(thumbnails):
-    thumbnailUrl = None
-
-    if 'maxres' in thumbnails:
-        thumbnailUrl = thumbnails['maxres']['url']
-    elif 'standard' in thumbnails:
-        thumbnailUrl = thumbnails['standard']['url']
-    elif 'high' in thumbnails:
-        thumbnailUrl = thumbnails['high']['url']
-    elif 'medium' in thumbnails:
-        thumbnailUrl = thumbnails['medium']['url']
-    elif 'default' in thumbnails:
-        thumbnailUrl = thumbnails['default']['url']
-    
-    return thumbnailUrl
+def get_playlist_thumbnails(thumbnails):
+    return {
+        'maxres': thumbnails.get('maxres', {}).get('url'),
+        'standard': thumbnails.get('standard', {}).get('url'),
+        'high': thumbnails.get('high', {}).get('url'),
+        'medium': thumbnails.get('medium', {}).get('url'),
+        'default': thumbnails.get('default', {}).get('url')
+    }
     
     
 def get_altitude_from_coordinates(latitude, longitude):
@@ -526,7 +519,12 @@ def disableSlug(oldSlug):
 
 
 def saveDebugJson(fileName, data):
-    with open(f'/data/debug/{fileName}', 'w', encoding='utf-8') as f:
+    directory = 'data/debug'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    filePath = os.path.join(directory, fileName)
+    with open(filePath, 'w', encoding='utf-8') as f:
         json.dump({'date': str(date.today()),
                   'items': data}, f, indent=4)
         
