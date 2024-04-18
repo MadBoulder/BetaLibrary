@@ -27,7 +27,7 @@
             <div class="form-group">
               <div class="row d-flex justify-content-center mt-100">
                 <div class="col-md-6" id="inactive-countries-list"> 
-                  {% for country in country_data %}
+                  {% for country in country_data.values() %}
                   <div class="active-filter-selection row" id="{{ country['reduced_code'] }}" data-country-name="{{ country['name'][0] }}"">
                     <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
                       {{ country['name'][0] }}
@@ -75,11 +75,11 @@
 			<div class="container" id="selected-countries" style="margin:inherit; padding: inherit; display: flex;">
 			</div>
 			<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
-				{% for zone in zones %}
-					<div class="custom-card" id="{{ zone['zone_code'] }}_{{zone['country']}}">
-            {% set found_element = playlists | selectattr('zone_code', 'equalto', zone['zone_code']) | first %}
+				{% for zone_code, zone in zones.items() %}
+					<div class="custom-card" id="{{ zone_code }}_{{zone['country']}}">
+            {% set found_element = playlists.get(zone_code, None) %}
             {% if found_element %}
-              <a href="/{{ zone['zone_code'] }}" style="text-decoration: none;">
+              <a href="/{{ zone_code }}" style="text-decoration: none;">
                 <div class="card-body">
                   <div class="card-body-image-container">
                     <div class="card-body-image-container-container">
@@ -95,7 +95,7 @@
               </a>
               <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                    var card = document.getElementById("{{ zone['zone_code'] }}_{{ zone['country'] }}");
+                    var card = document.getElementById("{{ zone_code }}_{{ zone['country'] }}");
                     var cardImage = card.querySelector(".card-body-image");
                     cardImage.src = "{{ found_element.thumbnails.maxres if found_element.thumbnails.maxres
                       else found_element.thumbnails.standard if found_element.thumbnails.standard

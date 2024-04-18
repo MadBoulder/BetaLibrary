@@ -99,11 +99,11 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% for state in states %}
+								{% for state_code, state in states.items() %}
 									<tr class="state-row">
 										<td>
 											<i class="fas fa-map table-row-icon"></i>
-											<a href="/states/{{state['code']}}" class="table-row-name text-bold">{{ state["name"][0] }}</a>
+											<a href="/states/{{state_code}}" class="table-row-name text-bold">{{ state["name"][0] }}</a>
 										</td>
 										<td>{{ state["count"] }}</td>
 									</tr>
@@ -152,11 +152,11 @@
 						</div>
 					</div>
 					<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
-						{% for area in areas %}
+						{% for areaCode, area in areas.items() %}
 							<div class="custom-card" id="{{ area['zone_code'] }}_{{area['country']}}">
-								{% set found_element = playlists | selectattr('zone_code', 'equalto', area['zone_code']) | first %}
+								{% set found_element = playlists.get(areaCode) %}
 								{% if found_element %}
-								<a href="/{{ area['zone_code'] }}" style="text-decoration: none;">
+								<a href="/{{ areaCode }}" style="text-decoration: none;">
 									<div class="card-body">
 										<div class="card-body-image-container">
 											<div class="card-body-image-container-container">
@@ -172,9 +172,13 @@
 								</a>
 								<script>
 									document.addEventListener("DOMContentLoaded", function() {
-										var card = document.getElementById("{{ area['zone_code'] }}_{{ area['country'] }}");
+										var card = document.getElementById("{{ areaCode }}_{{ area['country'] }}");
 										var cardImage = card.querySelector(".card-body-image");
-										cardImage.src = "{{ found_element.thumbnail }}";
+										cardImage.src = "{{ found_element.thumbnails.maxres if found_element.thumbnails.maxres
+											else found_element.thumbnails.standard if found_element.thumbnails.standard
+											else found_element.thumbnails.high if found_element.thumbnails.high
+											else found_element.thumbnails.medium if found_element.thumbnails.medium
+											else found_element.thumbnails.default}}";
 										var cardText = card.querySelector(".card-text");
 										var videoCount = {{ found_element.video_count }};
 										cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");

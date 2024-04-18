@@ -26,7 +26,7 @@ def main():
     Generate html map templates for all the areas located inside the data folder
     as well as a general map that contains all the areas
     """
-    areas = utils.MadBoulderDatabase.get_zone_data()
+    areas = utils.MadBoulderDatabase.getAreasData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
@@ -35,8 +35,8 @@ def main():
 
     playlists = {}
     total_areas = len(areas)
-    for index, area in enumerate(areas, start=1):
-        print(f"Creating zone map of {area[NAME_FIELD]} ({index}/{total_areas})")
+    for areaCode, area in areas.items():
+        print(f"Creating area page of {area[NAME_FIELD]}")
         
         # get external links
         links = [link for link in area.get(LINKS_FIELD, []) if link.get(LINK_FIELD)]
@@ -53,23 +53,18 @@ def main():
         guides = [guide for guide in guides if guide.get(LINK_FIELD)]
 
         # problems
-        problems = utils.MadBoulderDatabase.getVideoDataFromZone(area[ZONE_CODE_FIELD])
+        problems = utils.MadBoulderDatabase.getVideoDataFromZone(areaCode)
         problems.sort(key= lambda x: x['name'])
             
         # sectors
-        sectors = utils.zone_helpers.get_sectors_from_zone(area[ZONE_CODE_FIELD])
+        sectors = utils.zone_helpers.get_sectors_from_zone(areaCode)
         sectors.sort(key= lambda x: x)
         
         #playlists
-        playlists = utils.zone_helpers.get_playlists_from_zone(area[ZONE_CODE_FIELD])
+        playlists = utils.zone_helpers.get_playlists_from_zone(areaCode)
 
         #country
-        country = utils.zone_helpers.get_country_from_code(area[COUNTRY_CODE_FIELD])
-        country_name = country.get('name','')[0] if country else ''
-
-        state = utils.zone_helpers.get_state_from_code(area.get(STATE_CODE_FIELD,''))
-        state_code = state.get('code','') if state else ''
-        state_name = state.get('name','')[0] if state else ''
+        areaInfo = utils.zone_helpers.getStateAndCountryInfo(areaCode)
 
         #overview
         overview = area.get("overview", [""])[0]
@@ -77,27 +72,23 @@ def main():
         output = templatePage.render(
             problems=problems,
             sectors=sectors,
-            area_code=area[ZONE_CODE_FIELD],
+            area_code=areaCode,
             name=area[NAME_FIELD],
             rock_type=utils.zone_helpers.get_rock_type_str(area.get(ROCK_TYPE_FIELD, "")),
             overview=overview,
-            file_name=area[ZONE_CODE_FIELD],
             tag_name=area[NAME_FIELD].replace("'", r"\'"),
             links_list=links,
             guides_list=guides,
-            map_url='maps/'+area[ZONE_CODE_FIELD],
+            map_url='maps/'+areaCode,
             playlists=playlists,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
             alt=int(area.get(ALTITUDE_FIELD,'0')),
             zone=area[NAME_FIELD],
-            country_code=country.get('code',''),
-            country_name=country_name,
-            state_code=state_code,
-            state_name=state_name
+            areaInfo=areaInfo
         )
 
-        with open('templates/zones/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template:
+        with open('templates/zones/'+areaCode+'.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
         guides_es = [
@@ -110,33 +101,28 @@ def main():
             if guide.get(LINK_FIELD)
         ]
         guides_es = [guide for guide in guides_es if guide.get(LINK_FIELD)]
-        state_name_es = state.get('name','')[1] if state else ''
         overview_es = area.get("overview", [""])[1]
 
         output = templatePage_es.render(
             problems=problems,
             sectors=sectors,
-            area_code=area[ZONE_CODE_FIELD],
+            area_code=areaCode,
             name=area[NAME_FIELD],
             rock_type=utils.zone_helpers.get_rock_type_str(area.get(ROCK_TYPE_FIELD, "")),
             overview=overview_es,
-            file_name=area[ZONE_CODE_FIELD],
             tag_name=area[NAME_FIELD].replace("'", r"\'"),
             links_list=links,
             guides_list=guides_es,
-            map_url='maps/'+area[ZONE_CODE_FIELD],
+            map_url='maps/'+areaCode,
             playlists=playlists,
             lat=area[LATITUDE_FIELD],
             lng=area[LONGITUDE_FIELD],
             alt=int(area.get(ALTITUDE_FIELD,'0')),
             zone=area[NAME_FIELD],
-            country_code=country.get('code',''),
-            country_name=country_name,
-            state_code=state_code,
-            state_name=state_name_es
+            areaInfo=areaInfo
         )
 
-        with open('templates/zones/es/'+area[ZONE_CODE_FIELD]+'.html', 'w', encoding='utf-8') as template_es:
+        with open('templates/zones/es/'+areaCode+'.html', 'w', encoding='utf-8') as template_es:
             template_es.write(output)
 
 

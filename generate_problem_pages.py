@@ -25,11 +25,9 @@ def main():
     Generate html templates for all the problems listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
-    zones_data = utils.MadBoulderDatabase.get_zone_data()
+    zones_data = utils.MadBoulderDatabase.getAreasData()
     all_areas_list = utils.helpers.get_all_areas_list()
     
-    boulders = {area['area_code']: {boulder['name_code']: boulder['coordinates'] for boulder in area['boulders']} for area in utils.MadBoulderDatabase.get_boulder_data()}
-
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
 
@@ -39,33 +37,17 @@ def main():
     for index, zone_code in enumerate(all_areas_list, start=1):
         print(f"Generating Problems for {zone_code} ({index}/{len(all_areas_list)})")
         
-        zone_data = utils.helpers.find_item(zones_data, "zone_code", zone_code)
-        zone_added = zone_data is not None
-
+        areaInfo = utils.zone_helpers.getStateAndCountryInfo(zone_code)
         problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-
-        #country
-        country_name = ''
-        country_code = ''
-        if zone_data:
-            country = utils.zone_helpers.get_country_from_code(zone_data.get('country',''))
-            country_code = country.get('code','') if country else ''
-            country_name = country.get('name','')[0] if country else ''
-
-        state_name = ''
-        state_code = ''
-        if zone_data:
-            state = utils.zone_helpers.get_state_from_code(zone_data.get('state',''))
-            state_code = state.get('code','') if state else ''
-            state_name = state.get('name','')[0] if state else ''
+        boulders = utils.MadBoulderDatabase.getBoulderData(zone_code)
 
         for problem in problems:
             coordinates = None
             boulder_code = ''
-            if zone_code in boulders:
+            if boulders:
                 boulder_code = problem.get(BOULDER_CODE_FIELD)
-                if boulder_code and boulder_code in boulders[zone_code]:
-                    coordinates = boulders[zone_code][boulder_code]
+                if boulder_code and boulder_code in boulders:
+                    coordinates = boulders[boulder_code]['coordinates']
             
             boulder_name = problem.get(BOULDER_FIELD, '')
 
@@ -83,12 +65,8 @@ def main():
                 sector=problem[SECTOR_FIELD],
                 sector_code=problem[SECTOR_CODE_FIELD],
                 video_url=utils.channel.getEmbedUrl(problem['id']),
-                country_code=country_code,
-                country_name=country_name,
-                state_code=state_code,
-                state_name=state_name,
+                areaInfo=areaInfo,
                 file_name=file_name,
-                zone_added=zone_added,
                 coordinates=coordinates,
                 boulder_code=boulder_code,
                 boulder_name=boulder_name

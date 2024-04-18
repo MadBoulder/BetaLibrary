@@ -36,13 +36,14 @@ class bidict(dict):
 
 
 def load_sectors():
-    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
-    sectors = []
-    for item in playlist_data:
-        for sector in item.get('sectors', []):
-            sector['zone_code'] = item['zone_code']
-            sector['zone_name'] = item['title']
-            sectors.append(sector)
+    playlists = utils.MadBoulderDatabase.getPlaylistsData()
+    sectors = {}
+    for areaCode, playlist in playlists.items():
+        for sector in playlist.get('sectors', {}):
+            sector_data = playlist['sectors'][sector]
+            sector_data['zone_code'] = areaCode
+            sector_data['zone_name'] = playlist['title']
+            sectors[sector] = sector_data
     return sectors
 
 
@@ -148,7 +149,7 @@ def measure_similarity(query, zone):
 
 
 def search_zone(query, max_score=0):
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.getAreasData()
     return search(query, zone_data, max_score)
 
 
@@ -188,7 +189,7 @@ def search(query, items, max_score=0):
     if not query:
         return []
     
-    for item in items:
+    for item in items.values():
         lev, long_sub = measure_similarity(query, item[NAME])
         score = lev / (long_sub ** 4 + 1)
         item['score'] = score
@@ -196,7 +197,7 @@ def search(query, items, max_score=0):
         # add a score of 0
         if long_sub == len(query):
             item['score'] = 0
-    itemps_to_show = [item for item in items if item['score'] <= max_score]
+    itemps_to_show = [item for item in items.values() if item['score'] <= max_score]
     # Sort by score
     itemps_to_show.sort(key=lambda x: x['score'])
     
@@ -225,7 +226,7 @@ def get_number_of_videos_for_zone(zone_name):
     """
     Given a zone name, return the number of betas of the zone
     """
-    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
+    playlist_data = utils.MadBoulderDatabase.getPlaylistsData()
 
     for item in playlist_data:
         if item['zone_code'] == zone_name:
@@ -247,7 +248,7 @@ def format_views(number):
 
 def get_all_areas_list():
     print("get_all_areas_list")
-    video_data = utils.MadBoulderDatabase.get_video_data()
+    video_data = utils.MadBoulderDatabase.getAllVideoData()
 
     all_areas = set()
     for video in video_data.values():

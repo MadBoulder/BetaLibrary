@@ -44,7 +44,7 @@ SORT_FUNCTION = """
 """
 
 def get_last_dashboard_update():
-    return utils.MadBoulderDatabase.get_video_data_date()
+    return utils.MadBoulderDatabase.getVideoDataDate()
 
 
 def prepare_barchart_data(data, axis):
@@ -78,7 +78,7 @@ def get_dashboard():
     its callbacks, as well as data sources.
     """
     # Load data
-    video_data = utils.MadBoulderDatabase.get_video_data()
+    video_data = utils.MadBoulderDatabase.getVideoData()
 
     # X axis categories
     x_axis_map = {

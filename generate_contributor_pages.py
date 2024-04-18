@@ -11,7 +11,7 @@ def main():
     dir_path = 'templates/contributors'
     utils.helpers.empty_and_create_dir(dir_path)
 
-    contributors = utils.MadBoulderDatabase.get_contributors_list()
+    contributors = utils.MadBoulderDatabase.getContributorsList()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)

@@ -27,96 +27,9 @@ def init():
             })
 
 
-def getValue(element_name):
+def getValue(refPath):
     init()
-    return db.reference(element_name).get()
-
-
-def getNestedChild(elementName, childKey):
-    init()
-    return db.reference(f"{elementName}/items/{childKey}").get()
-
-
-def updateNode(elementName, data):
-    init()
-    nodeRef = db.reference(elementName)
-    nodeRef.set(data)
-
-
-def updateNodeWithItems(nodeName, data, reset=False):
-    init()
-    root = db.reference()
-    nodePath = root.child(nodeName)
-    
-    if nodePath.get() is None:
-        print(f"No existing data found for {nodeName}. Creating new node...")
-        nodePath.set({
-            'items': data,
-            'date': datetime.datetime.now().strftime("%Y-%m-%d")
-        })
-    else:
-        print(f"Updating existing data for {nodeName}.")
-
-        update_dict = {'items': data}
-        update_dict['date'] = datetime.datetime.now().strftime("%Y-%m-%d")
-
-        if reset:
-            nodePath.set(update_dict)
-        else:
-            nodePath.update(update_dict)
-
-
-def updateNestedChildNode(elementName, childKey, subChildKey, newData):
-    init()
-    root = db.reference()
-    nestedChildRef = root.child(f"{elementName}/items/{childKey}/{subChildKey}")
-    nestedChildRef.update(newData)
-
-
-def updateChildNode(elementName, childKey, subChildKey, newData):
-    init()
-    root = db.reference()
-    ref = root.child(f'{elementName}/{childKey}/{subChildKey}')
-    ref.update(newData)
-
-
-def setChildNode(elementName, childKey, subChildKey, newData):
-    init()
-    ref = db.reference(f'{elementName}/{childKey}/{subChildKey}')
-    ref.set(newData)
-
-
-def updateChildNodeWithUniqueId(elementName, childKey, subChildKey, newData):
-    init()
-    ref = db.reference(f'{elementName}/{childKey}/{subChildKey}')
-    newRef = ref.push(newData)
-    return newRef.key
-
-
-def updateNestedChild(elementName, childKey, newData):
-    init()
-    root = db.reference()
-    nestedChildRef = root.child(f"{elementName}/items/{childKey}")
-    nestedChildRef.update(newData)
-
-
-def updateChild(elementName, childKey, newData):
-    init()
-    root = db.reference()
-    nestedChildRef = root.child(f"{elementName}/{childKey}")
-    nestedChildRef.update(newData)
-
-
-def updateNodeNestedChildNode(parentNode, childNode, nestedChildNode, newData):
-    init()
-    nestedChildRef = db.reference(f"{parentNode}/{childNode}/{nestedChildNode}")
-    print(f"Updating nested child {nestedChildNode} for {childNode} under {parentNode}.")
-    nestedChildRef.update(newData)
-
-    
-def delete(element_name):
-    init()
-    return db.reference(element_name).delete()
+    return db.reference(refPath).get()
 
 
 def getDataByFieldValue(referencePath, fieldName, fieldValue):
@@ -132,3 +45,43 @@ def getDataByFieldValue(referencePath, fieldName, fieldValue):
 
     dataList = [data for data in results.values()]
     return dataList
+
+
+def setValue(refPath, value):
+    """ Set value for a specific path, overwriting existing data """
+    init()
+    db.reference(refPath).set(value)
+
+
+def updateValue(refPath, value):
+    """ Update value for a specific path, without overwriting existing data """
+    init()
+    db.reference(refPath).update(value)
+
+
+def addChildWithUniqueId(refPath, newData):
+    try:
+        ref = db.reference(refPath)
+        newRef = ref.push(newData)
+        return newRef.key
+    except Exception as e:
+        print(f"Failed to add child at {refPath}: {e}")
+        return None
+
+
+def delete(refPath):
+    init()
+    return db.reference(refPath).delete()
+
+
+def getDate(refPath):
+    init()
+    db.reference(f'{refPath}/date').get()
+
+
+def updateDate(refPath):
+    init()
+    db.reference(refPath).update({'date': datetime.datetime.now().isoformat()})
+
+
+

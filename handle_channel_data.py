@@ -111,7 +111,7 @@ def updateVideosFromChannel():
 def updateVideoDatabase():
     print("updateVideoDatabase")
 
-    videos = utils.MadBoulderDatabase.get_video_data()
+    videos = utils.MadBoulderDatabase.getVideoData()
     if not videos:
         print("No videos found in database.")
         return None
@@ -169,9 +169,9 @@ def updateVideoDatabase():
 
 def getLastDatabaseVideoUpdateDate():
     print("getLastDatabaseVideoUpdateDate")
-    lastUpdate = utils.MadBoulderDatabase.get_video_data_date()
+    lastUpdate = utils.MadBoulderDatabase.getVideoDataDate()
     print(lastUpdate)       
-    if lastUpdate: 
+    if lastUpdate:
         return datetime.datetime.strptime(lastUpdate, '%Y-%m-%d')
     else:
         return datetime.datetime.now()
@@ -279,9 +279,9 @@ def updateData(
 ):
     #if retrieve_data_from_channel:
         #retrieveAndUpdateVideoData(resetDatabase=False)
-        #createOptimizedVideoData()
-        retrieveAndUpdatePlaylistData()
-    #updateZoneData()
+        createOptimizedVideoData()
+        #retrieveAndUpdatePlaylistData()
+    #updateAreaData()
     #updateCountries()
     #updateBoulderData()
     #updateContributorsList()
@@ -298,7 +298,7 @@ def retrieveAndUpdateVideoData(resetDatabase=False):
 
     if video_data:
         print("Videos Retrived: ", len(video_data))
-        utils.MadBoulderDatabase.setVideoData(video_data, reset=resetDatabase)
+        utils.MadBoulderDatabase.setVideoData(video_data)
         
         saveDebugJson('video_data.json', video_data)
 
@@ -306,79 +306,86 @@ def retrieveAndUpdateVideoData(resetDatabase=False):
 def createOptimizedVideoData():
     print("createOptimizedVideoData")
 
-    videoData = utils.MadBoulderDatabase.get_video_data()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
     if not videoData:
         print("No video data found.")
-        return []
+        return {}
 
-    processed_data_search_optimized = [video for video in videoData.values() if video.get('name') != 'Unknown']
-    for video in processed_data_search_optimized:
+    for videoCode, video in videoData.items():
+        if videoCode == 'Unknown':
+            videoData[videoCode] = None
+            continue
         del video['viewCount']
         del video['date']
         del video['zone_code']
         del video['climber_code']
         del video['sector_code']
         del video['boulder_code']
-    
-    utils.MadBoulderDatabase.setVideoDataSearchOptimized(processed_data_search_optimized)
+        
+    utils.MadBoulderDatabase.setVideoDataSearchOptimized(videoData)
 
-    saveDebugJson('processed_data_search_optimized.json', processed_data_search_optimized)
+    saveDebugJson('processed_data_search_optimized.json', videoData)
 
          
 def retrieveAndUpdatePlaylistData():
     print("retrieveAndUpdatePlaylistData")
     
     playlists = retrieve_playlists_from_channel()
-                   
     saveDebugJson('raw_playlist_data.json', playlists)
     
-    processed_playlist_data = []
+    processed_playlist_data = {}
     print("retrieveAndUpdatePlaylistData Processing..")
     for playlist in playlists:
         title = playlist['snippet']['title']
-        is_sector = 'Sector' in title
+        is_sector = ': Sector' in title
         zone_name, sector_name = title.split(': Sector ') if is_sector else (title, None)
-            
-        playlist_json_object = []
-        for p in processed_playlist_data:
-            if p['title'] == zone_name:
-                playlist_json_object = p
-                break
         
-        if not playlist_json_object:
-            playlist_json_object = {"title": zone_name, "sectors": []}
-            processed_playlist_data.append(playlist_json_object)
-            
-        if not is_sector:
-            playlist_json_object['zone_code'] = slugify(zone_name)
-            playlist_json_object['id'] = playlist['id']
-            playlist_json_object['video_count'] = playlist['contentDetails']['itemCount']
-            playlist_json_object['thumbnails'] = get_playlist_thumbnails(playlist['snippet']['thumbnails'])
-        else:
-            playlist_json_object['sectors'].append({"name": sector_name, 
-                                                    "sector_code": slugify(sector_name), 
-                                                    "id": playlist['id'],
-                                                    "video_count": playlist['contentDetails']['itemCount']})
+        zone_code = slugify(zone_name)
+        if zone_code not in processed_playlist_data:
+            processed_playlist_data[zone_code] = {
+                "title": zone_name,
+                "zone_code": zone_code,
+                "sectors": {}
+            }
 
+        if is_sector:
+            sector_code = slugify(sector_name)
+            processed_playlist_data[zone_code]['sectors'][sector_code] = {
+                "name": sector_name,
+                "sector_code": sector_code,
+                "id": playlist['id'],
+                "video_count": playlist['contentDetails']['itemCount'],
+                "thumbnails": get_playlist_thumbnails(playlist['snippet']['thumbnails'])
+            }
+        else:
+            processed_playlist_data[zone_code].update({
+                "id": playlist['id'],
+                "video_count": playlist['contentDetails']['itemCount'],
+                "thumbnails": get_playlist_thumbnails(playlist['snippet']['thumbnails'])
+            })
+        
     utils.MadBoulderDatabase.setPlaylistData(processed_playlist_data)
 
     saveDebugJson('processed_playlist_data.json', processed_playlist_data)
 
 
-def updateZoneData():
+def updateAreaData():
     print("updateZoneData")
     
-    if os.path.exists('data/zones'):
-        zones = next(os.walk('data/zones/'))[1]
-        zones_data = []
-        for zone_code in zones:
-            datafile = 'data/zones/' + zone_code + '/' + zone_code + '.json'
-            print(datafile)
-            with open(datafile, encoding='utf-8') as data:
-                zone_data = json.load(data)
+    zone_data_path = 'data/zones/'
+    zones_data = {}
+    
+    if os.path.exists(zone_data_path):
+        zone_directories  = next(os.walk(zone_data_path))[1]
+        for zone_code in zone_directories :
+            data_file = f'{zone_data_path}{zone_code}/{zone_code}.json'
+            print(data_file)
+            with open(data_file, encoding='utf-8') as file:
+                zone_data = json.load(file)
+
                 zone_data['zone_code'] = slugify(zone_data['name'])
                 zone_data['altitude'] = get_altitude_from_coordinates(zone_data['latitude'], zone_data['longitude'])
-                zones_data.append(zone_data)
+                zones_data[zone_data['zone_code']] = zone_data
         
         utils.MadBoulderDatabase.setAreaData(zones_data)
 
@@ -387,7 +394,7 @@ def updateZoneData():
 
 def updateContributorsList():
     print("updateContributorsList")
-    video_data = utils.MadBoulderDatabase.get_video_data()
+    video_data = utils.MadBoulderDatabase.getVideoData()
 
     contributors = {}
     slug_cache = {}
@@ -440,7 +447,6 @@ def get_altitude_from_coordinates(latitude, longitude):
         print(f"An error occurred: {str(e)}")
         return None
 
-   
 
 def get_zone_code_from_name(zone_name, path = 'data/zones'):
     file_list = os.listdir(path)
@@ -463,52 +469,47 @@ def get_zone_code_from_name(zone_name, path = 'data/zones'):
 
 def updateBoulderData():
     print("updateBoulders")
-    boulders = {}
     with open('data/channel/boulder_data.json', 'r', encoding='utf-8') as f:
-        boulders = json.load(f)['items']
+        data = json.load(f)
 
-    utils.MadBoulderDatabase.setBoulderData(boulders)
+    formatted_boulder_data = {}
+    for item in data['items']:
+        area_code = item['area_code']
+        formatted_boulder_data[area_code] = {}
+        for boulder in item['boulders']:
+            boulder_code = boulder['name_code']
+            formatted_boulder_data[area_code][boulder_code] = {
+                'name': boulder['name'],
+                'coordinates': boulder['coordinates']
+            }
+
+    utils.MadBoulderDatabase.setBoulderData(formatted_boulder_data)
 
 
 def updateCountries():
     print("updateCountries")
-    countries = {}
+    data = {}
     with open('data/countries.json', 'r', encoding='utf-8') as f:
-        countries = json.load(f)['items']
+        data = json.load(f)
 
-    utils.MadBoulderDatabase.setCountryData(countries)
-    updateCountriesConfig()
+    formatted_country_data = {}
+    for item in data['items']:
+        countryCode = item['code']
+        formatted_country_data[countryCode] = {
+            'reduced_code' : item['reduced_code'],
+            'name' : item['name'],
+            'overview' : item['overview'],
+            'states' : {}
+        }
 
+        if item.get('states'):
+            for state in item['states']:
+                stateCode = state['code']
+                formatted_country_data[countryCode]['states'][stateCode] = {
+                    'name': state['name']
+                }
 
-def updateCountriesConfig():
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
-
-    countries_list = [f'\'{c}\'' for c in set(
-        [z['country'] for z in zone_data])]
-    countries_updated = 'COUNTRIES = ['
-    for z in countries_list:
-        if z != countries_list[-1]:
-            countries_updated += z + ", "
-        else:
-            countries_updated += z
-    countries_updated += ']'
-    replace_in_file(CONFIG_FILE, 'COUNTRIES', countries_updated)
-
-
-def replace_in_file(file_path, pattern, new_line):
-    # create temp file
-    fh, abs_path = mkstemp()
-    with fdopen(fh, 'w') as new_file:
-        with open(file_path) as old_file:
-            for line in old_file:
-                if pattern in line:
-                    new_file.write(new_line)
-                else:
-                    new_file.write(line)
-    # copy the file permissions from the old file to the new file
-    copymode(file_path, abs_path)
-    remove(file_path)
-    move(abs_path, file_path)
+    utils.MadBoulderDatabase.setCountryData(formatted_country_data)
 
 
 def deprecateSlug(oldSlug, newSlug):

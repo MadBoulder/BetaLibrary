@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+		<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div data-view-component="true" class="Subhead mt-0 mb-0">
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">
+										Deprecated Slugs
+									</h2>
+								</div>
+								{% if urlMappings %}
+									<button id="toggleSlugs" class="btn btn-secondary" onclick="toggleSlugs()">Show All</button>
+									<script>
+										var showAll = true; // By default, we don't show all slugs
+	
+										function toggleSlugs() {
+											console.log("toggleSlugs");
+											showAll = !showAll;
+											var rows = document.querySelectorAll('.slug-row');
+											for (var i = 0; i < rows.length; i++) {
+												var newSlug = rows[i].getAttribute('data-new-slug');
+												if (!showAll && newSlug) {
+													rows[i].style.display = 'none';
+												} else {
+													rows[i].style.display = '';
+												}
+											}
+	
+											var buttonText = showAll ? "Show Pending" : "Show All";
+											document.getElementById("toggleSlugs").innerText = buttonText;
+										}
+										document.addEventListener('DOMContentLoaded', toggleSlugs);
+									</script>
+								{% endif %}
+								<div class="clearfix gutter d-flex flex-shrink-0 flex-column-reverse flex-md-row">
+									
+									<div class="table-responsive">
+										<table id="users-table" class="table table-hover">
+											<thead style="vertical-align: middle;">
+												<tr>
+													<th>Old Slug</th>
+													<th>New Slug</th>
+													<th></th>
+												</tr>
+											</thead>
+											<tbody style="vertical-align: middle;">
+												{% if urlMappings %}
+													{% for oldSlug, newSlug in urlMappings.items() %}
+														<tr class="slug-row" data-new-slug="{{ newSlug }}">
+															<td>{{ oldSlug }}</td>
+															<td> 
+																{% if newSlug %}
+																	{{ newSlug }}
+																{% else %}
+																	<input type="text" class="form-control" id="newSlug-{{ loop.index }}" placeholder="Enter new slug">
+																	<button class="btn btn-primary" onclick="updateSlug('{{ oldSlug }}', document.getElementById('newSlug-{{ loop.index }}').value)">Update</button>
+																{% endif %}
+															</td>
+															<td>
+																<i onclick="deleteSlug('{{ oldSlug }}')" class="fas fa-times remove-project-icon"></i>
+															</td>
+														</tr>
+													{% endfor %}
+												{% endif %}
+											</tbody>
+										</table>
+										<script>
+											$(document).ready(function () {
+												$('#users-table').DataTable({
+													paging: false,
+													dom: 'tr',
+													order:[[0, 'desc']],
+													columnDefs: [{ 
+														orderable: false,
+														targets: -1
+													}]
+												});
+											});
+										</script>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function updateSlug(oldSlug, newSlug) {
+			console.log("updateSlug");
+			console.log(oldSlug);
+			console.log(newSlug);
+			fetch('/update-slug', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({ oldSlug: oldSlug, newSlug: newSlug })
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.status === 'success') {
+					location.reload();
+				} else {
+					console.error('Error updating slug');
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+
+		function deleteSlug(oldSlug) {
+			fetch('/delete-slug', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({ oldSlug: oldSlug })
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.status === 'success') {
+					console.log('Slug deleted');
+					location.reload();
+				} else {
+					console.error('Error deleting slug');
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+	</script>
+</html>

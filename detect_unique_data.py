@@ -6,7 +6,7 @@ import utils.MadBoulderDatabase
 
 
 if __name__ == '__main__':
-    video_data = utils.MadBoulderDatabase.get_video_data()
+    video_data = utils.MadBoulderDatabase.getVideoData()
     
     unique_zones = set()
     unique_climbers = set()

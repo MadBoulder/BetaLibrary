@@ -39,7 +39,7 @@ def get_last_dashboard_update():
 
 def get_dashboard():
     # Load data
-    video_data = utils.MadBoulderDatabase.get_video_data()
+    video_data = utils.MadBoulderDatabase.getVideoData()
 
     # X axis categories
     x_axis_map = {

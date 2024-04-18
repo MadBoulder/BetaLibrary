@@ -6,7 +6,7 @@ from collections import Counter
 
 
 def main():
-    zones_data = utils.MadBoulderDatabase.get_zone_data()
+    zones_data = utils.MadBoulderDatabase.getAreasData()
     existing_zone_codes = {zone['zone_code'] for zone in zones_data}
 
     video_data = utils.utils.MadBoulderDatabase.get_video_data()

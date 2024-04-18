@@ -14,28 +14,27 @@ def main():
     dir_path_states = 'templates/states'
     utils.helpers.empty_and_create_dir(dir_path_states)
 
-    country_data = utils.MadBoulderDatabase.get_country_data()
-    playlists = utils.MadBoulderDatabase.get_playlist_data()
+    country_data = utils.MadBoulderDatabase.getCountriesData()
+    playlists = utils.MadBoulderDatabase.getPlaylistsData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for country in country_data:
-        country_code=country['code']
+    for country_code, country in country_data.items():
         print("generating country: " + country_code)
         country_name = country.get("name", [""])[0]
-        areas = utils.zone_helpers.get_areas_from_country(country['reduced_code'])
-        states=country.get("states", [])
+        areas = utils.zone_helpers.get_areas_from_country(country_code)
+        states=country.get("states", {})
         overview=country['overview'][0]
         
-        area_state_codes = [area.get("state", '') for area in areas]
+        area_state_codes = [area.get("state", '') for area in areas.values()]
         state_code_counts = Counter(area_state_codes)
 
-        for state in states:
+        for state_code, state in states.items():
             if 'count' in state:
-                state['count'] += state_code_counts[state['code']]
+                state['count'] += state_code_counts[state_code]
             else:
-                state['count'] = state_code_counts[state['code']]
+                state['count'] = state_code_counts[state_code]
 
         template = template_env.get_template(
             'templates/templates/country_page_template.html')
@@ -67,8 +66,7 @@ def main():
         with open(f'templates/countries/es/{slugify(country_name)}.html', 'w', encoding='utf-8') as template:
             template.write(output)
 
-        for state in states:
-            state_code=state['code']
+        for state_code, state in states.items():
             state_name = state.get("name", [""])[0]
             print("generating state: " + state_code)
             

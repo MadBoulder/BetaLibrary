@@ -16,35 +16,27 @@ def main():
     dir_path_countries = 'templates/sectors'
     utils.helpers.empty_and_create_dir(dir_path_countries)
 
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.getAreasData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for zone in zone_data:
-        print("generating zone: " + zone['name'])
-        zone_code = zone['zone_code']  
+    for zone_code, zone in zone_data.items():
+        print("generating sectors for: " + zone['name'])
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
         problems_zone = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-        playlists = utils.zone_helpers.get_playlists_from_zone(zone_code)
-        
-        #country
-        country = utils.zone_helpers.get_country_from_code(zone['country'])
-        country_name = country.get('name','')[0] if country else ''
-
-        state = utils.zone_helpers.get_state_from_code(zone.get('state',''))
-        state_code = state.get('code','') if state else ''
-        state_name = state.get('name','')[0] if state else ''
+        playlist = utils.MadBoulderDatabase.getPlaylistdata(zone_code)
+        areaInfo = utils.zone_helpers.getStateAndCountryInfo(zone_code)
 
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
             problems.sort(key= lambda x: x['name'])
                
             video_id = ""
-            if 'sectors' in playlists:
-                for s in playlists['sectors']:
-                    if slugify(sector[1]) == s['sector_code']:
-                        video_id = s['id']
+            if 'sectors' in playlist:
+                for sectorPlaylistCode, sectorPLaylist in playlist['sectors'].items():
+                    if slugify(sector[1]) == sectorPlaylistCode:
+                        video_id = sectorPLaylist['id']
             template = template_env.get_template(
                 'templates/templates/sector_page_template.html')
             output = template.render(
@@ -54,10 +46,7 @@ def main():
                 sector_code=slugify(sector[1]),
                 problems=problems,
                 video_id=video_id,
-                country_code=country.get('code',''),
-                country_name=country_name,
-                state_code=state_code,
-                state_name=state_name
+                areaInfo=areaInfo
             )
             if not os.path.exists(f'templates/sectors/{zone_code}'):
                 os.mkdir(f'templates/sectors/{zone_code}')

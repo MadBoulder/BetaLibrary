@@ -107,9 +107,9 @@ def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     key_prefix='mad_zones'
 )
 def get_zone_data():
-    return utils.MadBoulderDatabase.get_zone_data()
+    return utils.MadBoulderDatabase.getAreasData()
 def get_playlist_data():
-    return utils.MadBoulderDatabase.get_playlist_data()
+    return utils.MadBoulderDatabase.getPlaylistsData()
 
 # Set language
 @app.route('/language/<language>')
@@ -182,18 +182,13 @@ def home_es():
 
 @app.route('/bouldering-areas-list', methods=['GET', 'POST'])
 def zones():
-    # TODO: POST and GET methods are handled equally
-    # if request.method == 'GET':
-    # if request.method == 'POST':
-    # each zone has: link, name, num.videos
     zones = get_zone_data()
     playlists = get_playlist_data()
-    country_data = utils.MadBoulderDatabase.get_country_data()
+    country_data = utils.MadBoulderDatabase.getCountriesData()
     return render_template(
         'bouldering-areas-list.html',
         zones=zones,
         playlists=playlists,
-        countries=app.config['COUNTRIES'],
         country_data=country_data)
 
 
@@ -644,7 +639,7 @@ def settings_stats():
 
         contributor_stats = utils.zone_helpers.calculate_contributor_stats(user_data['climber_id'])
         user_data['contributor_stats'] = contributor_stats
-        user_data['total_contributors'] = utils.MadBoulderDatabase.get_contributors_count()
+        user_data['total_contributors'] = utils.MadBoulderDatabase.getContributorsCount()
 
     return render_template("/settings/settings-stats.html", user_data=user_data)
 
@@ -673,7 +668,7 @@ def settings_projects():
 @admin_required
 def settings_admin_users():
     users_list, admins_list = get_all_users()
-    contributors = utils.MadBoulderDatabase.get_contributors_list()
+    contributors = utils.MadBoulderDatabase.getContributorsList()
     return render_template('settings/settings-admin-users.html', users_list=users_list, contributors=contributors)
 
 
@@ -716,6 +711,41 @@ def get_all_users():
 
         page = page.get_next_page()
     return users_list, admins_list
+
+
+@app.route('/settings/admin/urls', methods=['GET'])
+@admin_required
+def settings_admin_urls():
+    print("settings_admin_urls")
+    urlMappings = utils.MadBoulderDatabase.getUrlMappings()
+    print(urlMappings)
+    return render_template('settings/settings-admin-urls.html', urlMappings=urlMappings)
+
+
+@app.route('/update-slug', methods=['POST'])
+@admin_required
+def update_slug():
+    print(request)
+    data = request.get_json()
+    print(data)
+    oldSlug = data.get('oldSlug')
+    newSlug = data.get('newSlug')
+    
+    try:
+        utils.MadBoulderDatabase.updateSlug(oldSlug, newSlug)
+        return jsonify({'status': 'success', 'message': 'Slug updated successfully.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+@app.route('/delete-slug', methods=['POST'])
+@admin_required
+def delete_slug():
+    data = request.get_json()
+    oldSlug = data.get('oldSlug')
+    
+    utils.MadBoulderDatabase.deleteSlug(oldSlug)
+    return jsonify({'status': 'success', 'message': 'Slug deleted successfully'})
 
 
 def get_user_uid(id_token):
@@ -1131,7 +1161,7 @@ def comparador_pronostico_tiempo():
     return render_template('/es/comparador-pronostico-tiempo.html', zones=zones, default_zones=default_zones)
 
 
-@app.route('/element/weather-widget.html')
+@app.route('/element/weather-widget')
 def weather_widget():
     file_path = os.path.join(app.root_path, 'templates/elements/weather-widget.html')
     return send_file(file_path)
@@ -1224,7 +1254,7 @@ def create_assessment(
 
 @app.route('/about-us', methods=['GET'])
 def render_about_us():
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.getAreasData()
     stats_list = [
         {
             'text': _('Zones'),
@@ -1232,11 +1262,11 @@ def render_about_us():
         },
         {
             'text': _('Contributors'),
-            'data': utils.MadBoulderDatabase.get_contributors_count()
+            'data': utils.MadBoulderDatabase.getContributorsCount()
         },
         {
             'text': _('Videos'),
-            'data': utils.MadBoulderDatabase.get_video_count()
+            'data': utils.MadBoulderDatabase.getVideoCount()
         }
     ]
     return render_template('about-us.html', stats_list=stats_list)

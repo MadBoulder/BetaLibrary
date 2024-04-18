@@ -23,7 +23,7 @@ def get_contributor_count_from_problems(problems):
 def get_contributor_data(contributor_id):
     contributor = None
     if contributor_id:
-        contributor = utils.MadBoulderDatabase.get_contributors_list().get(slugify(contributor_id), None)
+        contributor = utils.MadBoulderDatabase.getContributorsList().get(slugify(contributor_id), None)
     return contributor
 
 
@@ -86,103 +86,111 @@ def get_playlist_url_from_sector(zone_code, sector):
     
     
 def get_playlists_from_zone(zone_code):
-    playlist_data = utils.MadBoulderDatabase.get_playlist_data()
-
-    playlists = []
-    for item in playlist_data:
-        if item['zone_code'] == zone_code:
-            playlists = item
-            break
-            
-    return playlists
+    return utils.MadBoulderDatabase.getPlaylistData(zone_code)
 
 
 def get_areas_from_country(country_code):
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.getAreasData()
 
-    areas = []
-    for item in zone_data:
+    areas = {}
+    for key, item in zone_data.items():
         if item['country'] == country_code:
-            areas.append(item)
+            areas[key] = item
             
     return areas
 
 
 def get_areas_from_state(state_code):
-    zone_data = utils.MadBoulderDatabase.get_zone_data()
+    zone_data = utils.MadBoulderDatabase.getAreasData()
 
-    areas = []
-    for item in zone_data:
+    areas = {}
+    for key, item in zone_data.items():
         if item.get('state','') == state_code:
-            areas.append(item)
+            areas[key] = item
             
     return areas
 
 
+def getStateAndCountryInfo(areaCode):
+    countryName = []
+    countryCode = ''
+    state_name = []
+    stateCode = ''
+    
+    areaData = utils.MadBoulderDatabase.getAreaData(areaCode)
+    if areaData:
+        countryCode = areaData.get('country','')
+        country = utils.MadBoulderDatabase.getCountryData(countryCode)
+        if country:
+            countryName = country.get('name',[])
+            stateCode = areaData.get('state','')
+            state = utils.zone_helpers.get_state_in_country(country, stateCode)
+            if state:
+                state_name = state.get('name',[])
+
+    return {
+        'country_name': countryName,
+        'country_code': countryCode,
+        'state_name': state_name,
+        'state_code': stateCode,
+        'zone_added': bool(areaData)
+    }
+
+
 def get_country_from_code(country_code):
-    country_data = utils.MadBoulderDatabase.get_country_data()
+    country_data = utils.MadBoulderDatabase.getCountriesData()
 
-    country = {}
-    for item in country_data:
+    for key, item in country_data.items():
         if item['reduced_code'] == country_code:
-            country = item
-            break
-            
-    return country
+            return item
 
 
-def get_state_from_code(state_code):
-    country_data = utils.MadBoulderDatabase.get_country_data()
-
-    state = {}
-    for item in country_data:
-        states = item.get('states', [])
-        for item2 in states:
-            if item2['code'] == state_code:
-                state = item2
-                break
-            
-    return state
+def get_state_in_country(country, stateToSearch):
+    states = country.get('states',{})
+    for stateCode, state in states.items():
+        if stateCode == stateToSearch:
+            return state
 
 
 @lru_cache(maxsize=10)
 def calculate_contributor_stats(climber_id):
     climber_id = slugify(climber_id)
     contributor_data = get_contributor_data(climber_id)
-    videos = contributor_data['videos']
-    unique_areas = set()
-    area_counts = {}
+    if contributor_data:
+        videos = contributor_data.get('videos')
+        unique_areas = set()
+        area_counts = {}
 
-    for video in videos.values():
-        area = video['zone']
-        grade = video['grade']
-        unique_areas.add(area)
+        for video in videos.values():
+            area = video['zone']
+            grade = video['grade']
+            unique_areas.add(area)
 
-        if area in area_counts:
-            area_counts[area] += 1
-        else:
-            area_counts[area] = 1
+            if area in area_counts:
+                area_counts[area] += 1
+            else:
+                area_counts[area] = 1
 
-    top_areas = sorted(area_counts.items(), key=lambda x: x[1], reverse=True)
-    video_rankings, view_rankings = calculate_rankings()
-    user_video_rank = video_rankings.get(climber_id, "Not ranked")
-    total_views_rank = view_rankings.get(climber_id, "Not ranked")
+        top_areas = sorted(area_counts.items(), key=lambda x: x[1], reverse=True)
+        video_rankings, view_rankings = calculate_rankings()
+        user_video_rank = video_rankings.get(climber_id, "Not ranked")
+        total_views_rank = view_rankings.get(climber_id, "Not ranked")
 
-    contributor_stats = {
-        'num_videos': len(videos),
-        'user_video_rank': user_video_rank,
-        'total_views': sum(int(video['viewCount']) for video in videos.values()),
-        'total_views_rank': total_views_rank,
-        'unique_areas': len(unique_areas),
-        'top_areas': [{'area': area, 'videos': count} for area, count in top_areas]
-    }
+        contributor_stats = {
+            'num_videos': len(videos),
+            'user_video_rank': user_video_rank,
+            'total_views': sum(int(video['viewCount']) for video in videos.values()),
+            'total_views_rank': total_views_rank,
+            'unique_areas': len(unique_areas),
+            'top_areas': [{'area': area, 'videos': count} for area, count in top_areas]
+        }
 
-    return contributor_stats
+        return contributor_stats
 
 
 @lru_cache(maxsize=10)
 def calculate_rankings():
-    contributors = utils.MadBoulderDatabase.get_contributors_list()
+    contributors = utils.MadBoulderDatabase.getContributorsList()
     all_stats = [
         {'climber_id': climber_code, 'name': data['name'], 'video_count': len(data['videos']), 'view_count': data['view_count']}
         for climber_code, data in contributors.items()

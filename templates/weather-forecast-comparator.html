@@ -80,8 +80,8 @@
 			<div id="zone-selector-popup" class="zone-selector-popup">
 				<input type="text" id="search-box" placeholder="Search for a zone..." />
 				<ul id="zone-list">
-					{% for zone in zones %}
-						<li data-value="{{ zone.latitude }},{{ zone.longitude }},{{ zone.name }},{{ zone.zone_code }}">{{ zone.name }}</li>
+					{% for zone_code, zone in zones.items() %}
+						<li data-value="{{ zone.latitude }},{{ zone.longitude }},{{ zone.name }},{{ zone_code }}">{{ zone.name }}</li>
 					{% endfor %}
 				</ul>
 			</div>
@@ -90,7 +90,7 @@
 			async function createWeatherWidget(latitude, longitude, zoneName, zoneCode) {
 				var uniqueId = 'weather-widget-' + zoneCode + '-' + Date.now();
 				try {
-					const response = await fetch('element/weather-widget.html');
+					const response = await fetch('/element/weather-widget');
 					let template = await response.text();
 
 					{% raw %}
