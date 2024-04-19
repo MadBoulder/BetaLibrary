@@ -25,7 +25,7 @@ def main():
         print("generating sectors for: " + zone['name'])
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
         problems_zone = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-        playlist = utils.MadBoulderDatabase.getPlaylistdata(zone_code)
+        playlist = utils.MadBoulderDatabase.getPlaylistData(zone_code)
         areaInfo = utils.zone_helpers.getStateAndCountryInfo(zone_code)
 
         for sector in sectors:

@@ -207,7 +207,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
     return map_html if return_html else area_map
 
 
-def load_general_map(zone_data, generate_ids, return_html=True):
+def load_general_map(areaData, generate_ids, return_html=True):
     """
     Create a map that contains all the zones provided by the list of zone_data
     i.e. all areas combined in one map. This map only shows the markers that 
@@ -244,21 +244,21 @@ def load_general_map(zone_data, generate_ids, return_html=True):
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
-    for zone in zone_data:
+    for areaCode, area in areaData.items():
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
-        playlists = utils.zone_helpers.get_playlists_from_zone(zone['zone_code'])
+        playlists = utils.zone_helpers.get_playlists_from_zone(areaCode)
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
-            zone['name'], zone['zone_code'], playlists['video_count']), script=True)
+            area['name'], areaCode, playlists['video_count']), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
-            popup_html, max_width=max(len(zone['name']), len(BETA_VIDEOS_TEXT))*10)
+            popup_html, max_width=max(len(area['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
 
         area_marker = folium.Marker(
-            location=[zone['latitude'], zone['longitude']],
-            tooltip=zone['name'],
+            location=[area['latitude'], area['longitude']],
+            tooltip=area['name'],
             icon=zoomed_out_icon,
             popup=zone_popup,
         )

@@ -31,6 +31,35 @@ class Case(Enum):
     none = 3
 
 
+def updateData(
+    retrieve_data_from_channel=True
+):
+    if retrieve_data_from_channel:
+        retrieveAndUpdateVideoData(resetDatabase=False)
+        createOptimizedVideoData()
+        retrieveAndUpdatePlaylistData()
+    #updateAreaData()
+    #updateCountries()
+    #updateBoulderData()
+    updateContributorsList()
+
+
+def retrieveAndUpdateVideoData(resetDatabase=False):
+    video_data = []
+    if resetDatabase:
+        print("Regenerating video database")
+        video_data = retrieveVideosFromChannel()
+    else:
+        print("Updating video databse")
+        video_data = updateVideosFromChannel()
+
+    if video_data:
+        print("Videos Retrived: ", len(video_data))
+        utils.MadBoulderDatabase.setVideoData(video_data)
+        
+        saveDebugJson('video_data.json', video_data)
+
+
 def retrieveVideosFromChannel(lastUpdate=None):
     print("Retrieving videos from channel")
     
@@ -111,7 +140,7 @@ def updateVideosFromChannel():
 def updateVideoDatabase():
     print("updateVideoDatabase")
 
-    videos = utils.MadBoulderDatabase.getVideoData()
+    videos = utils.MadBoulderDatabase.getAllVideoData()
     if not videos:
         print("No videos found in database.")
         return None
@@ -274,35 +303,6 @@ def getProblemName(title, nameDescription, grade, zone):
     return name
 
 
-def updateData(
-    retrieve_data_from_channel=True
-):
-    #if retrieve_data_from_channel:
-        #retrieveAndUpdateVideoData(resetDatabase=False)
-        createOptimizedVideoData()
-        #retrieveAndUpdatePlaylistData()
-    #updateAreaData()
-    #updateCountries()
-    #updateBoulderData()
-    #updateContributorsList()
-
-
-def retrieveAndUpdateVideoData(resetDatabase=False):
-    video_data = []
-    if resetDatabase:
-        print("Regenerating video database")
-        video_data = retrieveVideosFromChannel()
-    else:
-        print("Updating video databse")
-        video_data = updateVideosFromChannel()
-
-    if video_data:
-        print("Videos Retrived: ", len(video_data))
-        utils.MadBoulderDatabase.setVideoData(video_data)
-        
-        saveDebugJson('video_data.json', video_data)
-
-
 def createOptimizedVideoData():
     print("createOptimizedVideoData")
 
@@ -394,7 +394,7 @@ def updateAreaData():
 
 def updateContributorsList():
     print("updateContributorsList")
-    video_data = utils.MadBoulderDatabase.getVideoData()
+    video_data = utils.MadBoulderDatabase.getAllVideoData()
 
     contributors = {}
     slug_cache = {}

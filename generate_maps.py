@@ -15,14 +15,14 @@ def main():
     as well as a general map that contains all the areas
     """
     generate_ids = IDGenerator()
-    zone_data = utils.MadBoulderDatabase.getAreasData()
-    for zone in zone_data:
-        print(zone['zone_code'])
-        with open('templates/maps/'+zone['zone_code']+'.html', 'w', encoding='utf-8') as template:
+    areas = utils.MadBoulderDatabase.getAreasData()
+    for araCode, area in areas.items():
+        print(araCode)
+        with open('templates/maps/'+araCode+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
-                    zone['zone_code'],
-                    ZONES_PATH + zone['zone_code'] + '/' + zone['zone_code'] + '.json',
+                    araCode,
+                    ZONES_PATH + araCode + '/' + araCode + '.json',
                     generate_ids,
                     True
                 )
@@ -31,7 +31,7 @@ def main():
     with open('templates/maps/world.html', 'w', encoding='utf-8') as template:
         template.write(
             load_map.load_general_map(
-                zone_data,
+                areas,
                 generate_ids,
                 True
             )

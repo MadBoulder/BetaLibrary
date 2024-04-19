@@ -13,7 +13,7 @@ def getVideoCount():
 
 def setVideoData(videoData):
     utils.database.setValue('video_data/items', videoData)
-    utils.database.updateValue('video_count', len(videoData))
+    utils.database.setValue('video_count', len(videoData))
     utils.database.updateDate('video_data')
     
 def get_video_data_search_optimized():
@@ -159,9 +159,10 @@ def getVideoDataWithSlug(encodedSlug):
     print("encodedProblemSlug", encodedSlug)
     videoData = utils.database.getValue(f'video_data/items/{encodedSlug}')
     if not videoData:
-        newUrl = utils.database.getValue(f'url_mappings{encodedSlug}')
+        newUrl = utils.database.getValue(f'url_mappings/{encodedSlug}')
         if newUrl and not newUrl == '':
             encodedNewUrl = utils.database.encodeSlug(newUrl)
+            print("encodedNewUrl", encodedNewUrl)
             videoData = utils.database.getValue(f'video_data/items/{encodedNewUrl}')
         if not videoData:
             videoData = getVideoDataWithPartialSlug(encodedSlug)
@@ -193,7 +194,8 @@ def deleteSlug(slugId):
 
 
 def addSlug(slugId, newSlug):
-    utils.database.updateValue('url_mappings', {slugId: newSlug})
+    encodedSlugId = utils.database.encodeSlug(slugId)
+    utils.database.updateValue('url_mappings', {encodedSlugId: newSlug})
 
 
 def addDisableSlug(oldSlug):
