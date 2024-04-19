@@ -81,7 +81,7 @@ def delete(refPath):
 
 def getDate(refPath):
     init()
-    db.reference(f'{refPath}/date').get()
+    return db.reference(f'{refPath}/date').get()
 
 
 def updateDate(refPath):

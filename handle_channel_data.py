@@ -97,7 +97,8 @@ def retrieveVideosFromChannel(lastUpdate=None):
             page_token = searchResp.get('nextPageToken')
             if not page_token:
                 break
-
+                
+        print("New Videos Retrieved: ", len(videos))
         return videos
     except Exception as e:
         logging.error(f"Failed to retrieve videos: {str(e)}")
@@ -109,22 +110,6 @@ def encodeSlug(key):
 
 def decodeSlug(key):
     return key.replace('___', '/')
-
-
-def retrieve_playlists_from_channel():
-    playlists = []
-    next_page_token = None
-
-    while True:
-        response = utils.channel.fetchPlaylists(next_page_token)
-        playlists.extend(response["items"])
-
-        next_page_token = response.get("nextPageToken")
-        if not next_page_token:
-            break
-
-    print('Playlists retrieved: ' + str(len(playlists)))
-    return playlists
 
 
 def updateVideosFromChannel():
@@ -201,7 +186,7 @@ def getLastDatabaseVideoUpdateDate():
     lastUpdate = utils.MadBoulderDatabase.getVideoDataDate()
     print(lastUpdate)       
     if lastUpdate:
-        return datetime.datetime.strptime(lastUpdate, '%Y-%m-%d')
+        return datetime.datetime.strptime(lastUpdate, '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return datetime.datetime.now()
 
@@ -367,6 +352,22 @@ def retrieveAndUpdatePlaylistData():
     utils.MadBoulderDatabase.setPlaylistData(processed_playlist_data)
 
     saveDebugJson('processed_playlist_data.json', processed_playlist_data)
+
+
+def retrieve_playlists_from_channel():
+    playlists = []
+    next_page_token = None
+
+    while True:
+        response = utils.channel.fetchPlaylists(next_page_token)
+        playlists.extend(response["items"])
+
+        next_page_token = response.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    print('Playlists retrieved: ' + str(len(playlists)))
+    return playlists
 
 
 def updateAreaData():
