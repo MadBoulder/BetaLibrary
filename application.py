@@ -1070,6 +1070,73 @@ def contributor_approved_notification(email, climber_id):
     mail.send(msg)
 
 
+@app.route('/area-editor', methods=['GET'])
+@admin_required
+def area_editor():
+    return render_template('area-editor.html')
+
+
+@app.route('/fetch-altitude')
+def fetch_altitude():
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    url = f"https://api.opentopodata.org/v1/aster30m?locations={latitude},{longitude}"
+    
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return jsonify(response.json())
+        else:
+            return jsonify({'error': 'Failed to fetch data'}), response.status_code
+    except requests.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+    
+    
+@app.route('/get-countries')
+def get_countries():
+    countries = utils.MadBoulderDatabase.getCountriesData()
+    return jsonify(countries=countries)
+
+
+@app.route('/add-country', methods=['POST'])
+def add_country():
+    try:
+        data = request.get_json()
+        countryReducedCode = data['reduced_code'].lower()
+        countryCode = slugify(data['name'][0])
+
+        countryData = {
+            'name': data['name'],
+            'overview': data['overview'],
+            'reduced_code': countryReducedCode
+        }
+
+        utils.MadBoulderDatabase.updateCountry(countryCode, countryData)
+        return jsonify({'status': 'success', 'message': 'Country added successfully'}), 200
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+    
+
+
+@app.route('/add-state', methods=['POST'])
+def add_state():
+    try:
+        data = request.get_json()
+        countryCode = data['country']
+        stateCode = slugify(data['name'][0])
+
+        stateData = {
+            'name': data['name']
+        }
+
+        utils.MadBoulderDatabase.updateState(countryCode, stateCode, stateData)
+        return jsonify({'status': 'success', 'message': 'Country added successfully'}), 200
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+
+
 @app.route('/<string:sitemap_name>.xml')
 def sitemap_file(sitemap_name):
     if re.match(r'sitemap(-\w+)?', sitemap_name):

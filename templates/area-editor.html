@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Add New Area | MadBoulder</title>
+
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
+  </head>
+  <body>
+	{% include 'elements/main-menu.html' %}
+	<main>
+		<div class="container" id="mainContainer">
+			<h2>Add New Bouldering Area</h2>
+			<form method="post">
+				<div class="mb-3">
+					<label for="name">Area Name:</label>
+					<input type="text" id="name" name="name" required>
+				</div>
+				<div class="mb-3" style="display: flex; align-items: center;">
+					<label for="country">Country:</label>
+					<select id="country-select" name="countryCode" class="form-select" onchange="updateStatesDropdown();" style="margin: 0.5rem;" required>
+						<option value="">Select a country</option>
+					</select>
+					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal" style="white-space: nowrap;">
+						Add New Country
+					</button>
+				</div>
+				<div class="mb-3 d-none" id="states-container" style="display: flex; align-items: center;">
+					<label for="area-state">State</label>
+					<select class="form-select" id="area-state" style="margin: 0.5rem;">
+						<option value="">Select a state</option>
+					</select>
+					<button type="button" class="btn btn-primary" onclick="addNewState();" style="white-space: nowrap;">
+						Add New State
+					</button>
+				</div>
+				<div id="area-map" style="height: 400px; width: 100%;"></div>
+				<input type="text" id="area-coordinates" class="form-control mb-3" placeholder="Latitude, Longitude" required readonly>
+				<div>
+					<label for="altitude">Altitude (meters):</label>
+					<input type="text" id="altitude" name="altitude" readonly>
+				</div>
+				<div class="mb-3">
+					<label for="zoom-level">Zoom Level</label>
+					<input type="number" id="zoom-level" name="zoom" class="form-control" value="16" required>
+				</div>
+				<div class="mb-3">
+					<label for="rock_type">Rock Type:</label>
+					<input type="text" id="rock_type" name="rock_type">
+				</div>
+				<div class="mb-3">
+					<label>Overview (English)</label>
+					<textarea class="form-control" id="overview-en" rows="3"></textarea>
+				</div>
+				<div class="mb-3">
+					<label>Overview (Spanish)</label>
+					<textarea class="form-control" id="overview-es" rows="3"></textarea>
+				</div>
+				<div id="parking-map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+				<div id="parking-coordinates-container"></div>
+				<button type="button" id="clear-parkings" class="btn btn-warning">Clear Parkings</button>
+				<div class="mb-3">
+					<label for="links">Links:</label>
+					<input type="text" id="links" name="links">
+				</div>
+				<div class="mb-3">
+					<label for="guides">Guides:</label>
+					<input type="text" id="guides" name="guides">
+				</div>
+				<div class="mb-3">
+					<button type="submit" class="btn btn-primary">Create Area</button>
+				</div>
+			</form>
+			<div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="addCountryModalLabel">Add New Country</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="newCountryForm">
+								<div class="mb-3">
+									<label for="countryNameEn">Country Name (English)</label>
+									<input type="text" class="form-control" id="countryNameEn" required>
+								</div>
+								<div class="mb-3">
+									<label for="countryNameEs">Country Name (Spanish)</label>
+									<input type="text" class="form-control" id="countryNameEs" required>
+								</div>
+								<div class="mb-3">
+									<label for="countryCode" >Reduced Code</label>
+									<input type="text" class="form-control" id="countryCode" required>
+								</div>
+								<div class="mb-3">	
+									<label for="countryOverviewEn">Overview (English)</label>
+									<textarea class="form-control" id="countryOverviewEn" rows="3" required></textarea>
+								</div>
+								<div class="mb-3">
+									<label for="countryOverviewEs">Overview (Spanish)</label>
+									<textarea class="form-control" id="countryOverviewEs" rows="3" required></textarea>
+								</div>
+								<button type="submit" class="btn btn-primary">Submit</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script>
+				
+				var countries = {}; // This will hold the country and states info
+				var countrySelect = document.getElementById('country-select');
+				var stateSelect = document.getElementById('area-state');
+    			var statesContainer = document.getElementById('states-container');
+
+				document.addEventListener("DOMContentLoaded", function() {
+					fetchCountries();
+
+					document.getElementById('country-select').addEventListener('click', function() {
+						if (this.options.length <= 1) {  // Only "Select a country" exists
+							fetchCountries();  // Try fetching when user interacts
+						}
+					});
+				});
+				
+
+				function fetchCountries() {
+					axios.get('/get-countries').then(function (response) {
+						countries = response.data['countries'];
+						console.log(countries)
+						countrySelect.innerHTML = '<option value="">Select a country</option>';
+
+						for (var country in countries) {
+							var option = new Option(countries[country].name[0], country);
+							countrySelect.add(option);
+						}
+					}).catch(function (error) {
+						console.error('Error fetching countries:', error);
+					});
+				}
+
+				function updateStatesDropdown() {
+					var selectedCountry = countrySelect.value;
+					var states = countries[selectedCountry]?.states || {};
+					stateSelect.innerHTML = '<option value="">Select a state</option>'; // Reset state dropdown
+
+					Object.keys(states).forEach(function (stateCode) {
+						var option = new Option(states[stateCode].name[0], stateCode); // States[stateCode].name[0] is the English name
+						stateSelect.add(option);
+					});
+
+					
+					if (Object.keys(states).length > 0 || selectedCountry) {
+						statesContainer.classList.remove('d-none');
+					} else {
+						statesContainer.classList.add('d-none');
+					}
+				}
+
+				document.getElementById('newCountryForm').addEventListener('submit', function(event) {
+					event.preventDefault();
+
+					const countryNameEn = document.getElementById('countryNameEn').value;
+					const countryNameEs = document.getElementById('countryNameEs').value;
+					const countryCode = document.getElementById('countryCode').value;
+					const countryOverviewEn = document.getElementById('countryOverviewEn').value;
+					const countryOverviewEs = document.getElementById('countryOverviewEs').value;
+
+					const postData = {
+						name: [countryNameEn, countryNameEs],
+						overview: [countryOverviewEn, countryOverviewEs],
+						reduced_code: countryCode
+					};
+
+					fetch('/add-country', {
+						method: 'POST',
+						headers: {
+						'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(postData)
+					})
+					.then(response => response.json())
+					.then(data => {
+						console.log('Success:', data);
+        				$('#addCountryModal').modal('hide'); 
+						alert('Country added successfully!');
+						fetchCountries()
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+				});
+
+				function addNewState() {
+					var selectedCountry = countrySelect.value;
+					if (!selectedCountry) {
+						alert("Please select a country first.");
+						return;
+					}
+
+					var newStateNameEn = prompt("Enter new state name (English):");
+					var newStateNameEs = prompt("Enter new state name (Spanish):");
+
+					if (newStateNameEn) {
+						const newStateData = {
+							country: selectedCountry,
+							name: [newStateNameEn, newStateNameEs]
+						};
+
+						fetch('/add-state', {
+							method: 'POST',
+							headers: {
+							'Content-Type': 'application/json',
+							},
+							body: JSON.stringify(newStateData)
+						})
+						.then(response => response.json())
+						.then(data => {
+							console.log('Success:', data);
+							alert('State added successfully!');
+							fetchCountries()
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
+					}
+				}
+
+				var areaMap, parkingMap;
+				var areaMarker, parkingMarkers = [];
+
+				document.addEventListener("DOMContentLoaded", function() {
+					// Initialize the Area Map
+					areaMap = L.map('area-map').setView([51.505, -0.09], 13); // Default view
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						maxZoom: 18,
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					}).addTo(areaMap);
+
+					// Click event for area map
+					areaMap.on('click', function(e) {
+						if (areaMarker) areaMap.removeLayer(areaMarker);
+						areaMarker = placeMarker(e.latlng, areaMap, true);
+					});
+
+					// Initialize the Parking Map
+					parkingMap = L.map('parking-map').setView([51.505, -0.09], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						maxZoom: 18,
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					}).addTo(parkingMap);
+
+					// Click event for parking map
+					parkingMap.on('click', function(e) {
+						var marker = placeMarker(e.latlng, parkingMap, false);
+						parkingMarkers.push(marker);
+						addParkingCoordinates(e.latlng);
+					});
+
+					document.getElementById('clear-parkings').addEventListener('click', clearParkings);
+				});
+
+				function placeMarker(latLng, map, isArea) {
+					var marker = L.marker(latLng, { draggable: true });
+					marker.addTo(map);
+					updatePosition(isArea, marker);
+
+					marker.on('dragend', function() {
+						updatePosition(isArea, marker);
+					});
+
+					marker.on('contextmenu', function() {
+						removeMarker(marker, isArea);
+					});
+					return marker;
+				}
+
+				function updatePosition(isArea, marker) {
+					latLng = marker.getLatLng()
+					if (isArea) {
+						document.getElementById('area-coordinates').value = formatLatLng(latLng);
+						fetchAltitude(latLng.lat, latLng.lng)
+					} 
+					else {
+						var index = parkingMarkers.indexOf(marker);
+						var inputFields = document.querySelectorAll('#parking-coordinates-container input[type="text"]');
+						if (inputFields && inputFields[index]) {
+							inputFields[index].value = formatLatLng(latLng);						}
+					}
+				}
+
+				function removeMarker(marker, isArea) {
+					if (isArea) {
+						areaMap.removeLayer(areaMarker);
+						areaMarker = null;
+						document.getElementById('area-coordinates').value = '';
+						document.getElementById('altitude').value = '';
+					} else {
+						var index = parkingMarkers.indexOf(marker);
+						if (index > -1) {
+							parkingMap.removeLayer(parkingMarkers[index]);
+							parkingMarkers.splice(index, 1);
+							removeParkingCoordinates(index);
+						}
+					}
+				}
+
+				function formatLatLng(latLng) {
+					return `${latLng.lat.toFixed(6)}, ${latLng.lng.toFixed(6)}`;
+				}
+
+				function addParkingCoordinates(latLng) {
+					var container = document.getElementById('parking-coordinates-container');
+					var input = document.createElement('input');
+					input.type = 'text';
+					input.className = 'form-control mb-2';
+					input.value = formatLatLng(latLng);
+					input.readOnly = true;
+					container.appendChild(input);
+				}
+
+				function removeParkingCoordinates(index) {
+					var inputFields = document.querySelectorAll('#parking-coordinates-container input[type="text"]');
+					if (inputFields && inputFields.length > index) {
+						inputFields[index].parentNode.removeChild(inputFields[index]);
+					}
+				}
+
+				function clearParkings() {
+					parkingMarkers.forEach(marker => parkingMap.removeLayer(marker));
+					parkingMarkers = [];
+					document.getElementById('parking-coordinates-container').innerHTML = '';
+				}
+			
+				function fetchAltitude(lat, lng) {
+					const url = `/fetch-altitude?latitude=${lat}&longitude=${lng}`;
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							if (data.results && data.results.length > 0) {
+								document.getElementById('altitude').value = data.results[0].elevation;
+							} else {
+								console.error('No elevation data found');
+								alert('Elevation data not available for this location.');
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching altitude:', error);
+							alert('Failed to fetch elevation data.');
+						});
+				}
+			</script>
+		</div>
+	</main>
+	{% include 'elements/footer.html' %}
+  </body> 
+</html>

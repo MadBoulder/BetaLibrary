@@ -117,6 +117,9 @@ def getCountriesData():
     data = utils.database.getValue('country_data')
     return data;
 
+def getCountriesKeys():
+    return utils.database.getKeys('country_data')
+
 @lru_cache(maxsize=10)
 def getCountryData(countryCode):
     data = utils.database.getValue(f'country_data/{countryCode}')
@@ -128,7 +131,12 @@ def getStateData(countryCode, stateCode):
 def setCountryData(countries):
     utils.database.setValue('country_data', countries)
 
-@lru_cache(maxsize=10)
+def updateCountry(countryCode, data):
+    utils.database.setValue(f'country_data/{countryCode}', data)
+
+def updateState(countryCode, stateCode, data):
+    utils.database.setValue(f'country_data/{countryCode}/states/{stateCode}', data)
+
 def getAllBoulderData():
     data = utils.database.getValue('boulder_data')
     return data;
