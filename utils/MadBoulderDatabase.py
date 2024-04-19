@@ -87,7 +87,7 @@ def getRatings(problem_id):
 def submitRating(problem_id, user_uid, rating):
     encodedProblemId = utils.database.encodeSlug(problem_id)
     newRating = {user_uid: rating}
-    utils.database.updateChildNode('problems', encodedProblemId, 'ratings', newRating)
+    utils.database.updateValue(f'problems/{encodedProblemId}/ratings', newRating)
 
 
 def deleteRating(problem_id, user_uid):
@@ -113,7 +113,7 @@ def submitComment(problem_id, user_uid, comment):
         'text': comment,
         'date': utc_now
     }
-    newCommentId = utils.database.updateChildNodeWithUniqueId('problems', encodedProblemId, 'comments', newComment)
+    newCommentId = utils.database.addChildWithUniqueId(f'problems/{encodedProblemId}/comments', newComment)
 
     return newCommentId
 
@@ -142,8 +142,7 @@ def getProject(user_uid, problem_id):
 def addProject(user_uid, problem_id):
     encodedProblemId = utils.database.encodeSlug(problem_id)
     newProject = {encodedProblemId: problem_id}
-    utils.database.updateChildNode('users', user_uid, 'projects', newProject)
-    return
+    utils.database.updateValue(f'users/{user_uid}/projects', newProject)
 
 
 def deleteProject(user_uid, problem_id):
@@ -168,7 +167,7 @@ def getVideoDataWithSlug(encodedSlug):
 
 
 def getVideoDataFromZone(zone_code):
-    return utils.database.getDataByFieldValue('video_data/items', 'zone_code', zone_code)
+    return utils.database.getValueByField('video_data/items', 'zone_code', zone_code)
 
 
 def getUrlMappings():

@@ -32,7 +32,7 @@ def getValue(refPath):
     return db.reference(refPath).get()
 
 
-def getDataByFieldValue(referencePath, fieldName, fieldValue):
+def getValueByField(referencePath, fieldName, fieldValue):
     init()
 
     ref = db.reference(referencePath)
