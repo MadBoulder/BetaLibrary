@@ -737,7 +737,7 @@ def update_slug():
     newSlug = data.get('newSlug')
     
     try:
-        utils.MadBoulderDatabase.updateSlug(oldSlug, newSlug)
+        utils.MadBoulderDatabase.addSlug(oldSlug, newSlug)
         return jsonify({'status': 'success', 'message': 'Slug updated successfully.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500

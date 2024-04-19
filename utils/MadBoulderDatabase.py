@@ -163,7 +163,21 @@ def getVideoDataWithSlug(encodedSlug):
         if newUrl and not newUrl == '':
             encodedNewUrl = utils.database.encodeSlug(newUrl)
             videoData = utils.database.getValue(f'video_data/items/{encodedNewUrl}')
+        if not videoData:
+            videoData = getVideoDataWithPartialSlug(encodedSlug)
+           
     return videoData
+
+def getVideoDataWithPartialSlug(partialEncodedSlug):
+    all_slugs = utils.database.getKeys('video_data/items')
+    possible_matches = [slug for slug in all_slugs if slug.startswith(partialEncodedSlug)]
+    
+    if not possible_matches:
+        return None
+    best_match = min(possible_matches, key=len)
+    print(f"Best partial match found: {best_match}")
+    
+    return utils.database.getValue(f'video_data/items/{best_match}')
 
 
 def getVideoDataFromZone(zone_code):
@@ -178,19 +192,16 @@ def deleteSlug(slugId):
     return utils.database.delete(f'url_mappings/{slugId}')
 
 
-def updateSlug(slugId, newSlug):
+def addSlug(slugId, newSlug):
     utils.database.updateValue('url_mappings', {slugId: newSlug})
 
 
-def disableSlug(oldSlug):
-    oldEncodedSlug = utils.database.encodeSlug(oldSlug)
-    utils.database.updateValue('url_mappings', {oldEncodedSlug: ''})
+def addDisableSlug(oldSlug):
+    addSlug(oldSlug, '')
 
 
 def deprecateSlug(oldSlug, newSlug):
-    oldEncodedSlug = utils.database.encodeSlug(oldSlug)
-    utils.database.updateValue('url_mappings', {oldEncodedSlug: newSlug})
-
+    addSlug(oldSlug, newSlug)
     migrateData(oldSlug, newSlug)
 
 
@@ -207,5 +218,5 @@ def migrateData(oldSlug, newSlug):
     # Migrate comments
     oldComments = getComments(oldEncodedSlug)
     if oldComments:
-        utils.database.setValue(f'problems/{newEncodedSlug}/ratings', oldComments)
+        utils.database.setValue(f'problems/{newEncodedSlug}/comments', oldComments)
         utils.database.delete(f'problems/{oldEncodedSlug}/comments')

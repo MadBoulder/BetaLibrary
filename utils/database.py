@@ -47,6 +47,11 @@ def getValueByField(referencePath, fieldName, fieldValue):
     return dataList
 
 
+def getKeys(refPath):
+    init()
+    return db.reference(refPath).get()
+
+
 def setValue(refPath, value):
     """ Set value for a specific path, overwriting existing data """
     init()

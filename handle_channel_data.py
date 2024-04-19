@@ -516,7 +516,7 @@ def deprecateSlug(oldSlug, newSlug):
     utils.MadBoulderDatabase.deprecateSlug(oldSlug, newSlug)
 
 def disableSlug(oldSlug):
-    utils.MadBoulderDatabase.disableSlug(oldSlug)
+    utils.MadBoulderDatabase.addDisableSlug(oldSlug)
 
 
 def saveDebugJson(fileName, data):
