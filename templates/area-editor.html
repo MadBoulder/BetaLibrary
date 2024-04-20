@@ -14,8 +14,14 @@
   <body>
 	{% include 'elements/main-menu.html' %}
 	<main>
+		<div class="zone-header">
+			<div style="display: flex; justify-content: center;">
+				<h1 class="zone-header-title text-bold">
+					Add New Bouldering Area
+				</h1>
+			</div>
+		</div>
 		<div class="container" id="mainContainer">
-			<h2>Add New Bouldering Area</h2>
 			<form method="post">
 				<div class="mb-3">
 					<label for="name">Area Name:</label>
@@ -71,15 +77,15 @@
 					</div>
 				</div>
 				<div class="mb-3">
-					<label for="links">Links:</label>
-					<input type="text" id="links" name="links">
+					<button id="addLinkButton" class="btn btn-primary" onclick="addLinkFields()">Add New Link</button>
+					<div id="linksContainer" class="mt-2"></div>
 				</div>
 				<div class="mb-3">
-					<label for="guides">Guides:</label>
-					<input type="text" id="guides" name="guides">
+					<button id="addGuideButton" class="btn btn-primary" onclick="addGuideFields()">Add New Guide</button>
+					<div id="guidesContainer" class="mt-2"></div>
 				</div>
-				<div class="mb-3">
-					<button type="submit" class="btn btn-primary">Create Area</button>
+				<div class="mb-3" style="text-align: center;">
+					<button type="submit" class="btn btn-primary-madboulder">Create Area</button>
 				</div>
 			</form>
 			<div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
@@ -111,7 +117,7 @@
 									<label for="countryOverviewEs">Overview (Spanish)</label>
 									<textarea class="form-control" id="countryOverviewEs" rows="3" required></textarea>
 								</div>
-								<button type="submit" class="btn btn-primary">Submit</button>
+								<button type="submit" class="btn btn-primary">Create New Country</button>
 							</form>
 						</div>
 					</div>
@@ -387,6 +393,69 @@
 							console.error('Error fetching altitude:', error);
 							alert('Failed to fetch elevation data.');
 						});
+				}
+
+				function addLinkFields() {
+					var container = document.getElementById('linksContainer');
+					var linkIndex = container.children.length + 1;
+
+					var html = `
+						<div class="mb-3 link-entry" id="link${linkIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
+							<label>URL:</label>
+							<input type="text" class="form-control mb-1" style="width:auto;" id="linkUrl${linkIndex}" placeholder="Enter URL" required>
+							<label>Name:</label>
+							<input type="text" class="form-control mb-1" style="width:auto;" id="linkName${linkIndex}" placeholder="Enter name" required>
+							<div class="form-check mb-2">
+								<input class="form-check-input" type="checkbox" id="linkFree${linkIndex}">
+								<label class="form-check-label" for="linkFree${linkIndex}">
+									Free
+								</label>
+							</div>
+							<button class="btn btn-danger mb-2" onclick="removeLink('link${linkIndex}')">Remove</button>
+						</div>
+					`;
+
+					container.insertAdjacentHTML('beforeend', html);
+					setTimeout(() => {
+						document.getElementById(`linkUrl${linkIndex}`).focus();
+					}, 0);
+					document.getElementById(`link${linkIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+
+				function removeLink(linkId) {
+					var linkDiv = document.getElementById(linkId);
+					linkDiv.parentNode.removeChild(linkDiv);
+				}
+
+				function addGuideFields() {
+					var container = document.getElementById('guidesContainer');
+					var guideIndex = container.children.length + 1;  // Unique ID for each guide entry
+
+					var html = `
+						<div class="mb-3 guide-entry" id="guide${guideIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
+							<label>Name:</label>
+							<input type="text" class="form-control mb-1" style="width:auto;" id="guideName${guideIndex}" placeholder="Enter guide name" required>
+							<label>Thumbnail URL:</label>
+							<input type="text" class="form-control mb-1" style="width:auto;" id="guideThumbnail${guideIndex}" placeholder="Enter thumbnail URL" required>
+							<label>Link:</label>
+							<div id="guideLinks${guideIndex}" class="mb-2">
+								<input type="text" class="form-control mb-1" style="width:auto;" id="guideLink1_${guideIndex}" placeholder="Enter primary link" required>
+								<input type="text" class="form-control mb-1" style="width:auto;" id="guideLink2_${guideIndex}" placeholder="Enter secondary link">
+							</div>
+							<button class="btn btn-danger" onclick="removeGuide('guide${guideIndex}')">Remove Guide</button>
+						</div>
+					`;
+
+					container.insertAdjacentHTML('beforeend', html);
+					setTimeout(() => {
+						document.getElementById(`guideName${guideIndex}`).focus();
+					}, 0);
+					document.getElementById(`guideName${guideIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+
+				function removeGuide(guideId) {
+					var guideDiv = document.getElementById(guideId);
+					guideDiv.parentNode.removeChild(guideDiv);
 				}
 			</script>
 		</div>
