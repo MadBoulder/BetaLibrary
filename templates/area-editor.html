@@ -61,9 +61,15 @@
 					<label>Overview (Spanish)</label>
 					<textarea class="form-control" id="overview-es" rows="3"></textarea>
 				</div>
-				<div id="parking-map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
-				<div id="parking-coordinates-container"></div>
-				<button type="button" id="clear-parkings" class="btn btn-warning">Clear Parkings</button>
+				
+				<div class="mb-3">
+					<button id="addParkingButton" class="btn btn-primary" onclick="showParkingMap()">Add Parkings</button>
+					<div id="parkingMapContainer" style="display:none;">
+						<div id="parking-map" style="height: 400px; width: 100%;"></div>
+						<div id="parking-coordinates-container"></div>
+						<button type="button" id="clear-parkings" class="btn btn-warning">Clear Parkings</button>
+					</div>
+				</div>
 				<div class="mb-3">
 					<label for="links">Links:</label>
 					<input type="text" id="links" name="links">
@@ -234,8 +240,12 @@
 				var areaMap, parkingMap;
 				var areaMarker, parkingMarkers = [];
 
+
 				document.addEventListener("DOMContentLoaded", function() {
-					// Initialize the Area Map
+					InitAreaMap()
+				});
+
+				function InitAreaMap() {
 					areaMap = L.map('area-map').setView([51.505, -0.09], 13); // Default view
 					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 						maxZoom: 18,
@@ -247,23 +257,33 @@
 						if (areaMarker) areaMap.removeLayer(areaMarker);
 						areaMarker = placeMarker(e.latlng, areaMap, true);
 					});
+				}
 
-					// Initialize the Parking Map
-					parkingMap = L.map('parking-map').setView([51.505, -0.09], 13);
-					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-						maxZoom: 18,
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					}).addTo(parkingMap);
+				function showParkingMap() {
+					document.getElementById('parkingMapContainer').style.display = 'block';
+        			document.getElementById('addParkingButton').style.display = 'none';
+					InitParkingMap()
+				}
 
-					// Click event for parking map
-					parkingMap.on('click', function(e) {
-						var marker = placeMarker(e.latlng, parkingMap, false);
-						parkingMarkers.push(marker);
-						addParkingCoordinates(e.latlng);
-					});
+				function InitParkingMap() {
+					if (!parkingMap) {
+						parkingMap = L.map('parking-map').setView([51.505, -0.09], 13);
+						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+							maxZoom: 18,
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						}).addTo(parkingMap);
 
-					document.getElementById('clear-parkings').addEventListener('click', clearParkings);
-				});
+						// Click event for parking map
+						parkingMap.on('click', function(e) {
+							var marker = placeMarker(e.latlng, parkingMap, false);
+							parkingMarkers.push(marker);
+							addParkingCoordinates(e.latlng);
+							toggleClearParkingsButton();
+						});
+
+						document.getElementById('clear-parkings').addEventListener('click', clearParkings);
+					}
+				}
 
 				function placeMarker(latLng, map, isArea) {
 					var marker = L.marker(latLng, { draggable: true });
@@ -306,6 +326,7 @@
 							parkingMap.removeLayer(parkingMarkers[index]);
 							parkingMarkers.splice(index, 1);
 							removeParkingCoordinates(index);
+							toggleClearParkingsButton();
 						}
 					}
 				}
@@ -335,6 +356,19 @@
 					parkingMarkers.forEach(marker => parkingMap.removeLayer(marker));
 					parkingMarkers = [];
 					document.getElementById('parking-coordinates-container').innerHTML = '';
+        			toggleClearParkingsButton();
+
+					document.getElementById('parkingMapContainer').style.display = 'none';
+        			document.getElementById('addParkingButton').style.display = 'block';
+				}
+
+				function toggleClearParkingsButton() {
+					var button = document.getElementById('clear-parkings');
+					if (parkingMarkers.length > 0) {
+						button.style.display = 'block';
+					} else {
+						button.style.display = 'none';
+					}
 				}
 			
 				function fetchAltitude(lat, lng) {
