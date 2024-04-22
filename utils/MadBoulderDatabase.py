@@ -1,6 +1,7 @@
 import utils.database
 import pytz
 import datetime
+from functools import lru_cache
 
 def getAllVideoData():
     return utils.database.getValue('video_data/items')
@@ -35,7 +36,7 @@ def setContributorData(contributors):
     contributor_count = len(contributors)
     utils.database.setValue('contributor_count', contributor_count)
 
-
+@lru_cache(maxsize=10)
 def getPlaylistsData():
     return utils.database.getValue('playlist_data/items')
 
@@ -46,7 +47,7 @@ def setPlaylistData(playlists):
     utils.database.setValue('playlist_data/items', playlists)
     utils.database.updateDate('playlist_data')
 
-
+@lru_cache(maxsize=10)
 def getAreasData():
     return utils.database.getValue('area_data')
 
@@ -56,6 +57,7 @@ def getAreaData(areaCode):
 def setAreaData(areas):
     utils.database.setValue('area_data', areas)
 
+@lru_cache(maxsize=10)
 def getCountriesData():
     return utils.database.getValue('country_data')
 
@@ -150,11 +152,13 @@ def deleteProject(user_uid, problem_id):
     utils.database.delete(f'users/{user_uid}/projects/{encodedProblemId}')
 
 
+@lru_cache(maxsize=10)
 def getVideoData(area, name):
     encodedProblemSlug = utils.database.encodeSlug(area + '/' + name)
     return getVideoDataWithSlug(encodedProblemSlug)
 
 
+@lru_cache(maxsize=10)
 def getVideoDataWithSlug(encodedSlug):
     print("encodedProblemSlug", encodedSlug)
     videoData = utils.database.getValue(f'video_data/items/{encodedSlug}')
@@ -185,6 +189,7 @@ def getVideoDataFromZone(zone_code):
     return utils.database.getValueByField('video_data/items', 'zone_code', zone_code)
 
 
+@lru_cache(maxsize=10)
 def getUrlMappings():
     return utils.database.getValue('url_mappings')
 

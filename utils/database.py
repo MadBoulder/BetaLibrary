@@ -21,9 +21,9 @@ firebase_lock = threading.Lock()
 def init():
     with firebase_lock:
         if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder.json')
+            cred = credentials.Certificate('madboulder-development.json')
             firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder.firebaseio.com'
+                'databaseURL': 'https://madboulder-development-default-rtdb.europe-west1.firebasedatabase.app/'
             })
 
 
