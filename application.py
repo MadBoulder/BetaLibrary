@@ -1071,9 +1071,45 @@ def contributor_approved_notification(email, climber_id):
 
 
 @app.route('/area-editor', methods=['GET'])
-@admin_required
+#@admin_required
 def area_editor():
-    return render_template('area-editor.html')
+    rockTypeMapping = utils.zone_helpers.getRockTypeList()
+    countries = utils.MadBoulderDatabase.getCountriesData()
+    return render_template('area-editor.html', rockTypes=rockTypeMapping, countries=countries)
+
+
+@app.route('/submit-area', methods=['POST'])
+#@admin_required
+def submit_area():
+    print("submit_area")
+    try:
+        data = request.get_json()
+        print(data)
+        areaName = data['name']
+        areaCode = slugify(areaName)
+        areaData = {
+            "name": areaName,
+            "zone_code": areaCode,
+            "country": data['countryCode'],
+            "state": data.get('stateCode', ''),
+            "latitude": data['latitude'],
+            "longitude": data['longitude'],
+            "altitude": data['altitude'],
+            "zoom": data['zoom'],
+            "rock_type": data['rock_type'],
+            "overview": [
+                data['overview_en'],
+                data['overview_es']
+            ],
+            "parkings": json.loads(data['parkings']),
+            "links": json.loads(data['links']),
+            "guides": json.loads(data['guides'])
+        }
+        print(areaData)
+        utils.MadBoulderDatabase.AddArea(areaCode, areaData)
+        return jsonify({"status": "success", "message": "Area added successfully!"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
 
 @app.route('/fetch-altitude')
