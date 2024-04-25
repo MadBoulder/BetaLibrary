@@ -47,6 +47,9 @@ def setPlaylistData(playlists):
     utils.database.setValue('playlist_data/items', playlists)
     utils.database.updateDate('playlist_data')
 
+def getAreasCount():
+    return utils.database.getValue('areas_count')
+
 @lru_cache(maxsize=10)
 def getAreasData():
     return utils.database.getValue('area_data')
@@ -56,6 +59,8 @@ def getAreaData(areaCode):
 
 def setAreaData(areas):
     utils.database.setValue('area_data', areas)
+    areaCount = len(areas)
+    utils.database.setValue('areas_count', areaCount)
 
 @lru_cache(maxsize=10)
 def getCountriesData():

@@ -185,16 +185,9 @@ def home_es():
     return render_template('/es/home.html')
 
 
-@app.route('/bouldering-areas-list', methods=['GET', 'POST'])
+@app.route('/bouldering-areas-list', methods=['GET'])
 def zones():
-    zones = get_zone_data()
-    playlists = get_playlist_data()
-    country_data = utils.MadBoulderDatabase.getCountriesData()
-    return render_template(
-        'bouldering-areas-list.html',
-        zones=zones,
-        playlists=playlists,
-        country_data=country_data)
+    return render_template('bouldering-areas-list.html')
 
 
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
@@ -1259,11 +1252,10 @@ def create_assessment(
 
 @app.route('/about-us', methods=['GET'])
 def render_about_us():
-    zone_data = utils.MadBoulderDatabase.getAreasData()
     stats_list = [
         {
             'text': _('Zones'),
-            'data': len(zone_data)
+            'data': utils.MadBoulderDatabase.getAreasCount()
         },
         {
             'text': _('Contributors'),

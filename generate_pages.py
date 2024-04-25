@@ -27,9 +27,13 @@ def main():
     as well as a general map that contains all the areas
     """
     areas = utils.MadBoulderDatabase.getAreasData()
+    playlists = utils.MadBoulderDatabase.getPlaylistsData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
+
+    generateAreasListPage(template_env, areas, playlists)
+
     templatePage = template_env.get_template('templates/templates/area_page_template.html')
     templatePage_es = template_env.get_template('templates/templates/es/area_page_template.html')
 
@@ -124,6 +128,20 @@ def main():
 
         with open('templates/zones/es/'+areaCode+'.html', 'w', encoding='utf-8') as template_es:
             template_es.write(output)
+
+
+def generateAreasListPage(template_env, areas, playlists):
+    country_data = utils.MadBoulderDatabase.getCountriesData()
+    templatePageList = template_env.get_template('templates/templates/areas_list_page_template.html')
+
+    output = templatePageList.render(
+        zones=areas,
+        playlists=playlists,
+        country_data=country_data
+
+    )
+    with open('templates/bouldering-areas-list.html', 'w', encoding='utf-8') as template:
+        template.write(output)
 
 
 
