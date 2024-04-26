@@ -5,6 +5,7 @@ import utils.helpers
 import utils.zone_helpers
 import utils.MadBoulderDatabase
 from slugify import slugify
+from flask_babel import Babel, _
 
 LINK_FIELD = 'link'
 NAME_FIELD = 'name'
@@ -70,6 +71,9 @@ def main():
         #country
         areaInfo = utils.zone_helpers.getStateAndCountryInfo(areaCode)
 
+        #statistics
+        statistics = generateAreaStatistics(areaCode, problems)
+
         #overview
         overview = area.get("overview", [""])[0]
         
@@ -89,7 +93,8 @@ def main():
             lng=area[LONGITUDE_FIELD],
             alt=int(area.get(ALTITUDE_FIELD,'0')),
             zone=area[NAME_FIELD],
-            areaInfo=areaInfo
+            areaInfo=areaInfo,
+            stats_list=statistics
         )
 
         with open('templates/zones/'+areaCode+'.html', 'w', encoding='utf-8') as template:
@@ -123,7 +128,8 @@ def main():
             lng=area[LONGITUDE_FIELD],
             alt=int(area.get(ALTITUDE_FIELD,'0')),
             zone=area[NAME_FIELD],
-            areaInfo=areaInfo
+            areaInfo=areaInfo,
+            stats_list=statistics
         )
 
         with open('templates/zones/es/'+areaCode+'.html', 'w', encoding='utf-8') as template_es:
@@ -142,6 +148,36 @@ def generateAreasListPage(template_env, areas, playlists):
     )
     with open('templates/bouldering-areas-list.html', 'w', encoding='utf-8') as template:
         template.write(output)
+
+def generateAreaStatistics(areaCode, problems):
+    views_count = utils.zone_helpers.get_view_count_from_problems(problems)
+    contributor_count = utils.zone_helpers.get_contributor_count_from_problems(problems)
+    video_count = len(problems)
+    sector_count = utils.helpers.count_sectors_in_zone(areaCode)
+    data = [
+        {
+            'logo': 'fas fa-video-camera',
+            'text': _('Videos'),
+            'data': video_count
+        },
+        {
+            'logo': 'fas fa-eye',
+            'text': _('Views'),
+            'data': views_count
+        },
+        {
+            'logo': 'fas fa-user',
+            'text': _('Contributors'),
+            'data': contributor_count
+        },
+        {
+            'logo': 'fa fa-map-marked',
+            'text': _('Sectors'),
+            'data': sector_count
+        }
+    ]
+
+    return data
 
 
 

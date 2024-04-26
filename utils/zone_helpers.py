@@ -4,12 +4,6 @@ import utils.MadBoulderDatabase
 from functools import lru_cache
 
 
-def get_zone_view_count_from_zone_code(zone_code):
-    problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-    total_views = sum(int(problem['viewCount']) for problem in problems)
-    return total_views
-
-
 def get_view_count_from_problems(problems):
     total_views = sum(int(problem['viewCount']) for problem in problems)
     return total_views

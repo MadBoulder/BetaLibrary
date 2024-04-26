@@ -1362,7 +1362,7 @@ def custom_statistics():
         last_update=dashboard.get_last_dashboard_update()
     )
 
-# video count is cached for one hour
+
 @app.route('/<string:page>')
 @app.route('/templates/zones/<string:page>.html')
 @app.route('/<string:page>.html')
@@ -1376,7 +1376,7 @@ def render_page(page):
         page_path = 'zones/' + language_extension + slugify(page) + EXTENSION
         print(page_path)
 
-        return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
+        return render_template(page_path)
     except Exception as e:
         print("An error occurred:", e)
         abort(404)
@@ -1388,46 +1388,10 @@ def render_page(page):
 def render_page_es(page):
     try:
         page_path = 'zones/' + 'es/' + slugify(page) + EXTENSION
-        return render_template(page_path, current_url=page, stats_list=get_area_page_stats(page))
+        return render_template(page_path)
     except Exception as e:
         print("An error occurred:", e)
         abort(404)
-
-
-def get_area_page_stats(page):
-    try:
-        zone_problems = utils.MadBoulderDatabase.getVideoDataFromZone(slugify(page))
-
-        views_count = utils.zone_helpers.get_view_count_from_problems(zone_problems)
-        contributor_count = utils.zone_helpers.get_contributor_count_from_problems(zone_problems)
-        video_count = len(zone_problems)
-        sector_count = utils.helpers.count_sectors_in_zone(page)
-        data = [
-            {
-                'logo': 'fas fa-video-camera',
-                'text': _('Videos'),
-                'data': video_count
-            },
-            {
-                'logo': 'fas fa-eye',
-                'text': _('Views'),
-                'data': views_count
-            },
-            {
-                'logo': 'fas fa-user',
-                'text': _('Contributors'),
-                'data': contributor_count
-            },
-            {
-                'logo': 'fa fa-map-marked',
-                'text': _('Sectors'),
-                'data': sector_count
-            }]
-    except Exception as e:
-        print("An error occurred:", str(e))
-        traceback.print_exc()
-
-    return data
 
 
 @app.route('/problems/<string:area>/<string:problem_name>')
