@@ -2,6 +2,18 @@ import utils.database
 import pytz
 import datetime
 from functools import lru_cache
+import json
+import sys
+
+def estimate_data_size(data):
+    size_bytes = sys.getsizeof(json.dumps(data))
+    if size_bytes < 1024:
+        return f"{size_bytes} bytes"
+    size_kb = size_bytes / 1024
+    if size_kb < 1024:
+        return f"{size_kb:.2f} KB"
+    size_mb = size_kb / 1024
+    return f"{size_mb:.2f} MB"
 
 def getAllVideoData():
     return utils.database.getValue('video_data/items')
@@ -38,10 +50,14 @@ def setContributorData(contributors):
 
 @lru_cache(maxsize=10)
 def getPlaylistsData():
-    return utils.database.getValue('playlist_data/items')
+    data =  utils.database.getValue('playlist_data/items')
+    data_size = estimate_data_size(data)
+    print(f"Data fetched for 'getPlaylistsData': {data_size} bytes")
+    return data;
 
 def getPlaylistData(areaCode):
-    return utils.database.getValue(f'playlist_data/items/{areaCode}')
+    data =  utils.database.getValue(f'playlist_data/items/{areaCode}')
+    return data;
 
 def setPlaylistData(playlists):
     utils.database.setValue('playlist_data/items', playlists)
@@ -52,10 +68,14 @@ def getAreasCount():
 
 @lru_cache(maxsize=10)
 def getAreasData():
-    return utils.database.getValue('area_data')
+    data = utils.database.getValue('area_data')
+    data_size = estimate_data_size(data)
+    print(f"Data fetched for 'getAreasData': {data_size} bytes")
+    return data;
 
 def getAreaData(areaCode):
-    return utils.database.getValue(f'area_data/{areaCode}')
+    data = utils.database.getValue(f'area_data/{areaCode}')
+    return data;
 
 def setAreaData(areas):
     utils.database.setValue('area_data', areas)
@@ -64,10 +84,14 @@ def setAreaData(areas):
 
 @lru_cache(maxsize=10)
 def getCountriesData():
-    return utils.database.getValue('country_data')
+    data = utils.database.getValue('country_data')
+    data_size = estimate_data_size(data)
+    print(f"Data fetched for 'getCountriesData': {data_size} bytes")
+    return data;
 
 def getCountryData(countryCode):
-    return utils.database.getValue(f'country_data/{countryCode}')
+    data = utils.database.getValue(f'country_data/{countryCode}')
+    return data;
 
 def getStateData(countryCode, stateCode):
     return utils.database.getValue(f'country_data/{countryCode}/states/{stateCode}')
@@ -76,10 +100,14 @@ def setCountryData(countries):
     utils.database.setValue('country_data', countries)
 
 def getAllBoulderData():
-    return utils.database.getValue('boulder_data')
+    data = utils.database.getValue('boulder_data')
+    data_size = estimate_data_size(data)
+    print(f"Data fetched for 'getAllBoulderData': {data_size} bytes")
+    return data;
 
 def getBoulderData(areaCode):
-    return utils.database.getValue(f'boulder_data/{areaCode}')
+    data = utils.database.getValue(f'boulder_data/{areaCode}')
+    return data;
 
 def setBoulderData(boulders):
     utils.database.setValue('boulder_data', boulders)
@@ -157,28 +185,39 @@ def deleteProject(user_uid, problem_id):
     utils.database.delete(f'users/{user_uid}/projects/{encodedProblemId}')
 
 
-@lru_cache(maxsize=10)
-def getVideoData(area, name):
+
+
+def getProblemSlug(area, name):
     encodedProblemSlug = utils.database.encodeSlug(area + '/' + name)
-    return getVideoDataWithSlug(encodedProblemSlug)
+    return utils.database.decodeSlug(getProblemSlugWithSlug(encodedProblemSlug))
 
 
-@lru_cache(maxsize=10)
-def getVideoDataWithSlug(encodedSlug):
-    print("encodedProblemSlug", encodedSlug)
-    videoData = utils.database.getValue(f'video_data/items/{encodedSlug}')
-    if not videoData:
-        newUrl = utils.database.getValue(f'url_mappings/{encodedSlug}')
-        if newUrl and not newUrl == '':
-            encodedNewUrl = utils.database.encodeSlug(newUrl)
-            print("encodedNewUrl", encodedNewUrl)
-            videoData = utils.database.getValue(f'video_data/items/{encodedNewUrl}')
-        if not videoData:
-            videoData = getVideoDataWithPartialSlug(encodedSlug)
-           
-    return videoData
+def getProblemSlugWithSlug(slug):
+    encodedSlug = utils.database.encodeSlug(slug)
+    problemSlug = encodedSlug
+    slugExists = utils.database.checkExists(encodedSlug)
+    if not slugExists:
+        problemSlug = getSlugFromUrlMapping(encodedSlug)
+        if not problemSlug:
+            problemSlug = getProblemSlugFromPartialSlug(encodedSlug)
 
-def getVideoDataWithPartialSlug(partialEncodedSlug):
+    return utils.database.decodeSlug(problemSlug)
+
+
+def getSlugFromUrlMapping(encodedSlug):
+    problemSlug = ""
+
+    newUrl = utils.database.getValue(f'url_mappings/{encodedSlug}')
+    if newUrl and not newUrl == '':
+        encodedNewUrl = utils.database.encodeSlug(newUrl)
+        snapshot = utils.database.getValue(f'video_data/items/{encodedNewUrl}', shallow=True)
+        if snapshot is not None:
+            problemSlug = encodedNewUrl
+
+    return problemSlug
+
+
+def getProblemSlugFromPartialSlug(partialEncodedSlug):
     all_slugs = utils.database.getKeys('video_data/items')
     possible_matches = [slug for slug in all_slugs if slug.startswith(partialEncodedSlug)]
     
@@ -187,7 +226,22 @@ def getVideoDataWithPartialSlug(partialEncodedSlug):
     best_match = min(possible_matches, key=len)
     print(f"Best partial match found: {best_match}")
     
-    return utils.database.getValue(f'video_data/items/{best_match}')
+    return best_match
+
+
+@lru_cache(maxsize=10)
+def getVideoData(area, name):
+    encodedProblemSlug = utils.database.encodeSlug(area + '/' + name)
+    return getVideoDataWithSlug(encodedProblemSlug)
+
+
+@lru_cache(maxsize=10)
+def getVideoDataWithSlug(slug):
+    problemSlug = getProblemSlugWithSlug(slug)
+    if(problemSlug):
+        encodedProblemSlug = utils.database.encodeSlug(problemSlug)
+        videoData = utils.database.getValue(f'video_data/items/{encodedProblemSlug}')
+    return videoData
 
 
 def getVideoDataFromZone(zone_code):

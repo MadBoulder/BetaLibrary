@@ -1435,21 +1435,19 @@ def get_area_page_stats(page):
 def load_problem(area, problem_name):
     print("load problem", area, problem_name)
     try:
-        videoData = utils.MadBoulderDatabase.getVideoData(area, problem_name)
-        if videoData:
-            problem_id = videoData['secure_slug']
-
+        problemSlug = utils.MadBoulderDatabase.getProblemSlug(area, problem_name)
+        if problemSlug:
             user_uid = session.get('uid')
             if user_uid:
-                problem_in_projects = is_problem_in_projects(user_uid, problem_id)
-                comments = get_comments_for_problem(problem_id)
+                problem_in_projects = is_problem_in_projects(user_uid, problemSlug)
+                comments = get_comments_for_problem(problemSlug)
             else:
                 comments = []
                 problem_in_projects = False
             
-            ratings = get_ratings_for_problem(problem_id, user_uid)
+            ratings = get_ratings_for_problem(problemSlug, user_uid)
 
-            url = "problems/" + videoData['secure_slug'] + ".html"
+            url = "problems/" + problemSlug + ".html"
             return render_template(url, problem_in_projects=problem_in_projects, ratings=ratings, comments=comments)
         else:
             print("Problem not found:", area + '/' + problem_name)

@@ -27,9 +27,9 @@ def init():
             })
 
 
-def getValue(refPath):
+def getValue(refPath, shallow=False):
     init()
-    return db.reference(refPath).get()
+    return db.reference(refPath).get(shallow=shallow)
 
 
 def getValueByField(referencePath, fieldName, fieldValue):
@@ -47,9 +47,16 @@ def getValueByField(referencePath, fieldName, fieldValue):
     return dataList
 
 
+def checkExists(refPath):
+    init()
+    
+    snapshot = db.reference(refPath).get(shallow=True)
+    return snapshot is not None
+
+
 def getKeys(refPath):
     init()
-    return db.reference(refPath).get()
+    return db.reference(refPath).get(shallow=True)
 
 
 def setValue(refPath, value):
