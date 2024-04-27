@@ -5,6 +5,37 @@ from functools import lru_cache
 import json
 import sys
 
+PROBLEMS_KEY = 'problem_data'
+ENCODED_SEPARATOR = '___'
+DECODED_SEPARATOR = '/'
+
+def createSlug(areaCode, problemId):
+    return areaCode + DECODED_SEPARATOR + problemId
+
+def encodeSlug(key):
+    return key.replace(DECODED_SEPARATOR, ENCODED_SEPARATOR)
+
+def decodeSlug(key):
+    if key:
+        return key.replace(ENCODED_SEPARATOR, DECODED_SEPARATOR)
+    else:
+        return None
+
+def getSlugData(slug):
+    if ENCODED_SEPARATOR in slug:
+        parts = slug.split(ENCODED_SEPARATOR)
+    elif DECODED_SEPARATOR in slug:
+        parts = slug.split(DECODED_SEPARATOR)
+    else:
+        raise ValueError("Invalid slug format provided.")
+
+    if len(parts) != 2:
+        raise ValueError("Slug does not contain exactly one delimiter or has improper format.")
+
+    areaName, problemId = parts[0], parts[1]
+    return (areaName, problemId)
+
+
 def estimate_data_size(data):
     size_bytes = sys.getsizeof(json.dumps(data))
     if size_bytes < 1024:
@@ -16,18 +47,18 @@ def estimate_data_size(data):
     return f"{size_mb:.2f} MB"
 
 def getAllVideoData():
-    return utils.database.getValue('video_data/items')
+    return utils.database.getValue(f'{PROBLEMS_KEY}/items')
 
 def getVideoDataDate():
-    return utils.database.getDate('video_data')
+    return utils.database.getDate(PROBLEMS_KEY)
 
 def getVideoCount():
     return utils.database.getValue('video_count')
 
 def setVideoData(videoData):
-    utils.database.setValue('video_data/items', videoData)
+    utils.database.setValue(f'{PROBLEMS_KEY}/items', videoData)
     utils.database.setValue('video_count', len(videoData))
-    utils.database.updateDate('video_data')
+    utils.database.updateDate(PROBLEMS_KEY)
     
 def get_video_data_search_optimized():
     return utils.database.getValue('video_data_search_optimized')
@@ -48,7 +79,7 @@ def setContributorData(contributors):
     contributor_count = len(contributors)
     utils.database.setValue('contributor_count', contributor_count)
 
-@lru_cache(maxsize=10)
+#@lru_cache(maxsize=10)
 def getPlaylistsData():
     data =  utils.database.getValue('playlist_data/items')
     data_size = estimate_data_size(data)
@@ -66,7 +97,7 @@ def setPlaylistData(playlists):
 def getAreasCount():
     return utils.database.getValue('areas_count')
 
-@lru_cache(maxsize=10)
+#@lru_cache(maxsize=10)
 def getAreasData():
     data = utils.database.getValue('area_data')
     data_size = estimate_data_size(data)
@@ -82,7 +113,7 @@ def setAreaData(areas):
     areaCount = len(areas)
     utils.database.setValue('areas_count', areaCount)
 
-@lru_cache(maxsize=10)
+#@lru_cache(maxsize=10)
 def getCountriesData():
     data = utils.database.getValue('country_data')
     data_size = estimate_data_size(data)
@@ -115,33 +146,33 @@ def setBoulderData(boulders):
 
 #Ratings
 def getRatings(problem_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/ratings')
 
 
 def submitRating(problem_id, user_uid, rating):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     newRating = {user_uid: rating}
     utils.database.updateValue(f'problems/{encodedProblemId}/ratings', newRating)
 
 
 def deleteRating(problem_id, user_uid):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     utils.database.delete(f'problems/{encodedProblemId}/ratings/{user_uid}')
 
 
 #Comments
 def getComments(problem_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/comments')
 
 def getComment(problem_id, comment_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/comments/{comment_id}')
 
 
 def submitComment(problem_id, user_uid, comment):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     utc_now = datetime.datetime.now(pytz.utc).isoformat()
     newComment = {
         'user_uid': user_uid,
@@ -154,7 +185,7 @@ def submitComment(problem_id, user_uid, comment):
 
 
 def deleteComment(problem_id, user_uid, comment_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     comment = getComment(problem_id, comment_id)
     if comment:
         if comment.get('user_uid') == user_uid:
@@ -170,85 +201,80 @@ def getProjects(user_uid):
     return utils.database.getValue(f'users/{user_uid}/projects')
 
 def getProject(user_uid, problem_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'users/{user_uid}/projects/{encodedProblemId}')
 
 
 def addProject(user_uid, problem_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     newProject = {encodedProblemId: problem_id}
     utils.database.updateValue(f'users/{user_uid}/projects', newProject)
 
 
 def deleteProject(user_uid, problem_id):
-    encodedProblemId = utils.database.encodeSlug(problem_id)
+    encodedProblemId = encodeSlug(problem_id)
     utils.database.delete(f'users/{user_uid}/projects/{encodedProblemId}')
 
 
 
+def getProblemSlug(area, problem_id):
+    print("getProblemSlug")
+    problemSlug = createSlug(area, problem_id)
+    slugExists = utils.database.checkExists(f'{PROBLEMS_KEY}/items/{problemSlug}')
+    if not slugExists:
+        problemSlug = getSlugFromUrlMapping(problemSlug)
+        if not problemSlug:
+            problemSlug = getProblemSlugFromPartialSlug(area, problem_id)
 
-def getProblemSlug(area, name):
-    encodedProblemSlug = utils.database.encodeSlug(area + '/' + name)
-    return utils.database.decodeSlug(getProblemSlugWithSlug(encodedProblemSlug))
+    return decodeSlug(problemSlug)
 
 
 def getProblemSlugWithSlug(slug):
-    encodedSlug = utils.database.encodeSlug(slug)
-    problemSlug = encodedSlug
-    slugExists = utils.database.checkExists(encodedSlug)
-    if not slugExists:
-        problemSlug = getSlugFromUrlMapping(encodedSlug)
-        if not problemSlug:
-            problemSlug = getProblemSlugFromPartialSlug(encodedSlug)
-
-    return utils.database.decodeSlug(problemSlug)
+    areaName, problemId = getSlugData(slug)
+    return getProblemSlug(areaName, problemId)
 
 
-def getSlugFromUrlMapping(encodedSlug):
-    problemSlug = ""
-
+def getSlugFromUrlMapping(slug):
+    encodedSlug = encodeSlug(slug)
     newUrl = utils.database.getValue(f'url_mappings/{encodedSlug}')
     if newUrl and not newUrl == '':
-        encodedNewUrl = utils.database.encodeSlug(newUrl)
-        snapshot = utils.database.getValue(f'video_data/items/{encodedNewUrl}', shallow=True)
-        if snapshot is not None:
-            problemSlug = encodedNewUrl
+        return getProblemSlugWithSlug(newUrl)
 
-    return problemSlug
+    return ""
 
 
-def getProblemSlugFromPartialSlug(partialEncodedSlug):
-    all_slugs = utils.database.getKeys('video_data/items')
-    possible_matches = [slug for slug in all_slugs if slug.startswith(partialEncodedSlug)]
-    
+def getProblemSlugFromPartialSlug(areaName, problem_id):
+    all_slugs = utils.database.getKeys(f'{PROBLEMS_KEY}/items/{areaName}')
+    possible_matches = [slug for slug in all_slugs if slug.startswith(problem_id)]
+
     if not possible_matches:
         return None
     best_match = min(possible_matches, key=len)
+    
     print(f"Best partial match found: {best_match}")
     
-    return best_match
+    return createSlug(areaName, best_match)
 
 
-@lru_cache(maxsize=10)
-def getVideoData(area, name):
-    encodedProblemSlug = utils.database.encodeSlug(area + '/' + name)
-    return getVideoDataWithSlug(encodedProblemSlug)
-
-
-@lru_cache(maxsize=10)
-def getVideoDataWithSlug(slug):
-    problemSlug = getProblemSlugWithSlug(slug)
+#@lru_cache(maxsize=10)
+def getVideoData(area, problemId):
+    problemSlug = getProblemSlug(area, problemId)
     if(problemSlug):
-        encodedProblemSlug = utils.database.encodeSlug(problemSlug)
-        videoData = utils.database.getValue(f'video_data/items/{encodedProblemSlug}')
+        videoData = utils.database.getValue(f'{PROBLEMS_KEY}/items/{area}/{problemId}')
     return videoData
 
 
+#@lru_cache(maxsize=10)
+def getVideoDataWithSlug(slug):
+    area, problemId = getSlugData(slug)
+    return getVideoData(area, problemId)
+
+
 def getVideoDataFromZone(zone_code):
-    return utils.database.getValueByField('video_data/items', 'zone_code', zone_code)
+    return utils.database.getValue(f'{PROBLEMS_KEY}/items/{zone_code}')
 
 
-@lru_cache(maxsize=10)
+#@lru_cache(maxsize=10)
 def getUrlMappings():
     return utils.database.getValue('url_mappings')
 
@@ -258,7 +284,7 @@ def deleteSlug(slugId):
 
 
 def addSlug(slugId, newSlug):
-    encodedSlugId = utils.database.encodeSlug(slugId)
+    encodedSlugId = encodeSlug(slugId)
     utils.database.updateValue('url_mappings', {encodedSlugId: newSlug})
 
 
@@ -272,8 +298,8 @@ def deprecateSlug(oldSlug, newSlug):
 
 
 def migrateData(oldSlug, newSlug):
-    oldEncodedSlug = utils.database.encodeSlug(oldSlug)
-    newEncodedSlug = utils.database.encodeSlug(newSlug)
+    oldEncodedSlug = encodeSlug(oldSlug)
+    newEncodedSlug = encodeSlug(newSlug)
     
     # Migrate ratings
     oldRatings = getRatings(oldEncodedSlug)

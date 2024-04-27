@@ -6,13 +6,19 @@ from firebase_admin import db
 import threading
 from datetime import date
 import datetime
-    
+import json
+import sys
 
-def encodeSlug(key):
-    return key.replace('/', '___')
 
-def decodeSlug(key):
-    return key.replace('___', '/')
+def estimate_data_size(data):
+    size_bytes = sys.getsizeof(json.dumps(data))
+    if size_bytes < 1024:
+        return f"{size_bytes} bytes"
+    size_kb = size_bytes / 1024
+    if size_kb < 1024:
+        return f"{size_kb:.2f} KB"
+    size_mb = size_kb / 1024
+    return f"{size_mb:.2f} MB"
 
 
 firebase_lock = threading.Lock()
@@ -29,7 +35,11 @@ def init():
 
 def getValue(refPath, shallow=False):
     init()
-    return db.reference(refPath).get(shallow=shallow)
+    value = db.reference(refPath).get(shallow=shallow)
+    
+    print(f"getValue {refPath}: {estimate_data_size(value)}")
+
+    return value
 
 
 def getValueByField(referencePath, fieldName, fieldValue):
@@ -43,6 +53,7 @@ def getValueByField(referencePath, fieldName, fieldValue):
         print(f"No data found for {fieldName}: {fieldValue}")
         return []
 
+    print(f"getValueByField {referencePath},{fieldName}: {estimate_data_size(results)}")
     dataList = [data for data in results.values()]
     return dataList
 
@@ -51,12 +62,18 @@ def checkExists(refPath):
     init()
     
     snapshot = db.reference(refPath).get(shallow=True)
+    print(f"checkExists {refPath}: {estimate_data_size(snapshot)}")
+
     return snapshot is not None
 
 
 def getKeys(refPath):
     init()
-    return db.reference(refPath).get(shallow=True)
+    value = db.reference(refPath).get(shallow=True)
+
+    print(f"getKeys {refPath}: {estimate_data_size(value)}")
+
+    return value
 
 
 def setValue(refPath, value):
