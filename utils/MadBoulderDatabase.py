@@ -35,17 +35,6 @@ def getSlugData(slug):
     areaName, problemId = parts[0], parts[1]
     return (areaName, problemId)
 
-
-def estimate_data_size(data):
-    size_bytes = sys.getsizeof(json.dumps(data))
-    if size_bytes < 1024:
-        return f"{size_bytes} bytes"
-    size_kb = size_bytes / 1024
-    if size_kb < 1024:
-        return f"{size_kb:.2f} KB"
-    size_mb = size_kb / 1024
-    return f"{size_mb:.2f} MB"
-
 def getAllVideoData():
     return utils.database.getValue(f'{PROBLEMS_KEY}/items')
 
@@ -81,9 +70,7 @@ def setContributorData(contributors):
 
 #@lru_cache(maxsize=10)
 def getPlaylistsData():
-    data =  utils.database.getValue('playlist_data/items')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getPlaylistsData': {data_size} bytes")
+    data = utils.database.getValue('playlist_data/items')
     return data;
 
 def getPlaylistData(areaCode):
@@ -100,8 +87,6 @@ def getAreasCount():
 #@lru_cache(maxsize=10)
 def getAreasData():
     data = utils.database.getValue('area_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getAreasData': {data_size} bytes")
     return data;
 
 def getAreaData(areaCode):
@@ -116,8 +101,6 @@ def setAreaData(areas):
 #@lru_cache(maxsize=10)
 def getCountriesData():
     data = utils.database.getValue('country_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getCountriesData': {data_size} bytes")
     return data;
 
 def getCountryData(countryCode):
@@ -132,8 +115,6 @@ def setCountryData(countries):
 
 def getAllBoulderData():
     data = utils.database.getValue('boulder_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getAllBoulderData': {data_size} bytes")
     return data;
 
 def getBoulderData(areaCode):

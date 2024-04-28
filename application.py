@@ -271,6 +271,45 @@ def search():
         search_term='')
 
 
+@app.route('/search-api', methods=['GET'])
+def search_api():
+    #time.sleep(20)
+    #search_results = {'zones': [{'altitude': 848, 'country': 'spain', 'guides': [{'link': 'https://www.libreriadesnivel.com/libros/bloc-muntanyes-de-prades/9788461447800/', 'name': 'Bloc. Muntanyes de Prades', 'thumbnail': 'https://www.libreriadesnivel.com/media/img/portadas/9788461447800.jpg'}], 'latitude': 41.24535, 'longitude': 0.945928, 'name': 'Arbolí', 'overview': ["Arbolí, in the heart of Catalonia, Spain, boasts limestone boulders that offer exquisite pocket-pulling experiences. The area's fame rests on its warm winter appeal, making it an all-season destination. Arbolí's charm lies in its picturesque setting and the diversity of climbing features.", 'Arbolí, en el corazón de Cataluña, España, presume de bloques de caliza que ofrecen experiencias de agarres de presas exquisitos. La fama de la zona se basa en su atractivo invernal, lo que la convierte en un destino para todo el año. El encanto de Arbolí radica en su entorno pintoresco y la diversidad de características de escalada.'], 'rock_type': 'lime', 'state': 'catalonia', 'zone_code': 'arboli', 'zoom': 16, 'score': 0}], 'problems': [{'boulder': 'Unknown', 'climber': 'Aniol Santacreu', 'grade': '6a+', 'grade_with_info': '6a+ (sit)', 'id': 'qw6eq1LaVQU', 'name': 'Le Barbot', 'sector': 'Cul de Chien', 'secure_slug': 'fontainebleau/le-barbot-6a-sit', 'title': 'Le Barbot, 6a+ (sit). Fontainebleau', 'zone': 'Fontainebleau', 'score': 0}, {'boulder': 'Unknown', 'climber': 'Vikas Agartha', 'grade': 'V8', 'grade_with_info': 'V8 (sit)', 'id': 'GQLGMvfUl60', 'name': 'Arboretum', 'sector': "Potter's Point", 'secure_slug': 'santa-barbara/arboretum-v8-sit', 'title': 'Arboretum, V8 (sit). Santa Barbara', 'zone': 'Santa Barbara', 'score': 0}]}
+    #return jsonify({
+    #    'zones': search_results.get('zones', []),'problems': search_results.get('problems', [])
+    #})
+
+
+    query = request.args.get('query', '')
+    search_results = {}
+    max_score = 0.01
+
+    if query:
+        def search_zone():
+            search_results['zones'] = utils.helpers.search_zone(query, max_score=max_score)
+
+        def search_problem():
+            search_results['problems'] = utils.helpers.search_problem( query, max_score=max_score)
+
+        threads = []
+        zone_thread = threading.Thread(target=search_zone)
+        problems_thread = threading.Thread(target=search_problem)
+        threads.extend([zone_thread, problems_thread])
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        
+        print(search_results)
+
+        return jsonify({
+            'zones': search_results.get('zones', []),
+            'problems': search_results.get('problems', [])
+        })
+
+    return jsonify({'zones': [], 'problems': []})
+
 
 @app.route('/video-uploader-not-working', methods=['GET', 'POST'])
 def video_uploader_not_working():
