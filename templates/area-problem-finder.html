@@ -14,7 +14,6 @@
 	<main>
         <div class="container">
 			<br />
-			<!-- Search bar -->
 			<div id="searchElement" style="display: block; vertical-align: middle;">
 				<form id="searchForm" class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
 					<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
@@ -31,16 +30,10 @@
 					<span>{{ _("All results") }}</span>
 				</button>
 				<button class="btn btn-sort-madboulder filter-button" data-filter="zone">
-					<span>{{ _("Areas") }} ({{zones|length}})</span>
-				</button>
-				<button class="btn btn-sort-madboulder filter-button" data-filter="sector">
-					<span>{{ _("Sectors") }} ({{sectors|length}})</span>
+					<span>{{ _("Areas") }} ({{areas|length}})</span>
 				</button>
 				<button class="btn btn-sort-madboulder filter-button" data-filter="problem">
 					<span>{{ _("Problems") }} ({{problems|length}})</span>
-				</button>
-				<button class="btn btn-sort-madboulder filter-button" data-filter="video">
-					<span>{{ _("YT Betas") }} ({{videos|length}})</span>
 				</button>
 			</div>
 			<br />
@@ -50,66 +43,34 @@
 				<div class="result-container-header">
 					<h2 class="text-bold">{{ _("Areas") }}</h2>
 				</div>
-				{% for zone in zones %}
-					<a id="{{ zone['zone_code'] }}_{{ zone['country'] }}" href="/{{ zone['zone_code'] }}" class="result-item">
+				{% for area in areas %}
+					<a id="{{ area[0] }}_{{ area[1]['country'] }}" href="/{{ area[0] }}" class="result-item">
 						<div class="result-item-header">
 							<div class="result-item-title-container">
-								<h4 class="result-item-title text-bold">{{ zone["name"] }}</h4>
+								<h4 class="result-item-title text-bold">{{ area[1]["name"] }}</h4>
 							</div>
-							<div class="result-item-subtitle-container">0 {{ _("Problems") }}</div>
 						</div>
-						<div class="result-item-description-container">{{ zone["country"] }}</div>
+						<div class="result-item-description-container">{{ area[1]["country"] }}</div>
 					</a>
-					{% set found_element = playlists.get(zone['zone_code'], None) %}
-					{% if found_element %}
-					<script>
-						document.addEventListener("DOMContentLoaded", function() {
-							var card = document.getElementById("{{ zone['zone_code'] }}_{{ zone['country'] }}");
-							var cardText = card.querySelector(".result-item-subtitle-container");
-							var videoCount = {{ found_element.video_count }};
-            				cardText.innerHTML = videoCount + " {{ _('Problems') }}";
-						});		
-					</script>
-					{% endif %}
 				{% endfor %}
-				{%- if not zones -%}
+				{%- if not areas -%}
 					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
 				{%- endif -%}
 			</div>
-			
-			<div id="sector_results" class="result-container">
-				<div class="result-container-header">
-					<h2 class="text-bold">{{ _("Sectors") }}</h2>
-				</div>
-				{% for sector in sectors %}
-					<a href="/sectors/{{ sector['zone_code'] }}/{{ sector['name'] }}" class="result-item">
-						<div class="result-item-header">
-							<div class="result-item-title-container">
-								<h4 class="result-item-title text-bold">{{ sector["name"] }}</h4>
-							</div>
-							<div class="result-item-subtitle-container">{{ sector["video_count"] }} {{ _("Problems") }}</div>
-						</div>
-						<div class="result-item-description-container">{{ sector["zone_name"] }}</div>
-					</a>
-				{% endfor %} 
-				{%- if not sectors -%}
-					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
-				{%- endif -%}
-				</div>
 				
 			<div id="problem_results" class="result-container">
 				<div class="result-container-header">
 					<h2 class="text-bold">{{ _("Problems") }}</h2>
 				</div>
 				{% for problem in problems %}
-					<a href="/problems/{{ problem['secure_slug'] }}" class="result-item">
+					<a href="/problems/{{ problem[1]['secure_slug'] }}" class="result-item">
 						<div class="result-item-header">
 							<div class="result-item-title-container">
-								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem["name"] }}</h4>
-								<div style="white-space: nowrap; line-height: 1.625rem;">{{ problem["grade_with_info"] }}</div>
+								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem[1]["name"] }}</h4>
+								<div style="white-space: nowrap; line-height: 1.625rem;">{{ problem[1]["grade"] }}</div>
 							</div>
 						</div>
-						<div class="result-item-description-container">{{ problem["zone"] }}</div>
+						<div class="result-item-description-container">{{ problem[1]["zone"] }}</div>
 					</a>
 				{% endfor %}
 				{%- if not problems -%}
@@ -117,20 +78,6 @@
 				{%- endif -%}
 			</div>
 
-			<div id="video_results" class="result-container">
-				<div class="result-container-header">
-					<h2 class="text-bold">{{ _("YT Betas") }}</h2>
-				</div>
-				{% for video in videos %}
-					<div class="video-container mb-3">
-						<iframe width="560" height="315" src="{{ video['video_url'] }}" frameborder="0" allowfullscreen">
-						</iframe>
-					</div>
-				{% endfor %} 
-				{%- if not videos -%}
-					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
-				{%- endif -%}
-			</div>
 			<div style="display: none" id="searchingElement">
 				<div class="modal-dialog">
 					<div class="modal-content">

@@ -35,17 +35,6 @@ def getSlugData(slug):
     areaName, problemId = parts[0], parts[1]
     return (areaName, problemId)
 
-
-def estimate_data_size(data):
-    size_bytes = sys.getsizeof(json.dumps(data))
-    if size_bytes < 1024:
-        return f"{size_bytes} bytes"
-    size_kb = size_bytes / 1024
-    if size_kb < 1024:
-        return f"{size_kb:.2f} KB"
-    size_mb = size_kb / 1024
-    return f"{size_mb:.2f} MB"
-
 def getAllVideoData():
     return utils.database.getValue(f'{PROBLEMS_KEY}/items')
 
@@ -60,11 +49,12 @@ def setVideoData(videoData):
     utils.database.setValue('video_count', len(videoData))
     utils.database.updateDate(PROBLEMS_KEY)
     
-def get_video_data_search_optimized():
-    return utils.database.getValue('video_data_search_optimized')
+@lru_cache(maxsize=10)
+def getSearchData():
+    return utils.database.getValue('data_search_optimized')
 
 def setVideoDataSearchOptimized(videoData):
-    utils.database.setValue('video_data_search_optimized', videoData)
+    utils.database.setValue('data_search_optimized', videoData)
 
 
 def getContributorsCount():
@@ -81,9 +71,7 @@ def setContributorData(contributors):
 
 #@lru_cache(maxsize=10)
 def getPlaylistsData():
-    data =  utils.database.getValue('playlist_data/items')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getPlaylistsData': {data_size} bytes")
+    data = utils.database.getValue('playlist_data/items')
     return data;
 
 def getPlaylistData(areaCode):
@@ -100,8 +88,6 @@ def getAreasCount():
 #@lru_cache(maxsize=10)
 def getAreasData():
     data = utils.database.getValue('area_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getAreasData': {data_size} bytes")
     return data;
 
 def getAreaData(areaCode):
@@ -116,8 +102,6 @@ def setAreaData(areas):
 #@lru_cache(maxsize=10)
 def getCountriesData():
     data = utils.database.getValue('country_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getCountriesData': {data_size} bytes")
     return data;
 
 def getCountryData(countryCode):
@@ -132,8 +116,6 @@ def setCountryData(countries):
 
 def getAllBoulderData():
     data = utils.database.getValue('boulder_data')
-    data_size = estimate_data_size(data)
-    print(f"Data fetched for 'getAllBoulderData': {data_size} bytes")
     return data;
 
 def getBoulderData(areaCode):
@@ -218,7 +200,6 @@ def deleteProject(user_uid, problem_id):
 
 
 def getProblemSlug(area, problem_id):
-    print("getProblemSlug")
     problemSlug = createSlug(area, problem_id)
     slugExists = utils.database.checkExists(f'{PROBLEMS_KEY}/items/{problemSlug}')
     if not slugExists:
@@ -268,6 +249,12 @@ def getVideoData(area, problemId):
 def getVideoDataWithSlug(slug):
     area, problemId = getSlugData(slug)
     return getVideoData(area, problemId)
+
+
+def getVideoDataWithSlugs(problem_ids):
+    decoded_problem_ids = [decodeSlug(problemId) for problemId in problem_ids]
+    values = utils.database.getChildsValue(f'{PROBLEMS_KEY}/items', decoded_problem_ids)
+    return {encodeSlug(decoded_id): value for decoded_id, value in values.items()}
 
 
 def getVideoDataFromZone(zone_code):
