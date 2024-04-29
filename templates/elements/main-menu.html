@@ -22,7 +22,7 @@
 
 	<div id="searchElement">
 		<form id="menuSearchForm" class="justify-content-center" method="post" action="/area-problem-finder">
-			<input id="searchInput" class="form-control" type="text" placeholder="Find areas, problems.." name="searchterm" style="align-self: center; border-color: black; height: calc(1.5em + 0.75rem + 6px);">
+			<input id="searchInput" class="form-control" type="text" placeholder="Find areas, problems.." name="searchterm" autocomplete="off" style="align-self: center; border-color: black; height: calc(1.5em + 0.75rem + 6px);">
 			<div class="input-group-append">
 				<button
 				style="position: absolute; right: 0px; transform: translateY(-50%); top: 50%"
@@ -199,7 +199,6 @@
 	});
 
 	document.addEventListener('click', function(event) {
-		const inputSearchElement = document.getElementById('searchInput');
 		const searchResultsContainer = document.querySelector('.search-container');
 		const fadedBackground = document.getElementById('faded-background');
 
@@ -215,27 +214,27 @@
 		}
 	});
 
-
+	let debounceTimer;
+    const debounceDelay = 300;
     const searchContainerResults = document.querySelector('.search-container');
 	let lastQuery = '';
 	inputSearchElement.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
         const currentQuery = this.value;
         const queryLength = currentQuery.length;
         const lastQueryLength = lastQuery.length;
-		console.log(currentQuery)
 		if (queryLength >= 4 && (queryLength > lastQueryLength)) {
-			
-			searchResults = document.querySelector('.search-results');
-			console.log(searchResults)
-			if(!searchResults){
-				console.log("create searchResults")
-				const searchResults = document.createElement('div');
-				searchResults.classList.add('search-results');
-				searchContainerResults.append(searchResults)
-			}
-        	showLoading();
+			debounceTimer = setTimeout(() => {    
+				searchResults = document.querySelector('.search-results');
+				if(!searchResults){
+					const searchResults = document.createElement('div');
+					searchResults.classList.add('search-results');
+					searchContainerResults.append(searchResults)
+				}
+				showLoading();
 
-            performSearch(currentQuery);
+				performSearch(currentQuery);
+            }, debounceDelay);
         }
 		lastQuery = currentQuery;
     });
@@ -243,22 +242,18 @@
 	let signal;
 
 	function performSearch(query) {
-		console.log("performSearch")
 		if (controller) {
-			controller.abort();  // Abort the previous request
+			controller.abort();
 		}
 		
 		controller = new AbortController();
 		signal = controller.signal;
-
-		console.log("performSearch2")
 		
         fetch(`/search-api?query=${encodeURIComponent(query)}`, { signal })
             .then(response => response.json())
             .then(data => {
                 hideLoading();
-				console.log(data)
-                displayResults(query, data.zones, data.problems);
+                displayResults(query, data.areas, data.problems);
             })
 			
             .catch(error => {
@@ -271,6 +266,16 @@
 				}
             });
     }
+
+	inputSearchElement.addEventListener('keyup', function(event) {
+		if (event.key === "Enter") {
+			clearTimeout(debounceTimer);
+			if (controller) {
+				controller.abort();
+			}
+			event.preventDefault();
+		}
+	});
 
 	function showLoading() {
 		searchResults = document.querySelector('.search-results');
@@ -291,22 +296,30 @@
 		searchResults.innerHTML = '';
 	}
 
-	function displayResults(currentQuery, zones, problems) {
+	function highlightMatch(text, query) {
+		const idx = text.toLowerCase().indexOf(query.toLowerCase());
+		if (idx === -1) return text;  // If no match, return original text
+		const endIdx = idx + query.length;
+		return text.slice(0, idx) + '<strong>' + text.slice(idx, endIdx) + '</strong>' + text.slice(endIdx);
+	}
+
+	function displayResults(currentQuery, areas, problems) {
 		searchResults = document.querySelector('.search-results');
 		searchResults.innerHTML = '';
-		if(problems.length > 0 || zones.length > 0){
+		const maxItemsToShow = 4;
+		if(problems.length > 0 || areas.length > 0){
 			if (problems.length > 0) {
 				const problemsSection = document.createElement('div');
 				problemsSection.className = 'search-section';
 				problemsSection.textContent = 'Problems';
 				searchResults.appendChild(problemsSection);
 
-				problems.forEach(problem => {
+				problems.slice(0, maxItemsToShow).forEach(([problemId, problem]) => { 
 					const problemElement = document.createElement('a');
 					problemElement.className = 'search-result';
 					problemElement.href = `/problems/${problem.secure_slug}`;
 					problemElement.innerHTML = `
-						${problem.name}
+						${highlightMatch(problem.name, currentQuery)}
 						<div class="grade">${problem.grade}</div>
 						<div class="description">${problem.zone}</div>
 					`;
@@ -314,27 +327,27 @@
 				});
 			}
 
-			if (zones.length > 0) {
+			if (areas.length > 0) {
 				const areasSection = document.createElement('div');
 				areasSection.className = 'search-section';
 				areasSection.textContent = 'Areas';
 				searchResults.appendChild(areasSection);
 
-				zones.forEach(zone => {
-					const zoneElement = document.createElement('a');
-					zoneElement.className = 'search-result';
-					zoneElement.href = `/${zone.zone_code}`;
-					zoneElement.innerHTML = `
-						${zone.name}
-						<div class="description	">${zone.country}</div>
+				areas.slice(0, maxItemsToShow).forEach(([areaId, area]) => {
+					const areElement = document.createElement('a');
+					areElement.className = 'search-result';
+					areElement.href = `/${areaId}`;
+					areElement.innerHTML = `
+						${highlightMatch(area.name, currentQuery)}
+						<div class="description	">${area.country}</div>
 					`;
-					searchResults.appendChild(zoneElement);
+					searchResults.appendChild(areElement);
 				});
 			}
 			const findMoreElement = document.createElement('a');
 			findMoreElement.className = 'show-more btn btn-primary-madboulder text-bold';
 			findMoreElement.href = `/area-problem-finder?search_query=${currentQuery}`;
-			totalresults= problems.length + zones.length
+			totalresults= problems.length + areas.length
 			findMoreElement.innerHTML = `Show all ${totalresults} results for "${currentQuery}"`;
 
 			searchResults.appendChild(findMoreElement)

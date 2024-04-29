@@ -86,7 +86,13 @@ def retrieveVideosFromChannel(lastUpdate=None):
                     title = item['snippet']['title']
                     description = item['snippet']['description']
                     videoInfo = ExtractInfoFromDescription(title, description)
-                    videos[encodeSlug(videoInfo['secure_slug'])] = {
+
+                    zone_code = videoInfo['zone_code']
+                    partial_slug = videoInfo['partial_slug']
+                    if zone_code not in videos:
+                        videos[zone_code] = {}
+
+                    videos[zone_code][partial_slug] = {
                         'title': title,
                         'id': videoId,
                         'date': item['snippet']['publishedAt'],
@@ -98,7 +104,6 @@ def retrieveVideosFromChannel(lastUpdate=None):
             if not page_token:
                 break
                 
-        print("New Videos Retrieved: ", len(videos))
         return videos
     except Exception as e:
         logging.error(f"Failed to retrieve videos: {str(e)}")
@@ -225,7 +230,8 @@ def ExtractInfoFromDescription(title, description):
 
     videoInfo['name'] = getProblemName(title, videoInfo['name'], videoInfo['grade'], videoInfo['zone'])
     videoInfo['zone_code'] = slugify(videoInfo['zone'])
-    videoInfo['secure_slug'] = videoInfo['zone_code'] + '/' + slugify(videoInfo['name'] + '-'+ videoInfo['grade_with_info'])
+    videoInfo['partial_slug'] = slugify(videoInfo['name'] + '-'+ videoInfo['grade_with_info'])
+    videoInfo['secure_slug'] = videoInfo['zone_code'] + '/' + videoInfo['partial_slug']
     videoInfo['sector_code'] = slugify(videoInfo['sector'])
     videoInfo['climber_code'] = slugify(videoInfo['climber'])
     videoInfo['boulder_code'] = slugify(videoInfo['boulder'])
@@ -291,25 +297,36 @@ def getProblemName(title, nameDescription, grade, zone):
 def createOptimizedVideoData():
     print("createOptimizedVideoData")
 
+    
+    optimizedSearchData = {}
+
+    
     videoData = utils.MadBoulderDatabase.getAllVideoData()
     if not videoData:
         print("No video data found.")
         return {}
+    optimizedSearchData['problems'] = {}
+    for area in videoData.values():
+        for videoCode, video in area.items():
+            if videoCode == 'Unknown':
+                continue
+            optimizedSearchData['problems'][utils.MadBoulderDatabase.encodeSlug(video['secure_slug'])] = {
+            'name': video['name']
+        } 
 
-    for videoCode, video in videoData.items():
-        if videoCode == 'Unknown':
-            videoData[videoCode] = None
-            continue
-        del video['viewCount']
-        del video['date']
-        del video['zone_code']
-        del video['climber_code']
-        del video['sector_code']
-        del video['boulder_code']
+    
+    areasData = utils.MadBoulderDatabase.getAreasData()
+    optimizedSearchData['areas'] = {}
+    for area_code, area in areasData.items():
+        optimizedSearchData['areas'][area_code] = {
+            'name': area['name'],
+            'country': utils.MadBoulderDatabase.getCountryData(area['country'])['name'][0]
+        } 
         
-    utils.MadBoulderDatabase.setVideoDataSearchOptimized(videoData)
+    saveDebugJson('processed_data_search_optimized.json', optimizedSearchData)
+    utils.MadBoulderDatabase.setVideoDataSearchOptimized(optimizedSearchData)
 
-    saveDebugJson('processed_data_search_optimized.json', videoData)
+    
 
          
 def retrieveAndUpdatePlaylistData():

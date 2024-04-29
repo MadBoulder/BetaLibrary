@@ -42,6 +42,18 @@ def getValue(refPath, shallow=False):
     return value
 
 
+def getChildsValue(refPath, problem_ids):
+    init()
+
+    values = {}
+    ref = db.reference(refPath)
+    for problem_id in problem_ids:
+        values[problem_id] = ref.child(problem_id).get()
+
+    print(f"getChildsValue {refPath}: {estimate_data_size(values)}")
+    return values
+
+
 def getValueByField(referencePath, fieldName, fieldValue):
     init()
 

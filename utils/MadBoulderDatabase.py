@@ -49,11 +49,12 @@ def setVideoData(videoData):
     utils.database.setValue('video_count', len(videoData))
     utils.database.updateDate(PROBLEMS_KEY)
     
-def get_video_data_search_optimized():
-    return utils.database.getValue('video_data_search_optimized')
+@lru_cache(maxsize=10)
+def getSearchData():
+    return utils.database.getValue('data_search_optimized')
 
 def setVideoDataSearchOptimized(videoData):
-    utils.database.setValue('video_data_search_optimized', videoData)
+    utils.database.setValue('data_search_optimized', videoData)
 
 
 def getContributorsCount():
@@ -199,7 +200,6 @@ def deleteProject(user_uid, problem_id):
 
 
 def getProblemSlug(area, problem_id):
-    print("getProblemSlug")
     problemSlug = createSlug(area, problem_id)
     slugExists = utils.database.checkExists(f'{PROBLEMS_KEY}/items/{problemSlug}')
     if not slugExists:
@@ -249,6 +249,12 @@ def getVideoData(area, problemId):
 def getVideoDataWithSlug(slug):
     area, problemId = getSlugData(slug)
     return getVideoData(area, problemId)
+
+
+def getVideoDataWithSlugs(problem_ids):
+    decoded_problem_ids = [decodeSlug(problemId) for problemId in problem_ids]
+    values = utils.database.getChildsValue(f'{PROBLEMS_KEY}/items', decoded_problem_ids)
+    return {encodeSlug(decoded_id): value for decoded_id, value in values.items()}
 
 
 def getVideoDataFromZone(zone_code):

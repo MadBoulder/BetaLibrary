@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 import random
 import io
 import threading
@@ -26,6 +27,7 @@ from functools import wraps
 from dotenv import load_dotenv
 import traceback
 import requests
+import utils.searchManager
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -91,6 +93,7 @@ mail_settings = {
 app.config.update(mail_settings)
 mail = Mail(app)
 
+search_manager = utils.searchManager.SearchManager()
 
 def _get_seconds_to_next_time(hour=11, minute=10, second=0):
     now = datetime.datetime.now()
@@ -193,7 +196,6 @@ def zones():
 @app.route('/area-problem-finder', methods=['GET', 'POST'])
 def search():
     query = ""
-    search_results = {}
     
     if request.method == 'POST':
         query = request.form.get('searchterm', '')
@@ -205,110 +207,40 @@ def search():
         
     print(f"Search request: {query}")
     if query:
-        start_time = time.time()
-        threads = []
+        session_id = session.get('session_id')
+        if not session_id:
+            session_id = session['session_id'] = str(uuid.uuid4().hex)
+
         max_score = 0.01
-
-        def search_zone():
-            search_zone_start_time = time.time()
-            search_results['zones'] = utils.helpers.search_zone( query, max_score=max_score)
-            search_zone_elapsed_time = time.time() - search_zone_start_time
-            print(f"Search Zone execution time: {search_zone_elapsed_time} seconds")
-
-        def search_sector():
-            search_sector_start_time = time.time()
-            search_results['sectors'] = utils.helpers.search_sector( query, max_score=max_score)
-            search_sector_elapsed_time = time.time() - search_sector_start_time
-            print(f"Search Sector execution time: {search_sector_elapsed_time} seconds")
-
-        def search_problem():
-            search_problem_start_time = time.time()
-            search_results['problems'] = utils.helpers.search_problem( query, max_score=max_score)
-            search_problem_elapsed_time = time.time() - search_problem_start_time
-            print(f"Search Problem execution time: {search_problem_elapsed_time} seconds")
-            for p in search_results['problems']:
-                p['secure_slug'] = slugify(p['zone']) + '/' + slugify(p['name'] + '-'+ p['grade_with_info'])
-
-        def search_beta():
-            search_beta_start_time = time.time()
-            search_results['videos'] = utils.helpers.searchVideosInChanel(query, results=5)
-            search_beta_elapsed_time = time.time() - search_beta_start_time
-            print(f"Search Beta execution time: {search_beta_elapsed_time} seconds")
-
-        # Create and start threads for each search operation
-        search_zone_thread = threading.Thread(target=search_zone)
-        search_sector_thread = threading.Thread(target=search_sector)
-        search_problem_thread = threading.Thread(target=search_problem)
-        search_beta_thread = threading.Thread(target=search_beta)
-
-        threads.extend([search_zone_thread, search_sector_thread, search_problem_thread, search_beta_thread])
-
-        for thread in threads:
-            thread.start()
-
-        # Wait for all threads to complete
-        for thread in threads:
-            thread.join()
-
-        total_elapsed_time = time.time() - start_time
-        print(f"Search execution time: {total_elapsed_time} seconds")
-
-        playlists=get_playlist_data()
-
+        results = search_manager.search(session_id, query, max_score)
         return render_template(
             'area-problem-finder.html',
-            zones=search_results.get('zones', []),
-            sectors=search_results.get('sectors', []),
-            problems=search_results.get('problems', []),
-            videos=search_results.get('videos', []),
+            areas=results.get('areas', []),
+            problems=results.get('problems', []),
             search_term=query,
-            playlists=playlists
         )
     return render_template(
-        'area-problem-finder.html',
-        zones=[],
-        videos=[],
-        search_term='')
+        'area-problem-finder.html', areas=[], videos=[], search_term='')
 
 
 @app.route('/search-api', methods=['GET'])
 def search_api():
-    #time.sleep(20)
-    #search_results = {'zones': [{'altitude': 848, 'country': 'spain', 'guides': [{'link': 'https://www.libreriadesnivel.com/libros/bloc-muntanyes-de-prades/9788461447800/', 'name': 'Bloc. Muntanyes de Prades', 'thumbnail': 'https://www.libreriadesnivel.com/media/img/portadas/9788461447800.jpg'}], 'latitude': 41.24535, 'longitude': 0.945928, 'name': 'Arbolí', 'overview': ["Arbolí, in the heart of Catalonia, Spain, boasts limestone boulders that offer exquisite pocket-pulling experiences. The area's fame rests on its warm winter appeal, making it an all-season destination. Arbolí's charm lies in its picturesque setting and the diversity of climbing features.", 'Arbolí, en el corazón de Cataluña, España, presume de bloques de caliza que ofrecen experiencias de agarres de presas exquisitos. La fama de la zona se basa en su atractivo invernal, lo que la convierte en un destino para todo el año. El encanto de Arbolí radica en su entorno pintoresco y la diversidad de características de escalada.'], 'rock_type': 'lime', 'state': 'catalonia', 'zone_code': 'arboli', 'zoom': 16, 'score': 0}], 'problems': [{'boulder': 'Unknown', 'climber': 'Aniol Santacreu', 'grade': '6a+', 'grade_with_info': '6a+ (sit)', 'id': 'qw6eq1LaVQU', 'name': 'Le Barbot', 'sector': 'Cul de Chien', 'secure_slug': 'fontainebleau/le-barbot-6a-sit', 'title': 'Le Barbot, 6a+ (sit). Fontainebleau', 'zone': 'Fontainebleau', 'score': 0}, {'boulder': 'Unknown', 'climber': 'Vikas Agartha', 'grade': 'V8', 'grade_with_info': 'V8 (sit)', 'id': 'GQLGMvfUl60', 'name': 'Arboretum', 'sector': "Potter's Point", 'secure_slug': 'santa-barbara/arboretum-v8-sit', 'title': 'Arboretum, V8 (sit). Santa Barbara', 'zone': 'Santa Barbara', 'score': 0}]}
-    #return jsonify({
-    #    'zones': search_results.get('zones', []),'problems': search_results.get('problems', [])
-    #})
-
-
     query = request.args.get('query', '')
-    search_results = {}
-    max_score = 0.01
-
+    print(f"Search API request: {query}")
     if query:
-        def search_zone():
-            search_results['zones'] = utils.helpers.search_zone(query, max_score=max_score)
+        session_id = session.get('session_id')
+        if not session_id:
+            session_id = session['session_id'] = str(uuid.uuid4().hex)
 
-        def search_problem():
-            search_results['problems'] = utils.helpers.search_problem( query, max_score=max_score)
+        max_score = 0.01
+        results = search_manager.search(session_id, query, max_score)
+        if results:
+            return jsonify({
+                'areas': results.get('areas', []),
+                'problems': results.get('problems', [])
+            })
 
-        threads = []
-        zone_thread = threading.Thread(target=search_zone)
-        problems_thread = threading.Thread(target=search_problem)
-        threads.extend([zone_thread, problems_thread])
-
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-        
-        print(search_results)
-
-        return jsonify({
-            'zones': search_results.get('zones', []),
-            'problems': search_results.get('problems', [])
-        })
-
-    return jsonify({'zones': [], 'problems': []})
+    return jsonify({'areas': [], 'problems': []})
 
 
 @app.route('/video-uploader-not-working', methods=['GET', 'POST'])
