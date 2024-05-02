@@ -29,8 +29,10 @@ def main():
     Generate html templates for all the problems listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
-    zones_data = utils.MadBoulderDatabase.getAreasData()
+    areasData = utils.MadBoulderDatabase.getAreasData()
+    countriesData = utils.MadBoulderDatabase.getCountriesData()
     all_areas_with_boulders = utils.MadBoulderDatabase.getAllBoulderData()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
 
     dir_path_countries = 'templates/boulders'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -40,11 +42,13 @@ def main():
     for area_code, boulders in all_areas_with_boulders.items():
         print("Generating Boulder Pages for " + area_code)
 
-        problems = utils.MadBoulderDatabase.getVideoDataFromZone(area_code)
-        areaInfo = utils.zone_helpers.getStateAndCountryInfo(area_code)
+        if area_code in videoData:
+            problems = videoData[area_code]
+        areaInfo = utils.zone_helpers.getStateAndCountryInfoFromData(areasData, countriesData, area_code)
+
 
         for boulder_code, boulder in boulders.items():
-            boulder_problems = [problem for problem in problems if problem.get('boulder_code') == boulder_code]
+            boulder_problems = [problem for problem in problems.values() if problem.get('boulder_code') == boulder_code]
             if not boulder_problems:
                 continue
 

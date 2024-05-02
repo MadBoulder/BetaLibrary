@@ -16,17 +16,23 @@ def main():
     dir_path_countries = 'templates/sectors'
     utils.helpers.empty_and_create_dir(dir_path_countries)
 
-    zone_data = utils.MadBoulderDatabase.getAreasData()
+    areasData = utils.MadBoulderDatabase.getAreasData()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
+    countriesData = utils.MadBoulderDatabase.getCountriesData()
+    playlistsData = utils.MadBoulderDatabase.getPlaylistsData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for zone_code, zone in zone_data.items():
-        print("generating sectors for: " + zone['name'])
-        sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
-        problems_zone = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-        playlist = utils.MadBoulderDatabase.getPlaylistData(zone_code)
-        areaInfo = utils.zone_helpers.getStateAndCountryInfo(zone_code)
+    for areaCode, area in areasData.items():
+        print("generating sectors for: " + area['name'])
+        if areaCode in videoData:
+            problems_zone = videoData[areaCode]
+        sectors = utils.zone_helpers.getSectors(problems_zone)
+        if areaCode in playlistsData:
+            playlist = playlistsData[areaCode]
+        areaInfo = utils.zone_helpers.getStateAndCountryInfoFromData(areasData, countriesData, areaCode)
+
 
         for sector in sectors:
             problems = utils.zone_helpers.get_problems_from_sector(problems_zone, sector[1])
@@ -40,18 +46,18 @@ def main():
             template = template_env.get_template(
                 'templates/templates/sector_page_template.html')
             output = template.render(
-                zone_code=zone_code,
-                zone_name=zone['name'],
+                zone_code=areaCode,
+                zone_name=area['name'],
                 sector=sector,
                 sector_code=slugify(sector[1]),
                 problems=problems,
                 video_id=video_id,
                 areaInfo=areaInfo
             )
-            if not os.path.exists(f'templates/sectors/{zone_code}'):
-                os.mkdir(f'templates/sectors/{zone_code}')
+            if not os.path.exists(f'templates/sectors/{areaCode}'):
+                os.mkdir(f'templates/sectors/{areaCode}')
 
-            with open(f'templates/sectors/{zone_code}/{slugify(sector[1])}.html', 'w', encoding='utf-8') as template:
+            with open(f'templates/sectors/{areaCode}/{slugify(sector[1])}.html', 'w', encoding='utf-8') as template:
                 template.write(output)
 
 

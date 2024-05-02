@@ -35,6 +35,7 @@ def getSlugData(slug):
     areaName, problemId = parts[0], parts[1]
     return (areaName, problemId)
 
+@lru_cache(maxsize=10)
 def getAllVideoData():
     return utils.database.getValue(f'{PROBLEMS_KEY}/items')
 
@@ -46,7 +47,12 @@ def getVideoCount():
 
 def setVideoData(videoData):
     utils.database.setValue(f'{PROBLEMS_KEY}/items', videoData)
-    utils.database.setValue('video_count', len(videoData))
+
+    total_problems = 0
+    for area in videoData.values():
+        total_problems += len(area)
+    utils.database.setValue('video_count', total_problems)
+
     utils.database.updateDate(PROBLEMS_KEY)
     
 @lru_cache(maxsize=10)
@@ -69,7 +75,7 @@ def setContributorData(contributors):
     contributor_count = len(contributors)
     utils.database.setValue('contributor_count', contributor_count)
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getPlaylistsData():
     data = utils.database.getValue('playlist_data/items')
     return data;
@@ -85,11 +91,15 @@ def setPlaylistData(playlists):
 def getAreasCount():
     return utils.database.getValue('areas_count')
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getAreasData():
     data = utils.database.getValue('area_data')
     return data;
 
+def getAreaKeysFromProblems():
+    return utils.database.getValue(f'{PROBLEMS_KEY}/items', shallow=True)
+
+@lru_cache(maxsize=10)
 def getAreaData(areaCode):
     data = utils.database.getValue(f'area_data/{areaCode}')
     return data;
@@ -99,11 +109,12 @@ def setAreaData(areas):
     areaCount = len(areas)
     utils.database.setValue('areas_count', areaCount)
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getCountriesData():
     data = utils.database.getValue('country_data')
     return data;
 
+@lru_cache(maxsize=10)
 def getCountryData(countryCode):
     data = utils.database.getValue(f'country_data/{countryCode}')
     return data;
@@ -114,6 +125,7 @@ def getStateData(countryCode, stateCode):
 def setCountryData(countries):
     utils.database.setValue('country_data', countries)
 
+@lru_cache(maxsize=10)
 def getAllBoulderData():
     data = utils.database.getValue('boulder_data')
     return data;
@@ -237,7 +249,7 @@ def getProblemSlugFromPartialSlug(areaName, problem_id):
     return createSlug(areaName, best_match)
 
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getVideoData(area, problemId):
     problemSlug = getProblemSlug(area, problemId)
     if(problemSlug):
@@ -245,7 +257,7 @@ def getVideoData(area, problemId):
     return videoData
 
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getVideoDataWithSlug(slug):
     area, problemId = getSlugData(slug)
     return getVideoData(area, problemId)
@@ -257,11 +269,12 @@ def getVideoDataWithSlugs(problem_ids):
     return {encodeSlug(decoded_id): value for decoded_id, value in values.items()}
 
 
+@lru_cache(maxsize=10)
 def getVideoDataFromZone(zone_code):
     return utils.database.getValue(f'{PROBLEMS_KEY}/items/{zone_code}')
 
 
-#@lru_cache(maxsize=10)
+@lru_cache(maxsize=10)
 def getUrlMappings():
     return utils.database.getValue('url_mappings')
 

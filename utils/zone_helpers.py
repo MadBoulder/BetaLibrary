@@ -23,7 +23,7 @@ def get_contributor_data(contributor_id):
 
 def get_problems_from_sector(problems_zone, sector_code):
     problems = []
-    for p in problems_zone:
+    for p in problems_zone.values():
         if slugify(p['sector']) == sector_code:
             problems.append(p)
 
@@ -32,8 +32,11 @@ def get_problems_from_sector(problems_zone, sector_code):
     
 def get_sectors_from_zone(zone_code):
     problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
+    return getSectors(problems)
+
+def getSectors(problems):
     sectors = []
-    for p in problems:
+    for p in problems.values():
         alreadyAdded=False
         for s in sectors:
             if s[1] == slugify(p['sector']):
@@ -83,9 +86,7 @@ def get_playlists_from_zone(zone_code):
     return utils.MadBoulderDatabase.getPlaylistData(zone_code)
 
 
-def get_areas_from_country(country_code):
-    zone_data = utils.MadBoulderDatabase.getAreasData()
-
+def get_areas_from_country(country_code, zone_data):
     areas = {}
     for key, item in zone_data.items():
         if item['country'] == country_code:
@@ -94,15 +95,38 @@ def get_areas_from_country(country_code):
     return areas
 
 
-def get_areas_from_state(state_code):
-    zone_data = utils.MadBoulderDatabase.getAreasData()
-
+def get_areas_from_state(state_code, zone_data):
     areas = {}
     for key, item in zone_data.items():
         if item.get('state','') == state_code:
             areas[key] = item
             
     return areas
+
+
+def getStateAndCountryInfoFromData(areasData, countriesData, areaCode):
+    countryName = []
+    countryCode = ''
+    state_name = []
+    stateCode = ''
+    zoneAdded = False
+    
+    if areaCode in areasData:
+        zoneAdded = True
+        countryCode = areasData[areaCode].get('country','')
+        if countryCode in countriesData:
+            countryName = countriesData[countryCode].get('name',[])
+            stateCode = areasData[areaCode].get('state','')
+            if 'states' in countriesData[countryCode] and stateCode in countriesData[countryCode]['states']:
+                state_name = countriesData[countryCode]['states'][stateCode].get('name',[])
+
+    return {
+        'country_name': countryName,
+        'country_code': countryCode,
+        'state_name': state_name,
+        'state_code': stateCode,
+        'zone_added': zoneAdded
+    }
 
 
 def getStateAndCountryInfo(areaCode):
@@ -118,7 +142,7 @@ def getStateAndCountryInfo(areaCode):
         if country:
             countryName = country.get('name',[])
             stateCode = areaData.get('state','')
-            state = utils.zone_helpers.get_state_in_country(country, stateCode)
+            state = get_state_in_country(country, stateCode)
             if state:
                 state_name = state.get('name',[])
 
@@ -137,13 +161,6 @@ def get_country_from_code(country_code):
     for key, item in country_data.items():
         if item['reduced_code'] == country_code:
             return item
-
-
-def get_state_in_country(country, stateToSearch):
-    states = country.get('states',{})
-    for stateCode, state in states.items():
-        if stateCode == stateToSearch:
-            return state
 
 
 @lru_cache(maxsize=10)

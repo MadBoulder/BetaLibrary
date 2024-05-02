@@ -70,7 +70,8 @@ def retrieveVideosFromChannel(lastUpdate=None):
         page_token=None
 
         while True:
-            print(str(round((len(videos)/videoNum)*100, 2))+'%')
+            total_videos_retrieved = sum(len(zone_videos) for zone_videos in videos.values())
+            print(str(round((len(total_videos_retrieved)/videoNum)*100, 2))+'%')
 
             if lastUpdate:
                 searchResp = utils.channel.fetchVideoByDate(lastUpdate, page_token)
@@ -123,22 +124,28 @@ def updateVideosFromChannel():
     dateSinceLastUpdate = getLastDatabaseVideoUpdateDate().isoformat() + "Z"
     newVideos = retrieveVideosFromChannel(dateSinceLastUpdate)
         
-    allVideos = {**updatedVideos, **newVideos}
+    allVideos = updatedVideos
+    for zone_code, videos in newVideos.items():
+        if zone_code not in allVideos:
+            allVideos[zone_code] = {}
+        allVideos[zone_code].update(videos)
+
     return allVideos
 
 
 def updateVideoDatabase():
     print("updateVideoDatabase")
 
-    videos = utils.MadBoulderDatabase.getAllVideoData()
-    if not videos:
-        print("No videos found in database.")
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
+    if not videoData:
+        print("No videoData found in database.")
         return None
     
-    print("video count", len(videos))
     updatedVideos = {}
 
-    video_ids = [video['id'] for video in videos.values()]
+    video_ids = [video['id'] for area in videoData.values() for video in area.values()]
+    print("video count", len(video_ids))
+
     chunks = [video_ids[i:i + 50] for i in range(0, len(video_ids), 50)]
 
     for chunk_index, chunk in enumerate(chunks):
@@ -151,10 +158,12 @@ def updateVideoDatabase():
             videoDetails = videoResponse
             status = videoDetails['status']['privacyStatus']
 
-            corresponding_video = next((v for v in videos.values() if v['id'] == videoId), None)
+            corresponding_video = next((video for area in videoData.values() for video in area.values() if video['id'] == videoId), None)
             if not corresponding_video:
                 continue
 
+            zone_code = corresponding_video.get('zone_code')
+            partial_slug = corresponding_video.get('partial_slug')
             videoSlug = corresponding_video['secure_slug']
 
             if(status == 'public'):
@@ -168,6 +177,9 @@ def updateVideoDatabase():
                     print(f"Video with ID {videoId} has changed its url.")
                     deprecateSlug(videoSlug, newVideoInfo['secure_slug'])
 
+                if zone_code not in updatedVideos:
+                    updatedVideos[zone_code] = {}
+
                 updatedVideo = {
                     'title': title,
                     'id': videoId,
@@ -175,14 +187,14 @@ def updateVideoDatabase():
                     'viewCount': videoDetails['statistics'].get('viewCount', '0'),
                     **newVideoInfo
                 }
-                updatedVideos[encodeSlug(newVideoInfo['secure_slug'])] = updatedVideo
+                updatedVideos[zone_code][newVideoInfo['partial_slug']] = updatedVideo
             else:
                 print(f"Video with ID {videoId} not public.")
                 disableSlug(videoSlug)
-                updatedVideos[videoSlug] = None
+                updatedVideos[zone_code][partial_slug] = None
         
         
-    print(f"Updated videos count: {len(updatedVideos)}")
+    print(f"Updated videos count: {sum(len(zone) for zone in updatedVideos.values())}")
     return updatedVideos
 
 
@@ -412,25 +424,27 @@ def updateAreaData():
 
 def updateContributorsList():
     print("updateContributorsList")
-    video_data = utils.MadBoulderDatabase.getAllVideoData()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
 
     contributors = {}
     slug_cache = {}
-    for video, videoInfo in video_data.items():
-        print(video)
-        climber_name = videoInfo['climber']
+    for zone_code, zone_videos in videoData.items():
+        for videoPartialSlug, videoInfo in zone_videos.items():
+            video_slug = utils.MadBoulderDatabase.createSlug(zone_code, videoPartialSlug)
+            print(video_slug)
+            climber_name = videoInfo['climber']
 
-        if climber_name in slug_cache:
-            climber_code = slug_cache[climber_name]
-        else:
-            climber_code = slugify(climber_name)
-            slug_cache[climber_name] = climber_code
+            if climber_name in slug_cache:
+                climber_code = slug_cache[climber_name]
+            else:
+                climber_code = slugify(climber_name)
+                slug_cache[climber_name] = climber_code
 
-        if climber_code not in contributors:
-            contributors[climber_code] = {'name': climber_name, 'videos': {video: videoInfo}, 'view_count': int(videoInfo['viewCount'])}
-        else:
-            contributors[climber_code]['videos'][video] = videoInfo
-            contributors[climber_code]['view_count'] += int(videoInfo['viewCount'])
+            if climber_code not in contributors:
+                contributors[climber_code] = {'name': climber_name, 'videos': {video_slug: videoInfo}, 'view_count': int(videoInfo['viewCount'])}
+            else:
+                contributors[climber_code]['videos'][video_slug] = videoInfo
+                contributors[climber_code]['view_count'] += int(videoInfo['viewCount'])
     
     utils.MadBoulderDatabase.setContributorData(contributors)
 

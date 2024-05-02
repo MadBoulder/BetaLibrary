@@ -22,18 +22,6 @@ def load_sectors():
     return sectors
 
 
-def count_sectors_in_zone(zone):
-    """
-    Given a zone name, return the number of sectors based on the
-    zone's datafile specified sectors.
-    """
-    playlists = utils.zone_helpers.get_playlists_from_zone(zone)
-    if playlists:
-        return len(playlists.get('sectors', []))
-    else:
-        return 0
-
-
 def getLastVideosFromChannel(num_videos=6):
     response = utils.channel.fetchLastPublishedVideos(num_videos)
     video_links = [utils.channel.getEmbedUrl(item['id']['videoId']) for item in response['items']]
@@ -75,17 +63,6 @@ def format_views(number):
     else:
         return str(number)
 
-
-def get_all_areas_list():
-    print("get_all_areas_list")
-    video_data = utils.MadBoulderDatabase.getAllVideoData()
-
-    all_areas = set()
-    for video in video_data.values():
-        zone_code = video['zone_code']
-        all_areas.add(zone_code)
-
-    return list(all_areas)
 
 
 def find_item(items, key, value):

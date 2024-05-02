@@ -16,6 +16,7 @@ def main():
 
     country_data = utils.MadBoulderDatabase.getCountriesData()
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
+    areasData = utils.MadBoulderDatabase.getAreasData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
@@ -23,7 +24,7 @@ def main():
     for country_code, country in country_data.items():
         print("generating country: " + country_code)
         country_name = country.get("name", [""])[0]
-        areas = utils.zone_helpers.get_areas_from_country(country_code)
+        areas = utils.zone_helpers.get_areas_from_country(country_code, areasData)
         states=country.get("states", {})
         overview=country['overview'][0]
         
@@ -70,7 +71,7 @@ def main():
             state_name = state.get("name", [""])[0]
             print("generating state: " + state_code)
             
-            state_areas = utils.zone_helpers.get_areas_from_state(state_code)
+            state_areas = utils.zone_helpers.get_areas_from_state(state_code, areasData)
             state_template = template_env.get_template('templates/templates/state_page_template.html')
             state_output = state_template.render(
                 country_code=country_code,

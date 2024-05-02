@@ -28,18 +28,19 @@ def main():
     as well as a general map that contains all the areas
     """
     areas = utils.MadBoulderDatabase.getAreasData()
-    playlists = utils.MadBoulderDatabase.getPlaylistsData()
+    countriesData = utils.MadBoulderDatabase.getCountriesData()
+    playlistsData = utils.MadBoulderDatabase.getPlaylistsData()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    generateAreasListPage(template_env, areas, playlists)
+    generateAreasListPage(template_env, areas, playlistsData)
 
     templatePage = template_env.get_template('templates/templates/area_page_template.html')
     templatePage_es = template_env.get_template('templates/templates/es/area_page_template.html')
 
     playlists = {}
-    total_areas = len(areas)
     for areaCode, area in areas.items():
         print(f"Creating area page of {area[NAME_FIELD]}")
         
@@ -58,27 +59,31 @@ def main():
         guides = [guide for guide in guides if guide.get(LINK_FIELD)]
 
         # problems
-        problems = utils.MadBoulderDatabase.getVideoDataFromZone(areaCode)
-        problems.sort(key= lambda x: x['name'])
+        if areaCode in videoData:
+            problems_dict = videoData[areaCode]
+            problems_list = sorted(problems_dict.values(), key=lambda x: x['name'])
+
+        problems_list.sort(key= lambda x: x['name'])
             
         # sectors
-        sectors = utils.zone_helpers.get_sectors_from_zone(areaCode)
+        sectors = utils.zone_helpers.getSectors(problems_dict)
         sectors.sort(key= lambda x: x)
         
         #playlists
-        playlists = utils.zone_helpers.get_playlists_from_zone(areaCode)
+        if areaCode in playlistsData:
+            playlists = playlistsData[areaCode]
 
         #country
-        areaInfo = utils.zone_helpers.getStateAndCountryInfo(areaCode)
+        areaInfo = utils.zone_helpers.getStateAndCountryInfoFromData(areas, countriesData, areaCode)
 
         #statistics
-        statistics = generateAreaStatistics(areaCode, problems)
+        statistics = generateAreaStatistics(problems_list, playlists)
 
         #overview
         overview = area.get("overview", [""])[0]
         
         output = templatePage.render(
-            problems=problems,
+            problems=problems_list,
             sectors=sectors,
             area_code=areaCode,
             name=area[NAME_FIELD],
@@ -113,7 +118,7 @@ def main():
         overview_es = area.get("overview", [""])[1]
 
         output = templatePage_es.render(
-            problems=problems,
+            problems=problems_list,
             sectors=sectors,
             area_code=areaCode,
             name=area[NAME_FIELD],
@@ -149,11 +154,11 @@ def generateAreasListPage(template_env, areas, playlists):
     with open('templates/bouldering-areas-list.html', 'w', encoding='utf-8') as template:
         template.write(output)
 
-def generateAreaStatistics(areaCode, problems):
+def generateAreaStatistics(problems, playlists):
     views_count = utils.zone_helpers.get_view_count_from_problems(problems)
     contributor_count = utils.zone_helpers.get_contributor_count_from_problems(problems)
     video_count = len(problems)
-    sector_count = utils.helpers.count_sectors_in_zone(areaCode)
+    sector_count =  len(playlists.get('sectors', []))
     data = [
         {
             'logo': 'fas fa-video-camera',

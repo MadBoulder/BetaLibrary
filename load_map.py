@@ -244,11 +244,14 @@ def load_general_map(areaData, generate_ids, return_html=True):
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
+    playlistsData = utils.MadBoulderDatabase.getPlaylistsData()
+
     for areaCode, area in areaData.items():
         zoomed_out_icon = CustomIcon(
             'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
-        playlists = utils.zone_helpers.get_playlists_from_zone(areaCode)
+        if areaCode in playlistsData:
+            playlists = playlistsData[areaCode]
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
             area['name'], areaCode, playlists['video_count']), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id

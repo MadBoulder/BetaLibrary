@@ -25,8 +25,10 @@ def main():
     Generate html templates for all the problems listed in the processed_data file
     IMPORTANT: the processed_data file should be up to date. It can be extracted from 
     """
-    zones_data = utils.MadBoulderDatabase.getAreasData()
-    all_areas_list = utils.helpers.get_all_areas_list()
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
+    boulderData = utils.MadBoulderDatabase.getAllBoulderData()
+    areasData = utils.MadBoulderDatabase.getAreasData()
+    countriesData = utils.MadBoulderDatabase.getCountriesData()
     
     dir_path_countries = 'templates/problems'
     utils.helpers.empty_and_create_dir(dir_path_countries)
@@ -34,20 +36,18 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
-    for index, zone_code in enumerate(all_areas_list, start=1):
-        print(f"Generating Problems for {zone_code} ({index}/{len(all_areas_list)})")
-        
-        areaInfo = utils.zone_helpers.getStateAndCountryInfo(zone_code)
-        problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
-        boulders = utils.MadBoulderDatabase.getBoulderData(zone_code)
+    for zone_code, problems in videoData.items():
+        print(f"Generating Problems for {zone_code}")
 
-        for problem in problems:
+        areaInfo = utils.zone_helpers.getStateAndCountryInfoFromData(areasData, countriesData, zone_code)
+
+        for problem in problems.values():
             coordinates = None
             boulder_code = ''
-            if boulders:
+            if zone_code in boulderData:
                 boulder_code = problem.get(BOULDER_CODE_FIELD)
-                if boulder_code and boulder_code in boulders:
-                    coordinates = boulders[boulder_code]['coordinates']
+                if boulder_code and boulder_code in boulderData[zone_code]:
+                    coordinates = boulderData[zone_code][boulder_code]['coordinates']
             
             boulder_name = problem.get(BOULDER_FIELD, '')
 
