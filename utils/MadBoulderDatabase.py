@@ -112,6 +112,9 @@ def setAreaData(areas):
     areaCount = len(areas)
     utils.database.setValue('areas_count', areaCount)
 
+def addArea(areaCode, areaData):
+    utils.database.setValue(f'area_data/{areaCode}', areaData)
+
 @lru_cache(maxsize=10)
 def getCountriesData():
     data = utils.database.getValue('country_data')

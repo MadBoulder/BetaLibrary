@@ -1071,7 +1071,7 @@ def contributor_approved_notification(email, climber_id):
 
 
 @app.route('/area-editor', methods=['GET'])
-#@admin_required
+@admin_required
 def area_editor():
     rockTypeMapping = utils.zone_helpers.getRockTypeList()
     countries = utils.MadBoulderDatabase.getCountriesData()
@@ -1079,7 +1079,7 @@ def area_editor():
 
 
 @app.route('/submit-area', methods=['POST'])
-#@admin_required
+@admin_required
 def submit_area():
     print("submit_area")
     try:
@@ -1106,7 +1106,7 @@ def submit_area():
             "guides": json.loads(data['guides'])
         }
         print(areaData)
-        utils.MadBoulderDatabase.AddArea(areaCode, areaData)
+        utils.MadBoulderDatabase.addArea(areaCode, areaData)
         return jsonify({"status": "success", "message": "Area added successfully!"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
