@@ -16,13 +16,14 @@ def main():
     """
     generate_ids = IDGenerator()
     areas = utils.MadBoulderDatabase.getAreasData()
-    for araCode, area in areas.items():
-        print(araCode)
-        with open('templates/maps/'+araCode+'.html', 'w', encoding='utf-8') as template:
+    for areaCode, areaData in areas.items():
+        print(areaCode)
+        with open('templates/maps/'+areaCode+'.html', 'w', encoding='utf-8') as template:
             template.write(
                 load_map.load_map(
-                    araCode,
-                    ZONES_PATH + araCode + '/' + araCode + '.json',
+                    areaCode,
+                    areaData,
+                    ZONES_PATH + areaCode + '/' + areaCode + '.json',
                     generate_ids,
                     True
                 )

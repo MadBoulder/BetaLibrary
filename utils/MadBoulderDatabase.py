@@ -113,7 +113,7 @@ def setAreaData(areas):
     utils.database.setValue('areas_count', areaCount)
 
 def addArea(areaCode, areaData):
-    utils.database.setValue(f'area_data/{areaCode}', areaData)
+    utils.database.updateValue('area_data', {areaCode: areaData})
 
 @lru_cache(maxsize=10)
 def getCountriesData():
@@ -136,9 +136,13 @@ def setCountryData(countries):
 
 def updateCountry(countryCode, data):
     utils.database.setValue(f'country_data/{countryCode}', data)
+    getCountriesData.cache_clear()
+    getCountryData.cache_clear()
 
 def updateState(countryCode, stateCode, data):
     utils.database.setValue(f'country_data/{countryCode}/states/{stateCode}', data)
+    getCountriesData.cache_clear()
+    getCountryData.cache_clear()
 
 def getAllBoulderData():
     data = utils.database.getValue('boulder_data')
