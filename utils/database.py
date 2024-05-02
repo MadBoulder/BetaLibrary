@@ -27,10 +27,10 @@ firebase_lock = threading.Lock()
 def init():
     with firebase_lock:
         if not firebase_admin._apps:
-            cred = credentials.Certificate('madboulder-development.json')
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://madboulder-development-default-rtdb.europe-west1.firebasedatabase.app/'
-            })
+            cred = credentials.Certificate('madboulder.json') 
+            firebase_admin.initialize_app(cred, { 
+                'databaseURL': 'https://madboulder.firebaseio.com' 
+            }) 
 
 
 def getValue(refPath, shallow=False):

@@ -63,9 +63,9 @@ app.secret_key = bytes.fromhex(os.environ.get('SECRET_KEY'))
 app.jinja_env.filters['format_views'] = utils.helpers.format_views
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-cred = credentials.Certificate('madboulder-development.json')
+cred = credentials.Certificate('madboulder.json')
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://madboulder-development-default-rtdb.europe-west1.firebasedatabase.app/'
+    'databaseURL': 'https://madboulder.firebaseio.com'
 })
 mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']

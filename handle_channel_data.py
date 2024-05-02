@@ -38,9 +38,9 @@ def updateData(
         retrieveAndUpdateVideoData(resetDatabase=False)
         createOptimizedVideoData()
         retrieveAndUpdatePlaylistData()
-    #updateAreaData()
-    #updateCountries()
-    #updateBoulderData()
+    updateAreaData()
+    updateCountries()
+    updateBoulderData()
     updateContributorsList()
 
 
@@ -68,10 +68,14 @@ def retrieveVideosFromChannel(lastUpdate=None):
         uploadPLaylistId = utils.channel.getUploadPlaylistId()
         videos = {}
         page_token=None
+        total_videos_retrieved = 0
 
         while True:
-            total_videos_retrieved = sum(len(zone_videos) for zone_videos in videos.values())
-            print(str(round((len(total_videos_retrieved)/videoNum)*100, 2))+'%')
+            if videos:
+                total_videos_retrieved = 0
+                for area in videos.values():
+                    total_videos_retrieved += len(area)
+            print(str(round(((total_videos_retrieved)/videoNum)*100, 2))+'%')
 
             if lastUpdate:
                 searchResp = utils.channel.fetchVideoByDate(lastUpdate, page_token)
@@ -123,14 +127,13 @@ def updateVideosFromChannel():
 
     dateSinceLastUpdate = getLastDatabaseVideoUpdateDate().isoformat() + "Z"
     newVideos = retrieveVideosFromChannel(dateSinceLastUpdate)
-        
-    allVideos = updatedVideos
-    for zone_code, videos in newVideos.items():
-        if zone_code not in allVideos:
-            allVideos[zone_code] = {}
-        allVideos[zone_code].update(videos)
+    if newVideos:
+        for zone_code, videos in newVideos.items():
+            if zone_code not in updatedVideos:
+                updatedVideos[zone_code] = {}
+            updatedVideos[zone_code].update(videos)
 
-    return allVideos
+    return updatedVideos
 
 
 def updateVideoDatabase():
@@ -428,9 +431,9 @@ def updateContributorsList():
 
     contributors = {}
     slug_cache = {}
-    for zone_code, zone_videos in videoData.items():
-        for videoPartialSlug, videoInfo in zone_videos.items():
-            video_slug = utils.MadBoulderDatabase.createSlug(zone_code, videoPartialSlug)
+    for areaCode, area in videoData.items():
+        for videoPartialSlug, videoInfo in area.items():
+            video_slug = utils.MadBoulderDatabase.createEncodedSlug(areaCode, videoPartialSlug)
             print(video_slug)
             climber_name = videoInfo['climber']
 
@@ -446,6 +449,7 @@ def updateContributorsList():
                 contributors[climber_code]['videos'][video_slug] = videoInfo
                 contributors[climber_code]['view_count'] += int(videoInfo['viewCount'])
     
+    saveDebugJson('contributors.json', contributors)
     utils.MadBoulderDatabase.setContributorData(contributors)
 
 

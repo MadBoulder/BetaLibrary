@@ -12,6 +12,9 @@ DECODED_SEPARATOR = '/'
 def createSlug(areaCode, problemId):
     return areaCode + DECODED_SEPARATOR + problemId
 
+def createEncodedSlug(areaCode, problemId):
+    return areaCode + ENCODED_SEPARATOR + problemId
+
 def encodeSlug(key):
     return key.replace(DECODED_SEPARATOR, ENCODED_SEPARATOR)
 
