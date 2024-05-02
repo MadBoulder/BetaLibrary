@@ -20,19 +20,16 @@ BETA_VIDEOS_TEXT = 'Beta Videos: '
 #####################
 
 
-def load_map(area, datafile, generate_ids, return_html=True):
+def load_map(areaCode, areaData, datafile, generate_ids, return_html=True):
     """
     Create a map for a bouldering zone that shows the GEOJSON data, names and
     links to video playlists of its sectors as well as the parking areas. All
     this data should be provided via a JSON file
     """
     generate_ids.reset_seed()
-    area_data = {}
-    with open(datafile, encoding='utf-8') as data:
-        area_data = json.load(data)
 
-    area_map = folium.Map(location=[area_data['latitude'], area_data['longitude']],
-                          zoom_start=area_data['zoom'])
+    area_map = folium.Map(location=[areaData['latitude'], areaData['longitude']],
+                          zoom_start=areaData['zoom'])
     area_map._id = generate_ids.next_id()  # reassign id
     for child in area_map._children.values():
         child._id = generate_ids.next_id()
@@ -49,7 +46,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
     fs._id = generate_ids.next_id()
     fs.add_to(area_map)
 
-    sectors = area_data.get('sectors', [])
+    sectors = areaData.get('sectors', [])
     # Create a Folium feature group for this layer, since we will be displaying multiple layers
     sector_lyr = folium.FeatureGroup(name='Parking Markers')
     sector_lyr._id = generate_ids.next_id()  # reassign id
@@ -85,8 +82,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
     #    sector_lyr.add_child(sector_map)
     #
     # Parking areas
-    if 'parkings' in area_data and area_data['parkings']:
-        for parking in area_data['parkings']:
+    if 'parkings' in areaData and areaData['parkings']:
+        for parking in areaData['parkings']:
             parking_icon = CustomIcon(
                 'static/images/icons/parking.png',
                 icon_size=(ICON_SIZE, ICON_SIZE)
@@ -107,7 +104,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             sector_lyr.add_child(parking_marker)
 
     # Approximation
-    if area_data.get('approximation', None) is not None:
+    if areaData.get('approximation', None) is not None:
         import gpxpy
         import gpxpy.gpx
 
@@ -124,7 +121,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
             }
         }
 
-        gpx_path = 'data/zones/' + area + '/' + area_data.get('approximation')
+        gpx_path = 'data/zones/' + areaCode + '/' + areaData.get('approximation')
         with open(gpx_path, 'r') as gpx_file:
             gpx = gpxpy.parse(gpx_file)
             for track in gpx.tracks:
@@ -147,7 +144,7 @@ def load_map(area, datafile, generate_ids, return_html=True):
         zone_approximation._id = generate_ids.next_id()  # reassign id
 
         zone_approx_html = utils.js_helpers.generate_file_download_html(
-            area, area_data.get('approximation'), 'Track')
+            areaCode, areaData.get('approximation'), 'Track')
 
         track_popup = folium.Popup(
             zone_approx_html,
@@ -170,8 +167,8 @@ def load_map(area, datafile, generate_ids, return_html=True):
         'static/images/marker/marker.webp', icon_size=(MARKER_SIZE, MARKER_SIZE))
     zoomed_out_icon._id = generate_ids.next_id()  # reassign id
     sectors_marker = folium.Marker(
-        location=[area_data['latitude'], area_data['longitude']],
-        tooltip=area_data['name'],
+        location=[areaData['latitude'], areaData['longitude']],
+        tooltip=areaData['name'],
         icon=zoomed_out_icon
     )
     sectors_marker._id = generate_ids.next_id()  # reassign id

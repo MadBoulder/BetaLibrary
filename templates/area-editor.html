@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	{% include 'scripts/tracking-tools-scripts.html' %}
+    <title>Add New Area | MadBoulder</title>
+
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
+  </head>
+  <body>
+	{% include 'elements/main-menu.html' %}
+	<main>
+		<div class="zone-header">
+			<div style="display: flex; justify-content: center;">
+				<h1 class="zone-header-title text-bold">
+					Add New Bouldering Area
+				</h1>
+			</div>
+		</div>
+		<div class="container" id="mainContainer">
+			<form id="areaForm" method="post">
+				<div class="mb-3">
+					<label for="name">Area Name:</label>
+					<input type="text" id="name" name="name" required>
+				</div>
+				<div class="mb-3" style="display: flex; align-items: center;">
+					<label for="country">Country:</label>
+					<select id="country-select" name="countryCode" class="form-select" onchange="updateStatesDropdown();" style="margin: 0.5rem;" required>
+						<option value="">Select a country</option>
+						{% for country_code, country_info in countries.items() %}
+							<option value="{{ country_code }}">{{ country_info['name'][0] }}</option>
+						{% endfor %}
+					</select>
+					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal" style="white-space: nowrap;">
+						Add New Country
+					</button>
+				</div>
+				<div class="mb-3 d-none" id="states-container" style="display: flex; align-items: center;">
+					<label for="area-state">State</label>
+					<select class="form-select" id="area-state" style="margin: 0.5rem;">
+						<option value="">Select a state</option>
+					</select>
+					<button type="button" class="btn btn-primary" onclick="addNewState();" style="white-space: nowrap;">
+						Add New State
+					</button>
+				</div>
+				<div id="area-map" style="height: 400px; width: 100%;"></div>
+				<input type="text" id="area-coordinates" class="form-control mb-3" placeholder="Latitude, Longitude" required readonly>
+				<div>
+					<label for="altitude">Altitude (meters):</label>
+					<input type="text" id="altitude" name="altitude" readonly>
+				</div>
+				<div class="mb-3">
+					<label for="zoom-level">Zoom Level</label>
+					<input type="number" id="zoom-level" name="zoom" class="form-control" value="16" required>
+				</div>
+				<div class="mb-3">
+					<label for="rock_type">Rock Type:</label>
+					<select id="rock_type" name="rock_type" class="form-select" required>
+						<option value="">Select Rock Type</option>
+						{% for rockTypeCode, rockTypeName in rockTypes.items() %}
+							<option value="{{ rockTypeCode }}">{{ rockTypeName }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="mb-3">
+					<label>Overview (English)</label>
+					<textarea class="form-control" id="overview-en" rows="3"></textarea>
+				</div>
+				<div class="mb-3">
+					<label>Overview (Spanish)</label>
+					<textarea class="form-control" id="overview-es" rows="3"></textarea>
+				</div>
+				
+				<div class="mb-3">
+					<button id="addParkingButton" class="btn btn-primary">Add Parkings</button>
+					<div id="parkingMapContainer" style="display:none;">
+						<div id="parking-map" style="height: 400px; width: 100%;"></div>
+						<div id="parking-coordinates-container"></div>
+						<button type="button" id="clear-parkings" class="btn btn-warning">Clear Parkings</button>
+					</div>
+				</div>
+				<div class="mb-3">
+					<button id="addLinkButton" class="btn btn-primary" onclick="addLinkFields()">Add New Link</button>
+					<div id="linksContainer" class="mt-2"></div>
+				</div>
+				<div class="mb-3">
+					<button id="addGuideButton" class="btn btn-primary" onclick="addGuideFields()">Add New Guide</button>
+					<div id="guidesContainer" class="mt-2"></div>
+				</div>
+				<div class="mb-3" style="text-align: center;">
+					<button type="submit" class="btn btn-primary-madboulder">Create Area</button>
+				</div>
+			</form>
+			<div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="addCountryModalLabel">Add New Country</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="newCountryForm">
+								<div class="mb-3">
+									<label for="countryNameEn">Country Name (English)</label>
+									<input type="text" class="form-control" id="countryNameEn" required>
+								</div>
+								<div class="mb-3">
+									<label for="countryNameEs">Country Name (Spanish)</label>
+									<input type="text" class="form-control" id="countryNameEs" required>
+								</div>
+								<div class="mb-3">
+									<label for="countryCode" >Reduced Code</label>
+									<input type="text" class="form-control" id="countryCode" required>
+								</div>
+								<div class="mb-3">	
+									<label for="countryOverviewEn">Overview (English)</label>
+									<textarea class="form-control" id="countryOverviewEn" rows="3" required></textarea>
+								</div>
+								<div class="mb-3">
+									<label for="countryOverviewEs">Overview (Spanish)</label>
+									<textarea class="form-control" id="countryOverviewEs" rows="3" required></textarea>
+								</div>
+								<button type="submit" class="btn btn-primary">Create New Country</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					initializeForm();
+					InitAreaMap();
+					loadFormData();
+				});
+
+				function initializeForm() {
+					document.getElementById('areaForm').addEventListener('submit', submitAreaData);
+					document.getElementById('addParkingButton').addEventListener('click', showParkingMap);
+					document.querySelectorAll('#areaForm input, #areaForm textarea, #areaForm select').forEach(item => {
+						item.addEventListener('change', function() {
+							saveData();
+						});
+					});
+				}
+
+				function saveData() {
+					console.log("saveData")
+					const formData = getFormData();
+					localStorage.setItem('formData', JSON.stringify(formData));
+				}
+
+				function loadFormData() {
+					let storedData = localStorage.getItem('formData');
+					if (storedData) {
+						populateFormFields(JSON.parse(storedData));
+					}
+				}
+
+				function populateFormFields(data) {
+					console.log("populateFormFields")
+					console.log(data)
+					document.getElementById('name').value = data.name;
+					document.getElementById('country-select').value = data.countryCode;
+					updateStatesDropdown();
+					document.getElementById('area-state').value = data.stateCode;
+					if (data.latitude && data.longitude) {
+						document.getElementById('area-coordinates').value = `${data.latitude}, ${data.longitude}`;
+					}
+					document.getElementById('altitude').value = data.altitude;
+					document.getElementById('zoom-level').value = data.zoom;
+					document.getElementById('rock_type').value = data.rock_type;
+					document.getElementById('overview-en').value = data.overview_en;
+					document.getElementById('overview-es').value = data.overview_es;
+
+					if (data.parkings) {
+						JSON.parse(data.parkings).forEach(parking => {
+							addParkingCoordinates({ lat: parking.latitude, lng: parking.longitude });
+						});
+					}
+					if (data.links) {
+						let links = JSON.parse(data.links);
+						if (Array.isArray(links)) {
+							links.forEach(link => addLinkFields(link));
+						}
+					}
+					if (data.guides) {
+						let guides = JSON.parse(data.guides);
+						if (Array.isArray(guides)) {
+							guides.forEach(guide => addGuideFields(guide));
+						}
+					}
+				}
+
+				window.isDataModified = false;
+				document.querySelectorAll('input, textarea, select').forEach(input => {
+					input.addEventListener('change', () => {
+						window.isDataModified = true;
+					});
+				});
+
+				function updateStatesDropdown() {
+    			var statesContainer = document.getElementById('states-container');
+					var selectedCountry = document.getElementById('country-select').value;
+					var stateSelect = document.getElementById('area-state');
+					stateSelect.innerHTML = '<option value="">Select a state</option>';
+
+					{% for country_code, country_info in countries.items() %}
+						if (selectedCountry === "{{ country_code }}") {
+							{% if country_info.states %}
+								{% for state_code, state_info in country_info.states.items() %}
+									var option = new Option("{{ state_info.name[0] }}", "{{ state_code }}");
+									stateSelect.add(option);
+								{% endfor %}
+								statesContainer.classList.remove('d-none');
+							{% else %}
+								statesContainer.classList.add('d-none');
+							{% endif %}
+						}
+					{% endfor %}
+				}
+
+				document.getElementById('newCountryForm').addEventListener('submit', function(event) {
+					event.preventDefault();
+
+					const countryNameEn = document.getElementById('countryNameEn').value;
+					const countryNameEs = document.getElementById('countryNameEs').value;
+					const countryCode = document.getElementById('countryCode').value;
+					const countryOverviewEn = document.getElementById('countryOverviewEn').value;
+					const countryOverviewEs = document.getElementById('countryOverviewEs').value;
+
+					const postData = {
+						name: [countryNameEn, countryNameEs],
+						overview: [countryOverviewEn, countryOverviewEs],
+						reduced_code: countryCode
+					};
+
+					fetch('/add-country', {
+						method: 'POST',
+						headers: {
+						'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(postData)
+					})
+					.then(response => response.json())
+					.then(data => {
+						console.log('Success:', data);
+        				$('#addCountryModal').modal('hide'); 
+						alert('Country added successfully!');
+						fetchCountries()
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+				});
+
+				function addNewState() {
+					var selectedCountry = document.getElementById('country-select').value;
+					if (!selectedCountry) {
+						alert("Please select a country first.");
+						return;
+					}
+
+					var newStateNameEn = prompt("Enter new state name (English):");
+					var newStateNameEs = prompt("Enter new state name (Spanish):");
+
+					if (newStateNameEn) {
+						const newStateData = {
+							country: selectedCountry,
+							name: [newStateNameEn, newStateNameEs]
+						};
+
+						fetch('/add-state', {
+							method: 'POST',
+							headers: {
+							'Content-Type': 'application/json',
+							},
+							body: JSON.stringify(newStateData)
+						})
+						.then(response => response.json())
+						.then(data => {
+							console.log('Success:', data);
+							alert('State added successfully!');
+							fetchCountries()
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
+					}
+				}
+
+				var areaMap, parkingMap;
+				var areaMarker, parkingMarkers = [];
+
+				function InitAreaMap() {
+					areaMap = L.map('area-map').setView([51.505, -0.09], 13); // Default view
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						maxZoom: 18,
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					}).addTo(areaMap);
+
+					// Click event for area map
+					areaMap.on('click', function(e) {
+						if (areaMarker) areaMap.removeLayer(areaMarker);
+						areaMarker = placeMarker(e.latlng, areaMap, true);
+					});
+				}
+
+				function showParkingMap() {
+					console.log("showParkingMap")
+					document.getElementById('parkingMapContainer').style.display = 'block';
+        			document.getElementById('addParkingButton').style.display = 'none';
+					InitParkingMap()
+					
+					setTimeout(() => {
+						document.getElementById(`parkingMapContainer`).focus();
+					}, 0);
+					document.getElementById(`parkingMapContainer`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+
+				function InitParkingMap() {
+					console.log("InitParkingMap")
+					if (!parkingMap) {
+						parkingMap = L.map('parking-map').setView([51.505, -0.09], 13);
+						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+							maxZoom: 18,
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						}).addTo(parkingMap);
+
+						// Click event for parking map
+						parkingMap.on('click', function(e) {
+							var marker = placeMarker(e.latlng, parkingMap, false);
+							parkingMarkers.push(marker);
+							addParkingCoordinates(e.latlng);
+							toggleClearParkingsButton();
+						});
+
+						document.getElementById('clear-parkings').addEventListener('click', clearParkings);
+					}
+				}
+
+				function placeMarker(latLng, map, isArea) {
+					var marker = L.marker(latLng, { draggable: true });
+					marker.addTo(map);
+					updatePosition(isArea, marker);
+
+					marker.on('dragend', function() {
+						updatePosition(isArea, marker);
+					});
+
+					marker.on('contextmenu', function() {
+						removeMarker(marker, isArea);
+					});
+					return marker;
+				}
+
+				function updatePosition(isArea, marker) {
+					latLng = marker.getLatLng()
+					if (isArea) {
+						document.getElementById('area-coordinates').value = formatLatLng(latLng);
+						fetchAltitude(latLng.lat, latLng.lng)
+					} 
+					else {
+						var index = parkingMarkers.indexOf(marker);
+						var inputFields = document.querySelectorAll('#parking-coordinates-container input[type="text"]');
+						if (inputFields && inputFields[index]) {
+							inputFields[index].value = formatLatLng(latLng);						}
+					}
+				}
+
+				function removeMarker(marker, isArea) {
+					if (isArea) {
+						areaMap.removeLayer(areaMarker);
+						areaMarker = null;
+						document.getElementById('area-coordinates').value = '';
+						document.getElementById('altitude').value = '';
+					} else {
+						var index = parkingMarkers.indexOf(marker);
+						if (index > -1) {
+							parkingMap.removeLayer(parkingMarkers[index]);
+							parkingMarkers.splice(index, 1);
+							removeParkingCoordinates(index);
+							toggleClearParkingsButton();
+						}
+					}
+				}
+
+				function formatLatLng(latLng) {
+					return `${latLng.lat.toFixed(6)}, ${latLng.lng.toFixed(6)}`;
+				}
+
+				function addParkingCoordinates(latLng) {
+					var container = document.getElementById('parking-coordinates-container');
+					var input = document.createElement('input');
+					input.type = 'text';
+					input.className = 'form-control mb-2';
+					input.value = formatLatLng(latLng);
+					input.readOnly = true;
+					container.appendChild(input);
+				}
+
+				function removeParkingCoordinates(index) {
+					var inputFields = document.querySelectorAll('#parking-coordinates-container input[type="text"]');
+					if (inputFields && inputFields.length > index) {
+						inputFields[index].parentNode.removeChild(inputFields[index]);
+					}
+				}
+
+				function clearParkings() {
+					parkingMarkers.forEach(marker => parkingMap.removeLayer(marker));
+					parkingMarkers = [];
+					document.getElementById('parking-coordinates-container').innerHTML = '';
+        			toggleClearParkingsButton();
+
+					document.getElementById('parkingMapContainer').style.display = 'none';
+        			document.getElementById('addParkingButton').style.display = 'block';
+				}
+
+				function toggleClearParkingsButton() {
+					var button = document.getElementById('clear-parkings');
+					if (parkingMarkers.length > 0) {
+						button.style.display = 'block';
+					} else {
+						button.style.display = 'none';
+					}
+				}
+			
+				function fetchAltitude(lat, lng) {
+					console.log("fetchAltitude")
+					const url = `/fetch-altitude?latitude=${lat}&longitude=${lng}`;
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							if (data.results && data.results.length > 0) {
+								document.getElementById('altitude').value = data.results[0].elevation;
+							} else {
+								console.error('No elevation data found');
+								alert('Elevation data not available for this location.');
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching altitude:', error);
+							alert('Failed to fetch elevation data.');
+						});
+				}
+
+				function addLinkFields(link = {}) {
+					console.log("addLinkFields")
+					var container = document.getElementById('linksContainer');
+					var linkIndex = container.children.length + 1;
+
+					var html = `
+						<div class="mb-3 link-entry" id="link${linkIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
+							<label>URL:</label>
+							<input type="text" class="form-control mb-1 link-url" style="width:auto;" id="linkUrl${linkIndex}" placeholder="Enter URL" value="${link.url || ''}" required>
+							<label>Name:</label>
+							<input type="text" class="form-control mb-1 link-name" style="width:auto;" id="linkName${linkIndex}" placeholder="Enter name" value="${link.name || ''}" required>
+							<div class="form-check mb-2">
+								<input class="form-check-input link-free" type="checkbox" id="linkFree${linkIndex}" ${link.free ? 'checked' : ''}>
+								<label class="form-check-label" for="linkFree${linkIndex}">
+									Free
+								</label>
+							</div>
+							<button class="btn btn-danger mb-2" onclick="removeLink('link${linkIndex}')">Remove</button>
+						</div>
+					`;
+
+					container.insertAdjacentHTML('beforeend', html);
+					setTimeout(() => {
+						document.getElementById(`linkUrl${linkIndex}`).focus();
+					}, 0);
+					document.getElementById(`link${linkIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+					attachLinkEvents(linkIndex)
+				}
+
+				function attachLinkEvents(index) {
+					document.querySelector(`#link${index} .link-url`).addEventListener('change', saveData);
+					document.querySelector(`#link${index} .link-name`).addEventListener('change', saveData);
+					document.querySelector(`#link${index} .link-free`).addEventListener('change', saveData);
+				}
+
+				function removeLink(linkId) {
+					var linkDiv = document.getElementById(linkId);
+					linkDiv.parentNode.removeChild(linkDiv);
+				}
+
+				function addGuideFields(guide = {}) {
+					console.log("addGuideFields")
+					var container = document.getElementById('guidesContainer');
+					var guideIndex = container.children.length + 1;
+
+					guide.link = Array.isArray(guide.link) ? guide.link : [];
+
+					var link1 = guide.link.length > 0 ? guide.link[0] : '';
+					var link2 = guide.link.length > 1 ? guide.link[1] : '';
+
+					var html = `
+						<div class="mb-3 guide-entry" id="guide${guideIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
+							<label>Name:</label>
+							<input type="text" class="form-control mb-1 guide-name" style="width:auto;" id="guideName${guideIndex}" placeholder="Enter guide name" value="${guide.name || ''}" required>
+							<label>Thumbnail URL:</label>
+							<input type="text" class="form-control mb-1 guide-thumbnail" style="width:auto;" placeholder="Enter thumbnail URL" value="${guide.thumbnail || ''}" required>
+							<label>Link:</label>
+							<div id="guideLinks${guideIndex}" class="mb-2">
+								<input type="text" class="form-control mb-1 guide-link-amz-com" style="width:auto;" placeholder="Enter primary link" value="${link1}" required>
+								<input type="text" class="form-control mb-1 guide-link-amz-es" style="width:auto;" placeholder="Enter secondary link" value="${link2}">
+							</div>
+							<button class="btn btn-danger" onclick="removeGuide('guide${guideIndex}')">Remove Guide</button>
+						</div>
+					`;
+
+					container.insertAdjacentHTML('beforeend', html);
+					setTimeout(() => {
+						document.getElementById(`guideName${guideIndex}`).focus();
+					}, 0);
+					document.getElementById(`guideName${guideIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+					attachGuideEvents(guideIndex)
+				}
+
+				function attachGuideEvents(index) {
+					document.querySelector(`#guide${index} .guide-name`).addEventListener('change', saveData);
+					document.querySelector(`#guide${index} .guide-thumbnail`).addEventListener('change', saveData);
+					document.querySelector(`#guide${index} .guide-link-amz-com`).addEventListener('change', saveData);
+					document.querySelector(`#guide${index} .guide-link-amz-es`).addEventListener('change', saveData);
+				}
+
+				function removeGuide(guideId) {
+					var guideDiv = document.getElementById(guideId);
+					guideDiv.parentNode.removeChild(guideDiv);
+				}
+
+				function submitAreaData() {
+					console.log("submit");
+					event.preventDefault();
+					const confirmSubmit = confirm('Are you sure you want to add this new area? This will modify the database.');
+					if (!confirmSubmit) {
+						console.log("not confirmed");
+						return;
+					}
+					
+					const formData = getFormData();
+					console.log("Form Data:", formData);
+
+					fetch('/submit-area', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json',},
+						body: JSON.stringify(formData)
+					})
+					.then(response => response.json())
+					.then(data => {
+						alert(data.message);
+						if (data.status === 'success') {
+							console.log("area addes successfully")
+							//window.location.href = '/areas';  // Redirecting to the areas list page
+						}
+					})
+					.catch(error => console.error('Error submitting area:', error));
+				};
+
+				function getFormData(){
+					const formData = {
+						'name': document.getElementById('name').value,
+						'countryCode': document.getElementById('country-select').value,
+						'stateCode': document.getElementById('area-state').value,
+						'latitude': document.getElementById('area-coordinates').value.split(", ")[0],
+						'longitude': document.getElementById('area-coordinates').value.split(", ")[1],
+						'altitude': document.getElementById('altitude').value,
+						'zoom': document.getElementById('zoom-level').value,
+						'rock_type': document.getElementById('rock_type').value,
+						'overview_en': document.getElementById('overview-en').value,
+						'overview_es': document.getElementById('overview-es').value,
+						'parkings': JSON.stringify([...document.querySelectorAll('#parking-coordinates-container input')].map(input => ({
+							'latitude': input.value.split(", ")[0],
+							'longitude': input.value.split(", ")[1]
+						}))),
+						'links': JSON.stringify([...document.querySelectorAll('.link-entry')].map(div => ({
+							'url': div.querySelector('.link-url').value,
+							'name': div.querySelector('.link-name').value,
+							'free': div.querySelector('input[type="checkbox"]').checked
+						}))),
+						'guides': JSON.stringify([...document.querySelectorAll('.guide-entry')].map(div => ({
+							'link': [div.querySelector('.guide-link-amz-com').value, div.querySelector('.guide-link-amz-es').value],
+							'name': div.querySelector('.guide-name').value,
+							'thumbnail': div.querySelector('.guide-thumbnail').value
+						})))
+					};
+					return formData;
+				}
+			</script>
+		</div>
+	</main>
+	{% include 'elements/footer.html' %}
+  </body> 
+</html>

@@ -1070,6 +1070,109 @@ def contributor_approved_notification(email, climber_id):
     mail.send(msg)
 
 
+@app.route('/area-editor', methods=['GET'])
+@admin_required
+def area_editor():
+    rockTypeMapping = utils.zone_helpers.getRockTypeList()
+    countries = utils.MadBoulderDatabase.getCountriesData()
+    return render_template('area-editor.html', rockTypes=rockTypeMapping, countries=countries)
+
+
+@app.route('/submit-area', methods=['POST'])
+@admin_required
+def submit_area():
+    print("submit_area")
+    try:
+        data = request.get_json()
+        print(data)
+        areaName = data['name']
+        areaCode = slugify(areaName)
+        areaData = {
+            "name": areaName,
+            "zone_code": areaCode,
+            "country": data['countryCode'],
+            "state": data.get('stateCode', ''),
+            "latitude": data['latitude'],
+            "longitude": data['longitude'],
+            "altitude": data['altitude'],
+            "zoom": data['zoom'],
+            "rock_type": data['rock_type'],
+            "overview": [
+                data['overview_en'],
+                data['overview_es']
+            ],
+            "parkings": json.loads(data['parkings']),
+            "links": json.loads(data['links']),
+            "guides": json.loads(data['guides'])
+        }
+        print(areaData)
+        utils.MadBoulderDatabase.addArea(areaCode, areaData)
+        return jsonify({"status": "success", "message": "Area added successfully!"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route('/fetch-altitude')
+def fetch_altitude():
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    url = f"https://api.opentopodata.org/v1/aster30m?locations={latitude},{longitude}"
+    
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return jsonify(response.json())
+        else:
+            return jsonify({'error': 'Failed to fetch data'}), response.status_code
+    except requests.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+    
+    
+@app.route('/get-countries')
+def get_countries():
+    countries = utils.MadBoulderDatabase.getCountriesData()
+    return jsonify(countries=countries)
+
+
+@app.route('/add-country', methods=['POST'])
+def add_country():
+    try:
+        data = request.get_json()
+        countryReducedCode = data['reduced_code'].lower()
+        countryCode = slugify(data['name'][0])
+
+        countryData = {
+            'name': data['name'],
+            'overview': data['overview'],
+            'reduced_code': countryReducedCode
+        }
+
+        utils.MadBoulderDatabase.updateCountry(countryCode, countryData)
+        return jsonify({'status': 'success', 'message': 'Country added successfully'}), 200
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+    
+
+
+@app.route('/add-state', methods=['POST'])
+def add_state():
+    try:
+        data = request.get_json()
+        countryCode = data['country']
+        stateCode = slugify(data['name'][0])
+
+        stateData = {
+            'name': data['name']
+        }
+
+        utils.MadBoulderDatabase.updateState(countryCode, stateCode, stateData)
+        return jsonify({'status': 'success', 'message': 'Country added successfully'}), 200
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+
+
 @app.route('/<string:sitemap_name>.xml')
 def sitemap_file(sitemap_name):
     if re.match(r'sitemap(-\w+)?', sitemap_name):

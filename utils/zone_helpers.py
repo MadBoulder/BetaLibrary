@@ -52,8 +52,8 @@ def getSectors(problems):
     return sectors
     
 
-def get_rock_type_str(rock_type_code):
-    rock_type_mapping = {
+def getRockTypeList():
+    rockTypeMapping = {
         "volc": "Volcanic",
         "lime": "Limestone",
         "gran": "Granite",
@@ -70,7 +70,12 @@ def get_rock_type_str(rock_type_code):
         "grit": "Gritstone",
         "diab": "Diabase"
     }
-    return rock_type_mapping.get(rock_type_code.lower(), "Unknown")
+    return rockTypeMapping
+
+
+def getRockTypeStr(rock_type_code):
+    rockTypeMapping = getRockTypeList()
+    return rockTypeMapping.get(rock_type_code.lower(), "Unknown")
     
    
 def get_playlist_url_from_sector(zone_code, sector):
