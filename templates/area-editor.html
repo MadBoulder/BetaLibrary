@@ -17,7 +17,7 @@
 		<div class="zone-header">
 			<div style="display: flex; justify-content: center;">
 				<h1 class="zone-header-title text-bold">
-					Add New Bouldering Area
+					{{ action }}  Bouldering Area
 				</h1>
 			</div>
 		</div>
@@ -93,7 +93,7 @@
 					<div id="guidesContainer" class="mt-2"></div>
 				</div>
 				<div class="mb-3" style="text-align: center;">
-					<button type="submit" class="btn btn-primary-madboulder">Create Area</button>
+					<button type="submit" class="btn btn-primary-madboulder">{{ action }}  Area</button>
 				</div>
 			</form>
 			<div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
@@ -136,6 +136,7 @@
 					initializeForm();
 					InitAreaMap();
 					loadFormData();
+					document.getElementById(`name`).focus();
 				});
 
 				function initializeForm() {
@@ -153,46 +154,126 @@
 					const formData = getFormData();
 					localStorage.setItem('formData', JSON.stringify(formData));
 				}
+				
+				function getFormData(){
+					const formData = {
+						'name': document.getElementById('name').value,
+						'countryCode': document.getElementById('country-select').value,
+						'stateCode': document.getElementById('area-state').value,
+						'latitude': parseFloat(document.getElementById('area-coordinates').value.split(", ")[0]),
+						'longitude': parseFloat(document.getElementById('area-coordinates').value.split(", ")[1]),
+						'altitude': parseInt(document.getElementById('altitude').value),
+						'zoom': parseInt(document.getElementById('zoom-level').value),
+						'rock_type': document.getElementById('rock_type').value,
+						'overview_en': document.getElementById('overview-en').value,
+						'overview_es': document.getElementById('overview-es').value,
+						'parkings': JSON.stringify([...document.querySelectorAll('#parking-coordinates-container input')].map(input => ({
+							'parking_latitude': parseFloat(input.value.split(", ")[0]),
+							'parking_longitude': parseFloat(input.value.split(", ")[1])
+						}))),
+						'links': JSON.stringify([...document.querySelectorAll('.link-entry')].map(div => ({
+							'link': div.querySelector('.link-url').value,
+							'name': div.querySelector('.link-name').value,
+							'free': div.querySelector('input[type="checkbox"]').checked
+						}))),
+						'guides': JSON.stringify([...document.querySelectorAll('.guide-entry')].map(div => {
+							const primaryLink = div.querySelector('.guide-link-amz-com').value.trim();
+							const secondaryLink = div.querySelector('.guide-link-amz-es').value.trim();
+							let links;
+							if (primaryLink && secondaryLink) {
+								links = [primaryLink, secondaryLink];
+							} else {
+								links = primaryLink || ''; // Use only the primary link or empty string if primary is also empty
+							}
+
+							return {
+								'link': links,
+								'name': div.querySelector('.guide-name').value,
+								'thumbnail': div.querySelector('.guide-thumbnail').value
+							};
+						}))
+					};
+					return formData;
+				}
 
 				function loadFormData() {
 					let storedData = localStorage.getItem('formData');
-					if (storedData) {
-						populateFormFields(JSON.parse(storedData));
+					const currentAreaName = "{{ area.name or 'new' }}";
+
+					if (currentAreaName == 'new') {
+						if (storedData) {
+							storedData = JSON.parse(storedData);
+							populateFormFields(storedData);
+						}
+					}else{
+						console.log(currentAreaName);
+						storedData = JSON.parse(storedData);
+						if (storedData && storedData.name === currentAreaName) {
+							populateFormFields(storedData);
+						} else{
+							localStorage.removeItem('formData');
+							loadInitialData(); 
+						}
 					}
 				}
 
+				function loadInitialData() {
+					const initialData = {
+						name: "{{ area.name or '' }}",
+						countryCode: "{{ area.country or '' }}",
+						stateCode: "{{ area.state or '' }}",
+						latitude: "{{ area.latitude or '' }}",
+						longitude: "{{ area.longitude or '' }}",
+						altitude: "{{ area.altitude or '' }}",
+						zoom: "{{ area.zoom or 16 }}",
+						rock_type: "{{ area.rock_type or '' }}",
+						overview_en: "{{ (area.overview[0] if area.overview|length > 0 else '') }}",
+						overview_es: "{{ (area.overview[1] if area.overview|length > 1 else '') }}",
+        				parkings: {{ area.parkings|default([])|tojson }},
+						links: {{ area.links|default([])|tojson }},
+						guides: {{ area.guides|default([])|tojson }}
+					};
+					populateFormFields(initialData);
+				}
+
 				function populateFormFields(data) {
-					console.log("populateFormFields")
-					console.log(data)
+					console.log("populateFormFields");
 					document.getElementById('name').value = data.name;
 					document.getElementById('country-select').value = data.countryCode;
 					updateStatesDropdown();
 					document.getElementById('area-state').value = data.stateCode;
 					if (data.latitude && data.longitude) {
 						document.getElementById('area-coordinates').value = `${data.latitude}, ${data.longitude}`;
+						areaMarker = placeMarker({'lat': data.latitude, 'lng': data.longitude}, areaMap, true);
 					}
-					document.getElementById('altitude').value = data.altitude;
-					document.getElementById('zoom-level').value = data.zoom;
+					document.getElementById('altitude').value = isNaN(data.altitude) ? '' : data.altitude;
+					document.getElementById('zoom-level').value = isNaN(data.zoom) ? 16 : data.zoom;
 					document.getElementById('rock_type').value = data.rock_type;
 					document.getElementById('overview-en').value = data.overview_en;
 					document.getElementById('overview-es').value = data.overview_es;
-
-					if (data.parkings) {
-						JSON.parse(data.parkings).forEach(parking => {
-							addParkingCoordinates({ lat: parking.latitude, lng: parking.longitude });
+					
+					if (Array.isArray(data.parkings)) {
+						data.parkings.forEach(parking => {
+							showParkingMap();
+							console.log(parking);
+							latLng = {'lat': parking.parking_latitude, 'lng': parking.parking_longitude}
+							var marker = placeMarker(latLng, parkingMap, false);
+							parkingMarkers.push(marker);
+							addParkingCoordinates(latLng);
+							toggleClearParkingsButton();
 						});
 					}
-					if (data.links) {
-						let links = JSON.parse(data.links);
-						if (Array.isArray(links)) {
-							links.forEach(link => addLinkFields(link));
-						}
+
+					if (Array.isArray(data.links)) {
+						data.links.forEach(link => {
+							addLinkFields(link);
+						});
 					}
-					if (data.guides) {
-						let guides = JSON.parse(data.guides);
-						if (Array.isArray(guides)) {
-							guides.forEach(guide => addGuideFields(guide));
-						}
+
+					if (Array.isArray(data.guides)) {
+						data.guides.forEach(guide => {
+							addGuideFields(guide);
+						});
 					}
 				}
 
@@ -335,7 +416,7 @@
 						parkingMap.on('click', function(e) {
 							var marker = placeMarker(e.latlng, parkingMap, false);
 							parkingMarkers.push(marker);
-							addParkingCoordinates(e.latlng);
+							addParkingCoordinates({"parking_latitude": e.latlng.lat, "parking_longitude" : e.latLng.lng});
 							toggleClearParkingsButton();
 						});
 
@@ -347,6 +428,8 @@
 					var marker = L.marker(latLng, { draggable: true });
 					marker.addTo(map);
 					updatePosition(isArea, marker);
+
+					map.setView(latLng, map.getZoom());
 
 					marker.on('dragend', function() {
 						updatePosition(isArea, marker);
@@ -456,7 +539,7 @@
 					var html = `
 						<div class="mb-3 link-entry" id="link${linkIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
 							<label>URL:</label>
-							<input type="text" class="form-control mb-1 link-url" style="width:auto;" id="linkUrl${linkIndex}" placeholder="Enter URL" value="${link.url || ''}" required>
+							<input type="text" class="form-control mb-1 link-url" style="width:auto;" id="linkUrl${linkIndex}" placeholder="Enter URL" value="${link.link || ''}" required>
 							<label>Name:</label>
 							<input type="text" class="form-control mb-1 link-name" style="width:auto;" id="linkName${linkIndex}" placeholder="Enter name" value="${link.name || ''}" required>
 							<div class="form-check mb-2">
@@ -490,14 +573,19 @@
 
 				function addGuideFields(guide = {}) {
 					console.log("addGuideFields")
+					console.log(guide.link)
 					var container = document.getElementById('guidesContainer');
 					var guideIndex = container.children.length + 1;
 
-					guide.link = Array.isArray(guide.link) ? guide.link : [];
+					if (typeof guide.link === 'string') {
+						guide.link = [guide.link]; // Convert string to array
+					} else if (!Array.isArray(guide.link)) {
+						guide.link = []; // Ensure it's always an array even if undefined
+					}
 
 					var link1 = guide.link.length > 0 ? guide.link[0] : '';
 					var link2 = guide.link.length > 1 ? guide.link[1] : '';
-
+					console.log(guide.link)
 					var html = `
 						<div class="mb-3 guide-entry" id="guide${guideIndex}" style="display: flex;flex-wrap: wrap;flex-direction: row;align-items: center;justify-content: space-evenly;">
 							<label>Name:</label>
@@ -560,36 +648,6 @@
 					})
 					.catch(error => console.error('Error submitting area:', error));
 				};
-
-				function getFormData(){
-					const formData = {
-						'name': document.getElementById('name').value,
-						'countryCode': document.getElementById('country-select').value,
-						'stateCode': document.getElementById('area-state').value,
-						'latitude': document.getElementById('area-coordinates').value.split(", ")[0],
-						'longitude': document.getElementById('area-coordinates').value.split(", ")[1],
-						'altitude': document.getElementById('altitude').value,
-						'zoom': document.getElementById('zoom-level').value,
-						'rock_type': document.getElementById('rock_type').value,
-						'overview_en': document.getElementById('overview-en').value,
-						'overview_es': document.getElementById('overview-es').value,
-						'parkings': JSON.stringify([...document.querySelectorAll('#parking-coordinates-container input')].map(input => ({
-							'latitude': input.value.split(", ")[0],
-							'longitude': input.value.split(", ")[1]
-						}))),
-						'links': JSON.stringify([...document.querySelectorAll('.link-entry')].map(div => ({
-							'url': div.querySelector('.link-url').value,
-							'name': div.querySelector('.link-name').value,
-							'free': div.querySelector('input[type="checkbox"]').checked
-						}))),
-						'guides': JSON.stringify([...document.querySelectorAll('.guide-entry')].map(div => ({
-							'link': [div.querySelector('.guide-link-amz-com').value, div.querySelector('.guide-link-amz-es').value],
-							'name': div.querySelector('.guide-name').value,
-							'thumbnail': div.querySelector('.guide-thumbnail').value
-						})))
-					};
-					return formData;
-				}
 			</script>
 		</div>
 	</main>

@@ -1069,13 +1069,21 @@ def contributor_approved_notification(email, climber_id):
         body=msg_body)
     mail.send(msg)
 
-
+@app.route('/add-area')
+@app.route('/edit-area/<string:areaCode>')
 @app.route('/area-editor', methods=['GET'])
 @admin_required
-def area_editor():
+def area_editor(areaCode=None):
     rockTypeMapping = utils.zone_helpers.getRockTypeList()
     countries = utils.MadBoulderDatabase.getCountriesData()
-    return render_template('area-editor.html', rockTypes=rockTypeMapping, countries=countries)
+    if areaCode:
+        area = utils.MadBoulderDatabase.getAreaData(areaCode)
+        print(area)
+        action = "Edit"
+    else:
+        area = {}
+        action = "Create"
+    return render_template('area-editor.html', rockTypes=rockTypeMapping, countries=countries, area=area, action=action)
 
 
 @app.route('/submit-area', methods=['POST'])

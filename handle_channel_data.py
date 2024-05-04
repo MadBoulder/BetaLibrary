@@ -38,8 +38,6 @@ def updateData(
         retrieveAndUpdateVideoData(resetDatabase=False)
         createOptimizedVideoData()
         retrieveAndUpdatePlaylistData()
-    updateAreaData()
-    updateCountries()
     updateBoulderData()
     updateContributorsList()
 
@@ -401,9 +399,10 @@ def retrieve_playlists_from_channel():
     print('Playlists retrieved: ' + str(len(playlists)))
     return playlists
 
-
+#deprecated
 def updateAreaData():
     print("updateZoneData")
+    return
     
     zone_data_path = 'data/zones/'
     zones_data = {}
@@ -521,9 +520,10 @@ def updateBoulderData():
 
     utils.MadBoulderDatabase.setBoulderData(formatted_boulder_data)
 
-
+#deprecated
 def updateCountries():
     print("updateCountries")
+    return
     data = {}
     with open('data/countries.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
