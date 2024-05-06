@@ -57,6 +57,7 @@ def setVideoData(videoData):
     utils.database.setValue('video_count', total_problems)
 
     utils.database.updateDate(PROBLEMS_KEY)
+    getAllVideoData.cache_clear()
     
 @lru_cache(maxsize=10)
 def getSearchData():
@@ -90,6 +91,7 @@ def getPlaylistData(areaCode):
 def setPlaylistData(playlists):
     utils.database.setValue('playlist_data/items', playlists)
     utils.database.updateDate('playlist_data')
+    getPlaylistsData.cache_clear()
 
 def getAreasCount():
     return utils.database.getValue('areas_count')
@@ -111,6 +113,8 @@ def setAreaData(areas):
     utils.database.setValue('area_data', areas)
     areaCount = len(areas)
     utils.database.setValue('areas_count', areaCount)
+    getAreasData.cache_clear()
+    getAreaData.cache_clear()
 
 def addArea(areaCode, areaData):
     utils.database.updateValue('area_data', {areaCode: areaData})
@@ -133,6 +137,8 @@ def getStateData(countryCode, stateCode):
 
 def setCountryData(countries):
     utils.database.setValue('country_data', countries)
+    getCountriesData.cache_clear()
+    getCountryData.cache_clear()
 
 def updateCountry(countryCode, data):
     utils.database.setValue(f'country_data/{countryCode}', data)
