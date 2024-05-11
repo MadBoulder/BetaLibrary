@@ -178,6 +178,10 @@ def updateVideoDatabase():
                     print(f"Video with ID {videoId} has changed its url.")
                     deprecateSlug(videoSlug, newVideoInfo['secure_slug'])
 
+                    if zone_code != newVideoInfo['zone_code']:
+                        print(f"Video with ID {videoId} has changed its area.")
+                        zone_code = newVideoInfo['zone_code']
+
                 if zone_code not in updatedVideos:
                     updatedVideos[zone_code] = {}
 

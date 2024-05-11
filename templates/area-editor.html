@@ -77,7 +77,7 @@
 				</div>
 				
 				<div class="mb-3">
-					<button id="addParkingButton" class="btn btn-primary">Add Parkings</button>
+					<button id="addParkingButton" class="btn btn-primary" onclick="showParkingMap()">Add Parkings</button>
 					<div id="parkingMapContainer" style="display:none;">
 						<div id="parking-map" style="height: 400px; width: 100%;"></div>
 						<div id="parking-coordinates-container"></div>
@@ -141,7 +141,6 @@
 
 				function initializeForm() {
 					document.getElementById('areaForm').addEventListener('submit', submitAreaData);
-					document.getElementById('addParkingButton').addEventListener('click', showParkingMap);
 					document.querySelectorAll('#areaForm input, #areaForm textarea, #areaForm select').forEach(item => {
 						item.addEventListener('change', function() {
 							saveData();
@@ -255,11 +254,10 @@
 					if (Array.isArray(data.parkings)) {
 						data.parkings.forEach(parking => {
 							showParkingMap();
-							console.log(parking);
-							latLng = {'lat': parking.parking_latitude, 'lng': parking.parking_longitude}
-							var marker = placeMarker(latLng, parkingMap, false);
+							latlng = {'lat': parking.parking_latitude, 'lng': parking.parking_longitude}
+							var marker = placeMarker(latlng, parkingMap, false);
 							parkingMarkers.push(marker);
-							addParkingCoordinates(latLng);
+							addParkingCoordinates(latlng);
 							toggleClearParkingsButton();
 						});
 					}
@@ -377,12 +375,24 @@
 				var areaMap, parkingMap;
 				var areaMarker, parkingMarkers = [];
 
+				var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 18,
+					attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				});
+
+				var esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+					attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+				});
+
+				var baseLayers = {
+					"OpenStreetMap": osmLayer,
+					"Esri Satellite": esriLayer
+				};
+
 				function InitAreaMap() {
-					areaMap = L.map('area-map').setView([51.505, -0.09], 13); // Default view
-					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-						maxZoom: 18,
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					}).addTo(areaMap);
+					areaMap = L.map('area-map').setView([51.505, -0.09], 13);
+					esriLayer.addTo(areaMap);
+					L.control.layers(baseLayers).addTo(areaMap);
 
 					// Click event for area map
 					areaMap.on('click', function(e) {
@@ -401,22 +411,21 @@
 						document.getElementById(`parkingMapContainer`).focus();
 					}, 0);
 					document.getElementById(`parkingMapContainer`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+					return;
 				}
 
 				function InitParkingMap() {
 					console.log("InitParkingMap")
 					if (!parkingMap) {
 						parkingMap = L.map('parking-map').setView([51.505, -0.09], 13);
-						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-							maxZoom: 18,
-							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-						}).addTo(parkingMap);
+						osmLayer.addTo(parkingMap);
+						L.control.layers(baseLayers).addTo(parkingMap);
 
 						// Click event for parking map
 						parkingMap.on('click', function(e) {
 							var marker = placeMarker(e.latlng, parkingMap, false);
 							parkingMarkers.push(marker);
-							addParkingCoordinates({"parking_latitude": e.latlng.lat, "parking_longitude" : e.latLng.lng});
+							addParkingCoordinates(e.latlng);
 							toggleClearParkingsButton();
 						});
 
@@ -424,12 +433,12 @@
 					}
 				}
 
-				function placeMarker(latLng, map, isArea) {
-					var marker = L.marker(latLng, { draggable: true });
+				function placeMarker(latlng, map, isArea) {
+					var marker = L.marker(latlng, { draggable: true });
 					marker.addTo(map);
 					updatePosition(isArea, marker);
 
-					map.setView(latLng, map.getZoom());
+					map.setView(latlng, map.getZoom());
 
 					marker.on('dragend', function() {
 						updatePosition(isArea, marker);
@@ -442,16 +451,16 @@
 				}
 
 				function updatePosition(isArea, marker) {
-					latLng = marker.getLatLng()
+					latlng = marker.getLatLng()
 					if (isArea) {
-						document.getElementById('area-coordinates').value = formatLatLng(latLng);
-						fetchAltitude(latLng.lat, latLng.lng)
+						document.getElementById('area-coordinates').value = formatLatLng(latlng);
+						fetchAltitude(latlng.lat, latlng.lng)
 					} 
 					else {
 						var index = parkingMarkers.indexOf(marker);
 						var inputFields = document.querySelectorAll('#parking-coordinates-container input[type="text"]');
 						if (inputFields && inputFields[index]) {
-							inputFields[index].value = formatLatLng(latLng);						}
+							inputFields[index].value = formatLatLng(latlng);						}
 					}
 				}
 
@@ -472,16 +481,18 @@
 					}
 				}
 
-				function formatLatLng(latLng) {
-					return `${latLng.lat.toFixed(6)}, ${latLng.lng.toFixed(6)}`;
+				function formatLatLng(latlng) {
+					console.log("formatLatLng");
+					console.log(latlng);
+					return `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
 				}
 
-				function addParkingCoordinates(latLng) {
+				function addParkingCoordinates(latlng) {
 					var container = document.getElementById('parking-coordinates-container');
 					var input = document.createElement('input');
 					input.type = 'text';
 					input.className = 'form-control mb-2';
-					input.value = formatLatLng(latLng);
+					input.value = formatLatLng(latlng);
 					input.readOnly = true;
 					container.appendChild(input);
 				}
