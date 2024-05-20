@@ -48,27 +48,37 @@ def get_last_dashboard_update():
 
 
 def prepare_barchart_data(data, axis):
+    print("prepare_barchart_data")
     """
     Group data by different categories so that it is ready
     to be plotted
     """
     processed_data = {}
-    for _, v in axis.items():
-        x_data = [datum[v] for datum in data]
+    for _, identifier in axis.items():
+        print(identifier)
+        x_data = []
+        for area_id, problems in data.items():
+            for problem_id, problemInfo in problems.items():
+                 if identifier in problemInfo:
+                    x_data.append(problemInfo[identifier])
         unique_x_data = set(x_data)
         data_subset = {'x': [], 'y': [], 'raw': {}}
         for datum in unique_x_data:
             data_subset['x'].append(datum)
-            data_subset['y'].append(x_data.count(datum))
+            count = x_data.count(datum)
+            data_subset['y'].append(count)
+
+            viewCount_sum = 0
+            for area_id, problems in data.items():
+                for problem_id, stats in problems.items():
+                    if stats.get(identifier) == datum:
+                        viewCount_sum += int(stats.get('viewCount', 0))
+
             data_subset['raw'][datum] = {
-                'count': x_data.count(datum),
-                'viewCount': sum([int(vid['stats'].get('viewCount', '0')) for vid in data if vid[v] == datum]),
-                'favoriteCount': sum([int(vid['stats'].get('favoriteCount', '0')) for vid in data if vid[v] == datum]),
-                'likeCount': sum([int(vid['stats'].get('likeCount', '0')) for vid in data if vid[v] == datum]),
-                'dislikeCount': sum([int(vid['stats'].get('dislikeCount', '0')) for vid in data if vid[v] == datum]),
-                'commentCount': sum([int(vid['stats'].get('commentCount', '0')) for vid in data if vid[v] == datum])
+                'count': count,
+                'viewCount': viewCount_sum
             }
-        processed_data[v] = data_subset
+        processed_data[identifier] = data_subset
     return processed_data
 
 
@@ -78,7 +88,7 @@ def get_dashboard():
     its callbacks, as well as data sources.
     """
     # Load data
-    video_data = utils.MadBoulderDatabase.getVideoData()
+    video_data = utils.MadBoulderDatabase.getAllVideoData()
 
     # X axis categories
     x_axis_map = {
@@ -89,11 +99,7 @@ def get_dashboard():
     # Y axis categories
     y_axis_map = {
         "Count": "count",
-        "Views": "viewCount",
-        # "Favourites": "favoriteCount",
-        "Likes": "likeCount",
-        "Dislikes": "dislikeCount",
-        "Comments": "commentCount"
+        "Views": "viewCount"
     }
 
     # get ready to plot data
