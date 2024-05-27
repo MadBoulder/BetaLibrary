@@ -1486,11 +1486,10 @@ def load_problem(area, problem_name):
             user_uid = session.get('uid')
             if user_uid:
                 problem_in_projects = is_problem_in_projects(user_uid, problemSlug)
-                comments = get_comments_for_problem(problemSlug)
             else:
-                comments = []
                 problem_in_projects = False
             
+            comments = get_comments_for_problem(problemSlug)
             ratings = get_ratings_for_problem(problemSlug, user_uid)
 
             url = "problems/" + problemSlug + ".html"
