@@ -8,6 +8,7 @@ import shutil
 import utils.zone_helpers
 import utils.MadBoulderDatabase
 import utils.channel
+from collections import Counter
 
 
 def load_sectors():
@@ -51,6 +52,22 @@ def get_number_of_videos_for_zone(zone_name):
             return item['video_count']
             
     return 0
+
+
+def getMissingAreasCount():
+    print("get missing areas")
+    
+    zones_data = utils.MadBoulderDatabase.getAreasData()
+    existing_zone_codes = set(zones_data.keys())
+
+    videoData = utils.MadBoulderDatabase.getAllVideoData()
+
+    zone_code_counts = Counter()
+    for areaCode, problems in videoData.items():
+        if areaCode not in existing_zone_codes:
+            zone_code_counts[areaCode] += len(problems)
+    
+    return sorted(zone_code_counts.items(), key=lambda item: item[1], reverse=True)
 
 
 def format_views(number):

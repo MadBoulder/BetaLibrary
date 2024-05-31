@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'scripts/tracking-tools-scripts.html' %}
+		<title>MadBoulder Account</title>
+		<meta name="description" content="description">
+		{% include 'elements/head-resources.html' %}
+		{% include 'scripts/cookie-scripts.html' %}
+		<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+		<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" />
+		<style>
+			/* Basic CSS for styling */
+			.modal {
+				display: none; /* Hidden by default */
+				position: fixed; /* Stay in place */
+				z-index: 1; /* Sit on top */
+				left: 0;
+				top: 0;
+				width: 100%; /* Full width */
+				height: 100%; /* Full height */
+				overflow: auto; /* Enable scroll if needed */
+				background-color: rgb(0,0,0); /* Fallback color */
+				background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+			}
+			.modal-content {
+				background-color: #fefefe;
+				margin: 15% auto; /* 15% from the top and centered */
+				padding: 20px;
+				border: 1px solid #888;
+				width: 80%; /* Could be more or less, depending on screen size */
+				border-radius: 10px;
+			}
+			button.modal-close {
+				float: right;
+			}
+		</style>
+	</head>
+	<body>
+		{% include 'elements/main-menu.html' %}
+		<main>
+			<div class="pt-4 container-xl p-responsive clearfix">
+				<div data-view-component="true" class="Layout Layout--flowRow-until-md Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-start">
+					{% include 'elements/settings-nav-menu.html' %}
+					<div data-view-component="true" class="Layout-main">
+						<div data-view-component="true" class="Layout-main-centered-xl">
+							<div data-view-component="true" class="container-xl">
+								<div data-view-component="true" class="Subhead mt-0">
+									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">
+										Missing Areas List
+									</h2>
+								</div>  
+								<div class="clearfix gutter flex-column">
+									<a class="Button--primary Button--medium Button" href="/add-area">Add New Area</a>
+									<div class="table-responsive">
+										<table id="users-table" class="table table-hover">
+											<thead>
+												<tr>
+													<th>Area</th>
+													<th>Videos</th>
+												</tr>
+											</thead>
+											<tbody style="vertical-align: middle;">
+												{% for missingAreaCode, missingAreaCount in sortedMissingAreasCount %}
+													<tr>
+														<td>{{ missingAreaCode }}</td>
+														<td>{{ missingAreaCount }}</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+										<script>
+											$(document).ready(function () {
+												$('#users-table').DataTable({
+													paging: false,
+													dom: 'tr',
+													order:[[1, 'desc']],
+													columnDefs: [{ 
+														orderable: true,
+														targets: 1
+													}]
+												});
+											});
+										</script>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		{% include 'elements/footer.html' %}
+	</body>
+	<script>
+		function toggleContextMenu(event, userId) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var contextMenu = document.getElementById('context-menu-' + userId);
+			if (contextMenu.style.display === 'block') {
+				contextMenu.style.display = 'none';
+			} else {
+				document.querySelectorAll('.context-menu').forEach(function(menu) {
+					menu.style.display = 'none';
+				});
+				contextMenu.style.display = 'block';
+			}
+		}
+
+		document.addEventListener('click', function(event) {
+			document.querySelectorAll('.context-menu').forEach(function(menu) {
+				menu.style.display = 'none';
+			});
+		});
+
+		function openModal() {
+			document.getElementById('userModal').style.display = 'block';
+		}
+
+		function closeModal() {
+			document.getElementById('userModal').style.display = 'none';
+		}
+
+		function setUserAdminClaim(userId) {
+			if (!userId) {
+				alert('Please select a user.');
+				return;
+			}
+			if(confirm("Are you sure you want to add this user as admin?")) {
+				fetch(`/set-admin-claim/${userId}`, {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'}
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						console.log(data.message);
+						window.location.reload();
+					} else {
+						alert("Failed to set user admin claim: " + data.message);
+					}
+				})
+				.catch(error => {
+					console.error("Error setting user admin claim:", error);
+				});
+			}
+		}
+
+		function revokeUserAdminClaim(userId) {
+			if(confirm("Are you sure you want to revoke this user's admin claim?")) {
+				fetch(`/revoke-admin-claim/${userId}`, {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'}
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						console.log(data.message);
+						window.location.reload();
+					} else {
+						alert("Failed to revoke user admin claim: " + data.message);
+					}
+				})
+				.catch(error => {
+					console.error("Error revoking user admin claim:", error);
+				});
+			}
+		}
+	</script>
+</html>

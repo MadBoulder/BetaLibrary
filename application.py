@@ -687,8 +687,15 @@ def get_all_users():
 def settings_admin_urls():
     print("settings_admin_urls")
     urlMappings = utils.MadBoulderDatabase.getUrlMappings()
-    print(urlMappings)
     return render_template('settings/settings-admin-urls.html', urlMappings=urlMappings)
+
+
+@app.route('/settings/admin/missing-areas', methods=['GET'])
+@admin_required
+def settings_admin_missing_areas():
+    print("settings_admin_missing_areas")
+    sortedMissingAreasCount = utils.helpers.getMissingAreasCount()
+    return render_template('settings/settings-admin-missing-areas.html', sortedMissingAreasCount=sortedMissingAreasCount)
 
 
 @app.route('/update-slug', methods=['POST'])
