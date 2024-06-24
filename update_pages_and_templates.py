@@ -6,7 +6,7 @@ from generate_sector_pages import main as generate_sector_pages
 from generate_boulder_pages import main as generate_boulder_pages
 from generate_contributor_pages import main as generate_contributor_pages
 
-if __name__ == "__main__":
+def updatePages():
     print("\nUpdating and adding maps\n")
     generate_maps_main()
     print("\nUpdating and adding zone pages\n")
@@ -21,3 +21,7 @@ if __name__ == "__main__":
     generate_boulder_pages()
     print("\nUpdating and adding contributor pages\n")
     generate_contributor_pages()
+
+
+if __name__ == '__main__':
+    updatePages()

@@ -1,6 +1,7 @@
 import os
 from bs4 import BeautifulSoup
 from datetime import datetime
+import glob
 
 def get_files(folders_to_parse, include_subfolders, file_extension):
     html_files = []
@@ -62,7 +63,24 @@ def create_sitemap(xml_filename, html_files, pdf_files=[]):
         f.write('</urlset>\n')
 
 
-if __name__ == "__main__":
+def create_sitemap_index(index_filename="sitemap.xml"):
+    sitemap_filenames = glob.glob("sitemap-*.xml")
+    
+    with open(index_filename, "w") as f:
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        f.write('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+
+        for sitemap in sitemap_filenames:
+            f.write(f'  <sitemap>\n')
+            f.write(f'    <loc>https://madboulder.org/{sitemap}</loc>\n')
+            last_modified_date = datetime.fromtimestamp(os.path.getmtime(sitemap)).date()
+            f.write(f'    <lastmod>{last_modified_date.strftime("%Y-%m-%d")}</lastmod>\n')
+            f.write(f'  </sitemap>\n')
+
+        f.write('</sitemapindex>\n')
+
+
+def generate_sitemaps():
     sitemapFolders = ["templates", "templates/errors", "templates/policy", "templates/es"]
     create_sitemap("sitemap-main.xml", get_files(sitemapFolders, False, ".html"))
     create_sitemap("sitemap-zones.xml", get_files(["templates/zones"], True, ".html"))
@@ -74,5 +92,11 @@ if __name__ == "__main__":
     create_sitemap("sitemap-boulders.xml", get_files(["templates/boulders"], True, ".html"))
     create_sitemap("sitemap-pdfs.xml", [], get_files(["data/zones"], True, ".pdf"))
     
+    create_sitemap_index()
     
     print("Sitemaps created successfully!")
+
+
+    
+if __name__ == "__main__":
+    generate_sitemaps()

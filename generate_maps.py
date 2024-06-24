@@ -1,6 +1,4 @@
 import load_map
-import os
-from jinja2 import Environment, FileSystemLoader
 import utils.helpers
 import utils.js_helpers
 from utils.id_generator import IDGenerator
