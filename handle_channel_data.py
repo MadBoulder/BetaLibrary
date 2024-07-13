@@ -196,6 +196,9 @@ def updateVideoDatabase():
             else:
                 print(f"Video with ID {videoId} not public.")
                 disableSlug(videoSlug)
+                if zone_code not in updatedVideos:
+                    updatedVideos[zone_code] = {}
+
                 updatedVideos[zone_code][partial_slug] = None
         
         
