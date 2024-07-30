@@ -263,6 +263,7 @@ def video_uploader_test():
 
 @app.route('/upload-file', methods=['GET', 'POST'])
 def upload_file():
+    print("upload_file")
     uploaded_file = request.files['file']
 
     if uploaded_file:
@@ -270,29 +271,21 @@ def upload_file():
             upload_to_google_drive(uploaded_file)
 
             permissionNewsletter = request.form.get('permission-newsletter')
-            if permissionNewsletter:
-                email = request.form['email']
-                if email:
-                    register_new_subscriber(email)
-            
-            msg_body = 'Climber: {}\nEmail: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
-                request.form['climber'],
-                request.form['email'],
-                request.form['name'],
-                request.form['grade'],
-                request.form['zone'],
-                request.form['sector'],
-                request.form['notes'],
-                uploaded_file.filename)
-                
-            msg = Message(
-                subject='MadBoulder New Video Beta Received',
-                sender=app.config.get('MAIL_USERNAME'),
-                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-                body=msg_body)
-            
-            print("send email")
-            mail.send(msg)
+            email = request.form.get('email', '')
+            if permissionNewsletter and email:
+                register_new_subscriber(email)
+
+            send_email_new_video_beta(
+                climber=request.form.get('climber', ''),
+                email=email,
+                name=request.form.get('name', ''),
+                grade=request.form.get('grade', ''),
+                zone=request.form.get('zone', ''),
+                sector=request.form.get('sector', ''),
+                notes=request.form.get('notes', ''),
+                filename=uploaded_file.filename
+            )
+
             return jsonify({"message": "File uploaded and processed successfully"}), 200
         except Exception as e:
             print(f"Upload failed: {str(e)}")
@@ -339,6 +332,34 @@ def upload_to_google_drive(file):
 def bytes_to_mb(bytes_value):
     """Convert bytes to megabytes."""
     return bytes_value / (1024 * 1024)
+
+
+def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename):
+    print("send_email_new_video_beta")
+    try:
+        msg_body = 'Climber: {}\nEmail: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
+            climber,
+            email,
+            name,
+            grade,
+            zone,
+            sector,
+            notes,
+            filename
+        )
+                
+        msg = Message(
+            subject='MadBoulder New Video Beta Received',
+            sender=app.config.get('MAIL_USERNAME'),
+            recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
+            body=msg_body
+        )
+        
+        print("send email")
+        mail.send(msg)
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        raise
         
 
 def empty_google_drive():
@@ -534,6 +555,7 @@ def getUserData(user_uid):
         user_record = auth.get_user(user_uid)
         user_data['uid'] = user_uid
         user_data['displayName'] = user_record.display_name
+        user_data['email'] = user_record.email
         
         user_details_ref = db.reference(f'users/{user_uid}')
         user_details = user_details_ref.get()
