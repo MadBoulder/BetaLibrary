@@ -35,7 +35,7 @@
 			<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
 				<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 				<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
-				  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark"></span>
+				  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
 				</button>
 				<!-- Sort order -->
 				<div class="btn-group mb-2 joint-btns">
@@ -69,7 +69,7 @@
               <div class="input-group-prepend" style="display: flex;">
                 <span class="input-group-text w-100">Country</span>
               </div>
-              <select id="country-select" name="countries[]" multiple="multiple">
+              <select id="country-filter" name="countries[]" multiple="multiple">
                 {% for countryCode, countryData in country_data.items() %}
                   <option value="{{ countryCode }}" data-select2-id="country-{{ countryCode }}">{{ countryData['name'][0] }}</option>
                 {% endfor %}
@@ -83,6 +83,18 @@
                 <div class="range-label" id="min"></div>
                 <div class="range-label" id="max"></div>
               </div>
+          </div>
+          <div class="filter-section">
+            <div class="input-group flex-nowrap">
+              <div class="input-group-prepend" style="display: flex;">
+                <span class="input-group-text w-100">Rock type</span>
+              </div>
+              <select id="rocktype-filter" name="rockTypes[]" multiple="multiple">
+                {% for rockCode, rockName in rockTypes_data.items() %}
+                    <option value="{{ rockCode }}" data-select2-id="rocktype-{{ rockCode }}">{{ rockName }}</option>
+                {% endfor %}
+              </select>
+            </div>       
           </div>
           <div class="filter-reset-section">
             <button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
@@ -113,19 +125,22 @@
               var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
               var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
   
-              var selectedCountryIds = $('#country-select').val() || [];
+              var selectedCountries = $('#country-filter').val() || [];
+              var selectedRockTypes = $('#rocktype-filter').val() || [];
   
               $(".custom-card").each(function() {
                   var $card = $(this);
                   var videoCount = parseInt($card.find(".card-text").data("videos"));
                   var altitude = parseInt($card.find(".card-image-text").data("altitude"));
                   var country = $card[0].id.split("_")[1];
+                  var rockType = $card.find(".card-image-text").data("rocktype");
   
                   var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
                   var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
-                  var matchesCountry = selectedCountryIds.length === 0 || selectedCountryIds.includes(country);
+                  var matchesCountry = selectedCountries.length === 0 || selectedCountries.includes(country);
+                  var matchesRockType = selectedRockTypes.length === 0 || selectedRockTypes.includes(rockType);
   
-                  if (matchesVideo && matchesAltitude && matchesCountry) {
+                  if (matchesVideo && matchesAltitude && matchesCountry && matchesRockType) {
                       $card.show();
                   } else {
                       $card.hide();
@@ -143,12 +158,12 @@
               $("#video_slider").find(".range-label#min").text(minVideos);
               $("#video_slider").find(".range-label#max").text(maxVideos);
   
-              $('#country-select').val(null).trigger('change');
-  
+              $('#country-filter').val(null).trigger('change');
+              $('#rocktype-filter').val(null).trigger('change');
               
               var minAltitude = $("#altitude_slider").data("min");
               var maxAltitude = $("#altitude_slider").data("max");
-               $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
+              $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
               $("#altitude_slider").find(".range-label#min").text(minAltitude);
               $("#altitude_slider").find(".range-label#max").text(maxAltitude);
   
@@ -171,9 +186,10 @@
               const altitudeSliderMax = $("#altitude_slider").data("max");
               const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
   
-              const countryFilterApplied = $('#country-select').val().length > 0;
+              const countryFilterApplied = $('#country-filter').val().length > 0;
+              const rockTypeFilterApplied = $('#rocktype-filter').val().length > 0;
               
-              const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied;
+              const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied || rockTypeFilterApplied;
               return filtersApplied;
             }
   
@@ -227,6 +243,8 @@
                     var altitude = {{ zone.altitude }};
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "{{ zone.rock_type }}";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             {% endif %}
@@ -244,7 +262,7 @@
     var dict = JSON.parse(c_data);
 
     function removeElement(countryCode) {
-        var $option = $('#country-select option[value="' + countryCode + '"]');
+        var $option = $('#country-filter option[value="' + countryCode + '"]');
         if ($option.length && $option.prop('selected')) {
             $option.prop('selected', false);
 
@@ -255,7 +273,7 @@
     }
     
     function addElement(countryCode) {
-      var $option = $('#country-select option[value="' + countryCode + '"]');
+      var $option = $('#country-filter option[value="' + countryCode + '"]');
       if ($option.length && !$option.prop('selected')) {
           $option.prop('selected', true);
 
@@ -355,11 +373,14 @@
       loadSliders()
       loadSessionStatus();
 
-      const filtersApplied = checkIfFiltersApplied();
-      toggleFilterMark(filtersApplied);
+      $('#country-filter').select2({
+          width: '100%',
+          closeOnSelect: true
+      }).on('change', function() {
+        applyFilters();
+      });
 
-      $('#country-select').select2({
-          allowClear: true,
+      $('#rocktype-filter').select2({
           width: '100%',
           closeOnSelect: true
       }).on('change', function() {
@@ -371,39 +392,23 @@
         evt.stopPropagation();
       })
 
+      const filtersApplied = checkIfFiltersApplied();
+      toggleFilterMark(filtersApplied);
+
       $("#search-zone").keyup(function() {
-          var $cards = $(".custom-card");
-          var val = $.trim(this.value).toLowerCase();
-          if (val === "")
-              $cards.show();
-          else {
-            $cards.hide();
-            $cards.each(function(){
-              if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1){
-                $(this).show();
-              }
-            });
-          }
-          // At this point we are only showing zones that matched the search pattern,
-          // Now filter by country if required
-          var $countries = $("#selected-countries")[0].childNodes;
-          var ids = [];
-          $countries.forEach(c => {
-            if (c.id) ids.push(c.id);
-          });
-          if (ids.length === 0) {
-            // No Ids, everything is already ok
-            return;
-          }
-          // IDs ?
-          $cards.each(
-            function() {
-              var country = $(this)[0].id.split("_")[1];
-              if(!ids.includes(country)) {
-                $(this).hide();
-              }
-            }
-          );
+        applyFilters();
+
+        var $visibleCards = $(".custom-card:visible");
+        var val = $.trim(this.value).toLowerCase();
+        if (val === "") {
+            $visibleCards.show();
+        } else {
+            $visibleCards.hide();
+
+            $visibleCards.filter(function() {
+                return $(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) !== -1;
+            }).show();
+        }
       });
     });
   </script>  

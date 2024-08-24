@@ -35,7 +35,7 @@
 			<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
 				<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 				<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
-				  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark"></span>
+				  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
 				</button>
 				<!-- Sort order -->
 				<div class="btn-group mb-2 joint-btns">
@@ -69,7 +69,7 @@
               <div class="input-group-prepend" style="display: flex;">
                 <span class="input-group-text w-100">Country</span>
               </div>
-              <select id="country-select" name="countries[]" multiple="multiple">
+              <select id="country-filter" name="countries[]" multiple="multiple">
                 
                   <option value="andorra" data-select2-id="country-andorra">Andorra</option>
                 
@@ -130,6 +130,46 @@
                 <div class="range-label" id="max"></div>
               </div>
           </div>
+          <div class="filter-section">
+            <div class="input-group flex-nowrap">
+              <div class="input-group-prepend" style="display: flex;">
+                <span class="input-group-text w-100">Rock type</span>
+              </div>
+              <select id="rocktype-filter" name="rockTypes[]" multiple="multiple">
+                
+                    <option value="volc" data-select2-id="rocktype-volc">Volcanic</option>
+                
+                    <option value="lime" data-select2-id="rocktype-lime">Limestone</option>
+                
+                    <option value="gran" data-select2-id="rocktype-gran">Granite</option>
+                
+                    <option value="sand" data-select2-id="rocktype-sand">Sandstone</option>
+                
+                    <option value="cong" data-select2-id="rocktype-cong">Conglomerate</option>
+                
+                    <option value="gnei" data-select2-id="rocktype-gnei">Gneiss</option>
+                
+                    <option value="igne" data-select2-id="rocktype-igne">Igneous</option>
+                
+                    <option value="basa" data-select2-id="rocktype-basa">Basalt</option>
+                
+                    <option value="slat" data-select2-id="rocktype-slat">Slate</option>
+                
+                    <option value="schi" data-select2-id="rocktype-schi">Schist</option>
+                
+                    <option value="quar" data-select2-id="rocktype-quar">Quartzite</option>
+                
+                    <option value="iron" data-select2-id="rocktype-iron">Iron Rock</option>
+                
+                    <option value="serp" data-select2-id="rocktype-serp">Serpentine</option>
+                
+                    <option value="grit" data-select2-id="rocktype-grit">Gritstone</option>
+                
+                    <option value="diab" data-select2-id="rocktype-diab">Diabase</option>
+                
+              </select>
+            </div>       
+          </div>
           <div class="filter-reset-section">
             <button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
           </div>
@@ -159,19 +199,22 @@
               var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
               var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
   
-              var selectedCountryIds = $('#country-select').val() || [];
+              var selectedCountries = $('#country-filter').val() || [];
+              var selectedRockTypes = $('#rocktype-filter').val() || [];
   
               $(".custom-card").each(function() {
                   var $card = $(this);
                   var videoCount = parseInt($card.find(".card-text").data("videos"));
                   var altitude = parseInt($card.find(".card-image-text").data("altitude"));
                   var country = $card[0].id.split("_")[1];
+                  var rockType = $card.find(".card-image-text").data("rocktype");
   
                   var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
                   var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
-                  var matchesCountry = selectedCountryIds.length === 0 || selectedCountryIds.includes(country);
+                  var matchesCountry = selectedCountries.length === 0 || selectedCountries.includes(country);
+                  var matchesRockType = selectedRockTypes.length === 0 || selectedRockTypes.includes(rockType);
   
-                  if (matchesVideo && matchesAltitude && matchesCountry) {
+                  if (matchesVideo && matchesAltitude && matchesCountry && matchesRockType) {
                       $card.show();
                   } else {
                       $card.hide();
@@ -189,12 +232,12 @@
               $("#video_slider").find(".range-label#min").text(minVideos);
               $("#video_slider").find(".range-label#max").text(maxVideos);
   
-              $('#country-select').val(null).trigger('change');
-  
+              $('#country-filter').val(null).trigger('change');
+              $('#rocktype-filter').val(null).trigger('change');
               
               var minAltitude = $("#altitude_slider").data("min");
               var maxAltitude = $("#altitude_slider").data("max");
-               $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
+              $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
               $("#altitude_slider").find(".range-label#min").text(minAltitude);
               $("#altitude_slider").find(".range-label#max").text(maxAltitude);
   
@@ -217,9 +260,10 @@
               const altitudeSliderMax = $("#altitude_slider").data("max");
               const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
   
-              const countryFilterApplied = $('#country-select').val().length > 0;
+              const countryFilterApplied = $('#country-filter').val().length > 0;
+              const rockTypeFilterApplied = $('#rocktype-filter').val().length > 0;
               
-              const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied;
+              const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied || rockTypeFilterApplied;
               return filtersApplied;
             }
   
@@ -269,6 +313,8 @@
                     var altitude = 925.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -306,6 +352,8 @@
                     var altitude = 1528;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -343,6 +391,8 @@
                     var altitude = 1341;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -380,6 +430,8 @@
                     var altitude = 273.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -417,6 +469,8 @@
                     var altitude = 114;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -454,6 +508,8 @@
                     var altitude = 932;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -491,6 +547,8 @@
                     var altitude = 848;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -528,6 +586,8 @@
                     var altitude = 328.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -565,6 +625,8 @@
                     var altitude = 54.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -602,6 +664,8 @@
                     var altitude = 230;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -639,6 +703,8 @@
                     var altitude = 380.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -676,6 +742,8 @@
                     var altitude = 1231;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -713,6 +781,8 @@
                     var altitude = 325.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -750,6 +820,8 @@
                     var altitude = 1106.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -787,6 +859,8 @@
                     var altitude = 571.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -824,6 +898,8 @@
                     var altitude = 1565.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -861,6 +937,8 @@
                     var altitude = 119.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -898,6 +976,8 @@
                     var altitude = 1184.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -935,6 +1015,8 @@
                     var altitude = 2291;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -972,6 +1054,8 @@
                     var altitude = 497.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1009,6 +1093,8 @@
                     var altitude = 2090;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1046,6 +1132,8 @@
                     var altitude = 104.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1083,6 +1171,8 @@
                     var altitude = 740.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1120,6 +1210,8 @@
                     var altitude = 1478;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1157,6 +1249,8 @@
                     var altitude = 451.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1194,6 +1288,8 @@
                     var altitude = 426.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1231,6 +1327,8 @@
                     var altitude = 720;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1268,6 +1366,8 @@
                     var altitude = 1952;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "igne";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1305,6 +1405,8 @@
                     var altitude = 18.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1342,6 +1444,8 @@
                     var altitude = 327.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1379,6 +1483,8 @@
                     var altitude = 392.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1416,6 +1522,8 @@
                     var altitude = 60;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1453,6 +1561,8 @@
                     var altitude = 1339.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1490,6 +1600,8 @@
                     var altitude = 343.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1527,6 +1639,8 @@
                     var altitude = 373;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1564,6 +1678,8 @@
                     var altitude = 351;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1601,6 +1717,8 @@
                     var altitude = 496.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1638,6 +1756,8 @@
                     var altitude = 755;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1675,6 +1795,8 @@
                     var altitude = 91.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "basa";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1712,6 +1834,8 @@
                     var altitude = 622.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1749,6 +1873,8 @@
                     var altitude = 317.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "igne";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1786,6 +1912,8 @@
                     var altitude = 361.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1823,6 +1951,8 @@
                     var altitude = 587;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1860,6 +1990,8 @@
                     var altitude = 710;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1897,6 +2029,8 @@
                     var altitude = 794.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1934,6 +2068,8 @@
                     var altitude = 1568;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -1971,6 +2107,8 @@
                     var altitude = 296.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "slat";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2008,6 +2146,8 @@
                     var altitude = 393.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2045,6 +2185,8 @@
                     var altitude = 1315.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "serp";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2082,6 +2224,8 @@
                     var altitude = 802.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2119,6 +2263,8 @@
                     var altitude = 927;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2156,6 +2302,8 @@
                     var altitude = 604.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "aren";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2193,6 +2341,8 @@
                     var altitude = 2017.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2230,6 +2380,8 @@
                     var altitude = 737.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "cong";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2267,6 +2419,8 @@
                     var altitude = 2364.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2304,6 +2458,8 @@
                     var altitude = 998.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2341,6 +2497,8 @@
                     var altitude = 704;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2378,6 +2536,8 @@
                     var altitude = 341.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2415,6 +2575,8 @@
                     var altitude = 65.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2452,6 +2614,8 @@
                     var altitude = 1590.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2489,6 +2653,8 @@
                     var altitude = 485.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2526,6 +2692,8 @@
                     var altitude = 213;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2563,6 +2731,8 @@
                     var altitude = 177.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "igne";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2600,6 +2770,8 @@
                     var altitude = 463.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2637,6 +2809,8 @@
                     var altitude = 265.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2674,6 +2848,8 @@
                     var altitude = 443.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2711,6 +2887,8 @@
                     var altitude = 306.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2748,6 +2926,8 @@
                     var altitude = 556.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2785,6 +2965,8 @@
                     var altitude = 429.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2822,6 +3004,8 @@
                     var altitude = 357;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2859,6 +3043,8 @@
                     var altitude = 1030;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2896,6 +3082,8 @@
                     var altitude = 102.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2933,6 +3121,8 @@
                     var altitude = 14.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -2970,6 +3160,8 @@
                     var altitude = 564.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "schi";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3007,6 +3199,8 @@
                     var altitude = 374;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3044,6 +3238,8 @@
                     var altitude = 0.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3081,6 +3277,8 @@
                     var altitude = 1576.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3118,6 +3316,8 @@
                     var altitude = 1987.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3155,6 +3355,8 @@
                     var altitude = 89;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3192,6 +3394,8 @@
                     var altitude = 294.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3229,6 +3433,8 @@
                     var altitude = 509.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3266,6 +3472,8 @@
                     var altitude = 619.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3303,6 +3511,8 @@
                     var altitude = 256;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "basa";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3340,6 +3550,8 @@
                     var altitude = 144.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3377,6 +3589,8 @@
                     var altitude = 1125.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3414,6 +3628,8 @@
                     var altitude = 2132;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3451,6 +3667,8 @@
                     var altitude = 146.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "diab";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3488,6 +3706,8 @@
                     var altitude = 238;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3525,6 +3745,8 @@
                     var altitude = 384;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3562,6 +3784,8 @@
                     var altitude = 2331.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3599,6 +3823,8 @@
                     var altitude = 3175.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3636,6 +3862,8 @@
                     var altitude = 281.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "cong";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3673,6 +3901,8 @@
                     var altitude = 448.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3710,6 +3940,8 @@
                     var altitude = 1366;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3747,6 +3979,8 @@
                     var altitude = 19.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3784,6 +4018,8 @@
                     var altitude = 240.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3821,6 +4057,8 @@
                     var altitude = 153;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3858,6 +4096,8 @@
                     var altitude = 10.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3895,6 +4135,8 @@
                     var altitude = 440.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3932,6 +4174,8 @@
                     var altitude = 2158;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -3969,6 +4213,8 @@
                     var altitude = 1431.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "iron";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4006,6 +4252,8 @@
                     var altitude = 1462.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "quar";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4043,6 +4291,8 @@
                     var altitude = 214.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4080,6 +4330,8 @@
                     var altitude = 266;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4117,6 +4369,8 @@
                     var altitude = 1996;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "quar";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4154,6 +4408,8 @@
                     var altitude = 1288.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4191,6 +4447,8 @@
                     var altitude = 2333.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4228,6 +4486,8 @@
                     var altitude = 349.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4265,6 +4525,8 @@
                     var altitude = 1561.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4302,6 +4564,8 @@
                     var altitude = 42.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4339,6 +4603,8 @@
                     var altitude = 847;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4376,6 +4642,8 @@
                     var altitude = 1080;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4413,6 +4681,8 @@
                     var altitude = 243.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4450,6 +4720,8 @@
                     var altitude = 724.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4487,6 +4759,8 @@
                     var altitude = 503;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4524,6 +4798,8 @@
                     var altitude = 1419.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4561,6 +4837,8 @@
                     var altitude = 474;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4598,6 +4876,8 @@
                     var altitude = 1037;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4635,6 +4915,8 @@
                     var altitude = 312;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4672,6 +4954,8 @@
                     var altitude = 237.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4709,6 +4993,8 @@
                     var altitude = 734.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4746,6 +5032,8 @@
                     var altitude = 1904.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4783,6 +5071,8 @@
                     var altitude = 651.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4820,6 +5110,8 @@
                     var altitude = 909.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4857,6 +5149,8 @@
                     var altitude = 492.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4894,6 +5188,8 @@
                     var altitude = 1065.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4931,6 +5227,8 @@
                     var altitude = 429.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -4968,6 +5266,8 @@
                     var altitude = 1668;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5005,6 +5305,8 @@
                     var altitude = 345;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5042,6 +5344,8 @@
                     var altitude = 73.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5079,6 +5383,8 @@
                     var altitude = 3629.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5116,6 +5422,8 @@
                     var altitude = 1672;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5153,6 +5461,8 @@
                     var altitude = 1379.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5190,6 +5500,8 @@
                     var altitude = 259.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5227,6 +5539,8 @@
                     var altitude = 357.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5264,6 +5578,8 @@
                     var altitude = 318.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5301,6 +5617,8 @@
                     var altitude = 1277;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5338,6 +5656,8 @@
                     var altitude = 423.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5375,6 +5695,8 @@
                     var altitude = 133.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "basa";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5412,6 +5734,8 @@
                     var altitude = 2122.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5449,6 +5773,8 @@
                     var altitude = 40.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5486,6 +5812,8 @@
                     var altitude = 702;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5523,6 +5851,8 @@
                     var altitude = 12.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5560,6 +5890,8 @@
                     var altitude = 381;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5597,6 +5929,8 @@
                     var altitude = 2453;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5634,6 +5968,8 @@
                     var altitude = 284.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5671,6 +6007,8 @@
                     var altitude = 883.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5708,6 +6046,8 @@
                     var altitude = 525.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5745,6 +6085,8 @@
                     var altitude = 664.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5782,6 +6124,8 @@
                     var altitude = 310;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5819,6 +6163,8 @@
                     var altitude = 488.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5856,6 +6202,8 @@
                     var altitude = 291.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5893,6 +6241,8 @@
                     var altitude = 663.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5930,6 +6280,8 @@
                     var altitude = 3478.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -5967,6 +6319,8 @@
                     var altitude = 575.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6004,6 +6358,8 @@
                     var altitude = 1366;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6041,6 +6397,8 @@
                     var altitude = 303;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6078,6 +6436,8 @@
                     var altitude = 256;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6115,6 +6475,8 @@
                     var altitude = 430;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6152,6 +6514,8 @@
                     var altitude = 4.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6189,6 +6553,8 @@
                     var altitude = 405.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6226,6 +6592,8 @@
                     var altitude = 894.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6263,6 +6631,8 @@
                     var altitude = 677.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6300,6 +6670,8 @@
                     var altitude = 2656;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6337,6 +6709,8 @@
                     var altitude = 56.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6374,6 +6748,8 @@
                     var altitude = 2300.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6411,6 +6787,8 @@
                     var altitude = 368.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "grit";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6448,6 +6826,8 @@
                     var altitude = 1117.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6485,6 +6865,8 @@
                     var altitude = 786.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6522,6 +6904,8 @@
                     var altitude = 578.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6559,6 +6943,8 @@
                     var altitude = 177.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6596,6 +6982,8 @@
                     var altitude = 449;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6633,6 +7021,8 @@
                     var altitude = 540.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6670,6 +7060,8 @@
                     var altitude = 1389.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6707,6 +7099,8 @@
                     var altitude = 1281;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6744,6 +7138,8 @@
                     var altitude = 1605.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6781,6 +7177,8 @@
                     var altitude = 2087.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6818,6 +7216,8 @@
                     var altitude = 566.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6855,6 +7255,8 @@
                     var altitude = 1127.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6892,6 +7294,8 @@
                     var altitude = 936;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6929,6 +7333,8 @@
                     var altitude = 1762.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -6966,6 +7372,8 @@
                     var altitude = 584.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7003,6 +7411,8 @@
                     var altitude = 2890.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7040,6 +7450,8 @@
                     var altitude = 786.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7077,6 +7489,8 @@
                     var altitude = 2620.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7114,6 +7528,8 @@
                     var altitude = 848;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7151,6 +7567,8 @@
                     var altitude = 574.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7188,6 +7606,8 @@
                     var altitude = 967;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7225,6 +7645,8 @@
                     var altitude = 119.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7262,6 +7684,8 @@
                     var altitude = 1339.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7299,6 +7723,8 @@
                     var altitude = 321;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7336,6 +7762,8 @@
                     var altitude = 3273.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "volc";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7373,6 +7801,8 @@
                     var altitude = 1384.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7410,6 +7840,8 @@
                     var altitude = 794.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7447,6 +7879,8 @@
                     var altitude = 939.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7484,6 +7918,8 @@
                     var altitude = 447;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "cong";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7521,6 +7957,8 @@
                     var altitude = 353.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7558,6 +7996,8 @@
                     var altitude = 145;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7595,6 +8035,8 @@
                     var altitude = 316.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7632,6 +8074,8 @@
                     var altitude = 1135.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7669,6 +8113,8 @@
                     var altitude = 915.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7706,6 +8152,8 @@
                     var altitude = 598;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7743,6 +8191,8 @@
                     var altitude = 757.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7780,6 +8230,8 @@
                     var altitude = 242.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "granite";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7817,6 +8269,8 @@
                     var altitude = 128.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7854,6 +8308,8 @@
                     var altitude = 2030.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "granite";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7891,6 +8347,8 @@
                     var altitude = 355.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7928,6 +8386,8 @@
                     var altitude = 46.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -7965,6 +8425,8 @@
                     var altitude = 434.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8002,6 +8464,8 @@
                     var altitude = 173;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8039,6 +8503,8 @@
                     var altitude = 542.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8076,6 +8542,8 @@
                     var altitude = 1935.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8113,6 +8581,8 @@
                     var altitude = 7.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8150,6 +8620,8 @@
                     var altitude = 12.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8187,6 +8659,8 @@
                     var altitude = 1036;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8224,6 +8698,8 @@
                     var altitude = 3;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8261,6 +8737,8 @@
                     var altitude = 796;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "cong";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8298,6 +8776,8 @@
                     var altitude = 1540;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8335,6 +8815,8 @@
                     var altitude = 822.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8372,6 +8854,8 @@
                     var altitude = 500;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8409,6 +8893,8 @@
                     var altitude = 2555.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8446,6 +8932,8 @@
                     var altitude = 12.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "igne";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8483,6 +8971,8 @@
                     var altitude = 759.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "aren";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8520,6 +9010,8 @@
                     var altitude = 223;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8557,6 +9049,8 @@
                     var altitude = 894;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8594,6 +9088,8 @@
                     var altitude = 2631;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8631,6 +9127,8 @@
                     var altitude = 1838;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8668,6 +9166,8 @@
                     var altitude = 2607.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8705,6 +9205,8 @@
                     var altitude = 2;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8742,6 +9244,8 @@
                     var altitude = 3061.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8779,6 +9283,8 @@
                     var altitude = 1283.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8816,6 +9322,8 @@
                     var altitude = 21.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8853,6 +9361,8 @@
                     var altitude = 937.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8890,6 +9400,8 @@
                     var altitude = 869.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8927,6 +9439,8 @@
                     var altitude = 1406;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -8964,6 +9478,8 @@
                     var altitude = 1036;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9001,6 +9517,8 @@
                     var altitude = 995.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "cong";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9038,6 +9556,8 @@
                     var altitude = 863;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9075,6 +9595,8 @@
                     var altitude = 453.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9112,6 +9634,8 @@
                     var altitude = 1067.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9149,6 +9673,8 @@
                     var altitude = 737.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9186,6 +9712,8 @@
                     var altitude = 1535;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9223,6 +9751,8 @@
                     var altitude = 683.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9260,6 +9790,8 @@
                     var altitude = 1323;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9297,6 +9829,8 @@
                     var altitude = 310;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9334,6 +9868,8 @@
                     var altitude = 21.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9371,6 +9907,8 @@
                     var altitude = 463.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9408,6 +9946,8 @@
                     var altitude = 324;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9445,6 +9985,8 @@
                     var altitude = 405.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9482,6 +10024,8 @@
                     var altitude = 3.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9519,6 +10063,8 @@
                     var altitude = 1256.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9556,6 +10102,8 @@
                     var altitude = 1150.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9593,6 +10141,8 @@
                     var altitude = 2994;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9630,6 +10180,8 @@
                     var altitude = 717.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9667,6 +10219,8 @@
                     var altitude = 662;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9704,6 +10258,8 @@
                     var altitude = 1545.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9741,6 +10297,8 @@
                     var altitude = 1240;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9778,6 +10336,8 @@
                     var altitude = 1016;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gran";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9815,6 +10375,8 @@
                     var altitude = 634.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "gnei";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9852,6 +10414,8 @@
                     var altitude = 1208.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9889,6 +10453,8 @@
                     var altitude = 741.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "lime";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9926,6 +10492,8 @@
                     var altitude = 21.0;
                     cardImageText.textContent = altitude + " m";
                     cardImageText.setAttribute("data-altitude", altitude);
+                    var rocktype = "sand";
+                    cardImageText.setAttribute("data-rocktype", rocktype);
                 });		
               </script>
             
@@ -9943,7 +10511,7 @@
     var dict = JSON.parse(c_data);
 
     function removeElement(countryCode) {
-        var $option = $('#country-select option[value="' + countryCode + '"]');
+        var $option = $('#country-filter option[value="' + countryCode + '"]');
         if ($option.length && $option.prop('selected')) {
             $option.prop('selected', false);
 
@@ -9954,7 +10522,7 @@
     }
     
     function addElement(countryCode) {
-      var $option = $('#country-select option[value="' + countryCode + '"]');
+      var $option = $('#country-filter option[value="' + countryCode + '"]');
       if ($option.length && !$option.prop('selected')) {
           $option.prop('selected', true);
 
@@ -10054,11 +10622,14 @@
       loadSliders()
       loadSessionStatus();
 
-      const filtersApplied = checkIfFiltersApplied();
-      toggleFilterMark(filtersApplied);
+      $('#country-filter').select2({
+          width: '100%',
+          closeOnSelect: true
+      }).on('change', function() {
+        applyFilters();
+      });
 
-      $('#country-select').select2({
-          allowClear: true,
+      $('#rocktype-filter').select2({
           width: '100%',
           closeOnSelect: true
       }).on('change', function() {
@@ -10070,39 +10641,23 @@
         evt.stopPropagation();
       })
 
+      const filtersApplied = checkIfFiltersApplied();
+      toggleFilterMark(filtersApplied);
+
       $("#search-zone").keyup(function() {
-          var $cards = $(".custom-card");
-          var val = $.trim(this.value).toLowerCase();
-          if (val === "")
-              $cards.show();
-          else {
-            $cards.hide();
-            $cards.each(function(){
-              if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1){
-                $(this).show();
-              }
-            });
-          }
-          // At this point we are only showing zones that matched the search pattern,
-          // Now filter by country if required
-          var $countries = $("#selected-countries")[0].childNodes;
-          var ids = [];
-          $countries.forEach(c => {
-            if (c.id) ids.push(c.id);
-          });
-          if (ids.length === 0) {
-            // No Ids, everything is already ok
-            return;
-          }
-          // IDs ?
-          $cards.each(
-            function() {
-              var country = $(this)[0].id.split("_")[1];
-              if(!ids.includes(country)) {
-                $(this).hide();
-              }
-            }
-          );
+        applyFilters();
+
+        var $visibleCards = $(".custom-card:visible");
+        var val = $.trim(this.value).toLowerCase();
+        if (val === "") {
+            $visibleCards.show();
+        } else {
+            $visibleCards.hide();
+
+            $visibleCards.filter(function() {
+                return $(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) !== -1;
+            }).show();
+        }
       });
     });
   </script>  

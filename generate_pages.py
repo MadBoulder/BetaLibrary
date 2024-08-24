@@ -143,12 +143,14 @@ def main():
 
 def generateAreasListPage(template_env, areas, playlists):
     country_data = utils.MadBoulderDatabase.getCountriesData()
+    rockTypes_data = utils.zone_helpers.getRockTypeList()
     templatePageList = template_env.get_template('templates/templates/areas_list_page_template.html')
 
     output = templatePageList.render(
         zones=areas,
         playlists=playlists,
-        country_data=country_data
+        country_data=country_data,
+        rockTypes_data=rockTypes_data
 
     )
     with open('templates/bouldering-areas-list.html', 'w', encoding='utf-8') as template:
