@@ -15,45 +15,14 @@
   <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
 	<script src="/static/js/jquery.translate.js" ></script>
 	<script src="/static/js/slider.js" ></script>
+  <link href="/static/css/select2.min.css" rel="stylesheet" />
+<script src="/static/js/select2.min.js"></script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/zones.css') }}" />
   {% endraw %}
 	
   </head>
   <body>
     <div id="current-language" hidden>{% raw %}{{ current_lang }}{% endraw %}</div>
-    <!-- Country Selector Modal -->
-    <div class="modal fade" id="country-modal" role="dialog">
-      <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">{% raw %}{{ _("Filter zones") }}{% endraw %}</h4>
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="row d-flex justify-content-center mt-100">
-                <div class="col-md-6" id="inactive-countries-list"> 
-                  {% for countryCode, countryData in country_data.items() %}
-                  <div class="active-filter-selection row" id="{{ countryCode }}" data-country-name="{{ countryData['name'][0] }}"">
-                    <span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">
-                      {{ countryData['name'][0] }}
-                    </span>
-                    <div class="col-6" style="display: flex; justify-content: flex-end;">
-                      <button class="btn" onclick="addElement(this)">
-                        <i class="fas fa-plus item-icon"></i>
-                      </button>
-                    </div>
-                  </div>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Modal -->
 	
     {% raw %}{% include 'elements/main-menu.html' %}{% endraw %}
 	<main id="bouldering-areas-list">
@@ -85,140 +54,139 @@
 					</div>
 				</div>
 			</div>
-
-      <div id="filter-box" class="filter-box">
-        <div class="filter-section">
-          <p class="filter-title">Filter by Number of Videos</p>
-          <div id="video_slider" class="range_container" data-min="0" data-max="1000" data-values="[100, 800]" data-step="1" id="slider-container">
-            <div id="slider-range"></div>
-            <div class="range-label" id="min"></div>
-            <div class="range-label" id="max"></div>
-          </div>
-        </div>
-        <div class="filter-section">
-          <button class="btn mb-2" data-bs-toggle="modal" data-bs-target="#country-modal" style="background: white; border-color: black; margin-right: 0.5rem; margin-left: 0.5rem;">
-          <span>{% raw %}{{ _("Add Country") }}{% endraw %}</span>
-          </button>
-          <div class="container" id="selected-countries" style="margin:inherit; padding: inherit; display: flex;">
-        </div>
-        <div class="filter-section">
-            <p class="filter-title">Filter by Altitude</p>
-            <div id="altitude_slider" class="range_container" data-min="50" data-max="1500" data-values="[0, 2000]" data-step="1" id="slider-container">
+      <div id="filter-box" class="filter-box-container">
+        <div class="filter-box">
+          <div class="filter-section">
+            <p class="filter-title">Filter by Number of Videos</p>
+            <div id="video_slider" class="range_container" data-min="0" data-max="1000" data-values="[100, 800]" data-step="1" id="slider-container">
               <div id="slider-range"></div>
               <div class="range-label" id="min"></div>
               <div class="range-label" id="max"></div>
             </div>
           </div>
-        </div>
-        <div class="filter-reset-section">
-          <button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
-        </div>
-        <script>
-          function toggleFilters(){
-            var filterBox = document.getElementById("filter-box");
-            var filterButton = document.getElementById("filter-button");
-            if (!filterBox.classList.contains("show-filters")) {
-              filterBox.className += " show-filters";
-              filterButton.className += " filters-visible";
-              $('.range_container').refreshSlider();
-            }
-            else{
-              filterBox.classList.remove("show-filters");
-              filterButton.classList.remove("filters-visible");
-            }
-          }
-
-          function onSliderChanged(){
-            console.log("onSliderChanged");
-            applyFilters();
-          }
-
-          function applyFilters(){
-            var videoMin = parseInt($("#video_slider").find(".range-label#min").text());
-            var videoMax = parseInt($("#video_slider").find(".range-label#max").text());
-            var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
-            var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
-
-            var $countries = $("#selected-countries")[0].childNodes;
-            var selectedCountryIds = [];
-            $countries.forEach(c => {
-                if (c.id) selectedCountryIds.push(c.id);
-            }); 
-
-            $(".custom-card").each(function() {
-                var $card = $(this);
-                var videoCount = parseInt($card.find(".card-text").data("videos"));
-                var altitude = parseInt($card.find(".card-image-text").data("altitude"));
-                var country = $card[0].id.split("_")[1];
-
-                var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
-                var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
-                var matchesCountry = selectedCountryIds.length === 0 || selectedCountryIds.includes(country);
-
-                if (matchesVideo && matchesAltitude && matchesCountry) {
-                    $card.show();
-                } else {
-                    $card.hide();
-                }
-            });
-
-            const filtersApplied = checkIfFiltersApplied();
-            toggleFilterMark(filtersApplied);
-          }
-
-          function resetFilters() {
-            var minVideos = $("#video_slider").data("min");
-            var maxVideos = $("#video_slider").data("max");
-            $("#video_slider").find("#slider-range").slider("values", [minVideos, maxVideos]);
-            $("#video_slider").find(".range-label#min").text(minVideos);
-            $("#video_slider").find(".range-label#max").text(maxVideos);
-
-            var $selectedCountries = $("#selected-countries").children();
-            $selectedCountries.each(function() {
-                removeElement($(this).find(".btn")[0]);
-            });
-
-            
-            var minAltitude = $("#altitude_slider").data("min");
-            var maxAltitude = $("#altitude_slider").data("max");
-             $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
-            $("#altitude_slider").find(".range-label#min").text(minAltitude);
-            $("#altitude_slider").find(".range-label#max").text(maxAltitude);
-
-            $(".custom-card").show();
-
-            $("#search-zone").val("");
-            toggleFilterMark(false);
-          }
-
-          function checkIfFiltersApplied() {
-            const videoMin = parseInt($("#video_slider").find(".range-label#min").text());
-            const videoMax = parseInt($("#video_slider").find(".range-label#max").text());
-            const videoSliderMin = $("#video_slider").data("min");
-            const videoSliderMax = $("#video_slider").data("max");
-            const videoFilterApplied = (videoMin !== videoSliderMin || videoMax !== videoSliderMax);
-
-            const altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
-            const altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
-            const altitudeSliderMin = $("#altitude_slider").data("min");
-            const altitudeSliderMax = $("#altitude_slider").data("max");
-            const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
-
-            const selectedCountries = $("#selected-countries").children().length > 0;
-            
-            const filtersApplied = videoFilterApplied || altitudeFilterApplied || selectedCountries;
-            return filtersApplied;
-          }
-
-          function toggleFilterMark(show) {
-              const filterMark = $("#filter-mark");
-              if (show) {
-                  filterMark.show();
-              } else {
-                  filterMark.hide();
+          <div class="filter-section">
+            <div class="input-group flex-nowrap">
+              <div class="input-group-prepend" style="display: flex;">
+                <span class="input-group-text w-100">Country</span>
+              </div>
+              <select id="country-select" name="countries[]" multiple="multiple">
+                {% for countryCode, countryData in country_data.items() %}
+                  <option value="{{ countryCode }}" data-select2-id="country-{{ countryCode }}">{{ countryData['name'][0] }}</option>
+                {% endfor %}
+              </select>
+            </div>       
+          </div>
+          <div class="filter-section">
+              <p class="filter-title">Filter by Altitude</p>
+              <div id="altitude_slider" class="range_container" data-min="50" data-max="1500" data-values="[0, 2000]" data-step="1" id="slider-container">
+                <div id="slider-range"></div>
+                <div class="range-label" id="min"></div>
+                <div class="range-label" id="max"></div>
+              </div>
+          </div>
+          <div class="filter-reset-section">
+            <button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
+          </div>
+          <script>
+            function toggleFilters(){
+              var filterBox = document.getElementById("filter-box");
+              var filterButton = document.getElementById("filter-button");
+              if (!filterBox.classList.contains("show-filters")) {
+                filterBox.className += " show-filters";
+                filterButton.className += " filters-visible";
+                $('.range_container').refreshSlider();
               }
-          }
-        </script>
+              else{
+                filterBox.classList.remove("show-filters");
+                filterButton.classList.remove("filters-visible");
+              }
+            }
+  
+            function onSliderChanged(){
+              console.log("onSliderChanged");
+              applyFilters();
+            }
+  
+            function applyFilters(){
+              var videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+              var videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+              var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+              var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+  
+              var selectedCountryIds = $('#country-select').val() || [];
+  
+              $(".custom-card").each(function() {
+                  var $card = $(this);
+                  var videoCount = parseInt($card.find(".card-text").data("videos"));
+                  var altitude = parseInt($card.find(".card-image-text").data("altitude"));
+                  var country = $card[0].id.split("_")[1];
+  
+                  var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
+                  var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
+                  var matchesCountry = selectedCountryIds.length === 0 || selectedCountryIds.includes(country);
+  
+                  if (matchesVideo && matchesAltitude && matchesCountry) {
+                      $card.show();
+                  } else {
+                      $card.hide();
+                  }
+              });
+  
+              const filtersApplied = checkIfFiltersApplied();
+              toggleFilterMark(filtersApplied);
+            }
+  
+            function resetFilters() {
+              var minVideos = $("#video_slider").data("min");
+              var maxVideos = $("#video_slider").data("max");
+              $("#video_slider").find("#slider-range").slider("values", [minVideos, maxVideos]);
+              $("#video_slider").find(".range-label#min").text(minVideos);
+              $("#video_slider").find(".range-label#max").text(maxVideos);
+  
+              $('#country-select').val(null).trigger('change');
+  
+              
+              var minAltitude = $("#altitude_slider").data("min");
+              var maxAltitude = $("#altitude_slider").data("max");
+               $("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
+              $("#altitude_slider").find(".range-label#min").text(minAltitude);
+              $("#altitude_slider").find(".range-label#max").text(maxAltitude);
+  
+              $(".custom-card").show();
+  
+              $("#search-zone").val("");
+              toggleFilterMark(false);
+            }
+  
+            function checkIfFiltersApplied() {
+              const videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+              const videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+              const videoSliderMin = $("#video_slider").data("min");
+              const videoSliderMax = $("#video_slider").data("max");
+              const videoFilterApplied = (videoMin !== videoSliderMin || videoMax !== videoSliderMax);
+  
+              const altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+              const altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+              const altitudeSliderMin = $("#altitude_slider").data("min");
+              const altitudeSliderMax = $("#altitude_slider").data("max");
+              const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
+  
+              const countryFilterApplied = $('#country-select').val().length > 0;
+              
+              const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied;
+              return filtersApplied;
+            }
+  
+            function toggleFilterMark(show) {
+                const filterMark = $("#filter-mark");
+                if (show) {
+                    filterMark.show();
+                } else {
+                    filterMark.hide();
+                }
+            }
+          </script>
+        </div>
       </div>
 
 			<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
@@ -274,64 +242,35 @@
     var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
     var c_data = '{{ country_data | tojson | safe}}';
     var dict = JSON.parse(c_data);
-    
-    function sortCountryNodesAlphabetically() {
-      var items = Array.prototype.slice.call($("#inactive-countries-list")[0].children);
-      items.sort(function(a, b) {
-         return $(a).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase().localeCompare($(b).find(".active-filter-text-list-item")[0].innerHTML.toLowerCase());
-      });
-      for(var i = 0, len = items.length; i < len; i++) {
-        var parent = items[i].parentNode;
-        var detatchedItem = parent.removeChild(items[i]);
-        parent.appendChild(detatchedItem);
-      }
+
+    function removeElement(countryCode) {
+        var $option = $('#country-select option[value="' + countryCode + '"]');
+        if ($option.length && $option.prop('selected')) {
+            $option.prop('selected', false);
+
+            $("#selected-countries-list").find('li[data-country-code="' + countryCode + '"]').remove();
+
+            applyFilters();
+        }
     }
     
-    function removeElement(element) {
-        var id_to_place = $(element).parent()[0].id;
-        var text_to_place = $(element).parent().data('country-name');
-        $("#inactive-countries-list").append(
-          '<div class="active-filter-selection row" id="' + id_to_place + '">' +
-            '<span class="active-filter-text-list-item col-6 trn" style="display: grid; align-content:center;">' +
-              text_to_place +
-            '</span>' +
-            '<div class="col-6" style="display: flex; justify-content: flex-end;">' +
-              '<button class="btn" onclick="addElement(this)">' +
-                '<i class="fas fa-plus item-icon"></i>' +
-              '</button>' +
-            '</div>' +
-          '</div>' 
-        );
-        translator.lang(curr_lng);
-        $(element).parent().remove();
-        sortCountryNodesAlphabetically();
-        applyFilters();
-        sessionStorage.setItem(id_to_place, "inactive");
-        // Reset searchbox
-        $("#search-zone")[0].value = "";
-    };
-    
-    function addElement(element) {
-        // Add to active selection list:
-        var id_to_place = $(element).parent().parent()[0].id;
-        var text_to_place = $(element).parent().parent().data('country-name');
-        $("#selected-countries").append(
-          '<div class="active-filter-selection" id="'+ id_to_place +'" data-country-name="'+ text_to_place +'" style="display: flex; padding: 0.2rem;"><span class="active-filter-text trn" style="align-self: center;">'+
-          text_to_place +
-          '</span><button class="btn" onclick="removeElement(this)"><i class="fas fa-times item-icon" style="display: grid;"></i></button></div>'
-        );
-        // Remove from list
-        translator.lang(curr_lng);
-        $(element).parent().parent().remove();
-        sortCountryNodesAlphabetically();
-        applyFilters();
-        sessionStorage.setItem(id_to_place, "active");
-        // close modal if open
-        if (($("#country-modal").data('bs.modal') || {})._isShown)
-          $('#country-modal').modal('toggle');
-        // Reset searchbox
-        $("#search-zone")[0].value = "";
-    };
+    function addElement(countryCode) {
+      var $option = $('#country-select option[value="' + countryCode + '"]');
+      if ($option.length && !$option.prop('selected')) {
+          $option.prop('selected', true);
+
+          // Add selected country to the rendered list
+          var countryName = $option.text();
+          $("#selected-countries-list").append(
+              '<li class="select-selection--choice" data-country-code="' + countryCode + '">' +
+              countryName + 
+              '<span class="select-selection--choice-remove" onclick="removeElement(\'' + countryCode + '\')">×</span></li>'
+          );
+
+          applyFilters();
+          sessionStorage.setItem(countryCode, "active");
+      }
+  }
     
     function Sort(asc) {
       var criteria = $("#sort-criteria")[0].value;
@@ -372,25 +311,8 @@
     
     function loadSessionStatus() {
       if (!sessionStorage.getItem("initialized")) {
-        $("#inactive-countries-list")[0].childNodes.forEach(c => {
-            if (c.tagName === 'DIV' && c.id) sessionStorage.setItem(c.id, "inactive");
-          }
-        );
-        sessionStorage.setItem("initialized", "done");
         Sort(asc=true);
       } else {
-        var to_be_modified = [];
-        $("#inactive-countries-list")[0].childNodes.forEach(c => {
-            if (c.tagName === 'DIV') {
-              // if (sessionStorage.getItem(c.id) === "inactive") removeElement($(c).find(".btn")[0])
-              if (sessionStorage.getItem(c.id) === "active" )
-              {
-                to_be_modified.push(c);
-              }
-            }
-          }
-        );
-        to_be_modified.forEach(c => addElement($(c).find(".btn")[0]));
         $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
         ReorderZones();
       }
@@ -430,13 +352,25 @@
       curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
       translator = $('body').translate({lang: curr_lng, t: dict}); //use English
       translator.lang(curr_lng);
-      sortCountryNodesAlphabetically();
       loadSliders()
       loadSessionStatus();
 
       const filtersApplied = checkIfFiltersApplied();
       toggleFilterMark(filtersApplied);
-    
+
+      $('#country-select').select2({
+          allowClear: true,
+          width: '100%',
+          closeOnSelect: true
+      }).on('change', function() {
+        applyFilters();
+      });
+
+      //Avoids Dropdown opening when deselecting option
+      $('.select2-selection').on('click', '.select2-selection__choice__remove', function(evt) {
+        evt.stopPropagation();
+      })
+
       $("#search-zone").keyup(function() {
           var $cards = $(".custom-card");
           var val = $.trim(this.value).toLowerCase();
