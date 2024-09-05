@@ -35,6 +35,7 @@ def main():
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
 
+    generateFilterBoxElement(template_env)
     generateAreasListPage(template_env, areas, playlistsData)
 
     templatePage = template_env.get_template('templates/templates/area_page_template.html')
@@ -140,6 +141,17 @@ def main():
         with open('templates/zones/es/'+areaCode+'.html', 'w', encoding='utf-8') as template_es:
             template_es.write(output)
 
+def generateFilterBoxElement(template_env):
+    country_data = utils.MadBoulderDatabase.getCountriesData()
+    rockTypes_data = utils.zone_helpers.getRockTypeList()
+    templatePageList = template_env.get_template('templates/templates/filter-box-template.html')
+
+    output = templatePageList.render(
+        country_data=country_data,
+        rockTypes_data=rockTypes_data
+    )
+    with open('templates/elements/filter-box.html', 'w', encoding='utf-8') as template:
+        template.write(output)
 
 def generateAreasListPage(template_env, areas, playlists):
     country_data = utils.MadBoulderDatabase.getCountriesData()

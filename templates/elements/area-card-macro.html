@@ -1,0 +1,43 @@
+{% macro render_card(zone, zone_code, playlists) %}
+  <div class="custom-card" id="{{ zone_code }}_{{ zone['country'] }}">
+    {% set found_element = playlists.get(zone_code) %}
+    {% if found_element %}
+    <a href="/{{ zone_code }}" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">{{ zone['name'] }}</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("{{ zone_code }}_{{ zone['country'] }}");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "{{ found_element.thumbnails.maxres if found_element.thumbnails.maxres
+            else found_element.thumbnails.standard if found_element.thumbnails.standard
+            else found_element.thumbnails.high if found_element.thumbnails.high
+            else found_element.thumbnails.medium if found_element.thumbnails.medium
+            else found_element.thumbnails.default}}";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = {{ found_element.video_count }};
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = {{ zone.altitude }};
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "{{ zone.rock_type }}";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    {% endif %}
+  </div>
+{% endmacro %}

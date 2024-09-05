@@ -1,0 +1,302 @@
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<script src="/static/js/jquery.translate.js"></script>
+<script src="/static/js/slider.js"></script>
+<link href="/static/css/select2.min.css" rel="stylesheet" />
+<script src="/static/js/select2.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/filter.css') }}" />
+
+
+<div id="filter-box" class="filter-box-container">
+	<div class="filter-box">
+		{% if show_video_filter %}
+			<div class="filter-section">
+				<p class="filter-title">Filter by Number of Videos</p>
+				<div id="video_slider" class="range_container" data-min="0" data-max="1000" data-values="[100, 800]" data-step="1" id="slider-container">
+				<div id="slider-range"></div>
+				<div class="range-label" id="min"></div>
+				<div class="range-label" id="max"></div>
+				</div>
+			</div>
+			{% endif %}
+			{% if show_country_filter %}
+			<div class="filter-section">
+				<div class="input-group flex-nowrap">
+				<div class="input-group-prepend" style="display: flex;">
+					<span class="input-group-text w-100">Country</span>
+				</div>
+				<select id="country-filter" name="countries[]" multiple="multiple">
+					
+					<option value="andorra" data-select2-id="country-andorra">Andorra</option>
+					
+					<option value="argentina" data-select2-id="country-argentina">Argentina</option>
+					
+					<option value="australia" data-select2-id="country-australia">Australia</option>
+					
+					<option value="austria" data-select2-id="country-austria">Austria</option>
+					
+					<option value="brazil" data-select2-id="country-brazil">Brazil</option>
+					
+					<option value="canada" data-select2-id="country-canada">Canada</option>
+					
+					<option value="czech-republic" data-select2-id="country-czech-republic">Czech Republic</option>
+					
+					<option value="egypt" data-select2-id="country-egypt">Egypt</option>
+					
+					<option value="finland" data-select2-id="country-finland">Finland</option>
+					
+					<option value="france" data-select2-id="country-france">France</option>
+					
+					<option value="germany" data-select2-id="country-germany">Germany</option>
+					
+					<option value="india" data-select2-id="country-india">India</option>
+					
+					<option value="italy" data-select2-id="country-italy">Italy</option>
+					
+					<option value="mexico" data-select2-id="country-mexico">Mexico</option>
+					
+					<option value="morocco" data-select2-id="country-morocco">Morocco</option>
+					
+					<option value="new-zealand" data-select2-id="country-new-zealand">New Zealand</option>
+					
+					<option value="portugal" data-select2-id="country-portugal">Portugal</option>
+					
+					<option value="south-africa" data-select2-id="country-south-africa">South Africa</option>
+					
+					<option value="spain" data-select2-id="country-spain">Spain</option>
+					
+					<option value="sweden" data-select2-id="country-sweden">Sweden</option>
+					
+					<option value="switzerland" data-select2-id="country-switzerland">Switzerland</option>
+					
+					<option value="thailand" data-select2-id="country-thailand">Thailand</option>
+					
+					<option value="united-kingdom" data-select2-id="country-united-kingdom">United Kingdom</option>
+					
+					<option value="united-states-of-america" data-select2-id="country-united-states-of-america">United States of America</option>
+					
+				</select>
+				</div>
+			</div>
+			{% endif %}
+			{% if show_altitude_filter %}
+				<div class="filter-section">
+					<p class="filter-title">Filter by Altitude</p>
+					<div id="altitude_slider" class="range_container" data-min="50" data-max="1500" data-values="[0, 2000]" data-step="1" id="slider-container">
+						<div id="slider-range"></div>
+						<div class="range-label" id="min"></div>
+						<div class="range-label" id="max"></div>
+					</div>
+				</div>
+				{% endif %}
+				{% if show_rocktype_filter %}
+				<div class="filter-section">
+					<div class="input-group flex-nowrap">
+					<div class="input-group-prepend" style="display: flex;">
+						<span class="input-group-text w-100">Rock type</span>
+					</div>
+					<select id="rocktype-filter" name="rockTypes[]" multiple="multiple">
+						
+							<option value="volc" data-select2-id="rocktype-volc">Volcanic</option>
+						
+							<option value="lime" data-select2-id="rocktype-lime">Limestone</option>
+						
+							<option value="gran" data-select2-id="rocktype-gran">Granite</option>
+						
+							<option value="sand" data-select2-id="rocktype-sand">Sandstone</option>
+						
+							<option value="cong" data-select2-id="rocktype-cong">Conglomerate</option>
+						
+							<option value="gnei" data-select2-id="rocktype-gnei">Gneiss</option>
+						
+							<option value="igne" data-select2-id="rocktype-igne">Igneous</option>
+						
+							<option value="basa" data-select2-id="rocktype-basa">Basalt</option>
+						
+							<option value="slat" data-select2-id="rocktype-slat">Slate</option>
+						
+							<option value="schi" data-select2-id="rocktype-schi">Schist</option>
+						
+							<option value="quar" data-select2-id="rocktype-quar">Quartzite</option>
+						
+							<option value="iron" data-select2-id="rocktype-iron">Iron Rock</option>
+						
+							<option value="serp" data-select2-id="rocktype-serp">Serpentine</option>
+						
+							<option value="grit" data-select2-id="rocktype-grit">Gritstone</option>
+						
+							<option value="diab" data-select2-id="rocktype-diab">Diabase</option>
+						
+					</select>
+					</div>       
+				</div>
+				{% endif %}
+		<div class="filter-reset-section">
+			<button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
+		</div>
+		<script>
+			function loadSliders(){
+				var $cards = $(".custom-card");
+
+				var minVideos = Number.MAX_VALUE;
+				var maxVideos = 1;
+				$cards.each(function() {
+					var videoCount = parseInt($(this).find(".card-text").data("videos"));
+					if (videoCount < minVideos) minVideos = videoCount;
+					if (videoCount > maxVideos) maxVideos = videoCount;
+				});
+
+				$("#video_slider").data("min", minVideos);
+				$("#video_slider").data("max", maxVideos);
+				$("#video_slider").data("values", [minVideos, maxVideos]);
+
+				var minAltitudes = Number.MAX_VALUE;
+				var maxAltitudes = 0;
+				$cards.each(function() {
+					var altitudeCount = parseInt($(this).find(".card-image-text").data("altitude"));
+					if (altitudeCount < minAltitudes) minAltitudes = altitudeCount;
+					if (altitudeCount > maxAltitudes) maxAltitudes = altitudeCount;
+				});
+
+				$("#altitude_slider").data("min", minAltitudes);
+				$("#altitude_slider").data("max", maxAltitudes);
+				$("#altitude_slider").data("values", [minAltitudes, maxAltitudes]);
+
+				$('.range_container').initSlider();
+			};
+			
+			function loadFilters(){
+				console.log("loadFilters");
+
+				loadSliders();
+
+				$('#country-filter').select2({
+					width: '100%',
+					closeOnSelect: true
+				}).on('change', function() {
+					applyFilters();
+				});
+
+				$('#rocktype-filter').select2({
+					width: '100%',
+					closeOnSelect: true
+				}).on('change', function() {
+					applyFilters();
+				});
+
+				//Avoids Dropdown opening when deselecting option
+				$('.select2-selection').on('click', '.select2-selection__choice__remove', function(evt) {
+					evt.stopopagation();
+				})
+
+				
+				const filtersApplied = checkIfFiltersApplied();
+      			toggleFilterMark(filtersApplied);
+			};
+
+			function toggleFilters(){
+				var filterBox = document.getElementById("filter-box");
+				var filterButton = document.getElementById("filter-button");
+				if (!filterBox.classList.contains("show-filters")) {
+					filterBox.className += " show-filters";
+					filterButton.className += " filters-visible";
+					$('.range_container').refreshSlider();
+				}
+				else{
+					filterBox.classList.remove("show-filters");
+					filterButton.classList.remove("filters-visible");
+				}
+			}
+
+			function onSliderChanged() {
+				console.log("onSliderChanged");
+				applyFilters();
+			}
+
+			function applyFilters(){
+				var videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+				var videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+				var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+				var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+
+				var selectedCountries = $('#country-filter').length ? $('#country-filter').val() : [];
+				var selectedRockTypes = $('#rocktype-filter').length ? $('#rocktype-filter').val() : [];
+
+				$(".custom-card").each(function() {
+					var $card = $(this);
+					var videoCount = parseInt($card.find(".card-text").data("videos"));
+					var altitude = parseInt($card.find(".card-image-text").data("altitude"));
+					var country = $card[0].id.split("_")[1];
+					var rockType = $card.find(".card-image-text").data("rocktype");
+
+					var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
+					var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
+					var matchesCountry = selectedCountries.length === 0 || selectedCountries.includes(country);
+					var matchesRockType = selectedRockTypes.length === 0 || selectedRockTypes.includes(rockType);
+
+					if (matchesVideo && matchesAltitude && matchesCountry && matchesRockType) {
+						$card.show();
+					} else {
+						$card.hide();
+					}
+				});
+
+				const filtersApplied = checkIfFiltersApplied();
+				toggleFilterMark(filtersApplied);
+			}
+
+			function resetFilters() {
+				var minVideos = $("#video_slider").data("min");
+				var maxVideos = $("#video_slider").data("max");
+				$("#video_slider").find("#slider-range").slider("values", [minVideos, maxVideos]);
+				$("#video_slider").find(".range-label#min").text(minVideos);
+				$("#video_slider").find(".range-label#max").text(maxVideos);
+
+				$('#country-filter').val(null).trigger('change');
+				$('#rocktype-filter').val(null).trigger('change');
+				
+				var minAltitude = $("#altitude_slider").data("min");
+				var maxAltitude = $("#altitude_slider").data("max");
+				$("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
+				$("#altitude_slider").find(".range-label#min").text(minAltitude);
+				$("#altitude_slider").find(".range-label#max").text(maxAltitude);
+
+				$(".custom-card").show();
+
+				$("#search-zone").val("");
+				toggleFilterMark(false);
+			}
+
+			function checkIfFiltersApplied() {
+				const videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+				const videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+				const videoSliderMin = $("#video_slider").data("min");
+				const videoSliderMax = $("#video_slider").data("max");
+				const videoFilterApplied = (videoMin !== videoSliderMin || videoMax !== videoSliderMax);
+
+				const altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+				const altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+				const altitudeSliderMin = $("#altitude_slider").data("min");
+				const altitudeSliderMax = $("#altitude_slider").data("max");
+				const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
+
+				const countryFilterApplied = $('#country-filter').length > 0 && $('#country-filter').val().length > 0;
+				const rockTypeFilterApplied = $('#rocktype-filter').length > 0 && $('#rocktype-filter').val().length > 0;
+				
+				const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied || rockTypeFilterApplied;
+				return filtersApplied;
+			}
+
+			function toggleFilterMark(show) {
+				const filterMark = $("#filter-mark");
+				if (show) {
+					filterMark.show();
+				} else {
+					filterMark.hide();
+				}
+			}
+		</script>
+	</div>
+</div>

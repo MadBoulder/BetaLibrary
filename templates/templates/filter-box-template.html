@@ -1,0 +1,228 @@
+{% raw %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<script src="/static/js/jquery.translate.js"></script>
+<script src="/static/js/slider.js"></script>
+<link href="/static/css/select2.min.css" rel="stylesheet" />
+<script src="/static/js/select2.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/filter.css') }}" />
+{% endraw %}
+
+<div id="filter-box" class="filter-box-container">
+	<div class="filter-box">
+		{% raw %}{% if show_video_filter %}{% endraw %}
+			<div class="filter-section">
+				<p class="filter-title">Filter by Number of Videos</p>
+				<div id="video_slider" class="range_container" data-min="0" data-max="1000" data-values="[100, 800]" data-step="1" id="slider-container">
+				<div id="slider-range"></div>
+				<div class="range-label" id="min"></div>
+				<div class="range-label" id="max"></div>
+				</div>
+			</div>
+			{% raw %}{% endif %}{% endraw %}
+			{% raw %}{% if show_country_filter %}{% endraw %}
+			<div class="filter-section">
+				<div class="input-group flex-nowrap">
+				<div class="input-group-prepend" style="display: flex;">
+					<span class="input-group-text w-100">Country</span>
+				</div>
+				<select id="country-filter" name="countries[]" multiple="multiple">
+					{% for countryCode, countryData in country_data.items() %}
+					<option value="{{ countryCode }}" data-select2-id="country-{{ countryCode }}">{{ countryData['name'][0] }}</option>
+					{% endfor %}
+				</select>
+				</div>
+			</div>
+			{% raw %}{% endif %}{% endraw %}
+			{% raw %}{% if show_altitude_filter %}{% endraw %}
+				<div class="filter-section">
+					<p class="filter-title">Filter by Altitude</p>
+					<div id="altitude_slider" class="range_container" data-min="50" data-max="1500" data-values="[0, 2000]" data-step="1" id="slider-container">
+						<div id="slider-range"></div>
+						<div class="range-label" id="min"></div>
+						<div class="range-label" id="max"></div>
+					</div>
+				</div>
+				{% raw %}{% endif %}{% endraw %}
+				{% raw %}{% if show_rocktype_filter %}{% endraw %}
+				<div class="filter-section">
+					<div class="input-group flex-nowrap">
+					<div class="input-group-prepend" style="display: flex;">
+						<span class="input-group-text w-100">Rock type</span>
+					</div>
+					<select id="rocktype-filter" name="rockTypes[]" multiple="multiple">
+						{% for rockCode, rockName in rockTypes_data.items() %}
+							<option value="{{ rockCode }}" data-select2-id="rocktype-{{ rockCode }}">{{ rockName }}</option>
+						{% endfor %}
+					</select>
+					</div>       
+				</div>
+				{% raw %}{% endif %}{% endraw %}
+		<div class="filter-reset-section">
+			<button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
+		</div>
+		<script>
+			function loadSliders(){
+				var $cards = $(".custom-card");
+
+				var minVideos = Number.MAX_VALUE;
+				var maxVideos = 1;
+				$cards.each(function() {
+					var videoCount = parseInt($(this).find(".card-text").data("videos"));
+					if (videoCount < minVideos) minVideos = videoCount;
+					if (videoCount > maxVideos) maxVideos = videoCount;
+				});
+
+				$("#video_slider").data("min", minVideos);
+				$("#video_slider").data("max", maxVideos);
+				$("#video_slider").data("values", [minVideos, maxVideos]);
+
+				var minAltitudes = Number.MAX_VALUE;
+				var maxAltitudes = 0;
+				$cards.each(function() {
+					var altitudeCount = parseInt($(this).find(".card-image-text").data("altitude"));
+					if (altitudeCount < minAltitudes) minAltitudes = altitudeCount;
+					if (altitudeCount > maxAltitudes) maxAltitudes = altitudeCount;
+				});
+
+				$("#altitude_slider").data("min", minAltitudes);
+				$("#altitude_slider").data("max", maxAltitudes);
+				$("#altitude_slider").data("values", [minAltitudes, maxAltitudes]);
+
+				$('.range_container').initSlider();
+			};
+			
+			function loadFilters(){
+				console.log("loadFilters");
+
+				loadSliders();
+
+				$('#country-filter').select2({
+					width: '100%',
+					closeOnSelect: true
+				}).on('change', function() {
+					applyFilters();
+				});
+
+				$('#rocktype-filter').select2({
+					width: '100%',
+					closeOnSelect: true
+				}).on('change', function() {
+					applyFilters();
+				});
+
+				//Avoids Dropdown opening when deselecting option
+				$('.select2-selection').on('click', '.select2-selection__choice__remove', function(evt) {
+					evt.stopopagation();
+				})
+
+				
+				const filtersApplied = checkIfFiltersApplied();
+      			toggleFilterMark(filtersApplied);
+			};
+
+			function toggleFilters(){
+				var filterBox = document.getElementById("filter-box");
+				var filterButton = document.getElementById("filter-button");
+				if (!filterBox.classList.contains("show-filters")) {
+					filterBox.className += " show-filters";
+					filterButton.className += " filters-visible";
+					$('.range_container').refreshSlider();
+				}
+				else{
+					filterBox.classList.remove("show-filters");
+					filterButton.classList.remove("filters-visible");
+				}
+			}
+
+			function onSliderChanged() {
+				console.log("onSliderChanged");
+				applyFilters();
+			}
+
+			function applyFilters(){
+				var videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+				var videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+				var altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+				var altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+
+				var selectedCountries = $('#country-filter').length ? $('#country-filter').val() : [];
+				var selectedRockTypes = $('#rocktype-filter').length ? $('#rocktype-filter').val() : [];
+
+				$(".custom-card").each(function() {
+					var $card = $(this);
+					var videoCount = parseInt($card.find(".card-text").data("videos"));
+					var altitude = parseInt($card.find(".card-image-text").data("altitude"));
+					var country = $card[0].id.split("_")[1];
+					var rockType = $card.find(".card-image-text").data("rocktype");
+
+					var matchesVideo = videoCount >= videoMin && videoCount <= videoMax;
+					var matchesAltitude = altitude >= altitudeMin && altitude <= altitudeMax;
+					var matchesCountry = selectedCountries.length === 0 || selectedCountries.includes(country);
+					var matchesRockType = selectedRockTypes.length === 0 || selectedRockTypes.includes(rockType);
+
+					if (matchesVideo && matchesAltitude && matchesCountry && matchesRockType) {
+						$card.show();
+					} else {
+						$card.hide();
+					}
+				});
+
+				const filtersApplied = checkIfFiltersApplied();
+				toggleFilterMark(filtersApplied);
+			}
+
+			function resetFilters() {
+				var minVideos = $("#video_slider").data("min");
+				var maxVideos = $("#video_slider").data("max");
+				$("#video_slider").find("#slider-range").slider("values", [minVideos, maxVideos]);
+				$("#video_slider").find(".range-label#min").text(minVideos);
+				$("#video_slider").find(".range-label#max").text(maxVideos);
+
+				$('#country-filter').val(null).trigger('change');
+				$('#rocktype-filter').val(null).trigger('change');
+				
+				var minAltitude = $("#altitude_slider").data("min");
+				var maxAltitude = $("#altitude_slider").data("max");
+				$("#altitude_slider").find("#slider-range").slider("values", [minAltitude, maxAltitude]);
+				$("#altitude_slider").find(".range-label#min").text(minAltitude);
+				$("#altitude_slider").find(".range-label#max").text(maxAltitude);
+
+				$(".custom-card").show();
+
+				$("#search-zone").val("");
+				toggleFilterMark(false);
+			}
+
+			function checkIfFiltersApplied() {
+				const videoMin = parseInt($("#video_slider").find(".range-label#min").text());
+				const videoMax = parseInt($("#video_slider").find(".range-label#max").text());
+				const videoSliderMin = $("#video_slider").data("min");
+				const videoSliderMax = $("#video_slider").data("max");
+				const videoFilterApplied = (videoMin !== videoSliderMin || videoMax !== videoSliderMax);
+
+				const altitudeMin = parseInt($("#altitude_slider").find(".range-label#min").text());
+				const altitudeMax = parseInt($("#altitude_slider").find(".range-label#max").text());
+				const altitudeSliderMin = $("#altitude_slider").data("min");
+				const altitudeSliderMax = $("#altitude_slider").data("max");
+				const altitudeFilterApplied = (altitudeMin !== altitudeSliderMin || altitudeMax !== altitudeSliderMax);
+
+				const countryFilterApplied = $('#country-filter').length > 0 && $('#country-filter').val().length > 0;
+				const rockTypeFilterApplied = $('#rocktype-filter').length > 0 && $('#rocktype-filter').val().length > 0;
+				
+				const filtersApplied = videoFilterApplied || altitudeFilterApplied || countryFilterApplied || rockTypeFilterApplied;
+				return filtersApplied;
+			}
+
+			function toggleFilterMark(show) {
+				const filterMark = $("#filter-mark");
+				if (show) {
+					filterMark.show();
+				} else {
+					filterMark.hide();
+				}
+			}
+		</script>
+	</div>
+</div>

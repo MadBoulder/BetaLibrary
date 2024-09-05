@@ -36,12 +36,16 @@
 			<h2> {{ _("List of Areas") }} </h2>
 			<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: nowrap;">
 				<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+				<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
+					<i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
+				</button>
 				<!-- Sort order -->
 				<div class="btn-group mb-2 joint-btns">
 					<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
 						<select id="sort-criteria" onchange="ReorderZones()">
 							<option value="alph" selected>Alphabetically</option>
 							<option value="nvid">Number of videos</option>
+							<option value="alt">Altitude</option>
 						</select>
 						<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
 							<i class="fas fa-angle-up"></i>
@@ -52,307 +56,336 @@
 					</div>
 				</div>
 			</div>
+			
+			{% set show_video_filter = True %}
+			{% set show_country_filter = False %}
+			{% set show_altitude_filter = True %}
+			{% set show_rocktype_filter = True %}
+			{% include 'elements/filter-box.html' %}
+
+			
 			<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+			  
 				
-					<div class="custom-card" id="browse_united-states-of-america">
-						
-						
-						<a href="/browse" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Browse</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("browse_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/VIVoUyQeIJU/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 7;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="browse_united-states-of-america">
+    
+    
+    <a href="/browse" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Browse</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("browse_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/VIVoUyQeIJU/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 7;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1478;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "sand";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="ibex_united-states-of-america">
-						
-						
-						<a href="/ibex" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Ibex</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("ibex_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/cjVf2gTdNAs/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 5;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="ibex_united-states-of-america">
+    
+    
+    <a href="/ibex" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Ibex</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("ibex_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/cjVf2gTdNAs/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 5;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1462.0;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "quar";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="joe-s-valley_united-states-of-america">
-						
-						
-						<a href="/joe-s-valley" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Joe's Valley</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("joe-s-valley_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 213;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="joe-s-valley_united-states-of-america">
+    
+    
+    <a href="/joe-s-valley" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Joe's Valley</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("joe-s-valley_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/WvuZ7z_d1Pc/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 213;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1996;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "quar";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="little-cottonwood-canyon_united-states-of-america">
-						
-						
-						<a href="/little-cottonwood-canyon" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Little Cottonwood Canyon</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("little-cottonwood-canyon_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/yDL-1qx2YjU/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 43;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="little-cottonwood-canyon_united-states-of-america">
+    
+    
+    <a href="/little-cottonwood-canyon" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Little Cottonwood Canyon</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("little-cottonwood-canyon_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/yDL-1qx2YjU/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 43;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1672;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "gran";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="moe-s-valley_united-states-of-america">
-						
-						
-						<a href="/moe-s-valley" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Moe's Valley</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("moe-s-valley_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 67;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="moe-s-valley_united-states-of-america">
+    
+    
+    <a href="/moe-s-valley" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Moe's Valley</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("moe-s-valley_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/NI2fmCpnYoE/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 67;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 883.0;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "sand";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="triassic_united-states-of-america">
-						
-						
-						<a href="/triassic" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Triassic</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("triassic_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/moYZ3YvbjLo/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 6;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="triassic_united-states-of-america">
+    
+    
+    <a href="/triassic" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Triassic</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("triassic_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/moYZ3YvbjLo/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 6;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1838;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "sand";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="uintas_united-states-of-america">
-						
-						
-						<a href="/uintas" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Uintas</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("uintas_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/aYyt9UtXxZo/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 13;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
+  <div class="custom-card" id="uintas_united-states-of-america">
+    
+    
+    <a href="/uintas" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Uintas</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("uintas_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/aYyt9UtXxZo/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 13;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 3061.0;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "gnei";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 				
-					<div class="custom-card" id="zion-national-park_united-states-of-america">
-						
-						
-						<a href="/zion-national-park" style="text-decoration: none;">
-							<div class="card-body">
-								<div class="card-body-image-container">
-									<div class="card-body-image-container-container">
-										<img loading="lazy" class="card-body-image">
-									</div>
-								</div>
-								<div class="card-body-title-container">
-									<h5 class="text-bold card-title">Zion National Park</h5>
-									<p class="card-text">
-									</p>
-								</div>
-							</div>
-						</a>
-						<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								var card = document.getElementById("zion-national-park_united-states-of-america");
-								var cardImage = card.querySelector(".card-body-image");
-								cardImage.src = "https://i.ytimg.com/vi/7dZ_UcZuIso/maxresdefault.jpg";
-								var cardText = card.querySelector(".card-text");
-								var videoCount = 2;
-								cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
-								cardText.setAttribute("data-videos", videoCount);
-							});		
-						</script>
-						
-					</div>
-				
-				<script>
-					function Sort(asc) {
-					var criteria = $("#sort-criteria")[0].value;
-					$(".custom-card").sort(function(a, b) {
-						if (criteria==="nvid") {
-						var aValue = parseInt($(a).find("p")[0].dataset.videos);
-						var bValue = parseInt($(b).find("p")[0].dataset.videos);
-						return (asc ? 1 : -1) * (aValue - bValue);
-						}
-						else if (criteria==="alph") {
-						return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-						}
-					}).appendTo('#zones-list');
-					sessionStorage.setItem("sortCriteria", criteria);
-					if(asc){
-						sessionStorage.setItem("sortOrder", "asc");
-						$("#btn-asc").hide();
-						$("#btn-desc").show();
-					} 
-					else{
-						sessionStorage.setItem("sortOrder", "des");
-						$("#btn-asc").show();
-						$("#btn-desc").hide();
-					}
-					};
-					
-					function ReorderZones() {
-					if (sessionStorage.getItem("sortOrder") === "asc")
-						Sort(asc=true);
-					else if (sessionStorage.getItem("sortOrder") === "des")
-						Sort(asc=true);
-					};
-					
-					window.addEventListener('load', function() {
-					var $cards = $(".custom-card");
-					
-					$("#search-zone").keyup(function() {
-						var val = $.trim(this.value).toLowerCase();
-						if (val === "")
-							$cards.show();
-						else {
-							$cards.hide();
-							$cards.each(function(){
-							if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
-								$(this).show();
-							}
-							});
-						}
-					});
-					});
-				</script>
+  <div class="custom-card" id="zion-national-park_united-states-of-america">
+    
+    
+    <a href="/zion-national-park" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Zion National Park</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("zion-national-park_united-states-of-america");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/7dZ_UcZuIso/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 2;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 1208.0;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "sand";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
+			  
 			</div>
         </div>
 	</main>
@@ -360,4 +393,61 @@
 	{% include 'elements/footer.html' %}
 	
   </body>
+  	<script>
+		function Sort(asc) {
+			var criteria = $("#sort-criteria")[0].value;
+			$(".custom-card").sort(function(a, b) {
+				if (criteria==="nvid") {
+				var aValue = parseInt($(a).find(".card-text").data("videos"));
+				var bValue = parseInt($(b).find(".card-text").data("videos"));
+				return (asc ? 1 : -1) * (aValue - bValue);
+				}
+				else if (criteria==="alph") {
+				return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+				}
+				else if (criteria === "alt") {
+					var aAltitude = parseInt($(a).find(".card-image-text").data("altitude"));
+					var bAltitude = parseInt($(b).find(".card-image-text").data("altitude"));
+					return (asc ? 1 : -1) * (aAltitude - bAltitude);
+				}
+			}).appendTo('#zones-list');
+			sessionStorage.setItem("sortCriteria", criteria);
+			if(asc){
+				sessionStorage.setItem("sortOrder", "asc");
+				$("#btn-asc").hide();
+				$("#btn-desc").show();
+			} 
+			else{
+				sessionStorage.setItem("sortOrder", "des");
+				$("#btn-asc").show();
+				$("#btn-desc").hide();
+			}
+		};
+		
+		function ReorderZones() {
+		if (sessionStorage.getItem("sortOrder") === "asc")
+			Sort(asc=true);
+		else if (sessionStorage.getItem("sortOrder") === "des")
+			Sort(asc=true);
+		};
+		
+		window.addEventListener('load', function() {	
+		loadFilters();
+
+		var $cards = $(".custom-card");
+		$("#search-zone").keyup(function() {
+			var val = $.trim(this.value).toLowerCase();
+			if (val === "")
+				$cards.show();
+			else {
+				$cards.hide();
+				$cards.each(function(){
+				if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
+					$(this).show();
+				}
+				});
+			}
+		});
+		});
+	</script>
 </html>
