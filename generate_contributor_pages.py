@@ -12,6 +12,7 @@ def main():
     utils.helpers.empty_and_create_dir(dir_path)
 
     contributors = utils.MadBoulderDatabase.getContributorsList()
+    areasData = utils.MadBoulderDatabase.getAreasData()
 
     template_loader = FileSystemLoader(searchpath='.')
     template_env = Environment(loader=template_loader)
@@ -33,7 +34,8 @@ def main():
         output = template.render(
             contributor_code = contributor,
             contributor_name = details['name'],
-            problems = details['videos'].values()
+            problems = details['videos'].values(),
+            areasData = areasData
         )
 
         with open(f'templates/contributors/{contributor}.html', 'w', encoding='utf-8') as template:
