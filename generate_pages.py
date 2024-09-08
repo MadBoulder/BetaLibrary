@@ -144,13 +144,13 @@ def main():
 def generateFilterBoxElement(template_env):
     country_data = utils.MadBoulderDatabase.getCountriesData()
     rockTypes_data = utils.zone_helpers.getRockTypeList()
-    templatePageList = template_env.get_template('templates/templates/filter-box-template.html')
+    templatePageList = template_env.get_template('templates/templates/search-sort-filter-box-template.html')
 
     output = templatePageList.render(
         country_data=country_data,
         rockTypes_data=rockTypes_data
     )
-    with open('templates/elements/filter-box.html', 'w', encoding='utf-8') as template:
+    with open('templates/elements/search-sort-filter-box.html', 'w', encoding='utf-8') as template:
         template.write(output)
 
 def generateAreasListPage(template_env, areas, playlists):

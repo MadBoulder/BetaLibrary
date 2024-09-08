@@ -14,129 +14,30 @@
 	
   </head>
   <body>
-    <div id="current-language" hidden>{% raw %}{{ current_lang }}{% endraw %}</div>
-	
     {% raw %}{% include 'elements/main-menu.html' %}{% endraw %}
-	<main id="bouldering-areas-list">
-		<div class="container" id="mainContainer">
-      {% raw %}{% if session['is_admin'] %}{% endraw %}
-        <a href="/add-area">
-          Add New Area
-        </a>
-      {% raw %}{% endif %}{% endraw %}
-			<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
-				<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
-				<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
-				  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
-				</button>
-				<!-- Sort order -->
-				<div class="btn-group mb-2 joint-btns">
-					<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
-						<select id="sort-criteria" onchange="ReorderZones()">
-							<option value="alph" selected>{% raw %}{{ _("Alphabetically") }}{% endraw %}</option>
-							<option value="nvid">{% raw %}{{ _("Number of videos") }}{% endraw %}</option>
-							<option value="alt">{% raw %}{{ _("Altitude") }}{% endraw %}</option>
-						</select>
-						<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
-							<i class="fas fa-angle-up"></i>
-						</button>
-						<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
-							<i class="fas fa-angle-down"></i>
-						</button>
-					</div>
-				</div>
-			</div>
-      {% raw %}
-      {% set show_video_filter = True %}
-      {% set show_country_filter = True %}
-      {% set show_altitude_filter = True %}
-      {% set show_rocktype_filter = True %}
-      {% include 'elements/filter-box.html' %}{% endraw %}
-
-      {% import 'templates/elements/area-card-macro.html' as card %}
-      <div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
-        {% for zone_code, zone in zones.items() %}
-          {{ card.render_card(zone, zone_code, playlists) }}
-        {% endfor %}
-      </div>
-		</div>
-	</main>
-	{% raw %}{% include 'elements/footer.html' %}{% endraw %}
-  </body>
-  <script>
-    var translator;
-    var curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-    var c_data = '{{ country_data | tojson | safe}}';
-    var dict = JSON.parse(c_data);
-    
-    function Sort(asc) {
-      var criteria = $("#sort-criteria")[0].value;
-      $(".custom-card").sort(function(a, b) {
-        if (criteria==="nvid") {
-          var aValue = parseInt($(a).find(".card-text").data("videos"));
-          var bValue = parseInt($(b).find(".card-text").data("videos"));
-          return (asc ? 1 : -1) * (aValue - bValue);
-        }
-        else if (criteria==="alph") {
-          return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-        }
-        else if (criteria === "alt") {
-            var aAltitude = parseInt($(a).find(".card-image-text").data("altitude"));
-            var bAltitude = parseInt($(b).find(".card-image-text").data("altitude"));
-            return (asc ? 1 : -1) * (aAltitude - bAltitude);
-        }
-      }).appendTo('#zones-list');
-      sessionStorage.setItem("sortCriteria", criteria);
-      if(asc){
-        sessionStorage.setItem("sortOrder", "asc");
-        $("#btn-asc").hide();
-        $("#btn-desc").show();
-      } 
-      else{
-        sessionStorage.setItem("sortOrder", "des");
-        $("#btn-asc").show();
-        $("#btn-desc").hide();
-      }
-    };
-    
-    function ReorderZones() {
-      if (sessionStorage.getItem("sortOrder") === "asc")
-          Sort(asc=true);
-      else if (sessionStorage.getItem("sortOrder") === "des")
-          Sort(asc=true);
-    };
-    
-    function loadSessionStatus() {
-      if (!sessionStorage.getItem("initialized")) {
-        Sort(asc=true);
-      } else {
-        $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
-        ReorderZones();
-      }
-    };
+    <main class="bouldering-areas-list">
+      <div class="container" id="mainContainer">
+        {% raw %}{% if session['is_admin'] %}{% endraw %}
+          <a href="/add-area">
+            Add New Area
+          </a>
+        {% raw %}{% endif %}{% endraw %}
         
-    window.addEventListener('load', function(){
-      curr_lng = $("#current-language")[0].childNodes[0].nodeValue;
-      translator = $('body').translate({lang: curr_lng, t: dict}); //use English
-      translator.lang(curr_lng);
-      loadSessionStatus();
-      loadFilters();
+        {% raw %}
+        {% set show_video_filter = True %}
+        {% set show_country_filter = True %}
+        {% set show_altitude_filter = True %}
+        {% set show_rocktype_filter = True %}
+        {% include 'elements/search-sort-filter-box.html' %}{% endraw %}
 
-      $("#search-zone").keyup(function() {
-        applyFilters();
-
-        var $visibleCards = $(".custom-card:visible");
-        var val = $.trim(this.value).toLowerCase();
-        if (val === "") {
-            $visibleCards.show();
-        } else {
-            $visibleCards.hide();
-
-            $visibleCards.filter(function() {
-                return $(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) !== -1;
-            }).show();
-        }
-      });
-    });
-  </script>  
+        {% import 'templates/elements/area-card-macro.html' as card %}
+        <div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+          {% for zone_code, zone in zones.items() %}
+            {{ card.render_card(zone, zone_code, playlists) }}
+          {% endfor %}
+        </div>
+      </div>
+    </main>
+    {% raw %}{% include 'elements/footer.html' %}{% endraw %}
+  </body>
 </html>

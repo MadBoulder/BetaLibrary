@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 	<title>Bouldering Areas in Finland | MadBoulder</title>
-	<meta name="description" content="Discover all 1 Bouldering Areas in Finland | MadBoulder">
+	<meta name="description" content="Discover all 2 Bouldering Areas in Finland | MadBoulder">
 
 	<link rel="canonical" href="https://www.madboulder.org/countries/finland">
 	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/countries/finland">
@@ -25,13 +25,13 @@
 		
 		{% include 'elements/main-menu.html' %}
 		
-		<main>
+		<main class="bouldering-areas-list">
 			<div class="zone-header">
 				<div class="container zone-header-tree">
 					<a href="/bouldering-areas-list" class="zone-header-tree-link">All Areas</a>
 				</div>
 				<h1 class="zone-header-title text-bold">
-					1 Bouldering Areas in Finland
+					2 Bouldering Areas in Finland
 				</h1>
 			</div>
 			<div class="container" id="mainContainer">
@@ -89,40 +89,56 @@
 				
 				
 				<div class="container">
-					<h2>List of 1 Bouldering Areas</h2>
-					<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: nowrap;">
-						<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
-						<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
-							<i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
-						</button>
-						<!-- Sort order -->
-						<div class="btn-group mb-2 joint-btns">
-							<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
-								<select id="sort-criteria" onchange="ReorderZones()">
-									
-									<option value="alph" selected>Alphabetically</option>
-									<option value="nvid">Number of videos</option>
-									<option value="alt">Altitude</option>
-									
-								</select>
-								<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
-									<i class="fas fa-angle-up"></i>
-								</button>
-								<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
-									<i class="fas fa-angle-down"></i>
-								</button>
-							</div>
-						</div>
-					</div>
+					<h2>List of 2 Bouldering Areas</h2>
 					
 					{% set show_video_filter = True %}
 					{% set show_country_filter = False %}
 					{% set show_altitude_filter = True %}
 					{% set show_rocktype_filter = True %}
-					{% include 'elements/filter-box.html' %}
+					{% include 'elements/search-sort-filter-box.html' %}
 
 					
 					<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+					  
+						
+  <div class="custom-card" id="aland_finland">
+    
+    
+    <a href="/aland" style="text-decoration: none;">
+      <div class="card-body">
+        <div class="card-body-image-container">
+          <div class="card-body-image-container-container">
+            <p class="card-image-text"></p>
+            <img loading="lazy" class="card-body-image">
+          </div>
+        </div>
+        <div class="card-body-title-container">
+          <h5 class="text-bold card-title">Åland</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </a>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var card = document.getElementById("aland_finland");
+          var cardImage = card.querySelector(".card-body-image");
+          cardImage.src = "https://i.ytimg.com/vi/5nVHVrRuo_Q/maxresdefault.jpg";
+          var cardText = card.querySelector(".card-text");
+          var videoCount = 5;
+          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardText.setAttribute("data-videos", videoCount);
+          
+          var cardImageText = card.querySelector(".card-image-text");
+          var altitude = 22;
+          cardImageText.textContent = altitude + " m";
+          cardImageText.setAttribute("data-altitude", altitude);
+          var rocktype = "gran";
+          cardImageText.setAttribute("data-rocktype", rocktype);
+      });		
+    </script>
+    
+  </div>
+
 					  
 						
   <div class="custom-card" id="sipoo_finland">
@@ -172,62 +188,4 @@
 		{% include 'elements/footer.html' %}
 		
 	</body>
-	<script>
-		function Sort(asc) {
-			var criteria = $("#sort-criteria")[0].value;
-			$(".custom-card").sort(function(a, b) {
-				if (criteria==="nvid") {
-				var aValue = parseInt($(a).find(".card-text").data("videos"));
-				var bValue = parseInt($(b).find(".card-text").data("videos"));
-				return (asc ? 1 : -1) * (aValue - bValue);
-				}
-				else if (criteria==="alph") {
-				return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-				}
-				else if (criteria === "alt") {
-					var aAltitude = parseInt($(a).find(".card-image-text").data("altitude"));
-					var bAltitude = parseInt($(b).find(".card-image-text").data("altitude"));
-					return (asc ? 1 : -1) * (aAltitude - bAltitude);
-				}
-			}).appendTo('#zones-list');
-			sessionStorage.setItem("sortCriteria", criteria);
-			if(asc){
-				sessionStorage.setItem("sortOrder", "asc");
-				$("#btn-asc").hide();
-				$("#btn-desc").show();
-			} 
-			else{
-				sessionStorage.setItem("sortOrder", "des");
-				$("#btn-asc").show();
-				$("#btn-desc").hide();
-			}
-		};
-		
-		function ReorderZones() {
-		if (sessionStorage.getItem("sortOrder") === "asc")
-			Sort(asc=true);
-		else if (sessionStorage.getItem("sortOrder") === "des")
-			Sort(asc=true);
-		};
-		
-		window.addEventListener('load', function() {
-			loadFilters();
-		
-			var $cards = $(".custom-card");
-			
-			$("#search-zone").keyup(function() {
-				var val = $.trim(this.value).toLowerCase();
-				if (val === "")
-					$cards.show();
-				else {
-					$cards.hide();
-					$cards.each(function(){
-					if($(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) != -1) {
-						$(this).show();
-					}
-					});
-				}
-			});
-		});
-	</script>
 </html>

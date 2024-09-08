@@ -1,4 +1,4 @@
-{% raw %}
+
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
@@ -7,11 +7,33 @@
 <link href="/static/css/select2.min.css" rel="stylesheet" />
 <script src="/static/js/select2.min.js"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/filter.css') }}" />
-{% endraw %}
 
+
+<div class="md-form active-pink active-pink-2 mt-2 mr-0" style="display:flex; flex-wrap: wrap; justify-content:center;">
+	<input id="search-zone" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+	<button id="filter-button" class="filter-button btn mb-2" onclick="toggleFilters()">
+	  <i class="fas fa-filter"></i><span id="filter-mark" class="filter-mark" style="display: none;"></span>
+	</button>
+	<!-- Sort order -->
+	<div class="btn-group mb-2 joint-btns">
+		<div style="background: white; max-width: 100%; display: flex; border-radius: 0.25rem; border-color:black;">
+			<select id="sort-criteria" onchange="ReorderZones()">
+				<option value="alph" selected>{{ _("Alphabetically") }}</option>
+				<option value="nvid">{{ _("Number of videos") }}</option>
+				<option value="alt">{{ _("Altitude") }}</option>
+			</select>
+			<button id="btn-asc" class="btn form-group-addon sort-btn" onclick="Sort(true)">
+				<i class="fas fa-angle-up"></i>
+			</button>
+			<button id="btn-desc" class="btn form-group-addon sort-btn" onclick="Sort(false)">
+				<i class="fas fa-angle-down"></i>
+			</button>
+		</div>
+	</div>
+</div>
 <div id="filter-box" class="filter-box-container">
 	<div class="filter-box">
-		{% raw %}{% if show_video_filter %}{% endraw %}
+		{% if show_video_filter %}
 			<div class="filter-section">
 				<p class="filter-title">Filter by Number of Videos</p>
 				<div id="video_slider" class="range_container" data-min="0" data-max="1000" data-values="[100, 800]" data-step="1" id="slider-container">
@@ -20,22 +42,68 @@
 				<div class="range-label" id="max"></div>
 				</div>
 			</div>
-			{% raw %}{% endif %}{% endraw %}
-			{% raw %}{% if show_country_filter %}{% endraw %}
+			{% endif %}
+			{% if show_country_filter %}
 			<div class="filter-section">
 				<div class="input-group flex-nowrap">
 				<div class="input-group-prepend" style="display: flex;">
 					<span class="input-group-text w-100">Country</span>
 				</div>
 				<select id="country-filter" name="countries[]" multiple="multiple">
-					{% for countryCode, countryData in country_data.items() %}
-					<option value="{{ countryCode }}" data-select2-id="country-{{ countryCode }}">{{ countryData['name'][0] }}</option>
-					{% endfor %}
+					
+					<option value="andorra" data-select2-id="country-andorra">Andorra</option>
+					
+					<option value="argentina" data-select2-id="country-argentina">Argentina</option>
+					
+					<option value="australia" data-select2-id="country-australia">Australia</option>
+					
+					<option value="austria" data-select2-id="country-austria">Austria</option>
+					
+					<option value="brazil" data-select2-id="country-brazil">Brazil</option>
+					
+					<option value="canada" data-select2-id="country-canada">Canada</option>
+					
+					<option value="czech-republic" data-select2-id="country-czech-republic">Czech Republic</option>
+					
+					<option value="egypt" data-select2-id="country-egypt">Egypt</option>
+					
+					<option value="finland" data-select2-id="country-finland">Finland</option>
+					
+					<option value="france" data-select2-id="country-france">France</option>
+					
+					<option value="germany" data-select2-id="country-germany">Germany</option>
+					
+					<option value="india" data-select2-id="country-india">India</option>
+					
+					<option value="italy" data-select2-id="country-italy">Italy</option>
+					
+					<option value="mexico" data-select2-id="country-mexico">Mexico</option>
+					
+					<option value="morocco" data-select2-id="country-morocco">Morocco</option>
+					
+					<option value="new-zealand" data-select2-id="country-new-zealand">New Zealand</option>
+					
+					<option value="portugal" data-select2-id="country-portugal">Portugal</option>
+					
+					<option value="south-africa" data-select2-id="country-south-africa">South Africa</option>
+					
+					<option value="spain" data-select2-id="country-spain">Spain</option>
+					
+					<option value="sweden" data-select2-id="country-sweden">Sweden</option>
+					
+					<option value="switzerland" data-select2-id="country-switzerland">Switzerland</option>
+					
+					<option value="thailand" data-select2-id="country-thailand">Thailand</option>
+					
+					<option value="united-kingdom" data-select2-id="country-united-kingdom">United Kingdom</option>
+					
+					<option value="united-states-of-america" data-select2-id="country-united-states-of-america">United States of America</option>
+					
 				</select>
 				</div>
 			</div>
-			{% raw %}{% endif %}{% endraw %}
-			{% raw %}{% if show_altitude_filter %}{% endraw %}
+			{% endif %}
+			{% if show_altitude_filter %}
 				<div class="filter-section">
 					<p class="filter-title">Filter by Altitude</p>
 					<div id="altitude_slider" class="range_container" data-min="50" data-max="1500" data-values="[0, 2000]" data-step="1" id="slider-container">
@@ -44,21 +112,49 @@
 						<div class="range-label" id="max"></div>
 					</div>
 				</div>
-				{% raw %}{% endif %}{% endraw %}
-				{% raw %}{% if show_rocktype_filter %}{% endraw %}
+				{% endif %}
+				{% if show_rocktype_filter %}
 				<div class="filter-section">
 					<div class="input-group flex-nowrap">
 					<div class="input-group-prepend" style="display: flex;">
 						<span class="input-group-text w-100">Rock type</span>
 					</div>
 					<select id="rocktype-filter" name="rockTypes[]" multiple="multiple">
-						{% for rockCode, rockName in rockTypes_data.items() %}
-							<option value="{{ rockCode }}" data-select2-id="rocktype-{{ rockCode }}">{{ rockName }}</option>
-						{% endfor %}
+						
+							<option value="volc" data-select2-id="rocktype-volc">Volcanic</option>
+						
+							<option value="lime" data-select2-id="rocktype-lime">Limestone</option>
+						
+							<option value="gran" data-select2-id="rocktype-gran">Granite</option>
+						
+							<option value="sand" data-select2-id="rocktype-sand">Sandstone</option>
+						
+							<option value="cong" data-select2-id="rocktype-cong">Conglomerate</option>
+						
+							<option value="gnei" data-select2-id="rocktype-gnei">Gneiss</option>
+						
+							<option value="igne" data-select2-id="rocktype-igne">Igneous</option>
+						
+							<option value="basa" data-select2-id="rocktype-basa">Basalt</option>
+						
+							<option value="slat" data-select2-id="rocktype-slat">Slate</option>
+						
+							<option value="schi" data-select2-id="rocktype-schi">Schist</option>
+						
+							<option value="quar" data-select2-id="rocktype-quar">Quartzite</option>
+						
+							<option value="iron" data-select2-id="rocktype-iron">Iron Rock</option>
+						
+							<option value="serp" data-select2-id="rocktype-serp">Serpentine</option>
+						
+							<option value="grit" data-select2-id="rocktype-grit">Gritstone</option>
+						
+							<option value="diab" data-select2-id="rocktype-diab">Diabase</option>
+						
 					</select>
 					</div>       
 				</div>
-				{% raw %}{% endif %}{% endraw %}
+				{% endif %}
 		<div class="filter-reset-section">
 			<button class="filter-reset-button" onclick="resetFilters()">Reset Filters</button>
 		</div>
@@ -226,3 +322,72 @@
 		</script>
 	</div>
 </div>
+
+<script>
+    function Sort(asc) {
+      var criteria = $("#sort-criteria")[0].value;
+      $(".custom-card").sort(function(a, b) {
+        if (criteria==="nvid") {
+          var aValue = parseInt($(a).find(".card-text").data("videos"));
+          var bValue = parseInt($(b).find(".card-text").data("videos"));
+          return (asc ? 1 : -1) * (aValue - bValue);
+        }
+        else if (criteria==="alph") {
+          return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
+        }
+        else if (criteria === "alt") {
+            var aAltitude = parseInt($(a).find(".card-image-text").data("altitude"));
+            var bAltitude = parseInt($(b).find(".card-image-text").data("altitude"));
+            return (asc ? 1 : -1) * (aAltitude - bAltitude);
+        }
+      }).appendTo('#zones-list');
+      sessionStorage.setItem("sortCriteria", criteria);
+      if(asc){
+        sessionStorage.setItem("sortOrder", "asc");
+        $("#btn-asc").hide();
+        $("#btn-desc").show();
+      } 
+      else{
+        sessionStorage.setItem("sortOrder", "des");
+        $("#btn-asc").show();
+        $("#btn-desc").hide();
+      }
+    };
+    
+    function ReorderZones() {
+      if (sessionStorage.getItem("sortOrder") === "asc")
+          Sort(asc=true);
+      else if (sessionStorage.getItem("sortOrder") === "des")
+          Sort(asc=true);
+    };
+	
+    function loadSessionStatus() {
+      if (!sessionStorage.getItem("initialized")) {
+        Sort(asc=true);
+      } else {
+        $("#sort-criteria")[0].value = sessionStorage.getItem("sortCriteria");
+        ReorderZones();
+      }
+    };
+
+	window.addEventListener('load', function(){
+      loadSessionStatus();
+      loadFilters();
+
+      $("#search-zone").keyup(function() {
+        applyFilters();
+
+        var $visibleCards = $(".custom-card:visible");
+        var val = $.trim(this.value).toLowerCase();
+        if (val === "") {
+            $visibleCards.show();
+        } else {
+            $visibleCards.hide();
+
+            $visibleCards.filter(function() {
+                return $(this).find(".card-title")[0].innerHTML.toLowerCase().indexOf(val) !== -1;
+            }).show();
+        }
+      });
+    });
+</script> 
