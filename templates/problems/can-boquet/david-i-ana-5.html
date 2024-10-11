@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Mind Stream V101/12 {{ _("Boulder problem in") }} Smugglers' Notch | MadBoulder</title>
-	<meta name="description" content="Video of Mind Stream Boulder Problem in Smugglers' Notch climbed by Brian Squire | MadBoulder">
+    <title>David i Ana 5+ {{ _("Boulder problem in") }} Can Boquet | MadBoulder</title>
+	<meta name="description" content="Video of David i Ana Boulder Problem in Can Boquet climbed by Aniol Santacreu | MadBoulder">
 	
 	
 	{% include 'scripts/tracking-tools-scripts.html' %}
@@ -13,7 +13,10 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 	
 
-	<link rel="canonical" href="https://www.madboulder.org/problems/smugglers-notch/mind-stream-v101-12">
+	<link rel="canonical" href="https://www.madboulder.org/problems/can-boquet/david-i-ana-5">
+	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 	
 	
 	</head>
@@ -26,10 +29,25 @@
 				<div class="container zone-header-tree">
 					<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
 					
+					> 
+					<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
+					
+					> 
+					<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
+					
+					> 
+					<a href="/can-boquet" class="zone-header-tree-link">Can Boquet</a>
+					> 
+					<a href="/sectors/can-boquet/nou" class="zone-header-tree-link">Nou</a>
+					
+					> 
+					<a href="/boulders/can-boquet/no-somos-nada" class="zone-header-tree-link">No somos nada</a>
+					
+					
 				</div>
 				<div style="display: flex; justify-content: center;">
 					<h1 class="zone-header-title text-bold">
-						Mind Stream V101/12
+						David i Ana 5+
 					</h1>
 					<div class="ratingContainer" style="display: {{ 'none' if ratings.total_votes < 3 else 'flex' }};">
 						<div id="globalRating"></div>
@@ -40,10 +58,10 @@
 			<div class="container" id="mainContainer">
 				<div class="video-wrapper">
 					<div class="video-container" >
-						<iframe src="https://www.youtube.com/embed/Hn-u-mtNDTk" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+						<iframe src="https://www.youtube.com/embed/lXnNf_WbZqw" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 					</div>
 					<div class="video-caption">
-						<p> {{ _("Climber") }}: <a href="/contributors/brian-squire">Brian Squire</a></p>
+						<p> {{ _("Climber") }}: <a href="/contributors/aniol-santacreu">Aniol Santacreu</a></p>
 					</div>
 				</div>
 				<div class="user-container">
@@ -52,7 +70,7 @@
 							<div class="ml-auto btn-group mb-auto">
 								<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
 									{% if problem_in_projects %}disabled{% endif %}
-									onclick='addToProjects("smugglers-notch/mind-stream-v101-12", "Mind Stream", "V101/12", "smugglers-notch", "Smugglers\u0027 Notch")'>
+									onclick='addToProjects("can-boquet/david-i-ana-5", "David i Ana", "5+", "can-boquet", "Can Boquet")'>
 									{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}
 								</button>
 							</div>
@@ -128,6 +146,40 @@
 					{% endif %}
 				</div>
 				
+					<div class="map-container" id="mapid"></div>
+					<script>
+						var mymap = L.map('mapid').setView([41.529456, 2.34685], 15);
+					
+						// Base layer
+						var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+							maxZoom: 18,
+						}).addTo(mymap);
+					
+						// Satellite layer (for ortho view)
+						var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+							attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+							maxZoom: 18,
+						});
+					
+						var customIcon = L.icon({
+							iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+							iconSize: [24, 24], // Size of the icon
+							iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+							popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+						});
+					
+						var marker = L.marker([41.529456, 2.34685], {icon: customIcon}).addTo(mymap);
+						marker.bindPopup("<b>No somos nada {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.529456,2.34685' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();
+					
+						var baseLayers = {
+							"Street Map": streetMap,
+							"Satellite": satelliteMap
+						};
+					
+						L.control.layers(baseLayers).addTo(mymap);
+					</script>
+				
 				<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
 				<!-- Ad Test --> 
 				<ins class="adsbygoogle" 
@@ -150,7 +202,7 @@
 		 {% if session['uid'] %} 
 			document.getElementById('comment-form').addEventListener('submit', function(e) {
 				e.preventDefault();
-				const problemId = 'smugglers-notch/mind-stream-v101-12';
+				const problemId = 'can-boquet/david-i-ana-5';
 				const commentInput = document.getElementById('comment-input');
 				submitComment(problemId, commentInput);
 			});
@@ -183,7 +235,7 @@
 		}
 
 		function deleteComment(comment_id) {
-			const problemId = 'smugglers-notch/mind-stream-v101-12';
+			const problemId = 'can-boquet/david-i-ana-5';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
@@ -306,7 +358,7 @@
 		}
 
 		function submitRating(rating) {
-			const problemId = 'smugglers-notch/mind-stream-v101-12';
+			const problemId = 'can-boquet/david-i-ana-5';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({ problem_id: problemId, rating: rating }),
@@ -328,7 +380,7 @@
 		}
 
 		function deleteRating() {
-			const problemId = 'smugglers-notch/mind-stream-v101-12';
+			const problemId = 'can-boquet/david-i-ana-5';
 			const requestData = {
 				method: 'POST',
 				body: JSON.stringify({problem_id: problemId}),
