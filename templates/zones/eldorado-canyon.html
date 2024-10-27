@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Eldorado Canyon | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Eldorado Canyon with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/eldorado-canyon">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/eldorado-canyon">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/eldorado-canyon">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+			
+				> 
+				<a href="/states/colorado" class="zone-header-tree-link">Colorado</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Eldorado Canyon
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Eldorado Canyon Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<!-- Zone summary -->
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">9</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">1571</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">3</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Ad Test --> 
+					<ins class="adsbygoogle" 
+						style="display:block" 
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="3071479641" 
+						data-ad-format="auto" 
+						data-full-width-responsive="true"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Eldorado Canyon Boulder</h2>
+					
+						<div class="weather-widget weatherElement" data-zone-code="">
+	<div id="weather-widget-eldorado-canyon" class="weather-container dark">
+		<div class="weather-title-container" title="Eldorado Canyon">
+			<i class="fas fa-location-dot">location</i>
+			<div class="weather-title">
+				Eldorado Canyon
+			</div>
+		</div>
+		<div class="weather-info">
+			<div class="current-weather">
+				<div class="current-weather-icon">
+					<img loading="lazy" class="weather-icon"></img>
+				</div>
+				<div class="current-weather-desc">
+					<div class="current-weather-temperature weather-temperature"></div>
+					<div class="current-weather-description weather-description text-capitalize"></div>
+				</div>
+				<div class="current_weather-stats">
+					<div class="current_weather-stats-temp">
+						<div class="weather-max-temperature"></div>
+						<div class="weather-min-temperature"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-droplet mr-2">humidity</i>
+						<div class="weather-humidity"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-wind">air</i>
+						<div class="wind-speed"></div>
+					</div>
+				</div>
+			</div>
+			<div class="weather-forecast"></div>
+		</div>
+	</div>
+	<script>
+		$('#weather-widget-eldorado-canyon .weather-temperature').openWeather({
+			widgetId: 'weather-widget-eldorado-canyon',
+			lat: '39.930858',
+			lng: '-105.300876',
+			iconTarget: '#weather-widget-eldorado-canyon .weather-icon',
+			key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
+			customIcons: 'images/weather_icons/',
+			minTemperatureTarget: '#weather-widget-eldorado-canyon .weather-min-temperature',
+			maxTemperatureTarget: '#weather-widget-eldorado-canyon .weather-max-temperature',
+			humidityTarget: '#weather-widget-eldorado-canyon .weather-humidity',
+			windSpeedTarget: '#weather-widget-eldorado-canyon .wind-speed',
+			windSpeedUnit: 'km/h',
+			descriptionTarget: '#weather-widget-eldorado-canyon .weather-description',
+			forecastTarget: 'weather-forecast',
+			lang: '',
+			query: 'onecall'
+		});
+	</script>
+</div>
+					
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?default=eldorado-canyon">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							$('.weather-temperature').each(function() {
+								const openWeatherData = $(this).data('openWeather');
+								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+									openWeatherData.checkDaysSinceRain(function(days) {
+										let message;
+										if (days > 3) {
+											message = "It's been more than 3 days since it last rained.";
+										} else {
+											message = `It has been ${days} day(s) since it last rained.`;
+										}
+										$('#days-since-last-rain').text(message);
+									});
+								}
+							});
+						});
+					</script>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Area Weather Ad --> 
+					<ins class="adsbygoogle" 
+						style="display:inline-block;width:728px;height:90px"
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="2668154967"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Eldorado Canyon Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/_2kspj_ubHI/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/_2kspj_ubHI/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/_2kspj_ubHI/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/_2kspj_ubHI/mqdefault.jpg" alt="Photo of Eldorado Canyon Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Eldorado Canyon</h2>
+													<p style="text-align: justify;">Eldorado Canyon in Colorado offers a unique bouldering experience set amidst its iconic sandstone formations and rich climbing history. Known for a range of problems on high-quality rock, the canyon attracts both seasoned climbers and beginners. The rock’s coarse texture and naturally varying holds make for a satisfying challenge that requires both technical skill and strength. Located just outside Boulder, Eldorado’s accessibility adds to its allure, making it easy for climbers to spend a day testing their skills on problems scattered throughout the scenic canyon floor.<br><br>Beyond the technical aspects, Eldorado Canyon offers a stunning natural setting with views of the Continental Divide, and it's well-integrated within the surrounding Eldorado Canyon State Park. Climbers can find a range of bouldering problems suitable for all skill levels, from classic problems to more obscure routes off the beaten path. Visitors should note that seasonal closures occur in some areas to protect nesting raptors, so it’s advisable to check the park’s official site for any updates before planning a trip. The park’s combination of impressive geology and beautiful scenery makes bouldering here a uniquely rewarding experience.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 9
+													
+														<br>
+														<b>Rock type</b> Sandstone
+													
+													
+														<br>
+														<b>Altitude</b> 1871m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/eldorado-canyon">
+													Editar Zona
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guidebooks of Eldorado Canyon Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.amazon.com/Best-Boulder-Bouldering-Bob-Horan/dp/1585920045" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://m.media-amazon.com/images/I/91xbfDDS91L._SL1500_.jpg" alt="Best of Boulder Bouldering">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Best of Boulder Bouldering</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+					  </div>
+					
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Ad Test --> 
+					<ins class="adsbygoogle" 
+						style="display:block" 
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="8704691104" 
+						data-ad-format="auto" 
+						data-full-width-responsive="true"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Eldorado Canyon Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/eldorado-canyon"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058"
+						crossorigin="anonymous"></script>
+					<!-- Area Map Ad -->
+					<ins class="adsbygoogle"
+						style="display:block"
+						data-ad-client="ca-pub-2946344276077058"
+						data-ad-slot="6627581270"
+						data-ad-format="auto"
+						data-full-width-responsive="true"></ins>
+					<script>
+						(adsbygoogle = window.adsbygoogle || []).push({});
+					</script>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 2 Sectors of Eldorado Canyon Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/eldorado-canyon/south" class="table-row-name text-bold">South</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/eldorado-canyon/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">7</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058"
+						crossorigin="anonymous">
+					</script>
+					<ins class="adsbygoogle"
+						style="display:inline-block;width:720px;height:90px"
+						data-ad-client="ca-pub-2946344276077058"
+						data-ad-slot="3623317447"></ins>
+					<script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of Playlists from Eldorado Canyon Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPNEItydlIQpjGo66Wo2HYX"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<h2>List of 9 Problems in Video of Eldorado Canyon Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Elegant Infinite, V10  Eldorado Canyon" href="/problems/eldorado-canyon/elegant-infinite-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Elegant Infinite, V10  Eldorado Canyon" src="https://img.youtube.com/vi/VAVGoFXtWJw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/elegant-infinite-v10" class="table-row-name text-bold">Elegant Infinite</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Elegant Universe, V10. Eldorado Canyon" href="/problems/eldorado-canyon/elegant-universe-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Elegant Universe, V10. Eldorado Canyon" src="https://img.youtube.com/vi/t12AZh6Xg7A/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/elegant-universe-v10" class="table-row-name text-bold">Elegant Universe</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Midnight Frightening, V10. Eldorado Canyon" href="/problems/eldorado-canyon/midnight-frightening-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Midnight Frightening, V10. Eldorado Canyon" src="https://img.youtube.com/vi/giSRz2WSDSU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/midnight-frightening-v10" class="table-row-name text-bold">Midnight Frightening</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Promethea, V10. Eldorado Canyon" href="/problems/eldorado-canyon/promethea-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Promethea, V10. Eldorado Canyon" src="https://img.youtube.com/vi/_2kspj_ubHI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/promethea-v10" class="table-row-name text-bold">Promethea</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>South</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Qigong, V10. Eldorado Canyon" href="/problems/eldorado-canyon/qigong-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Qigong, V10. Eldorado Canyon" src="https://img.youtube.com/vi/WH1ulP5lSTc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/qigong-v10" class="table-row-name text-bold">Qigong</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Resonated, V9. Eldorado Canyon" href="/problems/eldorado-canyon/resonated-v9" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Resonated, V9. Eldorado Canyon" src="https://img.youtube.com/vi/vK3nLDe4sPg/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/resonated-v9" class="table-row-name text-bold">Resonated</a>
+									</div>
+								</td>
+								<td>V9</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="The Eighth, V10. Eldorado Canyon" href="/problems/eldorado-canyon/the-eighth-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Eighth, V10. Eldorado Canyon" src="https://img.youtube.com/vi/yf7OlB7Owik/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/the-eighth-v10" class="table-row-name text-bold">The Eighth</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="The Honeymilker, V11. Eldorado Canyon" href="/problems/eldorado-canyon/the-honeymilker-v11" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Honeymilker, V11. Eldorado Canyon" src="https://img.youtube.com/vi/5Elq2aCGsgs/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/the-honeymilker-v11" class="table-row-name text-bold">The Honeymilker</a>
+									</div>
+								</td>
+								<td>V11</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Weeping Gorilla, V10. Eldorado Canyon" href="/problems/eldorado-canyon/weeping-gorilla-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Weeping Gorilla, V10. Eldorado Canyon" src="https://img.youtube.com/vi/WqgUVAn7kUg/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/eldorado-canyon/weeping-gorilla-v10" class="table-row-name text-bold">Weeping Gorilla</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>South</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
