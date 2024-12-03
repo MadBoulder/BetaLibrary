@@ -96,7 +96,7 @@ Licensed under the MIT license
 		}
 
 		// define basic api endpoint
-		let apiURL = 'https://api.openweathermap.org/data/2.5/' + s.query + '?lang=' + s.lang;
+		let apiURL = 'https://api.openweathermap.org/data/3.0/' + s.query + '?lang=' + s.lang;
 
 		let weatherObj;
 
@@ -313,7 +313,7 @@ Licensed under the MIT license
 		});
 
 		function checkDaysSinceRain(lat, lng, key, callback) {
-			const daysToCheck = 3;
+			const daysToCheck = 5;
 			let daysSinceRain = 0;
 
 			const checkDay = (daysAgo) => {
@@ -324,23 +324,27 @@ Licensed under the MIT license
 
 				const dateToCheck = new Date();
 				dateToCheck.setDate(dateToCheck.getDate() - daysAgo);
-				const timestamp = Math.floor(dateToCheck / 1000);
+				const timestamp = Math.floor(dateToCheck.getTime() / 1000);
 
-				const apiUrl = `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${timestamp}&appid=${key}`;
+				const apiUrl = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${timestamp}&appid=${key}`;
 				$.ajax({
 					url: apiUrl,
 					method: 'GET',
 					success: function(data) {
 						let dailyPrecipitation = 0;
-
-						data.hourly.forEach(hour => {
-							if (hour.rain) {
-								dailyPrecipitation += hour.rain['1h'] ? hour.rain['1h'] : 0;
-							}
-							if (hour.snow) {
-								dailyPrecipitation += hour.snow['1h'] ? hour.snow['1h'] : 0;
-							}
-						});
+						
+						if (data.data && Array.isArray(data.data)) {
+							data.data.forEach(entry => {
+								if (entry.rain) {
+									dailyPrecipitation += entry.rain['1h'] || 0;
+								}
+								if (entry.snow) {
+									dailyPrecipitation += entry.snow['1h'] || 0;
+								}
+							});
+						} else {
+							console.error("Unexpected data structure: 'data' is not available or not an array.");
+						}
 
 						if (dailyPrecipitation > 0) {
 							callback(daysSinceRain);
@@ -349,8 +353,8 @@ Licensed under the MIT license
 							checkDay(daysAgo + 1);
 						}
 					},
-					error: function() {
-						console.log("Error fetching data for day", daysAgo);
+					error: function(xhr) {
+						console.log(`Error fetching data for day ${daysAgo}:`, xhr.responseText);
 						callback(daysSinceRain);
 					}
 				});
