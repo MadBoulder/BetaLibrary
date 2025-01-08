@@ -268,7 +268,17 @@ def upload_file():
 
     if uploaded_file:
         try:
-            upload_to_google_drive(uploaded_file)
+            name=request.form.get('name', '')
+            grade=request.form.get('grade', '')
+            zone=request.form.get('zone', '')
+            climber=request.form.get('climber', '')
+            sector=request.form.get('sector', '')
+            notes=request.form.get('notes', '')
+
+            renamed_file = rename_file(uploaded_file.filename, name, grade, zone)
+            file_id = upload_to_google_drive(uploaded_file, renamed_file)
+            
+            file_link = f"https://drive.google.com/file/d/{file_id}/view"
 
             permissionNewsletter = request.form.get('permission-newsletter')
             email = request.form.get('email', '')
@@ -276,17 +286,18 @@ def upload_file():
                 register_new_subscriber(email)
 
             send_email_new_video_beta(
-                climber=request.form.get('climber', ''),
+                climber=climber,
                 email=email,
-                name=request.form.get('name', ''),
-                grade=request.form.get('grade', ''),
-                zone=request.form.get('zone', ''),
-                sector=request.form.get('sector', ''),
-                notes=request.form.get('notes', ''),
-                filename=uploaded_file.filename
+                name=name,
+                grade=grade,
+                zone=zone,
+                sector=sector,
+                notes=notes,
+                filename=renamed_file,
+                file_link=file_link
             )
 
-            return jsonify({"message": "File uploaded and processed successfully"}), 200
+            return jsonify({"message": "File uploaded, renamed, and notification sent successfully"}), 200
         except Exception as e:
             print(f"Upload failed: {str(e)}")
             return jsonify({"error": "Internal server error occurred"}), 500
@@ -294,13 +305,13 @@ def upload_file():
         return jsonify({"error": "File upload failed. Please check your request."}), 400
 
 
-def upload_to_google_drive(file):
+def upload_to_google_drive(file, renamed_filename):
     print("upload_to_google_drive")
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
         if drive_service:
             CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
-            file_metadata = {'name': file.filename,
+            file_metadata = {'name': renamed_filename,
                              'parents': [CUSTOM_FOLDER_ID]}
                              
             video_content = file.read()
@@ -322,7 +333,8 @@ def upload_to_google_drive(file):
                     current_progress = status.progress() * 100
             current_progress = 100
 
-            print("Upload of {} is complete.".format(file.filename))
+            print("Upload of {} is complete.".format(renamed_filename))
+            return response.get('id')
         else:
             raise Exception("Upload failed: Couldn't create Drive service")
     except Exception as e:
@@ -334,29 +346,45 @@ def bytes_to_mb(bytes_value):
     return bytes_value / (1024 * 1024)
 
 
-def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename):
+def rename_file(original_filename, name, grade, zone):
+    # name format: "Name, Grade. Zone.mp4"
+    extension = original_filename.split('.')[-1]
+    renamed_filename = f"{name}, {grade}. {zone}.{extension}"
+    print(f"Renamed file to: {renamed_filename}")
+    return renamed_filename
+
+
+def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename, file_link):
     print("send_email_new_video_beta")
     try:
-        msg_body = 'Climber: {}\nEmail: {}\nName: {}\nGrade: {}\nZone: {}\nSector: {}\nNotes: {}\nFilename: {}\n'.format(
-            climber,
-            email,
-            name,
-            grade,
-            zone,
-            sector,
-            notes,
-            filename
-        )
-                
+        msg_body = f"""
+            A new video has been uploaded to MadBoulder.
+
+            Climber: {climber}
+            Email: {email}
+            Name: {name}
+            Grade: {grade}
+            Zone: {zone}
+            Sector: {sector}
+            Notes: {notes}
+
+            Filename: {filename}
+            Google Drive Link: {file_link}
+
+            Please review the video and proceed with the next steps.
+                    """
+         
+        subject = f"MadBoulder: New Video Uploaded by {climber}"
         msg = Message(
-            subject='MadBoulder New Video Beta Received',
+            subject=subject,
             sender=app.config.get('MAIL_USERNAME'),
             recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
             body=msg_body
         )
         
-        print("send email")
+        print("Sending email...")
         mail.send(msg)
+        print("Email sent successfully!")
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
         raise
