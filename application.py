@@ -18,6 +18,7 @@ import utils.helpers
 import utils.js_helpers
 import utils.zone_helpers
 import utils.MadBoulderDatabase
+import utils.channel
 import dashboard
 import dashboard_videos
 import re
@@ -36,6 +37,7 @@ import mailerlite as MailerLite
 import google.auth
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 
@@ -277,8 +279,6 @@ def upload_file():
 
             renamed_file = rename_file(uploaded_file.filename, name, grade, zone)
             file_id = upload_to_google_drive(uploaded_file, renamed_file)
-            
-            file_link = f"https://drive.google.com/file/d/{file_id}/view"
 
             permissionNewsletter = request.form.get('permission-newsletter')
             email = request.form.get('email', '')
@@ -294,7 +294,7 @@ def upload_file():
                 sector=sector,
                 notes=notes,
                 filename=renamed_file,
-                file_link=file_link
+                file_id=file_id
             )
 
             return jsonify({"message": "File uploaded, renamed, and notification sent successfully"}), 200
@@ -354,7 +354,7 @@ def rename_file(original_filename, name, grade, zone):
     return renamed_filename
 
 
-def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename, file_link):
+def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename, file_id):
     print("send_email_new_video_beta")
     try:
         msg_body = f"""
@@ -369,9 +369,14 @@ def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, 
             Notes: {notes}
 
             Filename: {filename}
-            Google Drive Link: {file_link}
+            Google Drive Link: https://drive.google.com/file/d/{file_id}/view
 
-            Please review the video and proceed with the next steps.
+            <form action="https://madboulder.org/process-upload-youtube-from-drive" method="POST">
+                <input type="hidden" name="drive_link" value="{file_id}">
+                <button type="submit" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+                    Upload to YouTube
+                </button>
+            </form>
                     """
          
         subject = f"MadBoulder: New Video Uploaded by {climber}"
@@ -402,7 +407,6 @@ def empty_google_drive():
         print(f"Total drive space: {total_space_mb:.2f} MB")
         print(f"Available drive space before emptying: {available_space_mb:.2f} MB")
         
-        
         file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
 
         for file in file_list:
@@ -427,6 +431,63 @@ def get_progress():
 @app.route('/upload-completed', methods=['GET'])
 def upload_completed():
     return render_template('thanks-for-uploading.html')
+
+
+@app.route('/process-upload-youtube-from-drive/<file_id>', methods=['GET'])
+def process_upload_youtube_from_drive(file_id):
+    print("process_upload_youtube_from_drive")
+    try:
+        #file_id = request.json.get('drive_id')
+        #title = request.json.get('title', 'Untitled Video')
+        #description = request.json.get('description', '')
+        #tags = request.json.get('tags', [])
+        #privacy_status = request.json.get('privacy_status', 'private')
+        if not file_id:
+            return "No Google Drive id provided", 400
+        
+        print("process_upload_youtube_from_drive 2")
+        video_stream = get_video_stream_from_drive(file_id)
+        print("video stream from Drive ready")
+        response = utils.channel.uploadVideo(video_stream, 'Untitled Video', '', '', 'private')
+        print("videos uploaded to Youtube")
+
+        return generate_success_page(response['id'])
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def get_video_stream_from_drive(file_id):
+    drive_service = build('drive', 'v3', credentials=credentials)
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+        print(f"Download progress: {int(status.progress() * 100)}%")
+    fh.seek(0)
+    return fh
+
+
+def generate_success_page(video_id):
+    youtube_url = f"https://studio.youtube.com/video/{video_id}/edit"
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Upload Successful</title>
+    </head>
+    <body>
+        <h1>Video Upload Successful</h1>
+        <p>Continue the edition in Youtube Studio:</p>
+        
+        <a href="{youtube_url}">{youtube_url}</a>
+    </body>
+    </html>
+    """
 
 
 @app.route('/login', methods=['GET'])
