@@ -19,6 +19,7 @@ import utils.js_helpers
 import utils.zone_helpers
 import utils.MadBoulderDatabase
 import utils.channel
+import utils.drive
 import dashboard
 import dashboard_videos
 import re
@@ -29,21 +30,16 @@ from dotenv import load_dotenv
 import traceback
 import requests
 import utils.searchManager
+from textwrap import dedent
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
 import mailerlite as MailerLite
 
-import google.auth
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-from googleapiclient.http import MediaIoBaseDownload
-from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 
 from google.cloud import recaptchaenterprise_v1
 from google.cloud.recaptchaenterprise_v1 import Assessment
-
 
 
 EXTENSION = '.html'
@@ -286,7 +282,7 @@ def upload_file():
                 'sector': sector,
                 'notes': notes
             }
-            file_id = upload_to_google_drive(uploaded_file, renamed_file, properties)
+            file_id = utils.drive.upload(uploaded_file, renamed_file, properties)
 
             permissionNewsletter = request.form.get('permission-newsletter')
             email = request.form.get('email', '')
@@ -313,50 +309,6 @@ def upload_file():
         return jsonify({"error": "File upload failed. Please check your request."}), 400
 
 
-def upload_to_google_drive(file, renamed_filename, properties):
-    print("upload_to_google_drive")
-    try:
-        drive_service = build('drive', 'v3', credentials=credentials)
-        if drive_service:
-            CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
-            file_metadata = {
-                'filename': renamed_filename,
-                'parents': [CUSTOM_FOLDER_ID],
-                'appProperties': properties
-            }
-                             
-            video_content = file.read()
-            media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
-            
-            request = drive_service.files().create(
-                body=file_metadata,
-                media_body=media,
-                fields='id'
-            )
-                        
-            response = None
-            global current_progress
-            current_progress = 0
-            while response is None:
-                status, response = request.next_chunk()
-                if status:
-                    print("Uploaded %d%%." % int(status.progress() * 100))
-                    current_progress = status.progress() * 100
-            current_progress = 100
-
-            print("Upload of {} is complete.".format(renamed_filename))
-            return response.get('id')
-        else:
-            raise Exception("Upload failed: Couldn't create Drive service")
-    except Exception as e:
-        raise Exception(e)
-        
-
-def bytes_to_mb(bytes_value):
-    """Convert bytes to megabytes."""
-    return bytes_value / (1024 * 1024)
-
-
 def rename_file(original_filename, name, grade, zone):
     # name format: "Name, Grade. Zone.mp4"
     extension = original_filename.split('.')[-1]
@@ -368,6 +320,7 @@ def rename_file(original_filename, name, grade, zone):
 def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename, file_id):
     print("send_email_new_video_beta")
     try:
+        fileLink = utils.drive.getFileLink(file_id)
         msg_body = f"""
             A new video has been uploaded to MadBoulder.
 
@@ -380,14 +333,13 @@ def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, 
             Notes: {notes}
 
             Filename: {filename}
-            Google Drive Link: https://drive.google.com/file/d/{file_id}/view
+            Google Drive Link: {fileLink}
 
-            <form action="https://madboulder.org/upload-hub" method="GET">
-                <input type="hidden" name="file_id" value="{file_id}">
-                <button type="submit" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
-                    Upload to YouTube
-                </button>
-            </form>
+            <a href="https://madboulder.org/upload-hub?file_id={file_id}" 
+                style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; text-align: center;"
+            >
+                Upload to YouTube
+            </a>
                     """
          
         subject = f"MadBoulder: New Video Uploaded by {climber}"
@@ -404,47 +356,6 @@ def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, 
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
         raise
-        
-
-def empty_google_drive():
-    try:
-        drive_service = build('drive', 'v3', credentials=credentials)
-
-        about_info_before = drive_service.about().get(fields='storageQuota').execute()
-        used_before_mb = bytes_to_mb(int(about_info_before['storageQuota']['usage']))
-        total_space_mb = bytes_to_mb(int(about_info_before['storageQuota']['limit']))
-        available_space_mb = total_space_mb - used_before_mb
-        print(f"Drive space used before emptying: {used_before_mb:.2f} MB")
-        print(f"Total drive space: {total_space_mb:.2f} MB")
-        print(f"Available drive space before emptying: {available_space_mb:.2f} MB")
-        
-        file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
-
-        for file in file_list:
-            print(file)
-            drive_service.files().delete(fileId=file['id']).execute()
-
-        drive_service.files().emptyTrash().execute()
-
-        about_info_after = drive_service.about().get(fields='storageQuota').execute()
-        used_after_mb = bytes_to_mb(int(about_info_after['storageQuota']['usage']))
-        print(f"Drive space used after emptying: {used_after_mb:.2f} MB")
-    
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-
-def get_file_metadata(file_id):
-    try:
-        drive_service = build('drive', 'v3', credentials=credentials)
-        file_metadata = drive_service.files().get(
-            fileId=file_id,
-            fields="filename, properties, thumbnailLink"
-        ).execute()
-        return file_metadata
-    except Exception as e:
-        print(f"Error fetching file metadata: {e}")
-        return None
 
 
 @app.route('/progress', methods=['GET'])
@@ -472,12 +383,11 @@ def upload_hub():
     if not isAuthenticated:
             return render_template('upload-hub.html', authenticated=False, file_id=file_id)
     else:
-
-        metadata = get_file_metadata(file_id)
+        metadata = utils.drive.getFileMetadata(file_id)
         if not metadata:
             return "Error fetching metadata from Google Drive.", 500
         
-        filename = metadata.get('filename', 'Unknown File')
+        filename = metadata.get('name', 'Unknown File')
         title = os.path.splitext(filename)[0]
 
         thumbnail = metadata.get('thumbnailLink')
@@ -489,8 +399,9 @@ def upload_hub():
         zone = properties.get('zone', 'Unknown Zone')
         zone_code = slugify(zone)
         sector = properties.get('sector', '')
+        sector_code = slugify(sector)
 
-        description = f"""
+        description = dedent(f"""
             Climber: {climber}
             Name: {name}
             Grade: {grade}
@@ -511,15 +422,15 @@ def upload_hub():
             ➞ Official Merch Store: https://shop.madboulder.org/
 
             #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}
-        """
+        """)
 
         tags = [
             "madboulder", "boulder", "bouldering", "escalada", "climbing", "bloc",
             "escalade", "climb", "climber", "mad boulder", "bloque", "klettern",
             "arrampicata", "boulder beta", "beta library", "escalada en roca",
             "rock climbing", f"{zone} Boulder", f"{zone} bouldering", f"{zone} {grade}",
-            f"{zone}", f"{zone}climbing", f"{name} {grade}", f"{name} {grade} {zone}",
-            f"{name}{zone}", f"{name}"
+            f"{zone}", f"{zone} climbing", f"{name} {grade}", f"{name} {grade} {zone}",
+            f"{name} {zone}", f"{name}"
         ]
 
         context = {
@@ -528,7 +439,9 @@ def upload_hub():
             "title": title,
             "description": description,
             "tags": ", ".join(tags),
-            "thumbnail": thumbnail
+            "thumbnail": thumbnail,
+            "zone_code": zone_code,
+            "sector_code": sector_code
         }
         return render_template('upload-hub.html', **context)
 
@@ -560,30 +473,36 @@ def process_upload_youtube_from_drive():
         title = request.form['title']
         description = request.form['description']
         tags = request.form.getlist('tags')
+        zone_code = request.form['zone_code']
+        sector_code = request.form['sector_code']
         
         print("process_upload_youtube_from_drive 2")
-        video_stream = get_video_stream_from_drive(file_id)
+        video_stream = utils.drive.getVideoStream(file_id)
         print("video stream from Drive ready")
         response = utils.channel.uploadVideo(video_stream, title, description, tags, 'private')
-        print("videos uploaded to Youtube")
+        uploadedVideoId = response['id']
+        print("video uploaded to Youtube")
+        
+        print(f"adding video to playlist {zone_code}")
+        playlists = utils.MadBoulderDatabase.getPlaylistData(zone_code)
+        zonePlaylistId = playlists.get("id")
+        sectorPlaylists = playlists.get("sectors", {})
 
-        return generate_success_page(response['id'])
+        if zonePlaylistId:
+            utils.channel.addVideoToPlaylist(uploadedVideoId, zonePlaylistId)
+
+        if sector_code in sectorPlaylists:
+            print("adding video to sector playlist")
+            sectorPlaylistId = sectorPlaylists[sector_code]["id"]
+            utils.channel.addVideoToPlaylist(uploadedVideoId, sectorPlaylistId)
+
+        print("enabling video monetization")
+        utils.channel.enableMonetization(uploadedVideoId)
+
+        return generate_success_page(uploadedVideoId)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
-def get_video_stream_from_drive(file_id):
-    drive_service = build('drive', 'v3', credentials=credentials)
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print(f"Download progress: {int(status.progress() * 100)}%")
-    fh.seek(0)
-    return fh
 
 
 def generate_success_page(video_id):
