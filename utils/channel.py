@@ -21,7 +21,11 @@ MAX_ITEMS_API_QUERY = 50
 CLIENT_SECRET_FILE = 'madboulder_channel.json'
 API_NAME = 'youtube'
 API_VERSION = 'v3'
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+SCOPES = [
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/youtube.force-ssl',
+    'https://www.googleapis.com/auth/youtube'
+]
 TOKEN_FILE = 'token.json'
 
 youtube = build(API_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY)
@@ -110,6 +114,50 @@ def searchForVideosByName(videoName, results=5):
     return response
 
 
+def addVideoToPlaylist(videoId, playlistId):
+    credentials = getCredentials()
+    youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+    request = youtubeOauth.playlistItems().insert(
+        part="snippet",
+        body={
+            "snippet": {
+                "playlistId": playlistId,
+                "resourceId": {
+                    "kind": "youtube#video",
+                    "videoId": videoId
+                }
+            }
+        }
+    )
+    request.execute()
+
+
+def enableMonetization(videoId):
+    try:
+        credentials = getCredentials()
+        youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+        request_body = {
+            "id": videoId,
+            "status": {
+                "selfDeclaredMadeForKids": False,
+                "monetizationDetails": {
+                    "access": "allowed"
+                }
+            }
+        }
+
+        response = youtubeOauth.videos().update(
+            part="status",
+            body=request_body
+        ).execute()
+
+        print(f"Monetization enabled for video: {videoId}")
+        return response
+    except Exception as e:
+        print(f"Error enabling monetization for video {videoId}: {e}")
+        return None
+
+
 def getEmbedUrl(id):
     return f"https://www.youtube.com/embed/{id}"
 
@@ -118,19 +166,16 @@ def getUrl(id):
     return f"https://www.youtube.com/watch?v={id}"
 
 
-
-
-
 def uploadVideo(videoStream, title, description, tags, privacyStatus='private'):
     print("uploadVideo youtube")
     try:
         credentials = getCredentials()
-        youtube = build(API_NAME, API_VERSION, credentials=credentials)
+        youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
         
         media_body = MediaIoBaseUpload(videoStream, mimetype='video/mp4', resumable=True)
 
 
-        request = youtube.videos().insert(
+        request = youtubeOauth.videos().insert(
             part="snippet,status",
             body={
                 "snippet": {
@@ -203,28 +248,7 @@ def oauth2callback(authorization_response):
     flow.fetch_token(authorization_response=authorization_response)
     saveToken(flow.credentials)
 
+
 def saveToken(credentials):
     with open(TOKEN_FILE, 'w') as token_file:
             token_file.write(credentials.to_json())
-
-#DEPRECATED
-def authenticate_youtube():
-    credentials = None
-    # Check if the credentials are already saved (e.g. after the user has authenticated)
-    if os.path.exists('token.json'):
-        credentials = Credentials.from_authorized_user_file('token.json', SCOPES)
-    
-    # If no valid credentials, start the OAuth flow
-    if not credentials or not credentials.valid:
-        if credentials and credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request()) # type: ignore
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CLIENT_SECRET_FILE, SCOPES)
-            credentials = flow.run_local_server(port=53011)
-        
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(credentials.to_json())
-
-    return credentials
