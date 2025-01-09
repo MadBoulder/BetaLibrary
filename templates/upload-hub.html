@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MadBoulder Upload Hub</title>
+</head>
+<body>
+    <h1>MadBoulder Upload Hub</h1>
+    
+    {% if authenticated %}
+        <p>You are authenticated with Google.</p>
+        <p>Ready to upload video for file ID: {{ file_id }}</p>
+		{% if thumbnail %}
+			<p>Preview:</p>
+			<img src="{{ thumbnail }}" alt="Thumbnail of the file" style="max-width: 300px; border: 1px solid #ccc;">
+		{% else %}
+			<p>No preview available for this file.</p>
+		{% endif %}
+        <form action="/process-upload-youtube-from-drive" method="post">
+            <label for="title">Title:</label>
+			<input type="text" id="title" name="title" value="{{ title }}" required><br>
+            
+            <label for="description">Description:</label>
+			<textarea id="description" name="description" required>{{ description }}</textarea><br>
+            
+            <label for="tags">Tags (comma-separated):</label>
+    		<input type="text" id="tags" name="tags" value="{{ tags }}"><br>
+            
+            <button type="submit">Upload Video</button>
+        </form>
+    {% else %}
+        <p>You are not authenticated with Google.</p>
+        <a href="/authenticate">Click here to authenticate</a>
+    {% endif %}
+</body>
+</html>

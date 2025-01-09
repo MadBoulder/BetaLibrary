@@ -278,7 +278,15 @@ def upload_file():
             notes=request.form.get('notes', '')
 
             renamed_file = rename_file(uploaded_file.filename, name, grade, zone)
-            file_id = upload_to_google_drive(uploaded_file, renamed_file)
+            properties = {
+                'name': name,
+                'grade': grade,
+                'zone': zone,
+                'climber': climber,
+                'sector': sector,
+                'notes': notes
+            }
+            file_id = upload_to_google_drive(uploaded_file, renamed_file, properties)
 
             permissionNewsletter = request.form.get('permission-newsletter')
             email = request.form.get('email', '')
@@ -305,14 +313,17 @@ def upload_file():
         return jsonify({"error": "File upload failed. Please check your request."}), 400
 
 
-def upload_to_google_drive(file, renamed_filename):
+def upload_to_google_drive(file, renamed_filename, properties):
     print("upload_to_google_drive")
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
         if drive_service:
             CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
-            file_metadata = {'name': renamed_filename,
-                             'parents': [CUSTOM_FOLDER_ID]}
+            file_metadata = {
+                'filename': renamed_filename,
+                'parents': [CUSTOM_FOLDER_ID],
+                'appProperties': properties
+            }
                              
             video_content = file.read()
             media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
@@ -371,8 +382,8 @@ def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, 
             Filename: {filename}
             Google Drive Link: https://drive.google.com/file/d/{file_id}/view
 
-            <form action="https://madboulder.org/process-upload-youtube-from-drive" method="POST">
-                <input type="hidden" name="drive_link" value="{file_id}">
+            <form action="https://madboulder.org/upload-hub" method="GET">
+                <input type="hidden" name="file_id" value="{file_id}">
                 <button type="submit" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
                     Upload to YouTube
                 </button>
@@ -423,6 +434,19 @@ def empty_google_drive():
         print(f"An unexpected error occurred: {e}")
 
 
+def get_file_metadata(file_id):
+    try:
+        drive_service = build('drive', 'v3', credentials=credentials)
+        file_metadata = drive_service.files().get(
+            fileId=file_id,
+            fields="filename, properties, thumbnailLink"
+        ).execute()
+        return file_metadata
+    except Exception as e:
+        print(f"Error fetching file metadata: {e}")
+        return None
+
+
 @app.route('/progress', methods=['GET'])
 def get_progress():
     return jsonify({'progress': current_progress})
@@ -433,22 +457,114 @@ def upload_completed():
     return render_template('thanks-for-uploading.html')
 
 
-@app.route('/process-upload-youtube-from-drive/<file_id>', methods=['GET'])
-def process_upload_youtube_from_drive(file_id):
+@app.route('/upload-hub')
+def upload_hub():
+    file_id = request.args.get('file_id')
+    if file_id:
+        session['file_id'] = file_id  # Save file_id in session for redirection
+    else:
+        file_id = session.get('file_id')  # Use stored file_id if available
+
+    if not file_id:
+        return "Error: No file ID provided.", 400
+
+    isAuthenticated = utils.channel.is_authenticated()
+    if not isAuthenticated:
+            return render_template('upload-hub.html', authenticated=False, file_id=file_id)
+    else:
+
+        metadata = get_file_metadata(file_id)
+        if not metadata:
+            return "Error fetching metadata from Google Drive.", 500
+        
+        filename = metadata.get('filename', 'Unknown File')
+        title = os.path.splitext(filename)[0]
+
+        thumbnail = metadata.get('thumbnailLink')
+
+        properties = metadata.get('properties', {})
+        climber = properties.get('climber', 'Unknown Climber')
+        name = properties.get('name', 'Unknown Problem')
+        grade = properties.get('grade', '')
+        zone = properties.get('zone', 'Unknown Zone')
+        zone_code = slugify(zone)
+        sector = properties.get('sector', '')
+
+        description = f"""
+            Climber: {climber}
+            Name: {name}
+            Grade: {grade}
+            Zone: {zone}
+            Sector: {sector}
+
+            Is this not the correct line or beta? Please tell us!
+
+            Do you have a beta recorded? Share it with us and help all the community. DM us in IG @madboulder for more details or upload it here:  https://www.madboulder.org/upload
+
+            ➞ {zone} Bouldering https://www.madboulder.org/{zone_code}
+
+            ➞ VISIT https://www.madboulder.org and discover all our content!
+
+            ➞ SUBSCRIBE to MadBoulder: https://www.youtube.com/c/MadBoulder
+
+            Do you enjoy our content? Please consider supporting what we do:
+            ➞ Official Merch Store: https://shop.madboulder.org/
+
+            #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}
+        """
+
+        tags = [
+            "madboulder", "boulder", "bouldering", "escalada", "climbing", "bloc",
+            "escalade", "climb", "climber", "mad boulder", "bloque", "klettern",
+            "arrampicata", "boulder beta", "beta library", "escalada en roca",
+            "rock climbing", f"{zone} Boulder", f"{zone} bouldering", f"{zone} {grade}",
+            f"{zone}", f"{zone}climbing", f"{name} {grade}", f"{name} {grade} {zone}",
+            f"{name}{zone}", f"{name}"
+        ]
+
+        context = {
+            "authenticated": isAuthenticated,
+            "file_id": file_id,
+            "title": title,
+            "description": description,
+            "tags": ", ".join(tags),
+            "thumbnail": thumbnail
+        }
+        return render_template('upload-hub.html', **context)
+
+@app.route('/authenticate')
+def authenticate():
+    local=request.host.startswith('localhost') or request.host.startswith('127.0.0.1')
+    return utils.channel.authenticate(local)    
+
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    authorization_response=request.url
+    utils.channel.oauth2callback(authorization_response)
+
+    return redirect(url_for('upload_hub'))
+
+
+@app.route('/process-upload-youtube-from-drive', methods=['POST'])
+def process_upload_youtube_from_drive():
     print("process_upload_youtube_from_drive")
     try:
-        #file_id = request.json.get('drive_id')
-        #title = request.json.get('title', 'Untitled Video')
-        #description = request.json.get('description', '')
-        #tags = request.json.get('tags', [])
-        #privacy_status = request.json.get('privacy_status', 'private')
+        if not utils.channel.is_authenticated():
+            return redirect(url_for('authenticate'))
+        
+        file_id = session.get('file_id')
         if not file_id:
-            return "No Google Drive id provided", 400
+            return "Error: No file ID available.", 400
+        
+        title = request.form['title']
+        description = request.form['description']
+        tags = request.form.getlist('tags')
         
         print("process_upload_youtube_from_drive 2")
         video_stream = get_video_stream_from_drive(file_id)
         print("video stream from Drive ready")
-        response = utils.channel.uploadVideo(video_stream, 'Untitled Video', '', '', 'private')
+        response = utils.channel.uploadVideo(video_stream, title, description, tags, 'private')
         print("videos uploaded to Youtube")
 
         return generate_success_page(response['id'])
