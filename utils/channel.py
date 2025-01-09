@@ -1,16 +1,17 @@
 
 import os
 import google.auth
+from flask import url_for, redirect
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
+import requests
+from google.auth.transport.requests import Request
 
-
-from google.oauth2.credentials import Credentials
-from google.oauth2 import service_account
+from google_auth_oauthlib.flow import Flow
 
 
 load_dotenv()
@@ -20,6 +21,8 @@ MAX_ITEMS_API_QUERY = 50
 CLIENT_SECRET_FILE = 'madboulder_channel.json'
 API_NAME = 'youtube'
 API_VERSION = 'v3'
+SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+TOKEN_FILE = 'token.json'
 
 youtube = build(API_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY)
 channelId='UCX9ok0rHnvnENLSK7jdnXxA'
@@ -115,10 +118,13 @@ def getUrl(id):
     return f"https://www.youtube.com/watch?v={id}"
 
 
+
+
+
 def uploadVideo(videoStream, title, description, tags, privacyStatus='private'):
     print("uploadVideo youtube")
     try:
-        credentials = authenticate_youtube()
+        credentials = getCredentials()
         youtube = build(API_NAME, API_VERSION, credentials=credentials)
         
         media_body = MediaIoBaseUpload(videoStream, mimetype='video/mp4', resumable=True)
@@ -141,16 +147,67 @@ def uploadVideo(videoStream, title, description, tags, privacyStatus='private'):
         )
 
         response = request.execute()
+        print("Upload successful:", response)
         return response
 
     except Exception as e:
         raise Exception(f"Error uploading video to YouTube: {str(e)}")
     
 
+def getCredentials():
+    credentials = None
+    
+    if os.path.exists(TOKEN_FILE):
+        credentials = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+
+        if not credentials or not credentials.valid:
+            if credentials and credentials.expired and credentials.refresh_token:
+                credentials.refresh(Request()) # type: ignore
+        
+    return credentials
 
 
+def is_authenticated():
+    credentials = getCredentials()
+    if not credentials:
+        return False
+    return credentials.valid
 
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+
+def authenticate(local):
+    if local:
+        credentials = getCredentials()
+        if not credentials or not credentials.valid:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                CLIENT_SECRET_FILE, SCOPES)
+            credentials = flow.run_local_server(
+                port=53011,
+                access_type='offline',
+                prompt='consent'
+            )
+            saveToken(credentials)
+
+        return redirect(url_for('upload_hub'))
+    else:
+        flow = Flow.from_client_secrets_file(
+            CLIENT_SECRET_FILE, scopes=SCOPES, redirect_uri=url_for('oauth2callback', _external=True)
+        )
+        authorization_url, _ = flow.authorization_url(prompt='consent')
+        return redirect(authorization_url)
+
+
+def oauth2callback(authorization_response):
+    flow = Flow.from_client_secrets_file(
+        CLIENT_SECRET_FILE, scopes=SCOPES, redirect_uri=url_for('oauth2callback', _external=True)
+    )
+    flow.fetch_token(authorization_response=authorization_response)
+    saveToken(flow.credentials)
+
+def saveToken(credentials):
+    with open(TOKEN_FILE, 'w') as token_file:
+            token_file.write(credentials.to_json())
+
+#DEPRECATED
 def authenticate_youtube():
     credentials = None
     # Check if the credentials are already saved (e.g. after the user has authenticated)
