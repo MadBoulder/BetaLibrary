@@ -25,9 +25,9 @@
 			<div id="upload-container" class="form-container">
 				<form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data" class="shadow-lg mx-auto">
 					<div class="form-section full-width">
-						<label class="text-bold">{{ _("Climber") }}*</label>
+						<label for="climber-input" class="text-bold">{{ _("Climber") }}*</label>
 						<input type="text" name="climber" id="climber-input" autocomplete="off" value="{{ user_data.climber_id if user_data and user_data.climber_id else '' }}" required>
-						<div id="climber-suggestions" class="suggestions-list"></div>
+						<div id="climber-suggestions" class="suggestions-container"></div>
 					</div>
 					{% if not user_data %}
 						<div class="form-section full-width">
@@ -39,17 +39,19 @@
 						<label class="text-bold">{{ _("Problem") }}*</label>
 						<input type="text" name="name" required>
 					</div>
-					<div class="form-section full-width" >
-						<label class="text-bold">{{ _("Area") }}*</label>
-						<input type="text" name="zone" required>
+					<div class="form-section full-width">
+					  <label for="area-input" class="text-bold">{{ _("Area") }}*</label>
+					  <input type="text" id="area-input" name="area" autocomplete="off" required/>
+					  <div id="area-suggestions" class="suggestions-container"></div>
 					</div>
 					<div class="form-section" style="grid-column: span 1 / span 1;">
 						<label class="text-bold">{{ _("Grade") }}</label>
 						<input type="text" name="grade">
 					</div>
-					<div class="form-section" style="grid-column: span 1 / span 1;">
+					<div for="sector-input" class="form-section" style="grid-column: span 1 / span 1;">
 						<label class="text-bold">{{ _("Sector") }}</label>
-						<input type="text" name="sector">
+						<input type="text" id="sector-input" name="sector" autocomplete="off">
+						<div id="sector-suggestions" class="suggestions-container"></div>
 					</div>
 					<div  class="form-section full-width">
 						<label class="text-bold">{{ _("Notes") }}</label>
@@ -99,16 +101,25 @@
 				<br />
 				<script>
     				const climbers = {{ climbers | tojson }};
+    				const areas = {{ areas | tojson }};
 
 					const state = {
 						activeIndex: -1,
 						currentSuggestions: [],
 						currentField: '',
+						selectedArea: null,
 					};
 
 					function filterSuggestions(input, data) {
 						const query = input.value.toLowerCase();
-						return data.filter(item => item.toLowerCase().includes(query));
+						return data.filter(item => {
+							if (typeof item === "string") {
+								return item.toLowerCase().includes(query);
+							} else if (item && typeof item === "object" && item.name) {
+								return item.name.toLowerCase().includes(query);
+							}
+							return false;
+						});
 					}
 
 					function updateSuggestions(field, input, suggestions) {
@@ -124,7 +135,7 @@
 							filteredSuggestions.forEach((suggestion, index) => {
 								const suggestionItem = document.createElement('div');
 								suggestionItem.className = 'suggestion-item';
-								suggestionItem.textContent = suggestion;
+								suggestionItem.textContent = typeof suggestion === "string" ? suggestion : suggestion.name;
 								suggestionItem.setAttribute('data-index', index);
 								suggestionItem.onclick = () => selectSuggestion(field, suggestion);
 								suggestionsContainer.appendChild(suggestionItem);
@@ -136,13 +147,29 @@
 					}
 
 					function selectSuggestion(field, suggestion) {
-						document.getElementById(`${field}-input`).value = suggestion;
+						document.getElementById(`${field}-input`).value = typeof suggestion === "string" ? suggestion : suggestion.name;
+
 						hideSuggestions(field);
+
+						if (field === 'area') {
+							state.selectedArea = suggestion;
+							updateSectorSuggestions(suggestion);
+						}
+					}
+
+					function updateSectorSuggestions(selectedArea) {
+						const sectorInput = document.getElementById('sector-input');
+						sectorInput.value = '';
+
+						const sectorSuggestions = selectedArea.sectors || [];
+						updateSuggestions('sector', sectorInput, sectorSuggestions);
 					}
 
 					function hideSuggestions(field) {
 						const suggestionsContainer = document.getElementById(`${field}-suggestions`);
-						suggestionsContainer.style.display = 'none';
+						if (suggestionsContainer) {
+							suggestionsContainer.style.display = 'none';
+						}
 						state.currentSuggestions = [];
 						state.activeIndex = -1;
 						state.currentField = '';
@@ -201,8 +228,66 @@
 					climberInput.addEventListener('input', function () {
 						updateSuggestions('climber', this, climbers);
 					});
+					climberInput.addEventListener('focus', function () {
+						updateSuggestions('climber', this, climbers);
+					});
 					climberInput.addEventListener('keydown', function (event) {
 						handleInputKeyDown(event, 'climber');
+					});
+
+					const areaInput = document.getElementById('area-input');
+					areaInput.addEventListener('input', function () {
+						const areaSuggestions = Object.values(areas);
+						updateSuggestions('area', this, areaSuggestions);
+					});
+					areaInput.addEventListener('focus', function () {
+						const areaSuggestions = Object.values(areas);
+						updateSuggestions('area', this, areaSuggestions);
+					});
+					areaInput.addEventListener('keydown', function (event) {
+						handleInputKeyDown(event, 'area');
+					});
+					areaInput.addEventListener('blur', function () {
+						const areaSuggestions = Object.values(areas);
+						const inputValue = this.value.trim().toLowerCase();
+						
+						const matchingArea = areaSuggestions.find(area => {
+							const areaName = typeof area === "string" ? area : area.name;
+							return areaName.toLowerCase() === inputValue;
+						});
+
+						if (matchingArea) {
+							selectSuggestion('area', matchingArea);
+						} else {
+							state.selectedArea = null;
+							document.getElementById('sector-input').value = '';
+							hideSuggestions('sector');
+						}
+					});
+
+					const sectorInput = document.getElementById('sector-input');
+					sectorInput.addEventListener('input', function () {
+						const sectorSuggestions = state.selectedArea ? state.selectedArea.sectors : [];
+						updateSuggestions('sector', this, sectorSuggestions);
+					});
+					sectorInput.addEventListener('focus', function () {
+						const sectorSuggestions = state.selectedArea ? state.selectedArea.sectors : [];
+						updateSuggestions('sector', this, sectorSuggestions);
+					});
+					sectorInput.addEventListener('keydown', function (event) {
+						handleInputKeyDown(event, 'sector');
+					});
+
+					document.addEventListener('click', function (event) {
+						const activeField = state.currentField;
+						if (!activeField) return;
+
+						const input = document.getElementById(`${activeField}-input`);
+						const suggestionsContainer = document.getElementById(`${activeField}-suggestions`);
+
+						if (!input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+							hideSuggestions(activeField);
+						}
 					});
 				</script>
 				<script>
