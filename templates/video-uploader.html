@@ -24,9 +24,10 @@
 		<div class="container">
 			<div id="upload-container" class="form-container">
 				<form id="upload-form" action="/upload-file" method="post" enctype="multipart/form-data" class="shadow-lg mx-auto">
-					<div class="form-section full-width" >
+					<div class="form-section full-width">
 						<label class="text-bold">{{ _("Climber") }}*</label>
-						<input type="text" name="climber" value="{{ user_data.climber_id if user_data and user_data.climber_id else '' }}" required>
+						<input type="text" name="climber" id="climber-input" autocomplete="off" value="{{ user_data.climber_id if user_data and user_data.climber_id else '' }}" required>
+						<div id="climber-suggestions" class="suggestions-list"></div>
 					</div>
 					{% if not user_data %}
 						<div class="form-section full-width">
@@ -96,7 +97,114 @@
 				)}}
 			  </div>
 				<br />
-				
+				<script>
+    				const climbers = {{ climbers | tojson }};
+
+					const state = {
+						activeIndex: -1,
+						currentSuggestions: [],
+						currentField: '',
+					};
+
+					function filterSuggestions(input, data) {
+						const query = input.value.toLowerCase();
+						return data.filter(item => item.toLowerCase().includes(query));
+					}
+
+					function updateSuggestions(field, input, suggestions) {
+						const suggestionsContainer = document.getElementById(`${field}-suggestions`);
+						suggestionsContainer.innerHTML = '';
+
+						const filteredSuggestions = filterSuggestions(input, suggestions);
+						state.currentSuggestions = filteredSuggestions;
+						state.activeIndex = -1;
+						state.currentField = field;
+
+						if (filteredSuggestions.length > 0) {
+							filteredSuggestions.forEach((suggestion, index) => {
+								const suggestionItem = document.createElement('div');
+								suggestionItem.className = 'suggestion-item';
+								suggestionItem.textContent = suggestion;
+								suggestionItem.setAttribute('data-index', index);
+								suggestionItem.onclick = () => selectSuggestion(field, suggestion);
+								suggestionsContainer.appendChild(suggestionItem);
+							});
+							suggestionsContainer.style.display = 'block';
+						} else {
+							hideSuggestions(field);
+						}
+					}
+
+					function selectSuggestion(field, suggestion) {
+						document.getElementById(`${field}-input`).value = suggestion;
+						hideSuggestions(field);
+					}
+
+					function hideSuggestions(field) {
+						const suggestionsContainer = document.getElementById(`${field}-suggestions`);
+						suggestionsContainer.style.display = 'none';
+						state.currentSuggestions = [];
+						state.activeIndex = -1;
+						state.currentField = '';
+					}
+					
+					function highlightSuggestion(field, index) {
+						const suggestionsContainer = document.getElementById(`${field}-suggestions`);
+						const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+
+						items.forEach((item, idx) => {
+							if (idx === index) {
+								item.classList.add('highlighted');
+								ensureVisible(item);
+							} else {
+								item.classList.remove('highlighted');
+							}
+						});
+					}
+
+					function ensureVisible(element) {
+						const container = element.parentElement;
+						const containerRect = container.getBoundingClientRect();
+						const elementRect = element.getBoundingClientRect();
+
+						if (elementRect.top < containerRect.top) {
+							container.scrollTop -= containerRect.top - elementRect.top;
+						} else if (elementRect.bottom > containerRect.bottom) {
+							container.scrollTop += elementRect.bottom - containerRect.bottom;
+						}
+					}
+
+					function handleInputKeyDown(event, field) {
+						const { activeIndex, currentSuggestions } = state;
+
+						if (event.key === 'ArrowDown') {
+							event.preventDefault();
+							const nextIndex = (activeIndex + 1) % currentSuggestions.length;
+							state.activeIndex = nextIndex;
+							highlightSuggestion(field, nextIndex);
+						} else if (event.key === 'ArrowUp') {
+							event.preventDefault();
+							const prevIndex = (activeIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
+							state.activeIndex = prevIndex;
+							highlightSuggestion(field, prevIndex);
+						} else if (event.key === 'Enter') {
+							event.preventDefault();
+							if (activeIndex >= 0) {
+								selectSuggestion(field, currentSuggestions[activeIndex]);
+							}
+						} else if (event.key === 'Escape') {
+							hideSuggestions(field);
+						}
+					}
+
+					const climberInput = document.getElementById('climber-input');
+					climberInput.addEventListener('input', function () {
+						updateSuggestions('climber', this, climbers);
+					});
+					climberInput.addEventListener('keydown', function (event) {
+						handleInputKeyDown(event, 'climber');
+					});
+				</script>
 				<script>
 					const form = document.getElementById('upload-form');
 					const progressContainer = document.getElementById('progress-container');
