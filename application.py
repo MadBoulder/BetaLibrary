@@ -251,7 +251,9 @@ def video_uploader_not_working():
 def video_uploader():
     user_uid = session.get('uid')
     user_data = getUserData(user_uid)
-    return render_template('video-uploader.html', user_data=user_data)
+    contributors = utils.MadBoulderDatabase.getContributorsList()
+    climbers = [data["name"] for data in contributors.values()]
+    return render_template('video-uploader.html', user_data=user_data, climbers=sorted(climbers))
 
 
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
