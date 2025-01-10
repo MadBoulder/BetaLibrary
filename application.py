@@ -253,7 +253,18 @@ def video_uploader():
     user_data = getUserData(user_uid)
     contributors = utils.MadBoulderDatabase.getContributorsList()
     climbers = [data["name"] for data in contributors.values()]
-    return render_template('video-uploader.html', user_data=user_data, climbers=sorted(climbers))
+    playlists = utils.MadBoulderDatabase.getPlaylistsData()
+    areas = {
+        playlist["zone_code"]: {
+            "name": playlist["title"],
+            "sectors": [
+                {"name": sector["name"], "sector_code": sector_code}
+                for sector_code, sector in playlist.get("sectors", {}).items()
+            ],
+        }
+        for playlist in playlists.values()
+    }
+    return render_template('video-uploader.html', user_data=user_data, climbers=sorted(climbers), areas=areas)
 
 
 @app.route('/video-uploader-test', methods=['GET', 'POST'])
@@ -270,7 +281,7 @@ def upload_file():
         try:
             name=request.form.get('name', '')
             grade=request.form.get('grade', '')
-            zone=request.form.get('zone', '')
+            zone=request.form.get('area', '')
             climber=request.form.get('climber', '')
             sector=request.form.get('sector', '')
             notes=request.form.get('notes', '')
