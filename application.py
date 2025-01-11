@@ -7,13 +7,12 @@ import threading
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
-from flask_mail import Mail,  Message
 import firebase_admin
 from firebase_admin import credentials, auth, db, exceptions
 from firebase_admin.exceptions import FirebaseError
 from urllib.parse import urlparse
-from jinja2 import Environment, FileSystemLoader
 import datetime
+from utils.emailProvider import EmailProvider
 import utils.helpers
 import utils.js_helpers
 import utils.zone_helpers
@@ -31,6 +30,7 @@ import traceback
 import requests
 import utils.searchManager
 from textwrap import dedent
+from types import SimpleNamespace
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -76,20 +76,7 @@ recaptcha_client = recaptchaenterprise_v1.RecaptchaEnterpriseServiceClient(crede
 
 current_progress = 0
 
-
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'],
-    "MAIL_RECIPIENTS": os.environ['EMAIL_RECIPIENTS'].split(":"),
-    "FEEDBACK_MAIL_RECIPIENTS": os.environ['FEEDBACK_MAIL_RECIPIENTS'].split(":")
-}
-
-app.config.update(mail_settings)
-mail = Mail(app)
+mail = EmailProvider(app)
 
 search_manager = utils.searchManager.SearchManager()
 
@@ -279,40 +266,26 @@ def upload_file():
 
     if uploaded_file:
         try:
-            name=request.form.get('name', '')
-            grade=request.form.get('grade', '')
-            zone=request.form.get('area', '')
-            climber=request.form.get('climber', '')
-            sector=request.form.get('sector', '')
-            notes=request.form.get('notes', '')
-
-            renamed_file = rename_file(uploaded_file.filename, name, grade, zone)
-            properties = {
-                'name': name,
-                'grade': grade,
-                'zone': zone,
-                'climber': climber,
-                'sector': sector,
-                'notes': notes
+            properties_dict = {
+                'name': request.form.get('name', ''),
+                'email': request.form.get('email', ''),
+                'grade': request.form.get('grade', ''),
+                'zone': request.form.get('area', ''),
+                'climber': request.form.get('climber', ''),
+                'sector': request.form.get('sector', ''),
+                'notes': request.form.get('notes', '')
             }
-            file_id = utils.drive.upload(uploaded_file, renamed_file, properties)
+            properties = SimpleNamespace(**properties_dict)
+
+            renamed_file = rename_file(uploaded_file.filename, properties.name, properties.grade, properties.zone)
+            
+            file_id = utils.drive.upload(uploaded_file, renamed_file, vars(properties))
 
             permissionNewsletter = request.form.get('permission-newsletter')
-            email = request.form.get('email', '')
-            if permissionNewsletter and email:
-                register_new_subscriber(email)
+            if permissionNewsletter and properties.email:
+                register_new_subscriber(properties.email)
 
-            send_email_new_video_beta(
-                climber=climber,
-                email=email,
-                name=name,
-                grade=grade,
-                zone=zone,
-                sector=sector,
-                notes=notes,
-                filename=renamed_file,
-                file_id=file_id
-            )
+            mail.sendNewVideoBeta(properties, renamed_file, file_id)
 
             return jsonify({"message": "File uploaded, renamed, and notification sent successfully"}), 200
         except Exception as e:
@@ -328,47 +301,6 @@ def rename_file(original_filename, name, grade, zone):
     renamed_filename = f"{name}, {grade}. {zone}.{extension}"
     print(f"Renamed file to: {renamed_filename}")
     return renamed_filename
-
-
-def send_email_new_video_beta(climber, email, name, grade, zone, sector, notes, filename, file_id):
-    print("send_email_new_video_beta")
-    try:
-        fileLink = utils.drive.getFileLink(file_id)
-        msg_body = f"""
-            A new video has been uploaded to MadBoulder.
-
-            Climber: {climber}
-            Email: {email}
-            Name: {name}
-            Grade: {grade}
-            Zone: {zone}
-            Sector: {sector}
-            Notes: {notes}
-
-            Filename: {filename}
-            Google Drive Link: {fileLink}
-
-            <a href="https://madboulder.org/upload-hub?file_id={file_id}" 
-                style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; text-align: center;"
-            >
-                Upload to YouTube
-            </a>
-                    """
-         
-        subject = f"MadBoulder: New Video Uploaded by {climber}"
-        msg = Message(
-            subject=subject,
-            sender=app.config.get('MAIL_USERNAME'),
-            recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-            body=msg_body
-        )
-        
-        print("Sending email...")
-        mail.send(msg)
-        print("Email sent successfully!")
-    except Exception as e:
-        print(f"Failed to send email: {str(e)}")
-        raise
 
 
 @app.route('/progress', methods=['GET'])
@@ -944,7 +876,7 @@ def update_user_details():
         updates['contributor_status'] = data['contributor_status']
         if data['contributor_status'] == 'pending':
             user_record = auth.get_user(user_uid)
-            new_pending_contributor_notification(user_record.email)
+            mail.sendPendingContributor(user_record.email)
 
     if updates:
         user_details_ref = db.reference(f'users/{user_uid}')
@@ -979,7 +911,7 @@ def update_user_details_protected():
         if 'climber_id' in data:
             climber_id = data['climber_id']
             user_record = auth.get_user(uid)
-            contributor_approved_notification(user_record.email, climber_id)
+            mail.sendContributorApproved(user_record.email, climber_id)
 
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
@@ -1215,26 +1147,6 @@ def remove_problem_from_projects():
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
 
-def new_pending_contributor_notification(email):
-    msg_body = 'New Contributor Submission pending to approve from user: {}\n\nApprove the request in https://www.madboulder.org/settings/admin/users'.format(email)
-        
-    msg = Message(
-        subject='MadBoulder New Contributor Submission',
-        sender=app.config.get('MAIL_USERNAME'),
-        recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-        body=msg_body)
-    mail.send(msg)
-    
-
-def contributor_approved_notification(email, climber_id):
-    msg_body = 'Your Contributor Submission has been accepted and associated with the following climber id: {}\n\nYou can review it in https://www.madboulder.org/settings/profile'.format(climber_id)       
-    msg = Message(
-        subject='Contributor Submission Accepted!',
-        sender=app.config.get('MAIL_USERNAME'),
-        recipients=[email],
-        body=msg_body)
-    mail.send(msg)
-
 @app.route('/add-area')
 @app.route('/edit-area/<string:areaCode>')
 @app.route('/area-editor', methods=['GET'])
@@ -1430,20 +1342,10 @@ def submit_form():
     assessment = create_assessment(project_id, recaptcha_site_key, recaptcha_token, recaptcha_action)
     if assessment:
         try:
-            feedback_data = request.form['feedback']
-            sender_email = request.form['email']
-            msg_body = 'Sender: {}\nMessage: {}'.format(
-                sender_email, feedback_data)
-            
-            msg = Message(
-                subject='madboulder.org feedback',
-                sender=app.config.get('MAIL_USERNAME'),
-                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-                body=msg_body)
-            mail.send(msg)
+            mail.sendFeedback(request.form['name'], request.form['email'], request.form['feedback'])
             return render_template('thanks-for-joining.html')
         except Exception as e:
-            print(str(e))  # Log the error for debugging
+            print(str(e)) 
             abort(500, 'Internal Server Error') 
 
      
@@ -1522,20 +1424,10 @@ def render_about_us():
 def join_us():
     if request.method == 'POST':
         try:
-            sender_name = request.form['name']
-            sender_message = request.form['message']
-            sender_email = request.form['email']
-            resume = request.files['resume']
-            msg_body = 'Sender: {} - {}\nMessage: {}'.format(
-                sender_name, sender_email, sender_message)
-                
-            msg = Message(
-                subject='madboulder.org join us',
-                sender=app.config.get('MAIL_USERNAME'),
-                recipients=app.config.get('FEEDBACK_MAIL_RECIPIENTS'),
-                body=msg_body)
-            msg.attach(resume.filename, 'application/octet-stream', resume.read())
-            mail.send(msg)
+            mail.sendjoinUs(request.form['name'], 
+                            request.form['message'], 
+                            request.form['email'], 
+                            request.files['resume'])
             return render_template('thanks-for-joining.html')
         except Exception as e:
             print("An error occurred:", e)
