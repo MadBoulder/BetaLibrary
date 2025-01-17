@@ -15,6 +15,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/la-riba/molsa-6a">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 	
 	</head>
 	<body>
@@ -38,7 +41,7 @@
 					<a href="/sectors/la-riba/clot-d-en-goda" class="zone-header-tree-link">Clot d'en Goda</a>
 					
 					> 
-					<a href="/boulders/la-riba/078-blanc-i-negre" class="zone-header-tree-link">078. Blanc i Negre</a>
+					<a href="/boulders/la-riba/78-blanc-i-negre" class="zone-header-tree-link">78. Blanc i Negre</a>
 					
 					
 				</div>
@@ -55,7 +58,7 @@
 			<div class="container" id="mainContainer">
 				<div class="video-wrapper">
 					<div class="video-container" >
-						<iframe src="https://www.youtube.com/embed/HgixyhFCjCk" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+						<iframe src="https://www.youtube.com/embed/IHu4km3ZprI" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 					</div>
 					<div class="video-caption">
 						<p> {{ _("Climber") }}: <a href="/contributors/jordi-climb">Jordi Climb</a></p>
@@ -142,6 +145,40 @@
 						</table>
 					{% endif %}
 				</div>
+				
+					<div class="map-container" id="mapid"></div>
+					<script>
+						var mymap = L.map('mapid').setView([41.317137, 1.166452], 15);
+					
+						// Base layer
+						var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+							maxZoom: 18,
+						}).addTo(mymap);
+					
+						// Satellite layer (for ortho view)
+						var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
+							attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+							maxZoom: 18,
+						});
+					
+						var customIcon = L.icon({
+							iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
+							iconSize: [24, 24], // Size of the icon
+							iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+							popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+						});
+					
+						var marker = L.marker([41.317137, 1.166452], {icon: customIcon}).addTo(mymap);
+						marker.bindPopup("<b>78. Blanc i Negre {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.317137,1.166452' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();
+					
+						var baseLayers = {
+							"Street Map": streetMap,
+							"Satellite": satelliteMap
+						};
+					
+						L.control.layers(baseLayers).addTo(mymap);
+					</script>
 				
 				<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
 				<!-- Ad Test --> 
