@@ -33,13 +33,8 @@ jobs:
       - name: Run Update Script
         id: update_script
         env:
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          FEEDBACK_MAIL_RECIPIENTS: ${{ secrets.FEEDBACK_MAIL_RECIPIENTS }}
           FLASK_ENV: ${{ secrets.FLASK_ENV }}
           MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY }}
-          PYTHON_VERSION: ${{ secrets.PYTHON_VERSION }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           WT_KEY: ${{ secrets.WT_KEY }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
@@ -66,19 +61,13 @@ jobs:
         run: |
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
 
-      - name: Send Notification on Failure
+      - name: Send Workflow Failure Email
         if: failure()
         env:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+          FEEDBACK_MAIL_RECIPIENTS: ${{ secrets.FEEDBACK_MAIL_RECIPIENTS }}
         run: |
-          python -c "
-          from utils.emailProvider import send_email
-          send_email(
-              subject='MadBoulder Website Update Failed',
-              body='The automatic website update workflow failed. Please check the GitHub Actions logs.',
-              recipients='${{ secrets.EMAIL_RECIPIENTS }}'.split(',')
-          )
-          "
+          python utils/send_workflow_failure_email.py
 
