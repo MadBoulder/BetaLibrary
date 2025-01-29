@@ -66,3 +66,34 @@ def joinUs(sender_name, sender_email, sender_message, resume):
     msg.attach(resume.filename, 'application/octet-stream', resume.read())
 
     return msg
+
+
+def workflow_failure():
+    msg_body = """The automatic website update workflow failed.
+Please check the GitHub Actions logs at: https://github.com/MadBoulder/BetaLibrary/actions
+
+This could indicate issues with:
+- Data updates from YouTube
+- Page generation
+- Sitemap updates"""
+
+    msg_body_html = """
+        <p>The automatic website update workflow failed.</p>
+        <p>Please check the GitHub Actions logs at: 
+           <a href="https://github.com/MadBoulder/BetaLibrary/actions">GitHub Actions</a>
+        </p>
+        <p>This could indicate issues with:</p>
+        <ul>
+            <li>Data updates from YouTube</li>
+            <li>Page generation</li>
+            <li>Sitemap updates</li>
+        </ul>
+    """
+
+    msg = Message(
+        subject="MadBoulder: Website Update Workflow Failed",
+        body=msg_body
+    )
+    msg.html = msg_body_html
+
+    return msg
