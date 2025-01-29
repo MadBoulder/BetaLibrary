@@ -1,0 +1,83 @@
+name: Update MadBoulder Website
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # Runs daily at 6 AM UTC (adjust as needed)
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ secrets.PYTHON_VERSION }}
+
+      - name: Create Secret Files
+        run: |
+          echo "${{ secrets.MADBOULDER_CHANNEL_JSON }}" > madboulder_channel.json
+          echo "${{ secrets.MADBOULDER_DEVELOPMENT_JSON }}" > madboulder-development.json
+          echo "${{ secrets.MADBOULDER_F1887F0310EC_ENV }}" > madboulder-f1887f0310ec.env
+          echo "${{ secrets.MADBOULDER_FILE_UPLOADER_ENV }}" > madboulder-file-uploader-5b2b9d6798b5.env
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Update Script
+        id: update_script
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          FEEDBACK_MAIL_RECIPIENTS: ${{ secrets.FEEDBACK_MAIL_RECIPIENTS }}
+          FLASK_ENV: ${{ secrets.FLASK_ENV }}
+          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY }}
+          PYTHON_VERSION: ${{ secrets.PYTHON_VERSION }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          WT_KEY: ${{ secrets.WT_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YOUTUBE_API_KEY_HANDLE_DATA: ${{ secrets.YOUTUBE_API_KEY_HANDLE_DATA }}
+        run: |
+          python update_data_pages_sitemap.py
+          if [ $? -ne 0 ]; then
+            echo "Script failed"
+            exit 1
+          fi
+          echo "script_success=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and Push Changes
+        if: steps.update_script.outputs.script_success == 'true'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto-update templates" || echo "No changes to commit"
+          git push
+
+      - name: Trigger Render Deploy
+        if: steps.update_script.outputs.script_success == 'true'
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Send Notification on Failure
+        if: failure()
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+        run: |
+          python -c "
+          from utils.emailProvider import send_email
+          send_email(
+              subject='MadBoulder Website Update Failed',
+              body='The automatic website update workflow failed. Please check the GitHub Actions logs.',
+              recipients='${{ secrets.EMAIL_RECIPIENTS }}'.split(',')
+          )
+          "
+
