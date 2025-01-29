@@ -211,6 +211,10 @@ def getCredentials():
         
     return credentials
 
+        if credentials.valid:
+            return True
+        
+    return False
 
 def is_authenticated():
     credentials = getCredentials()
