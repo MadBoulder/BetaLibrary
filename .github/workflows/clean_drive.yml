@@ -1,0 +1,33 @@
+name: Clean Google Drive Storage
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  # Runs at midnight every Sunday
+  workflow_dispatch:  # Allows manual triggers
+
+jobs:
+  clean-storage:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ secrets.PYTHON_VERSION }}
+
+      - name: Create Service Account File
+        run: |
+          echo '${{ secrets.MADBOULDER_F1887F0310EC_ENV }}' > madboulder-f1887f0310ec.env
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Clean Drive Storage
+        run: |
+          echo "::notice title=Cleaning Google Drive Storage::"
+          python -c "from utils.drive import empty_trash; empty_trash()" 

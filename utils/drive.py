@@ -102,8 +102,24 @@ def check_storage():
     return available >= 200
 
 
-def empty():
-    """Empty Google Drive and report storage changes."""
+def empty_trash():
+    """Empty Google Drive trash to free up space."""
+    try:
+        drive_service = build('drive', 'v3', credentials=credentials)
+        
+        get_storage_info()  # Show storage before emptying
+        
+        print("Emptying trash...")
+        drive_service.files().emptyTrash().execute()
+        
+        get_storage_info()  # Show storage after emptying
+            
+    except Exception as e:
+        print(f"Failed to empty trash: {e}")
+
+
+def empty_custom_folder():
+    """Empty the custom folder and report storage changes."""
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
         
@@ -122,4 +138,4 @@ def empty():
         get_storage_info()  # Show storage after emptying
             
     except Exception as e:
-        print(f"Failed to empty drive: {e}")
+        print(f"Failed to empty custom folder: {e}")
