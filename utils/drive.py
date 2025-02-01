@@ -78,34 +78,48 @@ def getVideoStream(file_id):
     return fh
     
 
-def empty():
+def get_storage_info():
+    """Get Google Drive storage information in MB."""
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
-
-        about_info_before = drive_service.about().get(fields='storageQuota').execute()
-        used_before_mb = bytes_to_mb(int(about_info_before['storageQuota']['usage']))
-        total_space_mb = bytes_to_mb(int(about_info_before['storageQuota']['limit']))
-        available_space_mb = total_space_mb - used_before_mb
-        print(f"Drive space used before emptying: {used_before_mb:.2f} MB")
-        print(f"Total drive space: {total_space_mb:.2f} MB")
-        print(f"Available drive space before emptying: {available_space_mb:.2f} MB")
+        quota = drive_service.about().get(fields='storageQuota').execute()['storageQuota']
         
-        file_list = drive_service.files().list(q="'root' in parents and trashed=false").execute().get('files', [])
+        used_mb = int(quota['usage']) / (1024 * 1024)
+        total_mb = int(quota['limit']) / (1024 * 1024)
+        
+        print(f"Drive space: {used_mb:.0f}MB / {total_mb:.0f}MB")
+        return total_mb - used_mb
+    except Exception as e:
+        print(f"Failed to get storage info: {e}")
+        return None
 
+
+def check_storage():
+    """Check if Google Drive available storage is below 200MB."""
+    available = get_storage_info()
+    if available is None:
+        return False
+    return available >= 200
+
+
+def empty():
+    """Empty Google Drive and report storage changes."""
+    try:
+        drive_service = build('drive', 'v3', credentials=credentials)
+        
+        get_storage_info()  # Show storage before emptying
+        
+        # Delete files from custom folder
+        file_list = drive_service.files().list(
+            q=f"'{CUSTOM_FOLDER_ID}' in parents and trashed=false"
+        ).execute().get('files', [])
+        
         for file in file_list:
-            print(file)
+            print(f"Deleting file: {file.get('name', 'unnamed')}")
             drive_service.files().delete(fileId=file['id']).execute()
 
         drive_service.files().emptyTrash().execute()
-
-        about_info_after = drive_service.about().get(fields='storageQuota').execute()
-        used_after_mb = bytes_to_mb(int(about_info_after['storageQuota']['usage']))
-        print(f"Drive space used after emptying: {used_after_mb:.2f} MB")
-
+        get_storage_info()  # Show storage after emptying
+            
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-
-def bytes_to_mb(bytes_value):
-    """Convert bytes to megabytes."""
-    return bytes_value / (1024 * 1024)
+        print(f"Failed to empty drive: {e}")
