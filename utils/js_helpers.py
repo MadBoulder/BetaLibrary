@@ -122,16 +122,32 @@ def replace_approx_placeholders_for_translations(map_html, approx_placeholder='a
     return map_html
 
 
-def generate_area_popup_html(area_name, area_code, area_videos):
-    """
-    Generate the html code tat shows the zone name and a link
-    to the page, as well as the number of videos of the zone
-
-    the placeholder variable should be the name of the zone + the
-    placeholder indicator. This value will be replaced by the number
-    of beta videos when rendering the pop up
-    """
-    return '<p><a href="'+'/'+area_code+'"target="_blank">'+area_name+'</a></p><p>Beta Videos: '+ str(area_videos) +'</p>'
+def generate_area_popup_html(name, area_code, video_count, thumbnail, country='', state=''):
+    """Generate HTML for area popup with thumbnail image"""
+    # Format location string
+    location = []
+    if state:
+        state_name = state[0] if isinstance(state, list) else state
+        location.append(state_name)
+    if country:
+        country_name = country[0] if isinstance(country, list) else country
+        location.append(country_name)
+    location_str = ', '.join(location)
+    
+    return f'''
+        <a href="/{area_code}" target="_blank" class="area-popup">
+            <img class="area-popup-image" src="{thumbnail}" alt="{name}">
+            <div class="area-popup-content">
+                <div class="area-popup-title">
+                    {name}
+                    <div class="area-popup-location">{location_str}</div>
+                </div>
+                <div class="area-popup-stats">
+                    <i class="fas fa-video"></i> {video_count}
+                </div>
+            </div>
+        </a>
+    '''
 
 
 def remove_geojson_zoom_on_click(map_html):

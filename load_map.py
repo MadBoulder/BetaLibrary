@@ -4,6 +4,7 @@ from folium.features import CustomIcon
 import json
 import os
 import utils.js_helpers
+import utils.MadBoulderDatabase
 
 POPUP_WIDTH = 100
 WIDTH_MULTIPLIER = 15
@@ -14,6 +15,8 @@ ICON_SIZE = 24
 PLACEHOLDER = '_placeholder'
 APPROX_PLACEHOLDER = 'approx_placeholder'
 BETA_VIDEOS_TEXT = 'Beta Videos: '
+COUNTRY_CODE_FIELD = 'country'
+STATE_CODE_FIELD = 'state'
 
 #####################
 ### GENERATE MAPS ###
@@ -241,6 +244,8 @@ def load_general_map(areaData, generate_ids, return_html=True):
     areas_cluster = MarkerCluster()
     areas_cluster._id = generate_ids.next_id()  # reassign id
 
+    # Get countries data
+    countriesData = utils.MadBoulderDatabase.getCountriesData()
     playlistsData = utils.MadBoulderDatabase.getPlaylistsData()
 
     for areaCode, area in areaData.items():
@@ -249,11 +254,33 @@ def load_general_map(areaData, generate_ids, return_html=True):
         zoomed_out_icon._id = generate_ids.next_id()  # reassign id
         if areaCode in playlistsData:
             playlists = playlistsData[areaCode]
+            
+            # Get the area thumbnail from playlists, using fallbacks
+            thumbnail = (playlists.get('thumbnails', {}).get('medium') or 
+                       playlists.get('thumbnails', {}).get('default') or 
+                       '/static/images/placeholder.webp')
+            
+        else:
+            thumbnail = '/static/images/placeholder.webp'
+            playlists = {'video_count': 0}
+            
+        # Get location info
+        country_code = area.get(COUNTRY_CODE_FIELD, '')
+        state_code = area.get(STATE_CODE_FIELD, '')
+        
+        # Get country and state names from codes
+        country = countriesData.get(country_code, {}).get('name', '') if country_code else ''
+        state = (countriesData.get(country_code, {})
+                .get('states', {})
+                .get(state_code, {})
+                .get('name', '')) if country_code and state_code else ''
+        
         popup_html = folium.Html(utils.js_helpers.generate_area_popup_html(
-            area['name'], areaCode, playlists['video_count']), script=True)
+            area['name'], areaCode, playlists['video_count'], thumbnail, 
+            country=country, state=state), script=True)
         popup_html._id = generate_ids.next_id()  # reassign id
         zone_popup = folium.Popup(
-            popup_html, max_width=max(len(area['name']), len(BETA_VIDEOS_TEXT))*10)
+            popup_html, max_width=350)  # Increased max_width to accommodate the image
         zone_popup._id = generate_ids.next_id()  # reassign id
 
         # Create marker with permanent tooltip
