@@ -256,10 +256,22 @@ def load_general_map(areaData, generate_ids, return_html=True):
             popup_html, max_width=max(len(area['name']), len(BETA_VIDEOS_TEXT))*10)
         zone_popup._id = generate_ids.next_id()  # reassign id
 
+        # Create marker with permanent tooltip
         area_marker = folium.Marker(
             location=[area['latitude'], area['longitude']],
-            tooltip=area['name'],
-            icon=zoomed_out_icon,
+            tooltip=folium.Tooltip(
+                area['name'],
+                permanent=True,
+                direction='bottom',
+                className='area-label',
+                sticky=False,
+                interactive=False
+            ),
+            icon=CustomIcon(
+                'static/images/marker/marker.webp',
+                icon_size=(MARKER_SIZE, MARKER_SIZE),
+                icon_anchor=(MARKER_SIZE/2, MARKER_SIZE)
+            ),
             popup=zone_popup,
         )
         area_marker._id = generate_ids.next_id()  # reassign id
@@ -273,9 +285,11 @@ def load_general_map(areaData, generate_ids, return_html=True):
     layer_control._id = generate_ids.next_id()  # reassign id
     layer_control.add_to(area_map)
 
-    # Since folium does not support all the functionalities we need
-    # we obtain them by injecting or editing JavaScript code in the map html
+    # Add CSS link for the map styles
     map_html = area_map.get_root().render()
+    css_link = '<link rel="stylesheet" href="/static/css/map.css">'
+    map_html = map_html.replace('</head>', f'{css_link}</head>')
+    
     map_html = utils.js_helpers.replace_tag_ids(
         map_html, ['html'], generate_ids)
     return map_html if return_html else area_map
