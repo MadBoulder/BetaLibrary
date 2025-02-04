@@ -42,6 +42,9 @@ from google.cloud.recaptchaenterprise_v1 import Assessment
 
 from utils.ai_helper import GenerativeAI
 
+from werkzeug.utils import secure_filename
+from pathlib import Path
+
 
 EXTENSION = '.html'
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
@@ -52,6 +55,9 @@ load_dotenv()  # Take environment variables from .env.
 # create and configure the application object
 app = Flask(__name__, static_folder='static')
 app.config.from_pyfile('config.py')
+app.config['UPLOAD_FOLDER'] = '/tmp'  # or another appropriate temporary directory
+app.config['LOCAL_VIDEOS_FOLDER'] = os.getenv('LOCAL_VIDEOS_FOLDER')
+app.config['UPLOADED_VIDEOS_FOLDER'] = os.getenv('UPLOADED_VIDEOS_FOLDER')
 if os.environ.get('FLASK_ENV') == 'production':
     app.config.update(
         SESSION_COOKIE_SECURE=True,
@@ -351,8 +357,8 @@ def upload_hub():
         zone_code = slugify(zone)
         sector = properties.get('sector', '')
         sector_code = slugify(sector)
-
-        schedule_info = suggest_upload_time(file_id, name, climber, grade, zone)
+        is_short = is_video_short(file_id)
+        schedule_info = suggest_upload_time(is_short, name, climber, grade, zone)
 
         # Generate description and tags
         description = utils.helpers.generateDescription(name, climber, grade, zone, properties.get('sector'))
@@ -374,6 +380,46 @@ def upload_hub():
     except Exception as e:
         print(f"Error in upload_hub: {e}")
         return str(e), 500
+    
+
+@app.route('/local-upload-hub')
+def local_upload_hub():
+    isAuthenticated = utils.channel.is_authenticated()
+    if not isAuthenticated:
+        return render_template('local-upload-hub.html', authenticated=False)
+    contributors = utils.MadBoulderDatabase.getContributorsList()
+    climbers = [data["name"] for data in contributors.values()]
+    return render_template("local-upload-hub.html", 
+        authenticated=True,
+        climbers=climbers
+    )
+
+
+@app.route('/compute-upload-metadata', methods=['POST'])
+def compute_upload_metadata():
+    try:
+        data = request.get_json()
+        # Use provided metadata with defaults
+        title = data.get('title', '')
+        problem = data.get('problem', 'Unknown Problem')
+        grade = data.get('grade', '')
+        climber = data.get('climber', 'Unknown Climber')
+        zone = data.get('zone', 'Unknown Zone')
+        sector = data.get('sector', '')
+        # Get is_short directly from the request data (default to False if not provided)
+        is_short = data.get('is_short', False)
+        
+        schedule_info = suggest_upload_time(is_short, problem, climber, grade, zone)
+        description = utils.helpers.generateDescription(problem, climber, grade, zone, sector)
+        tags = utils.helpers.generateTags(problem, zone, grade)
+        
+        return jsonify({
+             'description': description,
+             'tags': ", ".join(tags),
+             'schedule_info': schedule_info
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/test-schedule')
@@ -402,10 +448,11 @@ def test_schedule():
         name = properties.get('name', 'Unknown Problem')
         grade = properties.get('grade', '')
         zone = properties.get('zone', 'Unknown Zone')
-
+        
+        is_short = is_video_short(file_id)
         
         # Get AI recommendation
-        schedule_info = suggest_upload_time(file_id, name, climber, grade, zone)
+        schedule_info = suggest_upload_time(is_short, name, climber, grade, zone)
         if schedule_info and schedule_info.get('success'):
             publish_time = datetime.strptime(schedule_info['scheduled_time'], "%Y-%m-%d %H:%M:%S")
             return jsonify({
@@ -1803,8 +1850,8 @@ def page_not_found(error):
     return render_template('errors/404-page-not-found.html'), 404
 
 
-def suggest_upload_time(file_id, name, climber, grade, zone):
-    is_short = is_video_short(file_id)
+def suggest_upload_time(is_short, name, climber, grade, zone):
+    
     video_data = {
         'title': name,
         'zone': zone,
@@ -1862,6 +1909,115 @@ def is_video_short(file_id):
         print(f"Error determining if video is short: {e}")
         print(f"Video metadata: {metadata}")  # Debug print
         return False
+
+
+@app.route('/process-upload-youtube-from-local', methods=['POST'])
+def process_upload_youtube_from_local():
+    try:
+        # Get form data
+        video_filename = request.form['video']  # Now this will be just the filename
+        description = request.form['description']
+        tags = request.form['tags']
+        scheduled_time = request.form.get('scheduled_time', '')
+        
+        # Get the full path from your local videos folder
+        video_path = Path(app.config['LOCAL_VIDEOS_FOLDER']) / video_filename
+        
+        if not video_path.exists():
+            raise Exception(f"Video file not found: {video_filename}")
+        
+        title = os.path.splitext(video_filename)[0]
+
+        # Extract zone and sector from description
+        zone_match = re.search(r'Zone:\s*([^,\n]+)', description)
+        sector_match = re.search(r'Sector:\s*([^,\n]+)', description)
+        
+        zone = zone_match.group(1).strip() if zone_match else "Unknown Zone"
+        sector = sector_match.group(1).strip() if sector_match else ""
+        
+        # Generate slugified codes
+        zone_code = slugify(zone)
+        sector_code = slugify(sector)
+
+        # Upload to YouTube directly from the local path
+        with open(video_path, 'rb') as video_file:
+            # Convert scheduled_time string to datetime if it exists
+            publish_time = None
+            if scheduled_time:
+                publish_time = datetime.strptime(scheduled_time, "%Y-%m-%d %H:%M:%S")
+
+            response = utils.channel.uploadVideo(
+                video_stream=video_file,
+                title=title,
+                description=description,
+                tags=tags.split(','),
+                privacy_status='private',
+                publish_time=publish_time
+            )
+
+        uploadedVideoId = response['id']
+        print("video uploaded to Youtube")
+        
+        print(f"adding video to playlist {zone_code}")
+        playlists = utils.MadBoulderDatabase.getPlaylistData(zone_code)
+        zonePlaylistId = playlists.get("id")
+        sectorPlaylists = playlists.get("sectors", {})
+
+        if zonePlaylistId:
+            utils.channel.addVideoToPlaylist(uploadedVideoId, zonePlaylistId)
+
+        if sector_code in sectorPlaylists:
+            print("adding video to sector playlist")
+            sectorPlaylistId = sectorPlaylists[sector_code]["id"]
+            utils.channel.addVideoToPlaylist(uploadedVideoId, sectorPlaylistId)
+
+        print("enabling video monetization")
+        utils.channel.enableMonetization(uploadedVideoId)
+
+        # Generate success page with scheduling info if available
+
+        if uploadedVideoId: 
+            # Move the file to the uploaded videos folder
+            uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+            try:
+                # Create the destination directory if it doesn't exist
+                uploaded_path.parent.mkdir(parents=True, exist_ok=True)
+                # Move the file
+                video_path.rename(uploaded_path)
+            except Exception as move_error:
+                print(f"Warning: Could not move file to done folder: {move_error}")
+                # Continue anyway since the upload was successful
+            
+        return generate_success_page(uploadedVideoId, title, publish_time)
+
+    except Exception as e:
+        print(f"Error processing upload: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/preview-video/<filename>')
+def preview_video(filename):
+    return send_from_directory(app.config['LOCAL_VIDEOS_FOLDER'], filename)
+
+
+@app.route('/list-local-videos')
+def list_local_videos():
+    try:
+        videos_dir = Path(app.config['LOCAL_VIDEOS_FOLDER'])
+        
+        # List all video files (add more extensions if needed)
+        videos = []
+        for ext in ['.mp4', '.mov']:
+            videos.extend([f.name for f in videos_dir.glob(f'*[{ext.lower()}{ext.upper()}]')])
+        # Remove any duplicates that might still occur
+        videos = list(dict.fromkeys(videos))
+    except Exception as e:
+        print(f"Error listing videos: {str(e)}")
+        traceback.print_exc()  # This will print the full error stack
+        return jsonify({'error': str(e)}), 500
 
 
 # start the server

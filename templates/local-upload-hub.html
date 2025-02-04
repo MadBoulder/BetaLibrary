@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MadBoulder Local Upload Hub</title>
+    <link rel="stylesheet" href="/static/css/upload-hub.css">
+</head>
+<body>
+    <!-- Add datalist for climber suggestions -->
+    <datalist id="climbersList">
+        {% for climber in climbers %}
+            <option value="{{ climber }}">
+        {% endfor %}
+    </datalist>
+    
+    <h1>MadBoulder Local Upload Hub</h1>
+    
+    {% if authenticated %}
+        <p>You are authenticated with Google.</p>
+        <form id="localUploadForm" action="/process-upload-youtube-from-local" method="post" enctype="multipart/form-data">
+            <h2>Select a Video File</h2>
+            <select id="videoFile" name="video" required>
+                <option value="">Select a video...</option>
+            </select><br><br>
+            
+            <!-- Video preview element -->
+            <video id="videoPreview" controls style="display: none; max-width: 300px;"></video>
+            <br><br>
+            
+            <!-- Visible upload information that can be edited by the user (hidden until a video is selected) -->
+            <div id="uploadInformation" style="display: none;">
+                <h2>Upload Information</h2>
+                <label for="description">Description:</label><br>
+                <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+                
+                <label for="tags">Tags (comma-separated):</label>
+                <input type="text" id="tags" name="tags"><br><br>
+                
+                <label for="scheduled_time">Scheduled Time:</label>
+                <input type="text" id="scheduled_time" name="scheduled_time"><br><br>
+            </div>
+            
+            <button type="submit" id="uploadVideoButton" style="display: none;">Upload Video</button>
+        </form>
+        
+        <!-- Modal Popup for entering video metadata -->
+        <div id="metadataModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                 <span class="close-button" id="closeModal">&times;</span>
+                 <h2>Enter Video Details</h2>
+                 <label for="modalTitle">Title:</label>
+                 <input type="text" id="modalTitle" name="modalTitle"><br><br>
+                 
+                 <label for="modalProblem">Problem Name:</label>
+                 <input type="text" id="modalProblem" name="modalProblem"><br><br>
+                 
+                 <label for="modalGrade">Grade:</label>
+                 <input type="text" id="modalGrade" name="modalGrade"><br><br>
+                 
+                 <label for="modalClimber">Climber:</label>
+                 <input type="text" 
+                        id="modalClimber" 
+                        name="modalClimber" 
+                        list="climbersList" 
+                        autocomplete="off"
+                        placeholder="Start typing to see suggestions..."><br><br>
+                 
+                 <label for="modalZone">Zone:</label>
+                 <input type="text" id="modalZone" name="modalZone"><br><br>
+                 
+                 <label for="modalSector">Sector:</label>
+                 <input type="text" id="modalSector" name="modalSector"><br><br>
+                 
+                 <button id="popupSubmit" type="button">Submit Details</button>
+            </div>
+        </div>
+    {% else %}
+        <p>You are not authenticated with Google.</p>
+        <a href="/authenticate">Click here to authenticate</a>
+    {% endif %}
+    
+    <script>
+        // Function to convert UTC to Madrid time
+        function utcToMadrid(utcString) {
+            const utcDate = new Date(utcString + 'Z');  // Add Z to specify UTC
+            return new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/Madrid',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).format(utcDate);
+        }
+
+        // Function to format the schedule display
+        function formatScheduleInfo(utcTime, reasoning) {
+            const madridTime = utcToMadrid(utcTime);
+            return `
+                <strong>Recommended Schedule:</strong><br>
+                ${madridTime} (Madrid time)<br>
+                <div class="reasoning">${reasoning}</div>
+            `;
+        }
+
+        // Refresh schedule handler
+        async function checkSchedule() {
+            const scheduleInfo = document.getElementById('scheduleInfo');
+            scheduleInfo.style.display = 'none';
+            scheduleInfo.className = 'schedule-info';
+
+            try {
+                const response = await fetch('/test-schedule');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('scheduled_time').value = result.scheduled_time;
+                    scheduleInfo.className = 'schedule-info schedule-success';
+                    scheduleInfo.innerHTML = formatScheduleInfo(
+                        result.scheduled_time,
+                        result.reasoning
+                    );
+                } else {
+                    document.getElementById('scheduled_time').value = '';
+                    scheduleInfo.className = 'schedule-info schedule-warning';
+                    scheduleInfo.innerHTML = `
+                        <strong>Warning:</strong><br>
+                        ${result.message || 'Could not determine schedule time'}
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('scheduled_time').value = '';
+                scheduleInfo.className = 'schedule-info schedule-error';
+                scheduleInfo.innerHTML = `
+                    <strong>Error:</strong><br>
+                    ${error.message || 'Failed to get scheduling recommendation'}
+                `;
+            }
+            
+            scheduleInfo.style.display = 'block';
+        }
+
+        // Function to parse video filename into metadata
+        function parseFileName(fileName) {
+            // Remove file extension
+            const nameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
+            
+            // Try to match the pattern: "ProblemName, Grade. AreaName"
+            const parts = nameWithoutExt.split('.');
+            
+            let result = {
+                title: nameWithoutExt,
+                problem: '',
+                grade: '',
+                zone: ''
+            };
+            
+            if (parts.length >= 2) {
+                // Last part is the area/zone
+                result.zone = parts[parts.length - 1].trim();
+                
+                // First part contains problem and grade
+                const problemGradePart = parts[0];
+                const problemGradeMatch = problemGradePart.match(/(.*),\s*([^,]+)$/);
+                
+                if (problemGradeMatch) {
+                    result.problem = problemGradeMatch[1].trim();
+                    result.grade = problemGradeMatch[2].trim();
+                } else {
+                    // If no grade is found, assume it's all problem name
+                    result.problem = problemGradePart.trim();
+                }
+            } else {
+                // If the format doesn't match, use the whole name as problem
+                result.problem = nameWithoutExt;
+            }
+            
+            return result;
+        }
+
+        // Load video list when page loads
+        fetch('/list-local-videos')
+            .then(response => response.json())
+            .then(videos => {
+                const select = document.getElementById('videoFile');
+                videos.forEach(video => {
+                    const option = document.createElement('option');
+                    option.value = video;
+                    option.textContent = video;
+                    select.appendChild(option);
+                });
+            });
+
+        // Update the change handler
+        document.getElementById('videoFile').addEventListener('change', function(event) {
+            const select = event.target;
+            if (select.value) {
+                const filename = select.value;
+                
+                // Parse the filename
+                const parsedData = parseFileName(filename);
+                
+                // Show video preview
+                const videoPreview = document.getElementById('videoPreview');
+                videoPreview.src = `/preview-video/${encodeURIComponent(filename)}`;
+                videoPreview.style.display = 'block';
+    
+                // When metadata is loaded, compute if video is short.
+                videoPreview.addEventListener('loadedmetadata', function() {
+                    const duration = videoPreview.duration;
+                    const width = videoPreview.videoWidth;
+                    const height = videoPreview.videoHeight;
+                    const isVertical = (width > 0 && (height / width) >= 1);
+                    window.isShortVideo = isVertical && (duration <= 180);
+                    console.log('Computed isShortVideo:', window.isShortVideo);
+                });
+    
+                // Auto-fill modal fields from parsed filename
+                document.getElementById('modalTitle').value = parsedData.title;
+                document.getElementById('modalProblem').value = parsedData.problem;
+                document.getElementById('modalGrade').value = parsedData.grade;
+                document.getElementById('modalZone').value = parsedData.zone;
+    
+                // Show the metadata modal popup
+                document.getElementById('metadataModal').style.display = 'block';
+            }
+        });
+
+        // When the modal submit button is clicked, process the input fields.
+        document.getElementById('popupSubmit').addEventListener('click', function(){
+           // Get values from modal inputs
+           const title = document.getElementById('modalTitle').value;
+           const problem = document.getElementById('modalProblem').value;
+           const grade = document.getElementById('modalGrade').value;
+           const climber = document.getElementById('modalClimber').value;
+           const zone = document.getElementById('modalZone').value;
+           const sector = document.getElementById('modalSector').value;
+           
+           // Call the API endpoint to compute description, tags, and schedule info.
+           fetch('/compute-upload-metadata', {
+               method: 'POST',
+               headers: { 'Content-Type':'application/json' },
+               body: JSON.stringify({
+                  title: title,
+                  problem: problem,
+                  grade: grade,
+                  climber: climber,
+                  zone: zone,
+                  sector: sector,
+                  is_short: window.isShortVideo || false
+               })
+           })
+           .then(response => response.json())
+           .then(data => {
+               console.log(data);
+               if(data.error){
+                   alert("Error computing metadata: " + data.error);
+               } else {
+                   // Set fields with computed values
+                   document.getElementById('description').value = data.description;
+                   document.getElementById('tags').value = data.tags;
+                   if(data.schedule_info && data.schedule_info.success){
+                        document.getElementById('scheduled_time').value = data.schedule_info.scheduled_time;
+                   } else {
+                        document.getElementById('scheduled_time').value = "";
+                   }
+                   
+                   // Show the upload information container now that data is ready
+                   document.getElementById('uploadInformation').style.display = 'block';
+                   // Show the upload video button now that the video is loaded and metadata computed
+                   document.getElementById('uploadVideoButton').style.display = 'block';
+               }
+           })
+           .catch(err => { console.error(err); });
+           
+           // Hide the modal popup
+           document.getElementById('metadataModal').style.display = 'none';
+        });
+
+        // Allow closing the modal with the "x" button.
+        document.getElementById('closeModal').addEventListener('click', function(){
+             document.getElementById('metadataModal').style.display = 'none';
+        });
+    </script>
+</body>
+</html> 
