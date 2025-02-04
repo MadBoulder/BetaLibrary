@@ -11,7 +11,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, db, exceptions
 from firebase_admin.exceptions import FirebaseError
 from urllib.parse import urlparse
-import datetime
+from datetime import datetime, timedelta
 from utils.emailProvider import EmailProvider
 import utils.helpers
 import utils.js_helpers
@@ -80,14 +80,15 @@ mail = EmailProvider(app)
 
 search_manager = utils.searchManager.SearchManager()
 
-def _get_seconds_to_next_time(hour=11, minute=10, second=0):
-    now = datetime.datetime.now()
-    if now.hour >= hour and now.minute > minute:
-        wait_seconds = 24*60*60 - ((now.hour - hour)*60*60 + minute*60)
-    else:
-        next_time = now.replace(hour=hour, minute=minute, second=second)
-        wait_seconds = (next_time - now).seconds
-    return wait_seconds
+def _get_seconds_to_next_time(hour, minute, second):
+    """Get seconds until next occurrence of the specified time"""
+    now = datetime.now()
+    next_time = now.replace(hour=hour, minute=minute, second=second)
+    
+    if next_time <= now:
+        next_time += timedelta(days=1)
+        
+    return (next_time - now).total_seconds()
 
 
 @cache.cached(
@@ -315,19 +316,20 @@ def upload_completed():
 
 @app.route('/upload-hub')
 def upload_hub():
-    file_id = request.args.get('file_id')
-    if file_id:
-        session['file_id'] = file_id  # Save file_id in session for redirection
-    else:
-        file_id = session.get('file_id')  # Use stored file_id if available
+    try:
+        file_id = request.args.get('file_id')
+        if file_id:
+            session['file_id'] = file_id  # Save file_id in session for redirection
+        else:
+            file_id = session.get('file_id')  # Use stored file_id if available
 
-    if not file_id:
-        return "Error: No file ID provided.", 400
+        if not file_id:
+            return "Error: No file ID provided.", 400
 
-    isAuthenticated = utils.channel.is_authenticated()
-    if not isAuthenticated:
+        isAuthenticated = utils.channel.is_authenticated()
+        if not isAuthenticated:
             return render_template('upload-hub.html', authenticated=False, file_id=file_id)
-    else:
+
         metadata = utils.drive.getFileMetadata(file_id)
         if not metadata:
             return "Error fetching metadata from Google Drive.", 500
@@ -346,37 +348,40 @@ def upload_hub():
         sector = properties.get('sector', '')
         sector_code = slugify(sector)
 
-        description = dedent(f"""
-            Climber: {climber}
-            Name: {name}
-            Grade: {grade}
-            Zone: {zone}
-            Sector: {sector}
+        # Get schedule recommendation
+        is_short = is_video_short(file_id)
+        video_data = {
+            'title': name,
+            'zone': zone,
+            'grade': grade,
+            'is_short': is_short,
+            'climber': climber
+        }
+        scheduled_videos = utils.channel.get_scheduled_videos()
+        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
 
-            Is this not the correct line or beta? Please tell us!
+        schedule_info = None
+        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
+            recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+            utc_time = recommended_date.replace(
+                hour=recommendation['recommended_hour'],  # Already in UTC
+                minute=0,
+                second=0
+            )
+            schedule_info = {
+                'success': True,
+                'scheduled_time': utc_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'reasoning': recommendation['reasoning']
+            }
+        else:
+            schedule_info = {
+                'success': False,
+                'message': 'Could not determine schedule time'
+            }
 
-            Do you have a beta recorded? Share it with us and help all the community. DM us in IG @madboulder for more details or upload it here:  https://www.madboulder.org/upload
-
-            ➞ {zone} Bouldering https://www.madboulder.org/{zone_code}
-
-            ➞ VISIT https://www.madboulder.org and discover all our content!
-
-            ➞ SUBSCRIBE to MadBoulder: https://www.youtube.com/c/MadBoulder
-
-            Do you enjoy our content? Please consider supporting what we do:
-            ➞ Official Merch Store: https://shop.madboulder.org/
-
-            #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}
-        """)
-
-        tags = [
-            "madboulder", "boulder", "bouldering", "escalada", "climbing", "bloc",
-            "escalade", "climb", "climber", "mad boulder", "bloque", "klettern",
-            "arrampicata", "boulder beta", "beta library", "escalada en roca",
-            "rock climbing", f"{zone} Boulder", f"{zone} bouldering", f"{zone} {grade}",
-            f"{zone}", f"{zone} climbing", f"{name} {grade}", f"{name} {grade} {zone}",
-            f"{name} {zone}", f"{name}"
-        ]
+        # Generate description and tags
+        description = utils.helpers.generateDescription(name, climber, grade, zone, properties.get('sector'))
+        tags = utils.helpers.generateTags(name, zone, grade)
 
         context = {
             "authenticated": isAuthenticated,
@@ -386,9 +391,86 @@ def upload_hub():
             "tags": ", ".join(tags),
             "thumbnail": thumbnail,
             "zone_code": zone_code,
-            "sector_code": sector_code
+            "sector_code": sector_code,
+            "schedule_info": schedule_info
         }
         return render_template('upload-hub.html', **context)
+
+    except Exception as e:
+        print(f"Error in upload_hub: {e}")
+        return str(e), 500
+
+
+@app.route('/test-schedule')
+def test_schedule():
+    """Test endpoint to check scheduling recommendation without uploading"""
+    try:
+        file_id = request.args.get('file_id')
+        if file_id:
+            session['file_id'] = file_id  # Save file_id in session for redirection
+        else:
+            file_id = session.get('file_id')  # Use stored file_id if available
+
+        if not file_id:
+            return "Error: No file ID provided.", 400
+
+        isAuthenticated = utils.channel.is_authenticated()
+        if not isAuthenticated:
+            return render_template('upload-hub.html', authenticated=False, file_id=file_id)
+
+        metadata = utils.drive.getFileMetadata(file_id)
+        if not metadata:
+            return "Error fetching metadata from Google Drive.", 500
+        
+        filename = metadata.get('name', 'Unknown File')
+        title = os.path.splitext(filename)[0]
+
+        properties = metadata.get('properties', {})
+        climber = properties.get('climber', 'Unknown Climber')
+        name = properties.get('name', 'Unknown Problem')
+        grade = properties.get('grade', '')
+        zone = properties.get('zone', 'Unknown Zone')
+
+        is_short = is_video_short(file_id)
+        
+        # Get AI recommendation
+        video_data = {
+            'title': name,
+            'zone': zone,
+            'grade': grade,
+            'is_short': is_short,
+            'climber': climber
+        }
+        scheduled_videos = utils.channel.get_scheduled_videos()
+        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
+
+        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
+            recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+            publish_time = recommended_date.replace(
+                hour=recommendation['recommended_hour'],
+                minute=0,
+                second=0
+            )
+            return jsonify({
+                'success': True,
+                'scheduled_time': publish_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'hour': publish_time.hour,
+                'reasoning': recommendation['reasoning']
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Could not determine scheduling time'
+            })
+
+    except Exception as e:
+        print(f"Error testing schedule: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 
 @app.route('/authenticate')
 def authenticate():
@@ -421,10 +503,33 @@ def process_upload_youtube_from_drive():
         zone_code = request.form['zone_code']
         sector_code = request.form['sector_code']
         
+        # Get publish time from form
+        publish_time = None
+        if request.form.get('scheduled_time'):
+            try:
+                # The time from the form is already in UTC
+                publish_time = datetime.strptime(
+                    request.form['scheduled_time'],
+                    '%Y-%m-%d %H:%M:%S'
+                )
+            except ValueError as e:
+                print(f"Error parsing scheduled time: {e}")
+                print(f"Raw scheduled_time value: {request.form.get('scheduled_time')}")
+        
         print("process_upload_youtube_from_drive 2")
         video_stream = utils.drive.getVideoStream(file_id)
         print("video stream from Drive ready")
-        response = utils.channel.uploadVideo(video_stream, title, description, tags, 'private')
+        
+        # Upload video with private status initially
+        response = utils.channel.uploadVideo(
+            video_stream, 
+            title, 
+            description, 
+            tags, 
+            'private',
+            publish_time=publish_time  # Will be None if AI scheduling failed
+        )
+        
         uploadedVideoId = response['id']
         print("video uploaded to Youtube")
         
@@ -444,31 +549,61 @@ def process_upload_youtube_from_drive():
         print("enabling video monetization")
         utils.channel.enableMonetization(uploadedVideoId)
 
-        return generate_success_page(uploadedVideoId)
+        # Generate success page with scheduling info if available
+        return generate_success_page(uploadedVideoId, title, publish_time)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-def generate_success_page(video_id):
-    youtube_url = f"https://studio.youtube.com/video/{video_id}/edit"
-    return f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Upload Successful</title>
-    </head>
-    <body>
-        <h1>Video Upload Successful</h1>
-        <p>Continue the edition in Youtube Studio:</p>
+def generate_success_page(video_id, title, publish_time=None):
+    """Generate success page HTML with video details"""
+    try:
+        youtube_url = f"https://studio.youtube.com/video/{video_id}/edit"
+        success_html = f"""
+        <h2>Video Upload Successful!</h2>
+        <p>Your video "{title}" has been uploaded to YouTube.</p>
+        """
         
-        <a href="{youtube_url}">{youtube_url}</a>
-    </body>
-    </html>
-    """
+        if publish_time:
+            # Format datetime to ISO format for JavaScript
+            utc_time = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
+            success_html += f"""
+            <script>
+                function formatMadridTime(utcString) {{
+                    const utcDate = new Date(utcString + 'Z');
+                    return new Intl.DateTimeFormat('en-GB', {{
+                        timeZone: 'Europe/Madrid',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }}).format(utcDate);
+                }}
+                
+                document.write(`
+                    <p>The video will be published at: ${{formatMadridTime("{utc_time}")}} (Madrid time)</p>
+                `);
+            </script>
+            <noscript>
+                <p>The video will be published at: {publish_time} (UTC)</p>
+            </noscript>
+            """
+        
+        success_html += f"""
 
+        <p>Continue the edition in Youtube Studio:</p>
+        <a href="{youtube_url}">{title}</a>
+        """
+        
+        return success_html
+        
+    except Exception as e:
+        print(f"Error generating success page: {e}")
+        return "<h2>Upload completed, but there was an error generating the success page.</h2>"
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -687,10 +822,10 @@ def settings_stats():
         user_data['displayName'] = user_record.display_name
 
         account_creation_timestamp = user_record.user_metadata.creation_timestamp / 1000 # Convert from milliseconds to seconds
-        account_creation_date = datetime.datetime.fromtimestamp(account_creation_timestamp)
+        account_creation_date = datetime.fromtimestamp(account_creation_timestamp)
         user_data['dateCreated'] = account_creation_date.strftime('%Y-%m-%d')
 
-        time_since_creation = datetime.datetime.now() - account_creation_date
+        time_since_creation = datetime.now() - account_creation_date
         user_data['timeSinceCreation'] = str(time_since_creation.days) + " days"
         
         user_details_ref = db.reference(f'users/{user_uid}')
@@ -1128,7 +1263,7 @@ def add_problem_to_projects():
         return jsonify({'status': 'success', 'message': 'Problem added to Projects'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
+
 
 @app.route('/remove-problem-from-projects', methods=['POST'])
 @login_required
@@ -1145,7 +1280,7 @@ def remove_problem_from_projects():
         return jsonify({'status': 'success', 'message': 'Problem removed from Projects'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
+
 
 @app.route('/add-area')
 @app.route('/edit-area/<string:areaCode>')
@@ -1710,6 +1845,192 @@ def page_not_found(error):
     app.logger.error('Page not found: %s', (request.path))
     return render_template('errors/404-page-not-found.html'), 404
 
+
+
+def get_gemini_scheduling_recommendation(video_data, scheduled_videos):
+    """Get scheduling recommendation from Gemini AI"""
+    try:
+        # Import Gemini
+        import google.generativeai as genai
+        
+        # Configure Gemini
+        genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+        model = genai.GenerativeModel('gemini-pro')
+        
+        # Prepare scheduling rules for the prompt
+        scheduling_rules = """
+        Scheduling Rules:
+
+        Time Slots:
+        Video Type Short:
+        - 23:00h UTC previous day: Outside Europe (mostly US), any grade
+        - 07:00h UTC: Europe, low grade (3-6a)
+        - 11:00h UTC: Europe, mid grade (6a-6c)
+        - 15:00h UTC: Europe, advanced grade (6c+-7b)
+        - 19:00h UTC: Europe, elite grade (>7b+)
+        
+        Video Type Regular:
+        - 23:00h UTC previous day: Outside Europe (mostly US), grade above V5
+        - 07:00h UTC: Outside Europe (mostly US), grade below V5
+        - 13:00h UTC: Europe, low-mid grade
+        - 19:00h UTC: Europe, advanced-elite grade
+
+        Additional Rules:
+        1. Each time slot should only have one video per day
+        2. The same climber should not appear multiple times on the same day
+        3. The same zone/area should not appear multiple times on the same day
+        4. Try to space out videos from the same zone across different days
+        5. If a slot is taken or any rule is violated on a given day, recommend the next available day
+
+        IMPORTANT: Return hours in UTC.
+        """
+        
+        # Format currently scheduled videos with more detail
+        scheduled_slots = "\nCurrently scheduled videos:\n"
+        for video in scheduled_videos:
+            scheduled_slots += (
+                f"- {video['title']} "
+                f"(Climber: {video['climber']}, "
+                f"Zone: {video['zone']}, "
+                f"Grade: {video['grade']}) "
+                f"at {video['scheduledTime'].strftime('%Y-%m-%d %H:%M')}\n"
+            )
+            
+        # Create the prompt
+        prompt = f"""
+        {scheduling_rules}
+        
+        {scheduled_slots}
+        
+        New video details:
+        - Title: {video_data['title']}
+        - Zone: {video_data['zone']}
+        - Grade: {video_data['grade']}
+        - Climber: {video_data.get('climber', 'Unknown')}
+        - Type: {'Short' if video_data['is_short'] else 'Regular'}
+        
+        Based on these scheduling rules and currently scheduled videos, what is the best time slot for this new video? 
+        Consider the video type, grade, location, and scheduling constraints.
+        
+        Analyze the schedule to:
+        1. Find the appropriate hour based on video type and characteristics
+        2. Check which days have that hour slot available for video type
+        3. For each potential day, verify that:
+           - The time slot for this type of video is not already taken
+           - The same climber is not already scheduled
+           - The same zone is not already scheduled
+        4. Look for the earliest available day that meets ALL criteria
+        
+        You must respond with ONLY a JSON object in this exact format:
+        {{
+            "recommended_hour": {{Hour in UTC}},
+            "recommended_date": {{Time in UTC}},
+            "reasoning": "This slot was chosen because..."
+        }}
+        
+        Do not include any other text or explanation outside the JSON object.
+        The hour must be an integer 0-23.
+        The date must be in YYYY-MM-DD format.
+        """
+        
+        # Get response from Gemini
+        response = model.generate_content(prompt)
+        
+        # Clean the response text
+        cleaned_response = response.text.strip()
+        if cleaned_response.startswith('```json'):
+            cleaned_response = cleaned_response[7:-3]  # Remove ```json and ``` markers
+        
+        # Parse JSON
+        recommendation = json.loads(cleaned_response)
+        
+        # Validate the response format
+        required_keys = ['recommended_hour', 'recommended_date', 'reasoning']
+        if not all(key in recommendation for key in required_keys):
+            raise ValueError("Missing required keys in recommendation")
+            
+        if not isinstance(recommendation['recommended_hour'], int):
+            raise ValueError("recommended_hour must be an integer")
+            
+        # Try to parse the date to validate format
+        try:
+            datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+        except ValueError as e:
+            raise ValueError(f"Invalid date format: {e}")
+        
+        return recommendation
+        
+    except Exception as e:
+        print(f"Error getting Gemini recommendation: {e}")
+        print(f"Raw response: {response.text if 'response' in locals() else 'No response'}")
+        return None
+
+def suggest_upload_time(name, zone, grade, is_short, climber=None):
+    """Get AI recommendation for video scheduling time"""
+    try:
+        # Get video details from the form
+        video_data = {
+            'title': name,
+            'zone': zone,
+            'grade': grade,
+            'is_short': is_short,
+            'climber': climber
+        }
+        
+        # Get scheduled videos for next few days
+        scheduled_videos = utils.channel.get_scheduled_videos()
+        
+        # Get AI recommendation
+        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
+        
+        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
+            # Create datetime from recommended date and hour
+            try:
+                recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+                publish_time = recommended_date.replace(
+                    hour=recommendation['recommended_hour'],
+                    minute=0,
+                    second=0
+                )
+                print(f"AI Scheduling Recommendation: {recommendation['reasoning']}")
+                return publish_time
+            except ValueError as e:
+                print(f"Error parsing date: {e}")
+                return None
+            
+        # If AI recommendation fails, return None to indicate manual scheduling needed
+        print("AI scheduling failed - video will need manual scheduling")
+        return None
+        
+    except Exception as e:
+        print(f"Error suggesting upload time: {e}")
+        return None
+
+def is_video_short(file_id):
+    """Determine if video is a short based on its metadata"""
+    try:
+        metadata = utils.drive.getFileMetadata(file_id)
+        video_metadata = metadata.get('videoMediaMetadata', {})
+        
+        # Get duration in seconds
+        duration_millis = video_metadata.get('durationMillis', 0)
+        duration_seconds = int(duration_millis) / 1000
+        
+        # Get video dimensions
+        width = int(video_metadata.get('width', 0))
+        height = int(video_metadata.get('height', 0))
+        
+        # Check if video is vertical (height > width)
+        is_vertical = height > width
+        
+        # YouTube Shorts must be vertical and max 3 minutes (180 seconds)
+        return is_vertical and duration_seconds <= 180
+        
+    except Exception as e:
+        print(f"Error determining if video is short: {e}")
+        print(f"Video metadata: {metadata}")  # Debug print
+        # If we can't determine, assume it's not a short
+        return False
 
 # start the server
 if __name__ == '__main__':

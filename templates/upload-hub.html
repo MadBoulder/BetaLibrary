@@ -2,6 +2,31 @@
 <html lang="en">
 <head>
     <title>MadBoulder Upload Hub</title>
+    <style>
+        .schedule-info {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .schedule-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .schedule-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+        }
+        .schedule-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .reasoning {
+            font-style: italic;
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <h1>MadBoulder Upload Hub</h1>
@@ -15,9 +40,24 @@
 		{% else %}
 			<p>No preview available for this file.</p>
 		{% endif %}
+        <div id="scheduleInfo" class="schedule-info {% if schedule_info.success %}schedule-success{% else %}schedule-warning{% endif %}" style="display: block;">
+            {% if schedule_info.success %}
+                <div id="scheduleContent"></div>
+                <noscript>
+                    {{ schedule_info.scheduled_time }} (UTC)<br>
+                    <div class="reasoning">{{ schedule_info.reasoning }}</div>
+                </noscript>
+            {% else %}
+                <strong>Warning:</strong><br>
+                {{ schedule_info.message }}
+            {% endif %}
+        </div>
+        <button id="checkSchedule" class="btn btn-secondary">Refresh Schedule Recommendation</button>
         <form action="/process-upload-youtube-from-drive" method="post">
 			<input type="hidden" name="zone_code" value="{{ zone_code }}">
 			<input type="hidden" name="sector_code" value="{{ sector_code }}">
+            <input type="hidden" name="scheduled_time" id="scheduled_time" value="{{ schedule_info.scheduled_time if schedule_info.success else '' }}">
+            
             <label for="title">Title:</label>
 			<input type="text" id="title" name="title" value="{{ title }}" required><br>
             
@@ -33,5 +73,84 @@
         <p>You are not authenticated with Google.</p>
         <a href="/authenticate">Click here to authenticate</a>
     {% endif %}
+
+    <script>
+        // Function to convert UTC to Madrid time
+        function utcToMadrid(utcString) {
+            const utcDate = new Date(utcString + 'Z');  // Add Z to specify UTC
+            return new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/Madrid',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).format(utcDate);
+        }
+
+        // Function to format the schedule display
+        function formatScheduleInfo(utcTime, reasoning) {
+            const madridTime = utcToMadrid(utcTime);
+            return `
+                <strong>Recommended Schedule:</strong><br>
+                ${madridTime} (Madrid time)<br>
+                <div class="reasoning">${reasoning}</div>
+            `;
+        }
+
+        // Initialize schedule info if available
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if schedule_info and schedule_info.success %}
+                const scheduleContent = document.getElementById('scheduleContent');
+                const scheduledTime = {{ schedule_info.scheduled_time|tojson }};
+                const reasoning = {{ schedule_info.reasoning|tojson }};
+                
+                document.getElementById('scheduled_time').value = scheduledTime;
+                scheduleContent.innerHTML = formatScheduleInfo(scheduledTime, reasoning);
+            {% endif %}
+        });
+
+        // Refresh schedule handler
+        async function checkSchedule() {
+            const scheduleInfo = document.getElementById('scheduleInfo');
+            scheduleInfo.style.display = 'none';
+            scheduleInfo.className = 'schedule-info';
+
+            try {
+                const response = await fetch('/test-schedule');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('scheduled_time').value = result.scheduled_time;
+                    
+                    scheduleInfo.className = 'schedule-info schedule-success';
+                    scheduleInfo.innerHTML = formatScheduleInfo(
+                        result.scheduled_time,
+                        result.reasoning
+                    );
+                } else {
+                    document.getElementById('scheduled_time').value = '';
+                    scheduleInfo.className = 'schedule-info schedule-warning';
+                    scheduleInfo.innerHTML = `
+                        <strong>Warning:</strong><br>
+                        ${result.message || 'Could not determine schedule time'}
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('scheduled_time').value = '';
+                scheduleInfo.className = 'schedule-info schedule-error';
+                scheduleInfo.innerHTML = `
+                    <strong>Error:</strong><br>
+                    ${error.message || 'Failed to get scheduling recommendation'}
+                `;
+            }
+            
+            scheduleInfo.style.display = 'block';
+        }
+
+        document.getElementById('checkSchedule').addEventListener('click', checkSchedule);
+    </script>
 </body>
 </html>

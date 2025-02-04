@@ -1,4 +1,3 @@
-
 import os
 import google.auth
 from flask import url_for, redirect
@@ -10,6 +9,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 import requests
 from google.auth.transport.requests import Request
+from datetime import datetime
+import json
 
 from google_auth_oauthlib.flow import Flow
 
@@ -166,38 +167,52 @@ def getUrl(id):
     return f"https://www.youtube.com/watch?v={id}"
 
 
-def uploadVideo(videoStream, title, description, tags, privacyStatus='private'):
-    print("uploadVideo youtube")
+def uploadVideo(video_stream, title, description, tags, privacy_status, publish_time=None):
+    """Upload a video to YouTube"""
     try:
         credentials = getCredentials()
         youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
         
-        media_body = MediaIoBaseUpload(videoStream, mimetype='video/mp4', resumable=True)
-
-
-        request = youtubeOauth.videos().insert(
-            part="snippet,status",
-            body={
-                "snippet": {
-                    "title": title,
-                    "description": description,
-                    "tags": tags,
-                    "categoryId": "17"
-                },
-                "status": {
-                    "privacyStatus": privacyStatus
-                }
+        body = {
+            'snippet': {
+                'title': title,
+                'description': description,
+                'tags': tags,
+                'categoryId': '17'  # Sports category
             },
-            media_body=media_body
+            'status': {
+                'privacyStatus': privacy_status,
+                'selfDeclaredMadeForKids': False
+            }
+        }
+        
+        # Add publishAt if we have a publish_time
+        if publish_time:
+            print(publish_time)
+            # YouTube API expects RFC 3339 format
+            body['status']['publishAt'] = publish_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+            print(body)
+
+        # Call the API's videos.insert method
+        insert_request = youtubeOauth.videos().insert(
+            part=','.join(body.keys()),
+            body=body,
+            media_body=MediaIoBaseUpload(video_stream, 'video/*', resumable=True)
         )
-
-        response = request.execute()
-        print("Upload successful:", response)
+        
+        response = None
+        while response is None:
+            status, response = insert_request.next_chunk()
+            if status:
+                print(f"Uploaded {int(status.progress() * 100)}%")
+        
+        print(f"Upload Complete! Video ID: {response['id']}")
         return response
-
+        
     except Exception as e:
-        raise Exception(f"Error uploading video to YouTube: {str(e)}")
-    
+        print(f"Error uploading video: {e}")
+        raise e
+
 
 def getCredentials():
     credentials = None
@@ -252,3 +267,122 @@ def oauth2callback(authorization_response):
 def saveToken(credentials):
     with open(TOKEN_FILE, 'w') as token_file:
             token_file.write(credentials.to_json())
+
+
+def get_scheduled_videos():
+    """Get list of scheduled videos from YouTube"""
+    try:
+        # Get authenticated client
+        credentials = getCredentials()
+        youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+        
+        # Get the channel's uploads playlist ID
+        uploads_response = youtubeOauth.channels().list(
+            part='contentDetails',
+            mine=True
+        ).execute()
+        
+        uploads_playlist_id = uploads_response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+        
+        # Get videos until we find a published one
+        video_ids = []
+        next_page_token = None
+        request_next_page = True
+        
+        while request_next_page:
+            request = youtubeOauth.playlistItems().list(
+                part="snippet,status",  # Include status to check privacy
+                playlistId=uploads_playlist_id,
+                maxResults=50,
+                pageToken=next_page_token
+            )
+            playlist_response = request.execute()
+            
+            # Check each video's status
+            for item in playlist_response.get('items', []):
+                if item['status'].get('privacyStatus') == 'private':
+                    video_ids.append(item['snippet']['resourceId']['videoId'])
+                else:
+                    # Found a public video, don't request next page
+                    request_next_page = False
+            
+            # Only get next page if we haven't found a public video and there are more pages
+            if request_next_page and playlist_response.get('nextPageToken'):
+                next_page_token = playlist_response.get('nextPageToken')
+            else:
+                break
+        
+        if not video_ids:
+            print("No private videos found")
+            return []
+            
+        # Get full video details in batches
+        scheduled_videos = []
+        now = datetime.utcnow()
+        
+        for i in range(0, len(video_ids), 50):
+            batch_ids = video_ids[i:i + 50]
+            
+            videos_response = youtubeOauth.videos().list(
+                part="snippet,status",
+                id=','.join(batch_ids),
+                fields="items(id,snippet(title,description),status(privacyStatus,publishAt))"
+            ).execute()
+            
+            for item in videos_response.get('items', []):
+                status = item.get('status', {})
+                snippet = item.get('snippet', {})
+                
+                # Check if video has a future publish date
+                publish_at = status.get('publishAt')
+                if publish_at:
+                    publish_time = datetime.strptime(publish_at, '%Y-%m-%dT%H:%M:%SZ')
+                    
+                    if publish_time > now:
+                        description = snippet.get('description', '')
+                        metadata = parse_video_description(description)
+                        
+                        scheduled_videos.append({
+                            'id': item['id'],
+                            'title': snippet['title'],
+                            'description': description,
+                            'climber': metadata.get('climber'),
+                            'name': metadata.get('name'),
+                            'grade': metadata.get('grade'),
+                            'zone': metadata.get('zone'),
+                            'sector': metadata.get('sector'),
+                            'scheduledTime': publish_time
+                        })
+        
+        print("Scheduled videos found:", len(scheduled_videos))
+        return scheduled_videos
+        
+    except Exception as e:
+        print(f"Error fetching scheduled videos: {e}")
+        print(f"Error details: {str(e)}")
+        return []
+
+def parse_video_description(description):
+    """Extract metadata from video description"""
+    metadata = {}
+    
+    # Split description into lines and look for metadata
+    for line in description.split('\n'):
+        line = line.strip()
+        if ':' in line:
+            key, value = line.split(':', 1)
+            key = key.strip().lower()
+            value = value.strip()
+            
+            if key == 'climber':
+                metadata['climber'] = value
+            elif key == 'name':
+                metadata['name'] = value
+            elif key == 'grade':
+                metadata['grade'] = value
+            elif key == 'zone':
+                metadata['zone'] = value
+            elif key == 'sector':
+                metadata['sector'] = value
+    
+    return metadata

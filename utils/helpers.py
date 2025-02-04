@@ -9,6 +9,8 @@ import utils.zone_helpers
 import utils.MadBoulderDatabase
 import utils.channel
 from collections import Counter
+from textwrap import dedent
+from slugify import slugify
 
 
 def load_sectors():
@@ -111,3 +113,52 @@ def generate_download_url(area, filename):
     its download.
     """
     return '/download/' + area + '/' + filename
+
+
+def generateDescription(name, climber, grade, zone, sector=None):
+    """Generate standardized video description with metadata and links"""
+    zone_code = slugify(zone)
+    
+    # Build metadata section
+    metadata = [
+        f"Climber: {climber}",
+        f"Name: {name}",
+        f"Grade: {grade}",
+        f"Zone: {zone}"
+    ]
+    if sector:
+        metadata.append(f"Sector: {sector}")
+    
+    # Build the full description
+    description = dedent(f"""
+        {chr(10).join(metadata)}
+
+        Is this not the correct line or beta? Please tell us!
+
+        Do you have a beta recorded? Share it with us and help all the community. DM us in IG @madboulder for more details or upload it here:  https://www.madboulder.org/upload
+
+        ➞ {zone} Bouldering https://www.madboulder.org/{zone_code}
+
+        ➞ VISIT https://www.madboulder.org and discover all our content!
+
+        ➞ SUBSCRIBE to MadBoulder: https://www.youtube.com/c/MadBoulder
+
+        Do you enjoy our content? Please consider supporting what we do:
+        ➞ Official Merch Store: https://shop.madboulder.org
+
+        #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}
+    """).strip()
+    
+    return description
+
+
+def generateTags(name, zone, grade):
+    """Generate standardized video tags"""
+    return [
+        "madboulder", "boulder", "bouldering", "escalada", "climbing", "bloc",
+        "escalade", "climb", "climber", "mad boulder", "bloque", "klettern",
+        "arrampicata", "boulder beta", "beta library", "escalada en roca",
+        "rock climbing", f"{zone} Boulder", f"{zone} bouldering", f"{zone} {grade}",
+        f"{zone}", f"{zone} climbing", f"{name} {grade}", f"{name} {grade} {zone}",
+        f"{name} {zone}", f"{name}"
+    ]
