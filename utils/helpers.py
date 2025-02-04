@@ -9,7 +9,6 @@ import utils.zone_helpers
 import utils.MadBoulderDatabase
 import utils.channel
 from collections import Counter
-from textwrap import dedent
 from slugify import slugify
 
 
@@ -129,25 +128,23 @@ def generateDescription(name, climber, grade, zone, sector=None):
     if sector:
         metadata.append(f"Sector: {sector}")
     
-    # Build the full description
-    description = dedent(f"""
-        {chr(10).join(metadata)}
+    # Build the full description without extra indentation
+    description = f"""{chr(10).join(metadata)}
 
-        Is this not the correct line or beta? Please tell us!
+Is this not the correct line or beta? Please tell us!
 
-        Do you have a beta recorded? Share it with us and help all the community. DM us in IG @madboulder for more details or upload it here:  https://www.madboulder.org/upload
+Do you have a beta recorded? Share it with us and help all the community. DM us in IG @madboulder for more details or upload it here:  https://www.madboulder.org/upload
 
-        ➞ {zone} Bouldering https://www.madboulder.org/{zone_code}
+➞ {zone} Bouldering https://www.madboulder.org/{zone_code}
 
-        ➞ VISIT https://www.madboulder.org and discover all our content!
+➞ VISIT https://www.madboulder.org and discover all our content!
 
-        ➞ SUBSCRIBE to MadBoulder: https://www.youtube.com/c/MadBoulder
+➞ SUBSCRIBE to MadBoulder: https://www.youtube.com/c/MadBoulder
 
-        Do you enjoy our content? Please consider supporting what we do:
-        ➞ Official Merch Store: https://shop.madboulder.org
+Do you enjoy our content? Please consider supporting what we do:
+➞ Official Merch Store: https://shop.madboulder.org
 
-        #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}
-    """).strip()
+#madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}"""
     
     return description
 

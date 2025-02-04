@@ -29,7 +29,6 @@ from dotenv import load_dotenv
 import traceback
 import requests
 import utils.searchManager
-from textwrap import dedent
 from types import SimpleNamespace
 
 from bokeh.embed import components
@@ -40,6 +39,8 @@ from google.oauth2 import service_account
 
 from google.cloud import recaptchaenterprise_v1
 from google.cloud.recaptchaenterprise_v1 import Assessment
+
+from utils.ai_helper import GenerativeAI
 
 
 EXTENSION = '.html'
@@ -79,6 +80,9 @@ current_progress = 0
 mail = EmailProvider(app)
 
 search_manager = utils.searchManager.SearchManager()
+
+# Initialize AI helper
+ai = GenerativeAI()
 
 def _get_seconds_to_next_time(hour, minute, second):
     """Get seconds until next occurrence of the specified time"""
@@ -348,36 +352,7 @@ def upload_hub():
         sector = properties.get('sector', '')
         sector_code = slugify(sector)
 
-        # Get schedule recommendation
-        is_short = is_video_short(file_id)
-        video_data = {
-            'title': name,
-            'zone': zone,
-            'grade': grade,
-            'is_short': is_short,
-            'climber': climber
-        }
-        scheduled_videos = utils.channel.get_scheduled_videos()
-        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
-
-        schedule_info = None
-        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
-            recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
-            utc_time = recommended_date.replace(
-                hour=recommendation['recommended_hour'],  # Already in UTC
-                minute=0,
-                second=0
-            )
-            schedule_info = {
-                'success': True,
-                'scheduled_time': utc_time.strftime("%Y-%m-%d %H:%M:%S"),
-                'reasoning': recommendation['reasoning']
-            }
-        else:
-            schedule_info = {
-                'success': False,
-                'message': 'Could not determine schedule time'
-            }
+        schedule_info = suggest_upload_time(file_id, name, climber, grade, zone)
 
         # Generate description and tags
         description = utils.helpers.generateDescription(name, climber, grade, zone, properties.get('sector'))
@@ -421,9 +396,6 @@ def test_schedule():
         metadata = utils.drive.getFileMetadata(file_id)
         if not metadata:
             return "Error fetching metadata from Google Drive.", 500
-        
-        filename = metadata.get('name', 'Unknown File')
-        title = os.path.splitext(filename)[0]
 
         properties = metadata.get('properties', {})
         climber = properties.get('climber', 'Unknown Climber')
@@ -431,31 +403,16 @@ def test_schedule():
         grade = properties.get('grade', '')
         zone = properties.get('zone', 'Unknown Zone')
 
-        is_short = is_video_short(file_id)
         
         # Get AI recommendation
-        video_data = {
-            'title': name,
-            'zone': zone,
-            'grade': grade,
-            'is_short': is_short,
-            'climber': climber
-        }
-        scheduled_videos = utils.channel.get_scheduled_videos()
-        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
-
-        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
-            recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
-            publish_time = recommended_date.replace(
-                hour=recommendation['recommended_hour'],
-                minute=0,
-                second=0
-            )
+        schedule_info = suggest_upload_time(file_id, name, climber, grade, zone)
+        if schedule_info and schedule_info.get('success'):
+            publish_time = datetime.strptime(schedule_info['scheduled_time'], "%Y-%m-%d %H:%M:%S")
             return jsonify({
                 'success': True,
-                'scheduled_time': publish_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'scheduled_time': schedule_info['scheduled_time'],
                 'hour': publish_time.hour,
-                'reasoning': recommendation['reasoning']
+                'reasoning': schedule_info.get('reasoning', '')
             })
         else:
             return jsonify({
@@ -1846,191 +1803,66 @@ def page_not_found(error):
     return render_template('errors/404-page-not-found.html'), 404
 
 
+def suggest_upload_time(file_id, name, climber, grade, zone):
+    is_short = is_video_short(file_id)
+    video_data = {
+        'title': name,
+        'zone': zone,
+        'grade': grade,
+        'is_short': is_short,
+        'climber': climber
+    }
+    scheduled_videos = utils.channel.get_scheduled_videos()
+    print(video_data)
+    recommendation = ai.get_schedule_recommendation(video_data, scheduled_videos)
 
-def get_gemini_scheduling_recommendation(video_data, scheduled_videos):
-    """Get scheduling recommendation from Gemini AI"""
-    try:
-        # Import Gemini
-        import google.generativeai as genai
-        
-        # Configure Gemini
-        genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-        model = genai.GenerativeModel('gemini-pro')
-        
-        # Prepare scheduling rules for the prompt
-        scheduling_rules = """
-        Scheduling Rules:
-
-        Time Slots:
-        Video Type Short:
-        - 23:00h UTC previous day: Outside Europe (mostly US), any grade
-        - 07:00h UTC: Europe, low grade (3-6a)
-        - 11:00h UTC: Europe, mid grade (6a-6c)
-        - 15:00h UTC: Europe, advanced grade (6c+-7b)
-        - 19:00h UTC: Europe, elite grade (>7b+)
-        
-        Video Type Regular:
-        - 23:00h UTC previous day: Outside Europe (mostly US), grade above V5
-        - 07:00h UTC: Outside Europe (mostly US), grade below V5
-        - 13:00h UTC: Europe, low-mid grade
-        - 19:00h UTC: Europe, advanced-elite grade
-
-        Additional Rules:
-        1. Each time slot should only have one video per day
-        2. The same climber should not appear multiple times on the same day
-        3. The same zone/area should not appear multiple times on the same day
-        4. Try to space out videos from the same zone across different days
-        5. If a slot is taken or any rule is violated on a given day, recommend the next available day
-
-        IMPORTANT: Return hours in UTC.
-        """
-        
-        # Format currently scheduled videos with more detail
-        scheduled_slots = "\nCurrently scheduled videos:\n"
-        for video in scheduled_videos:
-            scheduled_slots += (
-                f"- {video['title']} "
-                f"(Climber: {video['climber']}, "
-                f"Zone: {video['zone']}, "
-                f"Grade: {video['grade']}) "
-                f"at {video['scheduledTime'].strftime('%Y-%m-%d %H:%M')}\n"
-            )
-            
-        # Create the prompt
-        prompt = f"""
-        {scheduling_rules}
-        
-        {scheduled_slots}
-        
-        New video details:
-        - Title: {video_data['title']}
-        - Zone: {video_data['zone']}
-        - Grade: {video_data['grade']}
-        - Climber: {video_data.get('climber', 'Unknown')}
-        - Type: {'Short' if video_data['is_short'] else 'Regular'}
-        
-        Based on these scheduling rules and currently scheduled videos, what is the best time slot for this new video? 
-        Consider the video type, grade, location, and scheduling constraints.
-        
-        Analyze the schedule to:
-        1. Find the appropriate hour based on video type and characteristics
-        2. Check which days have that hour slot available for video type
-        3. For each potential day, verify that:
-           - The time slot for this type of video is not already taken
-           - The same climber is not already scheduled
-           - The same zone is not already scheduled
-        4. Look for the earliest available day that meets ALL criteria
-        
-        You must respond with ONLY a JSON object in this exact format:
-        {{
-            "recommended_hour": {{Hour in UTC}},
-            "recommended_date": {{Time in UTC}},
-            "reasoning": "This slot was chosen because..."
-        }}
-        
-        Do not include any other text or explanation outside the JSON object.
-        The hour must be an integer 0-23.
-        The date must be in YYYY-MM-DD format.
-        """
-        
-        # Get response from Gemini
-        response = model.generate_content(prompt)
-        
-        # Clean the response text
-        cleaned_response = response.text.strip()
-        if cleaned_response.startswith('```json'):
-            cleaned_response = cleaned_response[7:-3]  # Remove ```json and ``` markers
-        
-        # Parse JSON
-        recommendation = json.loads(cleaned_response)
-        
-        # Validate the response format
-        required_keys = ['recommended_hour', 'recommended_date', 'reasoning']
-        if not all(key in recommendation for key in required_keys):
-            raise ValueError("Missing required keys in recommendation")
-            
-        if not isinstance(recommendation['recommended_hour'], int):
-            raise ValueError("recommended_hour must be an integer")
-            
-        # Try to parse the date to validate format
-        try:
-            datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
-        except ValueError as e:
-            raise ValueError(f"Invalid date format: {e}")
-        
-        return recommendation
-        
-    except Exception as e:
-        print(f"Error getting Gemini recommendation: {e}")
-        print(f"Raw response: {response.text if 'response' in locals() else 'No response'}")
-        return None
-
-def suggest_upload_time(name, zone, grade, is_short, climber=None):
-    """Get AI recommendation for video scheduling time"""
-    try:
-        # Get video details from the form
-        video_data = {
-            'title': name,
-            'zone': zone,
-            'grade': grade,
-            'is_short': is_short,
-            'climber': climber
+    schedule_info = None
+    if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
+        recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+        utc_time = recommended_date.replace(
+            hour=recommendation['recommended_hour'],  # Already in UTC
+            minute=0,
+            second=0
+        )
+        schedule_info = {
+            'success': True,
+            'scheduled_time': utc_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'reasoning': recommendation['reasoning']
         }
-        
-        # Get scheduled videos for next few days
-        scheduled_videos = utils.channel.get_scheduled_videos()
-        
-        # Get AI recommendation
-        recommendation = get_gemini_scheduling_recommendation(video_data, scheduled_videos)
-        
-        if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
-            # Create datetime from recommended date and hour
-            try:
-                recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
-                publish_time = recommended_date.replace(
-                    hour=recommendation['recommended_hour'],
-                    minute=0,
-                    second=0
-                )
-                print(f"AI Scheduling Recommendation: {recommendation['reasoning']}")
-                return publish_time
-            except ValueError as e:
-                print(f"Error parsing date: {e}")
-                return None
-            
-        # If AI recommendation fails, return None to indicate manual scheduling needed
-        print("AI scheduling failed - video will need manual scheduling")
-        return None
-        
-    except Exception as e:
-        print(f"Error suggesting upload time: {e}")
-        return None
+    else:
+        schedule_info = {
+            'success': False,
+            'message': 'Could not determine schedule time'
+        }
+
+    return schedule_info
+
 
 def is_video_short(file_id):
-    """Determine if video is a short based on its metadata"""
     try:
         metadata = utils.drive.getFileMetadata(file_id)
         video_metadata = metadata.get('videoMediaMetadata', {})
         
-        # Get duration in seconds
         duration_millis = video_metadata.get('durationMillis', 0)
         duration_seconds = int(duration_millis) / 1000
         
-        # Get video dimensions
         width = int(video_metadata.get('width', 0))
         height = int(video_metadata.get('height', 0))
+        print(f"Duration: {duration_seconds} seconds, Width: {width}, Height: {height}")
         
-        # Check if video is vertical (height > width)
-        is_vertical = height > width
+        aspect_ratio = (height / width) if width > 0 else 0
+        is_vertical = aspect_ratio >= 1
         
-        # YouTube Shorts must be vertical and max 3 minutes (180 seconds)
-        return is_vertical and duration_seconds <= 180
+        # Determine if video qualifies as a YouTube Short
+        result = is_vertical and (duration_seconds > 0 and duration_seconds <= 180)
+        print(f"Determined short video: {result} (is_vertical: {is_vertical}, duration: {duration_seconds} sec)")
+        return result
         
     except Exception as e:
         print(f"Error determining if video is short: {e}")
         print(f"Video metadata: {metadata}")  # Debug print
-        # If we can't determine, assume it's not a short
         return False
+
 
 # start the server
 if __name__ == '__main__':

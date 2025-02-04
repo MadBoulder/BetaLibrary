@@ -19,7 +19,7 @@ def getFileMetadata(file_id):
         drive_service = build('drive', 'v3', credentials=credentials)
         file_metadata = drive_service.files().get(
             fileId=file_id,
-            fields="name, properties, thumbnailLink"
+            fields="name, properties, thumbnailLink, mimeType, videoMediaMetadata(durationMillis, width, height)"
         ).execute()
         return file_metadata
     except Exception as e:
