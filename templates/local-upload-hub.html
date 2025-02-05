@@ -38,6 +38,12 @@
                 
                 <label for="scheduled_time">Scheduled Time:</label>
                 <input type="text" id="scheduled_time" name="scheduled_time"><br><br>
+                
+                <!-- Move the button and schedule info here -->
+                <button id="checkSchedule" class="btn btn-secondary" type="button">Refresh Schedule Recommendation</button>
+                <div id="scheduleInfo" class="schedule-info" style="display: block;">
+                    <div id="scheduleContent"></div>
+                </div>
             </div>
             
             <button type="submit" id="uploadVideoButton" style="display: none;">Upload Video</button>
@@ -111,8 +117,14 @@
             scheduleInfo.style.display = 'none';
             scheduleInfo.className = 'schedule-info';
 
+            const isShort = window.isShortVideo || false; // Assuming this variable is set elsewhere
+            const name = document.getElementById('modalProblem').value; // Get the problem name
+            const climber = document.getElementById('modalClimber').value; // Get the climber name
+            const grade = document.getElementById('modalGrade').value; // Get the grade
+            const zone = document.getElementById('modalZone').value; // Get the zone
+
             try {
-                const response = await fetch('/test-schedule');
+                const response = await fetch(`/test-schedule?is_short=${isShort}&name=${encodeURIComponent(name)}&climber=${encodeURIComponent(climber)}&grade=${encodeURIComponent(grade)}&zone=${encodeURIComponent(zone)}`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -258,24 +270,27 @@
                if(data.error){
                    alert("Error computing metadata: " + data.error);
                } else {
-                   // Set fields with computed values
                    document.getElementById('description').value = data.description;
                    document.getElementById('tags').value = data.tags;
                    if(data.schedule_info && data.schedule_info.success){
                         document.getElementById('scheduled_time').value = data.schedule_info.scheduled_time;
+
+                        const scheduleContent = document.getElementById('scheduleContent');
+                        const scheduledTime = data.schedule_info.scheduled_time;
+                        const reasoning = data.schedule_info.reasoning;
+                        
+                        document.getElementById('scheduled_time').value = scheduledTime;
+                        scheduleContent.innerHTML = formatScheduleInfo(scheduledTime, reasoning);
                    } else {
                         document.getElementById('scheduled_time').value = "";
                    }
                    
-                   // Show the upload information container now that data is ready
                    document.getElementById('uploadInformation').style.display = 'block';
-                   // Show the upload video button now that the video is loaded and metadata computed
                    document.getElementById('uploadVideoButton').style.display = 'block';
                }
            })
            .catch(err => { console.error(err); });
            
-           // Hide the modal popup
            document.getElementById('metadataModal').style.display = 'none';
         });
 
@@ -283,6 +298,9 @@
         document.getElementById('closeModal').addEventListener('click', function(){
              document.getElementById('metadataModal').style.display = 'none';
         });
+
+        // Add event listener for the refresh button
+        document.getElementById('checkSchedule').addEventListener('click', checkSchedule);
     </script>
 </body>
 </html> 

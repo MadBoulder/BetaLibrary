@@ -94,13 +94,17 @@
             scheduleInfo.style.display = 'none';
             scheduleInfo.className = 'schedule-info';
 
+            const name = document.getElementById('title').value; // Get the title
+            const climber = document.getElementById('climber').value; // Get the climber name
+            const grade = document.getElementById('grade').value; // Get the grade
+            const zone = document.getElementById('zone').value; // Get the zone
+
             try {
-                const response = await fetch('/test-schedule');
+                const response = await fetch(`/test-schedule?is_short=${is_short}&name=${encodeURIComponent(name)}&climber=${encodeURIComponent(climber)}&grade=${encodeURIComponent(grade)}&zone=${encodeURIComponent(zone)}`);
                 const result = await response.json();
                 
                 if (result.success) {
                     document.getElementById('scheduled_time').value = result.scheduled_time;
-                    
                     scheduleInfo.className = 'schedule-info schedule-success';
                     scheduleInfo.innerHTML = formatScheduleInfo(
                         result.scheduled_time,

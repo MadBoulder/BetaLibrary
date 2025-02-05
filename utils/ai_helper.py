@@ -8,14 +8,14 @@ class GenerativeAI:
     def __init__(self):
         # Configure Gemini
         genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
 
     def get_schedule_recommendation(self, video_data, scheduled_videos):
         """Get scheduling recommendation for a video"""
         try:
             # Get the complete prompt from SchedulingPrompts
             prompt = SchedulingPrompts.get_scheduling_prompt(video_data, scheduled_videos)
-            
+            print(prompt)
             # Get response from AI
             response = self.model.generate_content(prompt)
             

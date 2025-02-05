@@ -105,6 +105,9 @@ def generate_success_page(video_id, title, publish_time=None):
         success_html += f"""
         <p>Continue the edition in Youtube Studio:</p>
         <a href="{youtube_url}">{title}</a>
+        <br><br>
+        <p>Or add another one:</p>
+        <a href="/local-upload-hub" class="btn btn-primary">Return to Local Upload Hub</a>
         """
         
         return success_html

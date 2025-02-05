@@ -374,7 +374,8 @@ def upload_hub():
             "thumbnail": thumbnail,
             "zone_code": zone_code,
             "sector_code": sector_code,
-            "schedule_info": schedule_info
+            "schedule_info": schedule_info,
+            "is_short": is_short
         }
         return render_template('upload-hub.html', **context)
 
@@ -423,35 +424,17 @@ def compute_upload_metadata():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/test-schedule')
+@app.route('/test-schedule', methods=['GET'])
 def test_schedule():
     """Test endpoint to check scheduling recommendation without uploading"""
     try:
-        file_id = request.args.get('file_id')
-        if file_id:
-            session['file_id'] = file_id  # Save file_id in session for redirection
-        else:
-            file_id = session.get('file_id')  # Use stored file_id if available
+        # Get parameters from the request
+        is_short = request.args.get('is_short', type=bool)
+        name = request.args.get('name', '')
+        climber = request.args.get('climber', 'Unknown Climber')
+        grade = request.args.get('grade', '')
+        zone = request.args.get('zone', 'Unknown Zone')
 
-        if not file_id:
-            return "Error: No file ID provided.", 400
-
-        isAuthenticated = utils.channel.is_authenticated()
-        if not isAuthenticated:
-            return render_template('upload-hub.html', authenticated=False, file_id=file_id)
-
-        metadata = utils.drive.getFileMetadata(file_id)
-        if not metadata:
-            return "Error fetching metadata from Google Drive.", 500
-
-        properties = metadata.get('properties', {})
-        climber = properties.get('climber', 'Unknown Climber')
-        name = properties.get('name', 'Unknown Problem')
-        grade = properties.get('grade', '')
-        zone = properties.get('zone', 'Unknown Zone')
-        
-        is_short = is_video_short(file_id)
-        
         # Get AI recommendation
         schedule_info = suggest_upload_time(is_short, name, climber, grade, zone)
         if schedule_info and schedule_info.get('success'):
@@ -534,15 +517,15 @@ def process_upload_youtube_from_local():
             if error:
                 return error
 
-            # Move the file to uploaded videos folder on success
-            uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
-            try:
-                uploaded_path.parent.mkdir(parents=True, exist_ok=True)
-                video_path.rename(uploaded_path)
-            except Exception as move_error:
-                print(f"Warning: Could not move file to done folder: {move_error}")
+        # Move the file to uploaded videos folder on success
+        uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+        try:
+            uploaded_path.parent.mkdir(parents=True, exist_ok=True)
+            video_path.rename(uploaded_path)
+        except Exception as move_error:
+            print(f"Warning: Could not move file to done folder: {move_error}")
                 
-            return channel_uploader.generate_success_page(response['id'], title, publish_time)
+        return channel_uploader.generate_success_page(response['id'], title, publish_time)
 
     except Exception as e:
         print(f"Error in process_upload_youtube_from_local: {e}")
