@@ -44,6 +44,7 @@ from utils.ai_helper import GenerativeAI
 
 from werkzeug.utils import secure_filename
 from pathlib import Path
+import utils.channel_uploader as channel_uploader
 
 
 EXTENSION = '.html'
@@ -490,9 +491,65 @@ def oauth2callback():
     return redirect(url_for('upload_hub'))
 
 
+@app.route('/process-upload-youtube-from-local', methods=['POST'])
+def process_upload_youtube_from_local():
+    try:
+        # Get form data
+        video_filename = request.form['video']
+        description = request.form['description']
+        tags = request.form['tags']
+        scheduled_time = request.form.get('scheduled_time', '')
+        
+        # Get the full path from local videos folder
+        video_path = Path(app.config['LOCAL_VIDEOS_FOLDER']) / video_filename
+        
+        if not video_path.exists():
+            raise Exception(f"Video file not found: {video_filename}")
+        
+        title = os.path.splitext(video_filename)[0]
+
+        # Extract zone and sector from description
+        zone_match = re.search(r'Zone:\s*([^,\n]+)', description)
+        sector_match = re.search(r'Sector:\s*([^,\n]+)', description)
+        
+        zone = zone_match.group(1).strip() if zone_match else "Unknown Zone"
+        sector = sector_match.group(1).strip() if sector_match else ""
+        
+        # Generate slugified codes
+        zone_code = slugify(zone)
+        sector_code = slugify(sector)
+
+        # Upload to channel
+        with open(video_path, 'rb') as video_file:
+            response, publish_time, error = channel_uploader.process_channel_upload(
+                title=title,
+                description=description,
+                tags=tags,
+                scheduled_time=scheduled_time,
+                zone_code=zone_code,
+                sector_code=sector_code,
+                video_stream=video_file
+            )
+            
+            if error:
+                return error
+
+            # Move the file to uploaded videos folder on success
+            uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+            try:
+                uploaded_path.parent.mkdir(parents=True, exist_ok=True)
+                video_path.rename(uploaded_path)
+            except Exception as move_error:
+                print(f"Warning: Could not move file to done folder: {move_error}")
+                
+            return channel_uploader.generate_success_page(response['id'], title, publish_time)
+
+    except Exception as e:
+        print(f"Error in process_upload_youtube_from_local: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/process-upload-youtube-from-drive', methods=['POST'])
 def process_upload_youtube_from_drive():
-    print("process_upload_youtube_from_drive")
     try:
         if not utils.channel.is_authenticated():
             return redirect(url_for('authenticate'))
@@ -506,108 +563,29 @@ def process_upload_youtube_from_drive():
         tags = request.form.getlist('tags')
         zone_code = request.form['zone_code']
         sector_code = request.form['sector_code']
+        scheduled_time = request.form.get('scheduled_time')
         
-        # Get publish time from form
-        publish_time = None
-        if request.form.get('scheduled_time'):
-            try:
-                # The time from the form is already in UTC
-                publish_time = datetime.strptime(
-                    request.form['scheduled_time'],
-                    '%Y-%m-%d %H:%M:%S'
-                )
-            except ValueError as e:
-                print(f"Error parsing scheduled time: {e}")
-                print(f"Raw scheduled_time value: {request.form.get('scheduled_time')}")
-        
-        print("process_upload_youtube_from_drive 2")
         video_stream = utils.drive.getVideoStream(file_id)
         print("video stream from Drive ready")
         
-        # Upload video with private status initially
-        response = utils.channel.uploadVideo(
-            video_stream, 
-            title, 
-            description, 
-            tags, 
-            'private',
-            publish_time=publish_time  # Will be None if AI scheduling failed
+        response, publish_time, error = channel_uploader.process_channel_upload(
+            title=title,
+            description=description,
+            tags=tags,
+            scheduled_time=scheduled_time,
+            zone_code=zone_code,
+            sector_code=sector_code,
+            video_stream=video_stream
         )
         
-        uploadedVideoId = response['id']
-        print("video uploaded to Youtube")
-        
-        print(f"adding video to playlist {zone_code}")
-        playlists = utils.MadBoulderDatabase.getPlaylistData(zone_code)
-        zonePlaylistId = playlists.get("id")
-        sectorPlaylists = playlists.get("sectors", {})
-
-        if zonePlaylistId:
-            utils.channel.addVideoToPlaylist(uploadedVideoId, zonePlaylistId)
-
-        if sector_code in sectorPlaylists:
-            print("adding video to sector playlist")
-            sectorPlaylistId = sectorPlaylists[sector_code]["id"]
-            utils.channel.addVideoToPlaylist(uploadedVideoId, sectorPlaylistId)
-
-        print("enabling video monetization")
-        utils.channel.enableMonetization(uploadedVideoId)
-
-        # Generate success page with scheduling info if available
-        return generate_success_page(uploadedVideoId, title, publish_time)
+        if error:
+            return error
+            
+        return channel_uploader.generate_success_page(response['id'], title, publish_time)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-def generate_success_page(video_id, title, publish_time=None):
-    """Generate success page HTML with video details"""
-    try:
-        youtube_url = f"https://studio.youtube.com/video/{video_id}/edit"
-        success_html = f"""
-        <h2>Video Upload Successful!</h2>
-        <p>Your video "{title}" has been uploaded to YouTube.</p>
-        """
-        
-        if publish_time:
-            # Format datetime to ISO format for JavaScript
-            utc_time = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
-            success_html += f"""
-            <script>
-                function formatMadridTime(utcString) {{
-                    const utcDate = new Date(utcString + 'Z');
-                    return new Intl.DateTimeFormat('en-GB', {{
-                        timeZone: 'Europe/Madrid',
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    }}).format(utcDate);
-                }}
-                
-                document.write(`
-                    <p>The video will be published at: ${{formatMadridTime("{utc_time}")}} (Madrid time)</p>
-                `);
-            </script>
-            <noscript>
-                <p>The video will be published at: {publish_time} (UTC)</p>
-            </noscript>
-            """
-        
-        success_html += f"""
-
-        <p>Continue the edition in Youtube Studio:</p>
-        <a href="{youtube_url}">{title}</a>
-        """
-        
-        return success_html
-        
-    except Exception as e:
-        print(f"Error generating success page: {e}")
-        return "<h2>Upload completed, but there was an error generating the success page.</h2>"
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -1911,93 +1889,6 @@ def is_video_short(file_id):
         return False
 
 
-@app.route('/process-upload-youtube-from-local', methods=['POST'])
-def process_upload_youtube_from_local():
-    try:
-        # Get form data
-        video_filename = request.form['video']  # Now this will be just the filename
-        description = request.form['description']
-        tags = request.form['tags']
-        scheduled_time = request.form.get('scheduled_time', '')
-        
-        # Get the full path from your local videos folder
-        video_path = Path(app.config['LOCAL_VIDEOS_FOLDER']) / video_filename
-        
-        if not video_path.exists():
-            raise Exception(f"Video file not found: {video_filename}")
-        
-        title = os.path.splitext(video_filename)[0]
-
-        # Extract zone and sector from description
-        zone_match = re.search(r'Zone:\s*([^,\n]+)', description)
-        sector_match = re.search(r'Sector:\s*([^,\n]+)', description)
-        
-        zone = zone_match.group(1).strip() if zone_match else "Unknown Zone"
-        sector = sector_match.group(1).strip() if sector_match else ""
-        
-        # Generate slugified codes
-        zone_code = slugify(zone)
-        sector_code = slugify(sector)
-
-        # Upload to YouTube directly from the local path
-        with open(video_path, 'rb') as video_file:
-            # Convert scheduled_time string to datetime if it exists
-            publish_time = None
-            if scheduled_time:
-                publish_time = datetime.strptime(scheduled_time, "%Y-%m-%d %H:%M:%S")
-
-            response = utils.channel.uploadVideo(
-                video_stream=video_file,
-                title=title,
-                description=description,
-                tags=tags.split(','),
-                privacy_status='private',
-                publish_time=publish_time
-            )
-
-        uploadedVideoId = response['id']
-        print("video uploaded to Youtube")
-        
-        print(f"adding video to playlist {zone_code}")
-        playlists = utils.MadBoulderDatabase.getPlaylistData(zone_code)
-        zonePlaylistId = playlists.get("id")
-        sectorPlaylists = playlists.get("sectors", {})
-
-        if zonePlaylistId:
-            utils.channel.addVideoToPlaylist(uploadedVideoId, zonePlaylistId)
-
-        if sector_code in sectorPlaylists:
-            print("adding video to sector playlist")
-            sectorPlaylistId = sectorPlaylists[sector_code]["id"]
-            utils.channel.addVideoToPlaylist(uploadedVideoId, sectorPlaylistId)
-
-        print("enabling video monetization")
-        utils.channel.enableMonetization(uploadedVideoId)
-
-        # Generate success page with scheduling info if available
-
-        if uploadedVideoId: 
-            # Move the file to the uploaded videos folder
-            uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
-            try:
-                # Create the destination directory if it doesn't exist
-                uploaded_path.parent.mkdir(parents=True, exist_ok=True)
-                # Move the file
-                video_path.rename(uploaded_path)
-            except Exception as move_error:
-                print(f"Warning: Could not move file to done folder: {move_error}")
-                # Continue anyway since the upload was successful
-            
-        return generate_success_page(uploadedVideoId, title, publish_time)
-
-    except Exception as e:
-        print(f"Error processing upload: {e}")
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-
 @app.route('/preview-video/<filename>')
 def preview_video(filename):
     return send_from_directory(app.config['LOCAL_VIDEOS_FOLDER'], filename)
@@ -2014,6 +1905,7 @@ def list_local_videos():
             videos.extend([f.name for f in videos_dir.glob(f'*[{ext.lower()}{ext.upper()}]')])
         # Remove any duplicates that might still occur
         videos = list(dict.fromkeys(videos))
+        return jsonify(videos=videos)
     except Exception as e:
         print(f"Error listing videos: {str(e)}")
         traceback.print_exc()  # This will print the full error stack
