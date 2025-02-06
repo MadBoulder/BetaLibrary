@@ -54,10 +54,11 @@ class SchedulingPrompts:
         New video details:
         - Title: {video_data['title']}
         - Zone: {video_data['zone']}
-        - Grade: {video_data['grade']}
+        - Grade: {video_data.get('grade', 'Unknown')}
         - Climber: {video_data.get('climber', 'Unknown')}
         - Type: {'Short' if video_data['is_short'] else 'Regular'}
         """
+
 
     @classmethod
     def format_scheduled_videos(cls, scheduled_videos):
@@ -66,10 +67,11 @@ class SchedulingPrompts:
         for video in scheduled_videos:
             slots += (
                 f"- {video['title']} "
-                f"(Climber: {video['climber']}, "
-                f"Zone: {video['zone']}, "
-                f"Grade: {video['grade']}) "
+                f"(Climber: {video.get('climber', 'Unknown')}, "
+                f"Zone: {video.get('zone', 'Unknown')}, "
+                f"Grade: {video.get('grade', 'Unknown')}) "
                 f"at {video['scheduledTime'].strftime('%Y-%m-%d %H:%M')}\n"
+
             )
         return slots
 

@@ -14,6 +14,7 @@ class GenerativeAI:
         """Get scheduling recommendation for a video"""
         try:
             # Get the complete prompt from SchedulingPrompts
+            print("Getting scheduling recommendation")
             prompt = SchedulingPrompts.get_scheduling_prompt(video_data, scheduled_videos)
             print(prompt)
             # Get response from AI

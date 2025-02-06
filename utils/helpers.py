@@ -10,7 +10,11 @@ import utils.MadBoulderDatabase
 import utils.channel
 from collections import Counter
 from slugify import slugify
+import utils.drive
+from utils.ai_helper import GenerativeAI
+from datetime import datetime
 
+ai = GenerativeAI()
 
 def load_sectors():
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
@@ -159,3 +163,63 @@ def generateTags(name, zone, grade):
         f"{zone}", f"{zone} climbing", f"{name} {grade}", f"{name} {grade} {zone}",
         f"{name} {zone}", f"{name}"
     ]
+
+
+def isVideoShort(file_id):
+    """Determine if a video qualifies as a YouTube Short based on its metadata."""
+    try:
+        metadata = utils.drive.getFileMetadata(file_id)
+        video_metadata = metadata.get('videoMediaMetadata', {})
+        
+        duration_millis = video_metadata.get('durationMillis', 0)
+        duration_seconds = int(duration_millis) / 1000
+        
+        width = int(video_metadata.get('width', 0))
+        height = int(video_metadata.get('height', 0))
+        print(f"Duration: {duration_seconds} seconds, Width: {width}, Height: {height}")
+        
+        aspect_ratio = (height / width) if width > 0 else 0
+        is_vertical = aspect_ratio >= 1
+        
+        # Determine if video qualifies as a YouTube Short
+        result = is_vertical and (duration_seconds > 0 and duration_seconds <= 180)
+        print(f"Determined short video: {result} (is_vertical: {is_vertical}, duration: {duration_seconds} sec)")
+        return result
+        
+    except Exception as e:
+        print(f"Error determining if video is short: {e}")
+        print(f"Video metadata: {metadata}")  # Debug print
+        return False
+
+
+def suggestUploadTime(is_short, name, climber, grade, zone):
+    video_data = {
+        'title': name,
+        'zone': zone,
+        'grade': grade,
+        'is_short': is_short,
+        'climber': climber
+    }
+    scheduled_videos = utils.channel.getScheduledVideos()
+    recommendation = ai.get_schedule_recommendation(video_data, scheduled_videos)
+
+    schedule_info = None
+    if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
+        recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
+        utc_time = recommended_date.replace(
+            hour=recommendation['recommended_hour'],  # Already in UTC
+            minute=0,
+            second=0
+        )
+        schedule_info = {
+            'success': True,
+            'scheduled_time': utc_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'reasoning': recommendation['reasoning']
+        }
+    else:
+        schedule_info = {
+            'success': False,
+            'message': 'Could not determine schedule time'
+        }
+
+    return schedule_info

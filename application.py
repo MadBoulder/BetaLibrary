@@ -40,12 +40,9 @@ from google.oauth2 import service_account
 from google.cloud import recaptchaenterprise_v1
 from google.cloud.recaptchaenterprise_v1 import Assessment
 
-from utils.ai_helper import GenerativeAI
-
 from werkzeug.utils import secure_filename
 from pathlib import Path
 import utils.channel_uploader as channel_uploader
-
 
 EXTENSION = '.html'
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
@@ -87,9 +84,6 @@ current_progress = 0
 mail = EmailProvider(app)
 
 search_manager = utils.searchManager.SearchManager()
-
-# Initialize AI helper
-ai = GenerativeAI()
 
 def _get_seconds_to_next_time(hour, minute, second):
     """Get seconds until next occurrence of the specified time"""
@@ -358,10 +352,9 @@ def upload_hub():
         zone_code = slugify(zone)
         sector = properties.get('sector', '')
         sector_code = slugify(sector)
-        is_short = is_video_short(file_id)
-        schedule_info = suggest_upload_time(is_short, name, climber, grade, zone)
 
-        # Generate description and tags
+        is_short = utils.helpers.isVideoShort(file_id)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, name, climber, grade, zone)
         description = utils.helpers.generateDescription(name, climber, grade, zone, properties.get('sector'))
         tags = utils.helpers.generateTags(name, zone, grade)
 
@@ -411,7 +404,7 @@ def compute_upload_metadata():
         # Get is_short directly from the request data (default to False if not provided)
         is_short = data.get('is_short', False)
         
-        schedule_info = suggest_upload_time(is_short, problem, climber, grade, zone)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, problem, climber, grade, zone)
         description = utils.helpers.generateDescription(problem, climber, grade, zone, sector)
         tags = utils.helpers.generateTags(problem, zone, grade)
         
@@ -436,7 +429,7 @@ def test_schedule():
         zone = request.args.get('zone', 'Unknown Zone')
 
         # Get AI recommendation
-        schedule_info = suggest_upload_time(is_short, name, climber, grade, zone)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, name, climber, grade, zone)
         if schedule_info and schedule_info.get('success'):
             publish_time = datetime.strptime(schedule_info['scheduled_time'], "%Y-%m-%d %H:%M:%S")
             return jsonify({
@@ -1811,67 +1804,6 @@ def page_not_found(error):
     return render_template('errors/404-page-not-found.html'), 404
 
 
-def suggest_upload_time(is_short, name, climber, grade, zone):
-    
-    video_data = {
-        'title': name,
-        'zone': zone,
-        'grade': grade,
-        'is_short': is_short,
-        'climber': climber
-    }
-    scheduled_videos = utils.channel.get_scheduled_videos()
-    print(video_data)
-    recommendation = ai.get_schedule_recommendation(video_data, scheduled_videos)
-
-    schedule_info = None
-    if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:
-        recommended_date = datetime.strptime(recommendation['recommended_date'], '%Y-%m-%d')
-        utc_time = recommended_date.replace(
-            hour=recommendation['recommended_hour'],  # Already in UTC
-            minute=0,
-            second=0
-        )
-        schedule_info = {
-            'success': True,
-            'scheduled_time': utc_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'reasoning': recommendation['reasoning']
-        }
-    else:
-        schedule_info = {
-            'success': False,
-            'message': 'Could not determine schedule time'
-        }
-
-    return schedule_info
-
-
-def is_video_short(file_id):
-    try:
-        metadata = utils.drive.getFileMetadata(file_id)
-        video_metadata = metadata.get('videoMediaMetadata', {})
-        
-        duration_millis = video_metadata.get('durationMillis', 0)
-        duration_seconds = int(duration_millis) / 1000
-        
-        width = int(video_metadata.get('width', 0))
-        height = int(video_metadata.get('height', 0))
-        print(f"Duration: {duration_seconds} seconds, Width: {width}, Height: {height}")
-        
-        aspect_ratio = (height / width) if width > 0 else 0
-        is_vertical = aspect_ratio >= 1
-        
-        # Determine if video qualifies as a YouTube Short
-        result = is_vertical and (duration_seconds > 0 and duration_seconds <= 180)
-        print(f"Determined short video: {result} (is_vertical: {is_vertical}, duration: {duration_seconds} sec)")
-        return result
-        
-    except Exception as e:
-        print(f"Error determining if video is short: {e}")
-        print(f"Video metadata: {metadata}")  # Debug print
-        return False
-
-
 @app.route('/preview-video/<filename>')
 def preview_video(filename):
     return send_from_directory(app.config['LOCAL_VIDEOS_FOLDER'], filename)
@@ -1897,4 +1829,5 @@ def list_local_videos():
 
 # start the server
 if __name__ == '__main__':
+    # Start the Flask application
     app.run(debug=False)
