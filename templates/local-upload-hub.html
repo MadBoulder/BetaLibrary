@@ -18,6 +18,9 @@
     {% if authenticated %}
         <p>You are authenticated with Google.</p>
         <form id="localUploadForm" action="/process-upload-youtube-from-local" method="post" enctype="multipart/form-data">
+            <!-- Add a button to refresh the video list -->
+            <button id="refreshVideoList" type="button">Refresh Video List</button>
+            
             <h2>Select a Video File</h2>
             <select id="videoFile" name="video" required>
                 <option value="">Select a video...</option>
@@ -192,6 +195,25 @@
             return result;
         }
 
+        // Function to refresh the video list
+        async function refreshVideoList() {
+            const select = document.getElementById('videoFile');
+            select.innerHTML = '<option value="">Select a video...</option>'; // Clear existing options
+            
+            try {
+                const response = await fetch('/list-local-videos'); // Fetch the updated video list
+                const data = await response.json();
+                data.videos.forEach(video => {
+                    const option = document.createElement('option');
+                    option.value = video;
+                    option.textContent = video;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching video list:', error);
+            }
+        }
+
         // Load video list when page loads
         fetch('/list-local-videos')
             .then(response => response.json())
@@ -301,6 +323,7 @@
 
         // Add event listener for the refresh button
         document.getElementById('checkSchedule').addEventListener('click', checkSchedule);
+        document.getElementById('refreshVideoList').addEventListener('click', refreshVideoList);
     </script>
 </body>
 </html> 

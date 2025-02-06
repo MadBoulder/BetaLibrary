@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import jsonify
 import utils.channel
 import utils.MadBoulderDatabase
+import re  # Add this import at the top of the file
 
 def process_channel_upload(title, description, tags, scheduled_time, zone_code, sector_code, video_stream):
     """
@@ -35,25 +36,66 @@ def process_channel_upload(title, description, tags, scheduled_time, zone_code, 
             publish_time=publish_time
         )
 
-        uploaded_video_id = response['id']
+        if response is None:
+            raise Exception("Video upload failed, no response received.")
+
+        uploaded_video_id = response.get('id')
+        if not uploaded_video_id:
+            raise Exception("Upload response does not contain video ID.")
+
         print("video uploaded to channel")
         
         # Add to playlists
         print(f"adding video to playlist {zone_code}")
         playlists = utils.MadBoulderDatabase.getPlaylistData(zone_code)
-        zone_playlist_id = playlists.get("id")
-        sector_playlists = playlists.get("sectors", {})
 
+        zone_playlist_id = playlists.get("id") if playlists else None
+        sector_playlists = playlists.get("sectors", {}) if playlists else {}
+
+        # Check if the zone playlist exists, if not create it
+        if not zone_playlist_id:
+            # Extract zone name from title using regex
+            match = re.search(r',\s*[^.]+\. (.+)', title)  # Adjusted regex to capture the entire AreaName
+            zone_name = match.group(1).strip() if match else None  # Extract AreaName or set to None if not found
+
+            if not zone_name:
+                print("Zone name could not be extracted from the title, falling back to zone_code.")
+                zone_name = zone_code  # Fallback to zone_code if zone_name is not found
+
+            zone_playlist_id = utils.channel.createPlaylist(zone_name)  # Use zone_name instead of zone_code
+            if not zone_playlist_id:
+                raise Exception(f"Failed to create playlist for zone: {zone_name}")
+            else:
+                print(f"Created new playlist for zone: {zone_name} with ID: {zone_playlist_id}")
+                # Store the new playlist ID in the database
+                utils.MadBoulderDatabase.setPlaylistItem(zone_code,{"id": zone_playlist_id, "sectors": {}})
+
+        # Add video to the zone playlist
         if zone_playlist_id:
-            utils.channel.addVideoToPlaylist(uploaded_video_id, zone_playlist_id)
+            add_response = utils.channel.addVideoToPlaylist(uploaded_video_id, zone_playlist_id)
+            if not add_response:
+                print(f"Failed to add video {uploaded_video_id} to playlist {zone_playlist_id}")
+            else:
+                print(f"Video {uploaded_video_id} added to playlist {zone_playlist_id}")
 
-        if sector_code in sector_playlists:
-            print("adding video to sector playlist")
-            sector_playlist_id = sector_playlists[sector_code]["id"]
-            utils.channel.addVideoToPlaylist(uploaded_video_id, sector_playlist_id)
+        # Check if the sector playlist exists, if so add the video
+        if sector_code:
+            sector_playlist = sector_playlists.get(sector_code)
+            if sector_playlist:
+                sector_playlist_id = sector_playlist.get("id")
+                if sector_playlist_id:
+                    add_sector_response = utils.channel.addVideoToPlaylist(uploaded_video_id, sector_playlist_id)
+                    if not add_sector_response:
+                        print(f"Failed to add video {uploaded_video_id} to sector playlist {sector_playlist_id}")
+                    else:
+                        print(f"Video {uploaded_video_id} added to sector playlist {sector_playlist_id}")
+                else:
+                    print(f"Sector playlist ID not found for sector: {sector_code}")
+            else:
+                print(f"No sector playlist found for sector code: {sector_code}")
 
-        print("enabling video monetization")
-        utils.channel.enableMonetization(uploaded_video_id)
+        #print("enabling video monetization")
+        #utils.channel.enableMonetization(uploaded_video_id) # not working
 
         return response, publish_time, None
 

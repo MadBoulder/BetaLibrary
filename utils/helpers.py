@@ -169,7 +169,14 @@ def isVideoShort(file_id):
     """Determine if a video qualifies as a YouTube Short based on its metadata."""
     try:
         metadata = utils.drive.getFileMetadata(file_id)
+        if metadata is None:
+            print(f"Error: No metadata found for file ID {file_id}.")
+            return False
+        
         video_metadata = metadata.get('videoMediaMetadata', {})
+        if not video_metadata:
+            print(f"Error: No video media metadata found for file ID {file_id}.")
+            return False
         
         duration_millis = video_metadata.get('durationMillis', 0)
         duration_seconds = int(duration_millis) / 1000
@@ -188,7 +195,6 @@ def isVideoShort(file_id):
         
     except Exception as e:
         print(f"Error determining if video is short: {e}")
-        print(f"Video metadata: {metadata}")  # Debug print
         return False
 
 

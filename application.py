@@ -244,8 +244,8 @@ def video_uploader_not_working():
 def video_uploader():
     user_uid = session.get('uid')
     user_data = getUserData(user_uid)
-    contributors = utils.MadBoulderDatabase.getContributorsList()
-    climbers = [data["name"] for data in contributors.values()]
+    contributors = utils.MadBoulderDatabase.getContributorNames()
+    climbers = contributors
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
     areas = {
         playlist["zone_code"]: {
@@ -382,11 +382,17 @@ def local_upload_hub():
     isAuthenticated = utils.channel.is_authenticated()
     if not isAuthenticated:
         return render_template('local-upload-hub.html', authenticated=False)
-    contributors = utils.MadBoulderDatabase.getContributorsList()
-    climbers = [data["name"] for data in contributors.values()]
+    
+    try:
+        contributors = utils.MadBoulderDatabase.getContributorNames()
+        climbers = contributors  # Direct assignment since contributors is a list of names
+    except Exception as e:
+        print(f"Error fetching contributor names: {e}")
+        climbers = []  # Fallback to empty list if an error occurs
+    
     return render_template("local-upload-hub.html", 
         authenticated=True,
-        climbers=climbers
+        climbers=sorted(climbers)
     )
 
 
@@ -821,7 +827,7 @@ def settings_projects():
 @admin_required
 def settings_admin_users():
     users_list, admins_list = get_all_users()
-    contributors = utils.MadBoulderDatabase.getContributorsList()
+    contributors = utils.MadBoulderDatabase.getContributorNames()
     return render_template('settings/settings-admin-users.html', users_list=users_list, contributors=contributors)
 
 

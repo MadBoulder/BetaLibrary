@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from google.auth.transport.requests import Request
 from datetime import datetime, timedelta
+from googleapiclient.errors import HttpError
 
 from google_auth_oauthlib.flow import Flow
 
@@ -113,21 +114,27 @@ def searchForVideosByName(videoName, results=5):
 
 
 def addVideoToPlaylist(videoId, playlistId):
-    credentials = getCredentials()
-    youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
-    request = youtubeOauth.playlistItems().insert(
-        part="snippet",
-        body={
-            "snippet": {
-                "playlistId": playlistId,
-                "resourceId": {
-                    "kind": "youtube#video",
-                    "videoId": videoId
+    try:
+        credentials = getCredentials()
+        youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+
+        request = youtubeOauth.playlistItems().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "playlistId": playlistId,
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": videoId
+                    }
                 }
             }
-        }
-    )
-    request.execute()
+        )
+        return request.execute()
+    except Exception as e:
+        print(f"Error adding video to playlist {videoId}: {e}")
+        return None
+
 
 
 def enableMonetization(videoId):
@@ -406,3 +413,41 @@ def parse_video_description(description):
                 metadata['sector'] = value
     
     return metadata
+
+
+def createPlaylist(area_name, privacy_status='public'):
+    """Create a new playlist for the given area."""
+    credentials = getCredentials()
+    youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+    try:
+        # Define the request body for the playlist
+        request_body = {
+            'snippet': {
+                'title': area_name,
+                'description': f'Playlist for the bouldering area: {area_name}',
+                'tags': ['bouldering', 'climbing', area_name],
+                'defaultLanguage': 'en'
+            },
+            'status': {
+                'privacyStatus': privacy_status  # Configurable privacy status
+            }
+        }
+
+        # Call the YouTube API to create the playlist
+        response = youtubeOauth.playlists().insert(
+            part='snippet,status',
+            body=request_body
+        ).execute()
+
+        # Validate response and log
+        if 'id' in response:
+            print(f"Playlist created successfully: ID={response['id']}, Title={area_name}")
+            return response['id']
+        else:
+            print(f"Unexpected response structure: {response}")
+            return None
+
+    except HttpError as e:
+        error_content = e.content.decode('utf-8') if hasattr(e, 'content') else str(e)
+        print(f"An error occurred while creating the playlist: {error_content}")
+        return None

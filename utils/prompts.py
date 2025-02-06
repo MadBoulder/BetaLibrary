@@ -22,6 +22,7 @@ class SchedulingPrompts:
     3. The same zone/area should not appear multiple times on the same day
     4. Try to space out videos from the same zone across different days
     5. If a slot is taken or any rule is violated on a given day, recommend the next available day
+    6. Never propose a past date or hour
 
     IMPORTANT: Return hours in UTC.
     """

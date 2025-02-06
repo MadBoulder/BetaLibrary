@@ -336,3 +336,19 @@ def migrateData(oldSlug, newSlug):
     if oldComments:
         utils.database.setValue(f'problems/{newEncodedSlug}/comments', oldComments)
         utils.database.delete(f'problems/{oldEncodedSlug}/comments')
+
+@lru_cache(maxsize=1)
+def getContributorNames():
+    """Retrieve a list of contributor names from the database with caching."""
+    print("get_contributor_names")
+    
+    # Retrieve all contributors at once
+    contributors = utils.database.getValue('contributors')  # Retrieves all contributors
+    
+    if not contributors:
+        print("No contributors found.")
+        return []
+    
+    # Extract names from the retrieved data
+    contributor_names = [contributor['name'] for contributor in contributors.values() if 'name' in contributor]
+    return contributor_names
