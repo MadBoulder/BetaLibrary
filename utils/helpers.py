@@ -1,3 +1,4 @@
+import re
 import urllib.request
 import urllib.parse
 import json
@@ -13,6 +14,12 @@ from slugify import slugify
 import utils.drive
 from utils.ai_helper import GenerativeAI
 from datetime import datetime
+from enum import Enum
+
+class Case(Enum):
+    lower = 1
+    upper = 2
+    none = 3
 
 ai = GenerativeAI()
 
@@ -118,7 +125,7 @@ def generate_download_url(area, filename):
     return '/download/' + area + '/' + filename
 
 
-def generateDescription(name, climber, grade, zone, sector=None):
+def generateDescription(name, climber, grade, zone, sector=None, isShort=False):
     """Generate standardized video description with metadata and links"""
     zone_code = slugify(zone)
     
@@ -149,6 +156,9 @@ Do you enjoy our content? Please consider supporting what we do:
 ➞ Official Merch Store: https://shop.madboulder.org
 
 #madboulder #bouldering #climbing #boulder #escalada #bloc #bloque #boulderinglife #climbingismypassion #climbinglovers #climbingworldwide #{zone_code}"""
+    
+    if isShort:
+        description += " #shorts"
     
     return description
 
@@ -198,9 +208,9 @@ def isVideoShort(file_id):
         return False
 
 
-def suggestUploadTime(is_short, name, climber, grade, zone):
+def suggestUploadTime(is_short, climber, grade, zone):
+    print("suggestUploadTime")
     video_data = {
-        'title': name,
         'zone': zone,
         'grade': grade,
         'is_short': is_short,
@@ -229,3 +239,106 @@ def suggestUploadTime(is_short, name, climber, grade, zone):
         }
 
     return schedule_info
+
+
+def ExtractFieldFromStr(pattern, sourceStr, case=Case.none):
+    """
+    Given a regex pattern and a field, find the sequence that matches
+    the regex in the specified video field. Add the matched sequence as
+    the specified new video field
+    """
+    reg_pattern = re.compile(pattern)
+    resultStr = ''
+    if sourceStr:
+        matches = reg_pattern.findall(sourceStr)
+        if not matches:
+            resultStr = 'Unknown'
+        elif case == Case.upper:
+            resultStr = matches[0].upper()
+        elif case == Case.lower:
+            resultStr = matches[0].lower()
+        else:
+            resultStr = matches[0]
+    return resultStr
+
+
+def ExtractInfoFromDescription(title, description):
+    videoInfo = {
+        'name': ExtractName(description),
+        'grade': ExtractGrade(description),
+        'grade_with_info': ExtractGradeWithInfo(description),
+        'climber': ExtractClimber(description),
+        'zone': ExtractZone(description),
+        'sector': ExtractSector(description),
+        'boulder': ExtractBoulder(description),
+        'isShort': False 
+    }
+
+    # Set isShort to True if '#shorts' hashtag is found in the description
+    if '#shorts' in description.lower():
+        videoInfo['isShort'] = True
+
+    videoInfo['name'] = getProblemName(title, videoInfo['name'], videoInfo['grade'], videoInfo['zone'])
+    videoInfo['zone_code'] = slugify(videoInfo['zone'])
+    videoInfo['partial_slug'] = slugify(videoInfo['name'] + '-'+ videoInfo['grade_with_info'])
+    videoInfo['secure_slug'] = videoInfo['zone_code'] + '/' + videoInfo['partial_slug']
+    videoInfo['sector_code'] = slugify(videoInfo['sector'])
+    videoInfo['climber_code'] = slugify(videoInfo['climber'])
+    videoInfo['boulder_code'] = slugify(videoInfo['boulder'])
+
+    return videoInfo
+
+def ExtractName(sourceStr):
+    name_regex = r'Name: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(name_regex, sourceStr)
+
+def ExtractGrade(sourceStr):
+    regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractGradeWithInfo(sourceStr):
+    regex = r'Grade: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractClimber(sourceStr):
+    regex = r'Climber: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractZone(sourceStr):
+    regex = r'Zone: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractSector(sourceStr):
+    regex = r'Sector: \s*?(.*?)(?:\n|$)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+def ExtractBoulder(sourceStr):
+    regex = r'\bBoulder:\s*([^\n]+)'
+    return ExtractFieldFromStr(regex, sourceStr)
+
+
+def getProblemName(title, nameDescription, grade, zone):
+    name = nameDescription
+    if name == 'Unknown':
+        name = title.replace(
+            zone, ''
+        ).replace(
+            grade.lower(), ''
+        ).replace(
+            grade.upper(), ''
+        ).replace(
+            '(sit)',
+            ''
+        ).replace(
+            '(stand)',
+            ''
+        ).replace(
+            '(crouching start)',
+            ''
+        ).strip()
+
+        if name[-1] == '.':
+            name = name[:-1].strip()
+        if name[-1] == ',':
+            name = name[:-1].strip()
+    return name

@@ -1,4 +1,3 @@
-from enum import Enum
 import urllib.request
 import urllib.parse
 import json
@@ -17,18 +16,13 @@ from functools import lru_cache
 import datetime
 import utils.channel
 import utils.MadBoulderDatabase
+import utils.helpers
 import logging
 
 load_dotenv()
 
 ENCODING = 'utf-8'
 CONFIG_FILE = 'config.py'
-
-
-class Case(Enum):
-    lower = 1
-    upper = 2
-    none = 3
 
 
 def updateData(
@@ -88,7 +82,7 @@ def retrieveVideosFromChannel(lastUpdate=None):
                     videoId = item['id']
                     title = item['snippet']['title']
                     description = item['snippet']['description']
-                    videoInfo = ExtractInfoFromDescription(title, description)
+                    videoInfo = utils.helpers.ExtractInfoFromDescription(title, description)
 
                     zone_code = videoInfo['zone_code']
                     partial_slug = videoInfo['partial_slug']
@@ -170,7 +164,7 @@ def updateVideoDatabase():
             if(status == 'public'):
                 title = videoDetails['snippet']['title']
                 description = videoDetails['snippet']['description']
-                newVideoInfo = ExtractInfoFromDescription(title, description)
+                newVideoInfo = utils.helpers.ExtractInfoFromDescription(title, description)
 
                 if videoSlug != newVideoInfo['secure_slug']:
                     print(videoSlug)
@@ -216,110 +210,10 @@ def getLastDatabaseVideoUpdateDate():
         return datetime.datetime.now()
 
 
-def ExtractFieldFromStr(pattern, sourceStr, case=Case.none):
-    """
-    Given a regex pattern and a field, find the sequence that matches
-    the regex in the specified video field. Add the matched sequence as
-    the specified new video field
-    """
-    reg_pattern = re.compile(pattern)
-    resultStr = ''
-    if sourceStr:
-        matches = reg_pattern.findall(sourceStr)
-        if not matches:
-            resultStr = 'Unknown'
-        elif case == Case.upper:
-            resultStr = matches[0].upper()
-        elif case == Case.lower:
-            resultStr = matches[0].lower()
-        else:
-            resultStr = matches[0]
-    return resultStr
-
-
-def ExtractInfoFromDescription(title, description):
-    videoInfo = {
-        'name': ExtractName(description),
-        'grade': ExtractGrade(description),
-        'grade_with_info': ExtractGradeWithInfo(description),
-        'climber': ExtractClimber(description),
-        'zone': ExtractZone(description),
-        'sector': ExtractSector(description),
-        'boulder': ExtractBoulder(description),
-    }
-
-    videoInfo['name'] = getProblemName(title, videoInfo['name'], videoInfo['grade'], videoInfo['zone'])
-    videoInfo['zone_code'] = slugify(videoInfo['zone'])
-    videoInfo['partial_slug'] = slugify(videoInfo['name'] + '-'+ videoInfo['grade_with_info'])
-    videoInfo['secure_slug'] = videoInfo['zone_code'] + '/' + videoInfo['partial_slug']
-    videoInfo['sector_code'] = slugify(videoInfo['sector'])
-    videoInfo['climber_code'] = slugify(videoInfo['climber'])
-    videoInfo['boulder_code'] = slugify(videoInfo['boulder'])
-
-    return videoInfo
-
-def ExtractName(sourceStr):
-    name_regex = r'Name: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(name_regex, sourceStr)
-
-def ExtractGrade(sourceStr):
-    regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractGradeWithInfo(sourceStr):
-    regex = r'Grade: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractClimber(sourceStr):
-    regex = r'Climber: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractZone(sourceStr):
-    regex = r'Zone: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractSector(sourceStr):
-    regex = r'Sector: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractBoulder(sourceStr):
-    regex = r'\bBoulder:\s*([^\n]+)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-
-def getProblemName(title, nameDescription, grade, zone):
-    name = nameDescription
-    if name == 'Unknown':
-        name = title.replace(
-            zone, ''
-        ).replace(
-            grade.lower(), ''
-        ).replace(
-            grade.upper(), ''
-        ).replace(
-            '(sit)',
-            ''
-        ).replace(
-            '(stand)',
-            ''
-        ).replace(
-            '(crouching start)',
-            ''
-        ).strip()
-
-        if name[-1] == '.':
-            name = name[:-1].strip()
-        if name[-1] == ',':
-            name = name[:-1].strip()
-    return name
-
-
 def createOptimizedVideoData():
     print("createOptimizedVideoData")
-
     
     optimizedSearchData = {}
-
     
     videoData = utils.MadBoulderDatabase.getAllVideoData()
     if not videoData:

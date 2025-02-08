@@ -9,6 +9,7 @@ from googleapiclient.http import MediaIoBaseUpload
 from google.auth.transport.requests import Request
 from datetime import datetime, timedelta
 from googleapiclient.errors import HttpError
+import utils.helpers
 
 from google_auth_oauthlib.flow import Flow
 
@@ -324,32 +325,32 @@ def getUploadedVideosUntilDaysBack(days_back=7):
         return []
 
 def getVideoDetails(video_ids):
-        # Query video details for all video IDs
-        detailed_videos = []
-        
-        credentials = getCredentials()
-        youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
+    # Query video details for all video IDs
+    detailed_videos = []
+    
+    credentials = getCredentials()
+    youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
 
-        if video_ids:
-            # Split video_ids into chunks of 50 if necessary
-            for i in range(0, len(video_ids), 50):
-                chunk = video_ids[i:i + 50]
-                try:
-                    video_response = youtubeOauth.videos().list(
-                        part="snippet,status",  # Include both snippet and status
-                        id=','.join(chunk)  # Join the chunk into a single string
-                    ).execute()
+    if video_ids:
+        # Split video_ids into chunks of 50 if necessary
+        for i in range(0, len(video_ids), 50):
+            chunk = video_ids[i:i + 50]
+            try:
+                video_response = youtubeOauth.videos().list(
+                    part="snippet,status",  # Include both snippet and status
+                    id=','.join(chunk)  # Join the chunk into a single string
+                ).execute()
 
-                    # Combine data into detailed_videos
-                    for video in video_response.get('items', []):
-                        detailed_videos.append(video)
+                # Combine data into detailed_videos
+                for video in video_response.get('items', []):
+                    detailed_videos.append(video)
 
-                except Exception as e:
-                    print(f"Error fetching video details for IDs {chunk}: {e}")
-                    # Continue processing with whatever data has been retrieved so far
+            except Exception as e:
+                print(f"Error fetching video details for IDs {chunk}: {e}")
+                # Continue processing with whatever data has been retrieved so far
 
-        # Return the detailed video information
-        return detailed_videos
+    # Return the detailed video information
+    return detailed_videos
 
 
 def getScheduledVideos(days_back=7):
@@ -358,11 +359,9 @@ def getScheduledVideos(days_back=7):
         uploadedVideosWithDetails = getVideoDetails(uploadedVideosIds)
         scheduled_videos = []
 
-
         now = datetime.utcnow()
 
         for item in uploadedVideosWithDetails:
-            video_id = item['id']
             status = item['status']
             privacy_status = status['privacyStatus']
 
@@ -373,11 +372,15 @@ def getScheduledVideos(days_back=7):
                     publish_time = datetime.strptime(publish_at, '%Y-%m-%dT%H:%M:%SZ')
 
                     if publish_time > now:
-                        scheduled_videos.append({
-                            'id': video_id,
-                            'title': item['snippet']['title'],
-                            'scheduledTime': publish_time
-                        })
+                        video_id = item['id']
+                        title = item['snippet']['title']
+                        description = item['snippet']['description']
+                        videoInfo = utils.helpers.ExtractInfoFromDescription(title, description)
+                        videoInfo['id'] = video_id
+                        videoInfo['title'] = title
+                        videoInfo['scheduledTime'] = publish_time
+                        videoInfo['type'] = 'Short' if videoInfo['isShort'] else 'Regular'
+                        scheduled_videos.append(videoInfo)
                 else:
                     print(f"Error: Video ID {video_id} is private but has no publishAt date.")
 
@@ -387,32 +390,6 @@ def getScheduledVideos(days_back=7):
     except Exception as e:
         print(f"Error fetching private and scheduled videos: {e}")
         return []
-
-
-def parse_video_description(description):
-    """Extract metadata from video description"""
-    metadata = {}
-    
-    # Split description into lines and look for metadata
-    for line in description.split('\n'):
-        line = line.strip()
-        if ':' in line:
-            key, value = line.split(':', 1)
-            key = key.strip().lower()
-            value = value.strip()
-            
-            if key == 'climber':
-                metadata['climber'] = value
-            elif key == 'name':
-                metadata['name'] = value
-            elif key == 'grade':
-                metadata['grade'] = value
-            elif key == 'zone':
-                metadata['zone'] = value
-            elif key == 'sector':
-                metadata['sector'] = value
-    
-    return metadata
 
 
 def createPlaylist(area_name, privacy_status='public'):

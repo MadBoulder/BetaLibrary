@@ -400,19 +400,16 @@ def local_upload_hub():
 def compute_upload_metadata():
     try:
         data = request.get_json()
-        # Use provided metadata with defaults
-        title = data.get('title', '')
-        problem = data.get('problem', 'Unknown Problem')
+        problemName = data.get('problem', 'Unknown Problem')
         grade = data.get('grade', '')
         climber = data.get('climber', 'Unknown Climber')
         zone = data.get('zone', 'Unknown Zone')
         sector = data.get('sector', '')
-        # Get is_short directly from the request data (default to False if not provided)
         is_short = data.get('is_short', False)
         
-        schedule_info = utils.helpers.suggestUploadTime(is_short, problem, climber, grade, zone)
-        description = utils.helpers.generateDescription(problem, climber, grade, zone, sector)
-        tags = utils.helpers.generateTags(problem, zone, grade)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
+        description = utils.helpers.generateDescription(problemName, climber, grade, zone, sector, is_short)
+        tags = utils.helpers.generateTags(problemName, zone, grade)
         
         return jsonify({
              'description': description,
@@ -428,14 +425,13 @@ def test_schedule():
     """Test endpoint to check scheduling recommendation without uploading"""
     try:
         # Get parameters from the request
-        is_short = request.args.get('is_short', type=bool)
-        name = request.args.get('name', '')
+        is_short = request.args.get('is_short', 'false').lower() == 'true'
         climber = request.args.get('climber', 'Unknown Climber')
         grade = request.args.get('grade', '')
         zone = request.args.get('zone', 'Unknown Zone')
 
         # Get AI recommendation
-        schedule_info = utils.helpers.suggestUploadTime(is_short, name, climber, grade, zone)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
         if schedule_info and schedule_info.get('success'):
             publish_time = datetime.strptime(schedule_info['scheduled_time'], "%Y-%m-%d %H:%M:%S")
             return jsonify({

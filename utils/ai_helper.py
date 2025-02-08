@@ -7,7 +7,6 @@ from utils.prompts import SchedulingPrompts
 class GenerativeAI:
     def __init__(self):
         # Configure Gemini
-        print(os.environ)
         genai.configure(api_key=os.environ['GEMINI_API_KEY'])
         self.model = genai.GenerativeModel('gemini-1.5-flash')
 
