@@ -93,6 +93,10 @@ def setPlaylistData(playlists):
     utils.database.updateDate('playlist_data')
     getPlaylistsData.cache_clear()
 
+def setPlaylistItem(zone_code, data):
+    utils.database.setValue(f'playlist_data/items/{zone_code}', data)
+    getPlaylistsData.cache_clear()
+
 def getAreasCount():
     return utils.database.getValue('areas_count')
 
