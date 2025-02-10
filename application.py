@@ -1034,7 +1034,7 @@ def complete_profile_info():
             updates['contributor_status'] = "pending"
 
             user_record = auth.get_user(user_uid)
-            new_pending_contributor_notification(user_record.email)
+            mail.sendPendingContributor(user_record.email)
         else:
             updates['contributor_status'] = "non contributor"
 
