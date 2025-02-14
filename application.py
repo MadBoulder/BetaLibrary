@@ -354,7 +354,7 @@ def upload_hub():
         sector_code = slugify(sector)
 
         is_short = utils.helpers.isVideoShort(file_id)
-        schedule_info = utils.helpers.suggestUploadTime(is_short, name, climber, grade, zone)
+        schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
         description = utils.helpers.generateDescription(name, climber, grade, zone, properties.get('sector'))
         tags = utils.helpers.generateTags(name, zone, grade)
 
