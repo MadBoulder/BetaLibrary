@@ -1829,6 +1829,22 @@ def list_local_videos():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/get-sectors', methods=['GET'])
+def get_sectors():
+    """Endpoint to get sectors from a given zone code."""
+    zone = request.args.get('zone')
+    if not zone:
+        return jsonify({'error': 'Zone code is required'}), 400
+    
+    try:
+        zone_code = slugify(zone)
+        sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)
+        return jsonify({'sectors': sectors}), 200
+    except Exception as e:
+        print(f"Error fetching sectors: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 # start the server
 if __name__ == '__main__':
     # Start the Flask application

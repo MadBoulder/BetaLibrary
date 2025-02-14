@@ -12,6 +12,9 @@
             <option value="{{ climber }}">
         {% endfor %}
     </datalist>
+
+    <datalist id="sectorsList">
+    </datalist>
     
     <h1>MadBoulder Local Upload Hub</h1>
     
@@ -78,7 +81,8 @@
                  <input type="text" id="modalZone" name="modalZone"><br><br>
                  
                  <label for="modalSector">Sector:</label>
-                 <input type="text" id="modalSector" name="modalSector"><br><br>
+                 <input type="text" id="modalSector" name="modalSector" list="sectorsList">
+                 <br><br>
                  
                  <button id="popupSubmit" type="button">Submit Details</button>
             </div>
@@ -256,6 +260,22 @@
                 document.getElementById('modalProblem').value = parsedData.problem;
                 document.getElementById('modalGrade').value = parsedData.grade;
                 document.getElementById('modalZone').value = parsedData.zone;
+    
+                // Fetch sectors based on the selected zone
+                fetch(`/get-sectors?zone=${encodeURIComponent(parsedData.zone)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sectors) {
+                            const sectorsList = document.getElementById('sectorsList');
+                            sectorsList.innerHTML = ''; // Clear existing options
+                            data.sectors.forEach(sector => {
+                                const option = document.createElement('option');
+                                option.value = sector[0];
+                                sectorsList.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching sectors:', error));
     
                 // Show the metadata modal popup
                 document.getElementById('metadataModal').style.display = 'block';
