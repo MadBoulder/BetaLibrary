@@ -21,8 +21,6 @@ class Case(Enum):
     upper = 2
     none = 3
 
-ai = GenerativeAI()
-
 def load_sectors():
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
     sectors = {}
@@ -217,7 +215,7 @@ def suggestUploadTime(is_short, climber, grade, zone):
         'climber': climber
     }
     scheduled_videos = utils.channel.getScheduledVideos()
-    recommendation = ai.get_schedule_recommendation(video_data, scheduled_videos)
+    recommendation = GenerativeAI().get_schedule_recommendation(video_data, scheduled_videos)
 
     schedule_info = None
     if recommendation and 'recommended_hour' in recommendation and 'recommended_date' in recommendation:

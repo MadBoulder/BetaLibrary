@@ -219,7 +219,9 @@ def load_general_map(areaData, generate_ids, return_html=True):
             15.417195,
             -15.184135
         ],
-        zoom_start=3
+        zoom_start=3,
+        world_copy_jump=True,
+        no_wrap=False 
     )
     area_map._id = generate_ids.next_id()  # reassign id
     for child in area_map._children.values():
