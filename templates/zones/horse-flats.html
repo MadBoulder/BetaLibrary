@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Horse Flats | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Horse Flats with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/horse-flats">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/horse-flats">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/horse-flats">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+			
+				> 
+				<a href="/states/california" class="zone-header-tree-link">California</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Horse Flats
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Horse Flats Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<!-- Zone summary -->
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">5</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">640</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">2</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Ad Test --> 
+					<ins class="adsbygoogle" 
+						style="display:block" 
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="3071479641" 
+						data-ad-format="auto" 
+						data-full-width-responsive="true"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Horse Flats Boulder</h2>
+					
+						<div class="weather-widget weatherElement" data-zone-code="">
+	<div id="weather-widget-horse-flats" class="weather-container dark">
+		<div class="weather-title-container" title="Horse Flats">
+			<i class="fas fa-location-dot">location</i>
+			<div class="weather-title">
+				Horse Flats
+			</div>
+		</div>
+		<div class="weather-info">
+			<div class="current-weather">
+				<div class="current-weather-icon">
+					<img loading="lazy" class="weather-icon"></img>
+				</div>
+				<div class="current-weather-desc">
+					<div class="current-weather-temperature weather-temperature"></div>
+					<div class="current-weather-description weather-description text-capitalize"></div>
+				</div>
+				<div class="current_weather-stats">
+					<div class="current_weather-stats-temp">
+						<div class="weather-max-temperature"></div>
+						<div class="weather-min-temperature"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-droplet mr-2">humidity</i>
+						<div class="weather-humidity"></div>
+					</div>
+					<div class="current_weather-stats-item">
+						<i class="fas fa-wind">air</i>
+						<div class="wind-speed"></div>
+					</div>
+				</div>
+			</div>
+			<div class="weather-forecast"></div>
+		</div>
+	</div>
+	<script>
+		$('#weather-widget-horse-flats .weather-temperature').openWeather({
+			widgetId: 'weather-widget-horse-flats',
+			lat: '34.345307',
+			lng: '-118.018627',
+			iconTarget: '#weather-widget-horse-flats .weather-icon',
+			key: '768becec481510ce421dc2b7afa05318',
+			customIcons: 'images/weather_icons/',
+			minTemperatureTarget: '#weather-widget-horse-flats .weather-min-temperature',
+			maxTemperatureTarget: '#weather-widget-horse-flats .weather-max-temperature',
+			humidityTarget: '#weather-widget-horse-flats .weather-humidity',
+			windSpeedTarget: '#weather-widget-horse-flats .wind-speed',
+			windSpeedUnit: 'km/h',
+			descriptionTarget: '#weather-widget-horse-flats .weather-description',
+			forecastTarget: 'weather-forecast',
+			lang: '',
+			query: 'onecall'
+		});
+	</script>
+</div>
+					
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?default=horse-flats">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							$('.weather-temperature').each(function() {
+								const openWeatherData = $(this).data('openWeather');
+								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+									openWeatherData.checkDaysSinceRain(function(days) {
+										let message;
+										if (days > 3) {
+											message = "It's been more than 3 days since it last rained.";
+										} else {
+											message = `It has been ${days} day(s) since it last rained.`;
+										}
+										$('#days-since-last-rain').text(message);
+									});
+								}
+							});
+						});
+					</script>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Area Weather Ad --> 
+					<ins class="adsbygoogle" 
+						style="display:inline-block;width:728px;height:90px"
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="2668154967"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Horse Flats Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/7W0a7g-4eKg/sddefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/7W0a7g-4eKg/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/7W0a7g-4eKg/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/7W0a7g-4eKg/mqdefault.jpg" alt="Photo of Horse Flats Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Horse Flats</h2>
+													<p style="text-align: justify;">Horse Flats is a high-altitude bouldering area nestled in the Angeles National Forest, offering a mix of technical face climbing and powerful overhangs on gritty, coarse-grained granite. The most distinctive feature of the area is the unique friction-dependent climbing, where subtle smears and delicate footwork are essential. The bouldering is spread across several sectors, with problems ranging from V0 slabs to steep, crimpy test pieces that push into the V8 range and beyond. Given its elevation of over 5,600 feet (1,700 meters), the best season for climbing is late spring through fall, when temperatures are mild. Summers can be warm but remain manageable thanks to the shade provided by towering pine trees. <br><br>What makes Horse Flats particularly special is its remote feel despite being relatively close to Los Angeles. The peaceful forest setting, coupled with high-quality granite boulders, provides an experience reminiscent of more alpine destinations. While crash pads and spotters are recommended due to uneven landings, many problems offer safe and approachable movement, making it a great destination for climbers of all levels. Camping at the nearby Horse Flats Campground allows for multi-day trips, with basic amenities available, though visitors should bring their own water.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 5
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 1862m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/horse-flats">
+													Editar Zona
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guidebooks of Horse Flats Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://www.mountainproject.com/area/105920760/horse-flats" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Horse Flats Climbing
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<!-- Ad Test --> 
+					<ins class="adsbygoogle" 
+						style="display:block" 
+						data-ad-client="ca-pub-2946344276077058" 
+						data-ad-slot="8704691104" 
+						data-ad-format="auto" 
+						data-full-width-responsive="true"> 
+					</ins> 
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Horse Flats Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/horse-flats"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058"
+						crossorigin="anonymous"></script>
+					<!-- Area Map Ad -->
+					<ins class="adsbygoogle"
+						style="display:block"
+						data-ad-client="ca-pub-2946344276077058"
+						data-ad-slot="6627581270"
+						data-ad-format="auto"
+						data-full-width-responsive="true"></ins>
+					<script>
+						(adsbygoogle = window.adsbygoogle || []).push({});
+					</script>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 1 Sectors of Horse Flats Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/horse-flats/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058"
+						crossorigin="anonymous">
+					</script>
+					<ins class="adsbygoogle"
+						style="display:inline-block;width:720px;height:90px"
+						data-ad-client="ca-pub-2946344276077058"
+						data-ad-slot="3623317447"></ins>
+					<script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of Playlists from Horse Flats Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNM9YqNWNxkhAy5NKmzX4pT"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<h2>List of 5 Problems in Video of Horse Flats Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="B1 Traverse, V4. Horse Flats" href="/problems/horse-flats/b1-traverse-v4" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of B1 Traverse, V4. Horse Flats" src="https://img.youtube.com/vi/HkQgVw_X_DM/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/horse-flats/b1-traverse-v4" class="table-row-name text-bold">B1 Traverse </a>
+									</div>
+								</td>
+								<td>V4</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Barndoor Arete, V3. Horse Flats" href="/problems/horse-flats/barndoor-arete-v3" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Barndoor Arete, V3. Horse Flats" src="https://img.youtube.com/vi/ityyCNvZ1CU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/horse-flats/barndoor-arete-v3" class="table-row-name text-bold">Barndoor Arete</a>
+									</div>
+								</td>
+								<td>V3</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Bow Sprits, V2. Horse Flats" href="/problems/horse-flats/bow-sprits-v2" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Bow Sprits, V2. Horse Flats" src="https://img.youtube.com/vi/HITMXOpyL7c/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/horse-flats/bow-sprits-v2" class="table-row-name text-bold">Bow Sprits</a>
+									</div>
+								</td>
+								<td>V2</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Dragon Flake, V5. Horse Flats" href="/problems/horse-flats/dragon-flake-v5" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dragon Flake, V5. Horse Flats" src="https://img.youtube.com/vi/DFIEp9o-uaU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/horse-flats/dragon-flake-v5" class="table-row-name text-bold">Dragon Flake</a>
+									</div>
+								</td>
+								<td>V5</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="The Falcon, V5. Horse Flats" href="/problems/horse-flats/the-falcon-v5" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Falcon, V5. Horse Flats" src="https://img.youtube.com/vi/7W0a7g-4eKg/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/horse-flats/the-falcon-v5" class="table-row-name text-bold">The Falcon</a>
+									</div>
+								</td>
+								<td>V5</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
