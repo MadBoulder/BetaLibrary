@@ -1414,6 +1414,18 @@ def comparador_pronostico_tiempo():
     return render_template('/es/comparador-pronostico-tiempo.html', zones=zones, default_zones=default_zones)
 
 
+@app.route('/element/weather-widget.html', methods=['GET'])
+def weather_widget_html():
+    lat = request.args.get('lat', default='', type=str)
+    lng = request.args.get('lng', default='', type=str)
+    zone = request.args.get('zone', default='', type=str)
+    zone_code = request.args.get('zone_code', default='', type=str)
+    uniqueId = request.args.get('uniqueId', default='', type=str)
+    current_lang = request.args.get('current_lang', default='', type=str)
+
+    return render_template('elements/weather-widget.html', lat=lat, lng=lng, zone=zone, zone_code=zone_code, uniqueId=uniqueId, current_lang=current_lang)
+
+
 @app.route('/element/weather-widget')
 def weather_widget():
     file_path = os.path.join(app.root_path, 'templates/elements/weather-widget.html')

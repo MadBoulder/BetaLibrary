@@ -166,9 +166,7 @@
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
 					<h2>Weather Forecast in {{ name }} Boulder</h2>
-					{% with uniqueId='weather-widget-' ~ area_code %}
-						{% include 'templates/elements/weather-widget.html' %}
-					{% endwith %}
+					<div id="weather-widget-placeholder"></div>
 					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
 					<div class="weatherElement compareWeatherButtonContainer">
 						<a class="mad-button" href="/weather-forecast-comparator?default={{ area_code }}">
@@ -177,20 +175,59 @@
 					</div>
 					<script>
 						$(document).ready(function() {
-							$('.weather-temperature').each(function() {
-								const openWeatherData = $(this).data('openWeather');
-								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
-									openWeatherData.checkDaysSinceRain(function(days) {
-										let message;
-										if (days > 3) {
-											message = "It's been more than 3 days since it last rained.";
-										} else {
-											message = `It has been ${days} day(s) since it last rained.`;
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '{{ lat }}',
+											lng: '{{ lng }}',
+											zone: '{{ name }}',
+											zone_code: '{{ area_code }}',
+											uniqueId: 'weather-widget-' + '{{ area_code }}',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
 										}
-										$('#days-since-last-rain').text(message);
 									});
 								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
 							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
 						});
 					</script>
 					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 

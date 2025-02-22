@@ -125,6 +125,7 @@ Licensed under the MIT license
 			url: apiURL,
 			dataType: 'json',
 			success: function(data) {
+				console.log("Weather API call successful. Response data:", data);
 				if(data) {
 					// adjust data to expected format
 					if (s.query.localeCompare('onecall') == 0) {
@@ -306,6 +307,8 @@ Licensed under the MIT license
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
+				// Log any errors that occur during the API call
+				console.error("Weather API call failed. Error:", textStatus);
 				s.error.call(this, {
 					error: textStatus
 				});
@@ -345,6 +348,8 @@ Licensed under the MIT license
 						} else {
 							console.error("Unexpected data structure: 'data' is not available or not an array.");
 						}
+
+						console.log(`Daily precipitation for ${daysAgo} days ago: ${dailyPrecipitation}`); // Log the precipitation amount
 
 						if (dailyPrecipitation > 0) {
 							callback(daysSinceRain);

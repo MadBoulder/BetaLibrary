@@ -205,63 +205,7 @@
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
 					<h2>Weather Forecast in Laramade Boulder</h2>
-					
-						<div class="weather-widget weatherElement" data-zone-code="">
-	<div id="weather-widget-laramade" class="weather-container dark">
-		<div class="weather-title-container" title="Laramade">
-			<i class="fas fa-location-dot">location</i>
-			<div class="weather-title">
-				Laramade
-			</div>
-		</div>
-		<div class="weather-info">
-			<div class="current-weather">
-				<div class="current-weather-icon">
-					<img loading="lazy" class="weather-icon"></img>
-				</div>
-				<div class="current-weather-desc">
-					<div class="current-weather-temperature weather-temperature"></div>
-					<div class="current-weather-description weather-description text-capitalize"></div>
-				</div>
-				<div class="current_weather-stats">
-					<div class="current_weather-stats-temp">
-						<div class="weather-max-temperature"></div>
-						<div class="weather-min-temperature"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-droplet mr-2">humidity</i>
-						<div class="weather-humidity"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-wind">air</i>
-						<div class="wind-speed"></div>
-					</div>
-				</div>
-			</div>
-			<div class="weather-forecast"></div>
-		</div>
-	</div>
-	<script>
-		$('#weather-widget-laramade .weather-temperature').openWeather({
-			widgetId: 'weather-widget-laramade',
-			lat: '42.784082',
-			lng: '1.547472',
-			iconTarget: '#weather-widget-laramade .weather-icon',
-			key: '768becec481510ce421dc2b7afa05318',
-			customIcons: 'images/weather_icons/',
-			minTemperatureTarget: '#weather-widget-laramade .weather-min-temperature',
-			maxTemperatureTarget: '#weather-widget-laramade .weather-max-temperature',
-			humidityTarget: '#weather-widget-laramade .weather-humidity',
-			windSpeedTarget: '#weather-widget-laramade .wind-speed',
-			windSpeedUnit: 'km/h',
-			descriptionTarget: '#weather-widget-laramade .weather-description',
-			forecastTarget: 'weather-forecast',
-			lang: '',
-			query: 'onecall'
-		});
-	</script>
-</div>
-					
+					<div id="weather-widget-placeholder"></div>
 					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
 					<div class="weatherElement compareWeatherButtonContainer">
 						<a class="mad-button" href="/weather-forecast-comparator?default=laramade">
@@ -270,20 +214,59 @@
 					</div>
 					<script>
 						$(document).ready(function() {
-							$('.weather-temperature').each(function() {
-								const openWeatherData = $(this).data('openWeather');
-								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
-									openWeatherData.checkDaysSinceRain(function(days) {
-										let message;
-										if (days > 3) {
-											message = "It's been more than 3 days since it last rained.";
-										} else {
-											message = `It has been ${days} day(s) since it last rained.`;
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '42.784082',
+											lng: '1.547472',
+											zone: 'Laramade',
+											zone_code: 'laramade',
+											uniqueId: 'weather-widget-' + 'laramade',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
 										}
-										$('#days-since-last-rain').text(message);
 									});
 								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
 							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
 						});
 					</script>
 					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 

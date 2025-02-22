@@ -210,63 +210,7 @@
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
 					<h2>Previsión del Tiempo en La Collada Boulder</h2>
-					
-						<div class="weather-widget weatherElement" data-zone-code="">
-	<div id="weather-widget-la-collada" class="weather-container dark">
-		<div class="weather-title-container" title="La Collada">
-			<i class="fas fa-location-dot">location</i>
-			<div class="weather-title">
-				La Collada
-			</div>
-		</div>
-		<div class="weather-info">
-			<div class="current-weather">
-				<div class="current-weather-icon">
-					<img loading="lazy" class="weather-icon"></img>
-				</div>
-				<div class="current-weather-desc">
-					<div class="current-weather-temperature weather-temperature"></div>
-					<div class="current-weather-description weather-description text-capitalize"></div>
-				</div>
-				<div class="current_weather-stats">
-					<div class="current_weather-stats-temp">
-						<div class="weather-max-temperature"></div>
-						<div class="weather-min-temperature"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-droplet mr-2">humidity</i>
-						<div class="weather-humidity"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-wind">air</i>
-						<div class="wind-speed"></div>
-					</div>
-				</div>
-			</div>
-			<div class="weather-forecast"></div>
-		</div>
-	</div>
-	<script>
-		$('#weather-widget-la-collada .weather-temperature').openWeather({
-			widgetId: 'weather-widget-la-collada',
-			lat: '43.211854',
-			lng: '-6.015777',
-			iconTarget: '#weather-widget-la-collada .weather-icon',
-			key: '768becec481510ce421dc2b7afa05318',
-			customIcons: 'images/weather_icons/',
-			minTemperatureTarget: '#weather-widget-la-collada .weather-min-temperature',
-			maxTemperatureTarget: '#weather-widget-la-collada .weather-max-temperature',
-			humidityTarget: '#weather-widget-la-collada .weather-humidity',
-			windSpeedTarget: '#weather-widget-la-collada .wind-speed',
-			windSpeedUnit: 'km/h',
-			descriptionTarget: '#weather-widget-la-collada .weather-description',
-			forecastTarget: 'weather-forecast',
-			lang: '',
-			query: 'onecall'
-		});
-	</script>
-</div>
-					
+					<div id="weather-widget-placeholder"></div>
 					<div class="weatherElement" id="days-since-last-rain">Cargando los dias desde la última lluvia...</div>
 					<div class="weatherElement compareWeatherButtonContainer">
 						<a class="mad-button" href="/es/comparador-pronostico-tiempo?default=la-collada">
@@ -275,20 +219,59 @@
 					</div>
 					<script>
 						$(document).ready(function() {
-							$('.weather-temperature').each(function() {
-								const openWeatherData = $(this).data('openWeather');
-								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
-									openWeatherData.checkDaysSinceRain(function(days) {
-										let message;
-										if (days > 3) {
-											message = "Han pasado más de 3 días desde la última lluvia.";
-										} else {
-											message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "Han pasado más de 3 días desde la última lluvia.";
+											} else {
+												message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+							
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '43.211854',
+											lng: '-6.015777',
+											zone: 'La Collada',
+											zone_code: 'la-collada',
+											uniqueId: 'weather-widget-' + 'la-collada',
+											current_lang: 'es'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
 										}
-										$('#days-since-last-rain').text(message);
 									});
 								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
 							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
 						});
 					</script>
 					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
