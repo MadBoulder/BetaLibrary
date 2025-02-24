@@ -89,6 +89,13 @@ def format_views(number):
         return f"{formatted_number:.2f}k".rstrip('0').rstrip('.') if formatted_number < 10 else f"{formatted_number:.1f}k".rstrip('0').rstrip('.') if formatted_number < 100 else f"{int(formatted_number)}k"
     else:
         return str(number)
+    
+
+def format_date(value, format='%d/%m/%Y %H:%M'):
+    if isinstance(value, str):
+        # Convert ISO formatted string to a datetime object
+        value = datetime.fromisoformat(value)
+    return value.strftime(format)
 
 
 

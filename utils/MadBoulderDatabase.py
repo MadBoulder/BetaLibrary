@@ -173,6 +173,10 @@ def getRatings(problem_id):
     return utils.database.getValue(f'problems/{encodedProblemId}/ratings')
 
 
+def getUserRatings(uid):
+    return []
+
+
 def submitRating(problem_id, user_uid, rating):
     encodedProblemId = encodeSlug(problem_id)
     newRating = {user_uid: rating}
@@ -185,6 +189,10 @@ def deleteRating(problem_id, user_uid):
 
 
 #Comments
+def getAllProblems():
+    return utils.database.getValue('problems')
+
+
 def getComments(problem_id):
     encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/comments')
@@ -192,6 +200,25 @@ def getComments(problem_id):
 def getComment(problem_id, comment_id):
     encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/comments/{comment_id}')
+
+def getUserComments(uid):
+    problems = getAllProblems()
+
+    userComments = []
+    for problemId, problem in problems.items():
+        comments = problem.get('comments', {})
+        for commentId, comment in comments.items():
+            if comment.get('user_uid') == uid:
+                videoData = getVideoDataWithSlug(problemId)
+                userComments.append({
+                    'problem_id': problemId,
+                    'comment_id': commentId,
+                    'text': comment.get('text'),
+                    'date': comment.get('date'),
+                    'videoData': videoData
+                })
+
+    return userComments
 
 
 def submitComment(problem_id, user_uid, comment):
@@ -220,8 +247,20 @@ def deleteComment(problem_id, user_uid, comment_id):
 
     
 #Projects
-def getProjects(user_uid):
-    return utils.database.getValue(f'users/{user_uid}/projects')
+def getProjects(uid):
+    projectsList = []
+    if uid:
+        projectIds = utils.database.getValue(f'users/{uid}/projects')
+        if projectIds:
+            for problemId in projectIds:
+                videoData = getVideoDataWithSlug(problemId)
+                if videoData:
+                    projectsList.append(videoData)
+                else:
+                    print(f"Data for problem ID {problemId} not found.")
+
+    return projectsList
+
 
 def getProject(user_uid, problem_id):
     encodedProblemId = encodeSlug(problem_id)

@@ -62,6 +62,7 @@ if os.environ.get('FLASK_ENV') == 'production':
     )
 app.secret_key = bytes.fromhex(os.environ.get('SECRET_KEY'))
 app.jinja_env.filters['format_views'] = utils.helpers.format_views
+app.jinja_env.filters['format_date'] = utils.helpers.format_date
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 mailerlite = MailerLite.Client({
@@ -741,21 +742,23 @@ def settings_stats():
 @app.route('/settings/projects', methods=['GET'])
 @login_required
 def settings_projects():
-    user_uid = session.get('uid')
-    projectIds = utils.MadBoulderDatabase.getProjects(user_uid)
-    projectsList = []
-    print(projectIds)
+    projects = utils.MadBoulderDatabase.getProjects(session.get('uid'))
+    return render_template("/settings/settings-projects.html", projects=projects)
 
-    if projectIds:
-        for problemId in projectIds:
-            videoData = utils.MadBoulderDatabase.getVideoDataWithSlug(problemId)
-            if videoData:
-                projectsList.append(videoData)
-            else:
-                print(f"Data for problem ID {problemId} not found.")
-    print(projectsList)
 
-    return render_template("/settings/settings-projects.html", projects=projectsList)
+@app.route('/settings/comments', methods=['GET'])
+@login_required
+def settings_comments():
+    comments = utils.MadBoulderDatabase.getUserComments(session.get('uid'))
+    return render_template("/settings/settings-comments.html", comments=comments)
+
+
+@app.route('/settings/ratings', methods=['GET'])
+@login_required
+def settings_ratings():
+    ratings = utils.MadBoulderDatabase.getUserRatings(session.get('uid'))
+    print(ratings)
+    return render_template("/settings/settings-ratings.html", ratings=ratings)
 
 
 @app.route('/settings/admin/users', methods=['GET'])
