@@ -1,7 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import db
-
+from firebase_admin import db, auth
 import threading
 from datetime import date
 import datetime
@@ -100,6 +99,7 @@ def updateValue(refPath, value):
 
 
 def addChildWithUniqueId(refPath, newData):
+    init()
     try:
         ref = db.reference(refPath)
         newRef = ref.push(newData)
@@ -124,4 +124,70 @@ def updateDate(refPath):
     db.reference(refPath).update({'date': datetime.datetime.now().isoformat()})
 
 
+def getAllUsers():
+    init()
+    users = []
+    page = auth.list_users()
+    while page:
+        users.extend(page.users)
+        page = page.get_next_page()
+    return users
+
+
+def getUserRecord(uid):
+    init()
+    return auth.get_user(uid)
+
+
+def getUserMetadata(uid):
+    init()
+    user_record = getUserRecord(uid)
+    return user_record.user_metadata
+
+
+def getUserDetails(uid):
+    init()
+    user_details_ref = db.reference(f'users/{uid}')
+    return user_details_ref.get()
+
+
+def verifyToken(token):
+    init()
+    return auth.verify_id_token(token)
+
+
+def updateUserDisplayName(uid, display_name):
+    init()
+    auth.update_user(uid, display_name=display_name)
+
+
+def updateUserDetails(uid, detailKey, detailValue):
+    init()
+    userDetails = {}
+    userDetails[detailKey] = detailValue
+
+    user_details_ref = db.reference(f'users/{uid}')
+    user_details_ref.update(userDetails)
+
+
+def updateUserAdminRole(uid, admin=False):
+    init()
+    if admin:
+        auth.set_custom_user_claims(uid, {'admin': True})
+    else:
+        auth.set_custom_user_claims(uid, None)
+
+
+def deleteUser(uid):
+    init()
+    user_details_ref = db.reference(f'users/{uid}')
+    user_details_ref.delete()
+    auth.delete_user(uid)
+
+
+def removeUser(uid):
+    init()
+    user_details_ref = db.reference(f'users/{uid}')
+    user_details_ref.delete()
+    firebase_admin.auth.delete_user(uid)
 

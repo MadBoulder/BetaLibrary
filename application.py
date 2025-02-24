@@ -7,9 +7,6 @@ import threading
 from flask import Flask, render_template, send_from_directory, request, abort, session, redirect, url_for, send_file, jsonify
 from flask_caching import Cache
 from flask_babel import Babel, _
-import firebase_admin
-from firebase_admin import credentials, auth, db, exceptions
-from firebase_admin.exceptions import FirebaseError
 from urllib.parse import urlparse
 from datetime import datetime, timedelta
 from utils.emailProvider import EmailProvider
@@ -35,8 +32,9 @@ from bokeh.embed import components
 from bokeh.resources import INLINE
 import mailerlite as MailerLite
 
-from google.oauth2 import service_account
 
+from firebase_admin import credentials
+from google.oauth2 import service_account
 from google.cloud import recaptchaenterprise_v1
 from google.cloud.recaptchaenterprise_v1 import Assessment
 
@@ -66,10 +64,6 @@ app.secret_key = bytes.fromhex(os.environ.get('SECRET_KEY'))
 app.jinja_env.filters['format_views'] = utils.helpers.format_views
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-cred = credentials.Certificate('madboulder.json')
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://madboulder.firebaseio.com'
-})
 mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']
 })
@@ -243,7 +237,7 @@ def video_uploader_not_working():
 @app.route('/video-uploader', methods=['GET', 'POST'])
 def video_uploader():
     user_uid = session.get('uid')
-    user_data = getUserData(user_uid)
+    user_data = utils.MadBoulderDatabase.getUserData(user_uid)
     contributors = utils.MadBoulderDatabase.getContributorNames()
     climbers = contributors
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
@@ -592,9 +586,9 @@ def verify_token():
     id_token = auth_header.split(' ')[1]
 
     try:
-        uid = get_user_uid(id_token)
+        uid = utils.MadBoulderDatabase.getUserUid(id_token)
         session['uid'] = uid
-        session['is_admin'] = check_admin_privileges(uid)
+        session['is_admin'] = utils.MadBoulderDatabase.checkAdminPrivileges(uid)
 
         return jsonify({"message": "Token verified", "uid": uid}), 200
     except Exception as e:
@@ -659,13 +653,6 @@ def admin_required(f):
         return inner(*args, **kwargs)
     return decorated_function
 
-
-def check_admin_privileges(uid):
-    user = auth.get_user(uid)
-    if user.custom_claims:
-        return user.custom_claims.get('admin', False)
-    else:
-        return False
     
 @app.route('/reset-next-url')
 def reset_next_url():
@@ -678,17 +665,16 @@ def reset_next_url():
 def check_profile_completion():
     try:
         user_uid = session.get('uid')
-        user_record = auth.get_user(user_uid)
+        userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
 
         try:
-            existing_subscriber = mailerlite.subscribers.get(user_record.email)
+            existing_subscriber = mailerlite.subscribers.get(userEmail)
             is_in_database = bool(existing_subscriber and existing_subscriber.get('data'))
         except Exception as e:
             print(f"Error fetching subscriber information: {str(e)}")
             is_in_database = False
 
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details = user_details_ref.get()
+        user_details = utils.MadBoulderDatabase.getUserData(user_uid)
 
         required_fields = ['contributor_status'] 
         is_complete = user_details and all(field in user_details for field in required_fields) and is_in_database
@@ -708,38 +694,16 @@ def complete_profile():
 @login_required
 def settings_profile():
     user_uid = session.get('uid')
-    user_data = getUserData(user_uid)
+    user_data = utils.MadBoulderDatabase.getUserData(user_uid)
 
     return render_template('settings/settings-profile.html', user_data=user_data)
-
-
-def getUserData(user_uid):
-    user_data = {}
-    if user_uid:
-        user_record = auth.get_user(user_uid)
-        user_data['uid'] = user_uid
-        user_data['displayName'] = user_record.display_name
-        user_data['email'] = user_record.email
-        
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details = user_details_ref.get()
-        if(user_details):
-            user_data.update(user_details)
-
-    return user_data
 
 
 @app.route('/settings/account', methods=['GET', 'POST'])
 @login_required
 def settings_account():
     user_uid = session.get('uid')
-    user_data = {}
-
-    if user_uid:
-        user_record = auth.get_user(user_uid)
-        user_data['uid'] = user_uid
-        user_data['email'] = user_record.email
-        user_data['displayName'] = user_record.display_name
+    user_data = utils.MadBoulderDatabase.getUserBasicData(user_uid)
 
     return render_template('settings/settings-account.html', user_data=user_data)
 
@@ -748,17 +712,7 @@ def settings_account():
 @login_required
 def settings_my_videos():
     user_uid = session.get('uid')
-    user_data = {}
-
-    if user_uid:
-        user_record = auth.get_user(user_uid)
-        user_data['uid'] = user_uid
-        user_data['email'] = user_record.email
-        user_data['displayName'] = user_record.display_name
-        
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details = user_details_ref.get()
-        user_data.update(user_details)
+    user_data = utils.MadBoulderDatabase.getUserData(user_uid)
 
     climber_id = user_data.get('climber_id')
     if(climber_id):
@@ -773,30 +727,15 @@ def settings_my_videos():
 @login_required
 def settings_stats():
     user_uid = session.get('uid')
-    user_data = {}
-
-    if user_uid:
-        user_record = auth.get_user(user_uid)
-        user_data['uid'] = user_uid
-        user_data['email'] = user_record.email
-        user_data['displayName'] = user_record.display_name
-
-        account_creation_timestamp = user_record.user_metadata.creation_timestamp / 1000 # Convert from milliseconds to seconds
-        account_creation_date = datetime.fromtimestamp(account_creation_timestamp)
-        user_data['dateCreated'] = account_creation_date.strftime('%Y-%m-%d')
-
-        time_since_creation = datetime.now() - account_creation_date
-        user_data['timeSinceCreation'] = str(time_since_creation.days) + " days"
-        
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details = user_details_ref.get()
-        user_data.update(user_details)
-
-        contributor_stats = utils.zone_helpers.calculate_contributor_stats(user_data['climber_id'])
-        user_data['contributor_stats'] = contributor_stats
-        user_data['total_contributors'] = utils.MadBoulderDatabase.getContributorsCount()
-
-    return render_template("/settings/settings-stats.html", user_data=user_data)
+    user_data = utils.MadBoulderDatabase.getUserData(user_uid)
+    climber_id = user_data.get('climber_id')
+    
+    if(climber_id):
+        user_stats = utils.MadBoulderDatabase.getUserStats(user_uid)
+        return render_template("/settings/settings-stats.html", user_data=user_stats)
+    else:
+        print("Error loading my stats: No climber_id found")
+        return redirect("/settings/profile")
 
 
 @app.route('/settings/projects', methods=['GET'])
@@ -822,7 +761,7 @@ def settings_projects():
 @app.route('/settings/admin/users', methods=['GET'])
 @admin_required
 def settings_admin_users():
-    users_list, admins_list = get_all_users()
+    users_list, admins_list = utils.MadBoulderDatabase.getAllUsers()
     contributors = utils.MadBoulderDatabase.getContributorNames()
     return render_template('settings/settings-admin-users.html', users_list=users_list, contributors=contributors)
 
@@ -830,42 +769,8 @@ def settings_admin_users():
 @app.route('/settings/admin/admins', methods=['GET'])
 @admin_required
 def settings_admin_admins():
-    users_list, admins_list = get_all_users()
+    users_list, admins_list = utils.MadBoulderDatabase.getAllUsers()
     return render_template('settings/settings-admin-admins.html', users_list=users_list, admins_list=admins_list)
-
-
-def get_all_users():
-    users_list = []
-    admins_list = []
-
-    page = auth.list_users()
-    while page:
-        for user_record in page.users:
-            uid = user_record.uid
-
-            user_info = {
-                'uid': uid,
-                'email': user_record.email,
-                'displayName': user_record.display_name,
-                'contributor_status': 'N/A',  # Default value
-                'climber_id': 'N/A',  # Default value
-                'profile_completed': False
-            }
-
-            user_details_ref = db.reference(f'users/{uid}')
-            user_details = user_details_ref.get()
-            if user_details:
-                user_info['contributor_status'] = user_details.get('contributor_status', 'N/A')
-                user_info['climber_id'] = user_details.get('climber_id', 'N/A')
-                user_info['profile_completed'] = True
-
-            users_list.append(user_info)
-
-            if check_admin_privileges(uid):
-                admins_list.append(user_info)
-
-        page = page.get_next_page()
-    return users_list, admins_list
 
 
 @app.route('/settings/admin/urls', methods=['GET'])
@@ -910,17 +815,11 @@ def delete_slug():
     return jsonify({'status': 'success', 'message': 'Slug deleted successfully'})
 
 
-def get_user_uid(id_token):
-    decoded_token = auth.verify_id_token(id_token)
-    uid = decoded_token['uid']
-    return uid
-
-
 @app.route('/set-admin-claim/<userid>', methods=['POST'])
 @admin_required
 def add_admin_privileges(userid):
     try:
-        auth.set_custom_user_claims(userid, {'admin': True})
+        utils.MadBoulderDatabase.updateUserAdminRole(userid, False)
         return jsonify({'status': 'success', 'message': 'Admin privileges added successfully.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
@@ -930,7 +829,7 @@ def add_admin_privileges(userid):
 @admin_required
 def revoke_admin_privileges(userid):
     try:
-        auth.set_custom_user_claims(userid, None)
+        utils.MadBoulderDatabase.updateUserAdminRole(userid, False)
         return jsonify({'status': 'success', 'message': 'Admin privileges revoked successfully.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
@@ -947,9 +846,9 @@ def update_user():
     user_uid = session.get('uid')
     try:
         if 'displayName' in data:
-            auth.update_user(user_uid, display_name=data['displayName'])
+            utils.MadBoulderDatabase.updateUserDisplayName(user_uid, data['displayName'])
 
-    except FirebaseError as e:
+    except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
     if request.is_json:
@@ -963,19 +862,13 @@ def update_user_details():
         data = request.get_json()
     else:
         data = request.form
-        
-    user_uid = session.get('uid')
 
-    updates = {}
-    if 'contributor_status' in data and data['contributor_status'] != 'approved':
-        updates['contributor_status'] = data['contributor_status']
+    if 'contributor_status' in data and data['contributor_status'] != 'approved':        
+        user_uid = session.get('uid')
+        utils.MadBoulderDatabase.updateUserContributorStatus(user_uid, data['contributor_status'])
         if data['contributor_status'] == 'pending':
-            user_record = auth.get_user(user_uid)
-            mail.sendPendingContributor(user_record.email)
-
-    if updates:
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details_ref.update(updates)
+            userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
+            mail.sendPendingContributor(userEmail)
 
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
@@ -991,22 +884,17 @@ def update_user_details_protected():
 
     uid = data.get('uid')
 
-    updates = {}
     if 'contributor_status' in data:
-        updates['contributor_status'] = data['contributor_status']
+        utils.MadBoulderDatabase.updateUserContributorStatus(uid, data['contributor_status'])
 
     if 'climber_id' in data:
-        updates['climber_id'] = data['climber_id']
-
-    if updates:
-        user_details_ref = db.reference(f'users/{uid}')
-        user_details_ref.update(updates)
+        utils.MadBoulderDatabase.updateUserClimberId(uid, data['climber_id'])
 
     if data['contributor_status'] == 'approved':
         if 'climber_id' in data:
             climber_id = data['climber_id']
-            user_record = auth.get_user(uid)
-            mail.sendContributorApproved(user_record.email, climber_id)
+            userEmail = utils.MadBoulderDatabase.getUserEmail(uid)
+            mail.sendContributorApproved(userEmail, climber_id)
 
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'User updated successfully'})
@@ -1027,24 +915,19 @@ def complete_profile_info():
     wantsNewsletter = data.get('wantsNewsletter', False)
 
     try:
-        auth.update_user(user_uid, display_name=name)
+        utils.MadBoulderDatabase.updateUserDisplayName(user_uid, name)
 
-        updates = {}
         if isContributor:
-            updates['contributor_status'] = "pending"
+            utils.MadBoulderDatabase.updateUserContributorStatus(user_uid, "pending")
 
-            user_record = auth.get_user(user_uid)
-            mail.sendPendingContributor(user_record.email)
+            userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
+            mail.sendPendingContributor(userEmail)
         else:
-            updates['contributor_status'] = "non contributor"
-
-        if updates:
-            user_details_ref = db.reference(f'users/{user_uid}')
-            user_details_ref.update(updates)
+            utils.MadBoulderDatabase.updateUserContributorStatus(user_uid, "non contributor")
 
         if wantsNewsletter:
-            user_record = auth.get_user(user_uid)
-            register_new_subscriber(user_record.email)
+            userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
+            register_new_subscriber(userEmail)
 
         return jsonify({'message': 'Profile updated successfully'}), 200
     except Exception as e:
@@ -1130,9 +1013,8 @@ def check_subscription_status():
     user_uid = session.get('uid')
 
     try:
-        user_record = auth.get_user(user_uid)
-        print(user_record)
-        subscriber = mailerlite.subscribers.get(user_record.email)
+        userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
+        subscriber = mailerlite.subscribers.get(userEmail)
         subscriber_data = subscriber.get('data', {})
         if subscriber_data.get('status') == 'active':
             return jsonify({"subscribed": True}), 200
@@ -1178,13 +1060,10 @@ def delete_account():
         data = request.get_json()
         unsubscribe_newsletter = data.get('unsubscribeNewsletter', True)
         if unsubscribe_newsletter:
-            user_record = auth.get_user(user_uid)
-            unsubscribe(user_record.email)
+            userEmail = utils.MadBoulderDatabase.getUserEmail(user_uid)
+            unsubscribe(userEmail)
 
-        user_details_ref = db.reference(f'users/{user_uid}')
-        user_details_ref.delete()
-        auth.delete_user(user_uid)
-
+        utils.MadBoulderDatabase.removeUser(user_uid)
         session.clear()
 
         return jsonify({'status': 'success', 'message': 'Your account has been successfully deleted.'})
@@ -1197,14 +1076,12 @@ def delete_account():
 @admin_required
 def remove_user(userId):
     try:
-        user_record = auth.get_user(userId)
-        unsubscribe(user_record.email)
-        user_ref = db.reference(f'users/{userId}')
-        user_ref.delete()
-        firebase_admin.auth.delete_user(userId)
+        userEmail = utils.MadBoulderDatabase.getUserEmail(userId)
+        unsubscribe(userEmail)
+        utils.MadBoulderDatabase.removeUser(userId)
 
         return jsonify({"success": True}), 200
-    except firebase_admin.exceptions.FirebaseError as e:
+    except Exception as e:
         print(f"Error removing user: {e}")
         return jsonify({"error": "Failed to remove user"}), 500
     
@@ -1707,13 +1584,8 @@ def get_comments_for_problem(problem_id):
         return []
     else:
         for comment_id, comment in comments.items():
-            comment['user_name'] = get_user_display_name(comment['user_uid'])
+            comment['user_name'] = utils.MadBoulderDatabase.getUserDisplayName(comment['user_uid'])
         return [{'id': key, **value} for key, value in comments.items()]
-    
-
-def get_user_display_name(user_uid):
-    user_record = auth.get_user(user_uid)
-    return user_record.display_name
     
 
 @app.route('/sectors/<string:page>/<string:sector_name>')

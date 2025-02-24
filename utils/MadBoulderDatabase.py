@@ -1,9 +1,10 @@
 import utils.database
 import pytz
-import datetime
+from datetime import datetime
 from functools import lru_cache
 import json
 import sys
+import utils.zone_helpers
 
 PROBLEMS_KEY = 'problem_data'
 ENCODED_SEPARATOR = '___'
@@ -356,3 +357,137 @@ def getContributorNames():
     # Extract names from the retrieved data
     contributor_names = [contributor['name'] for contributor in contributors.values() if 'name' in contributor]
     return contributor_names
+
+
+def getAllUsers():
+    users_list = []
+    admins_list = []
+
+    allUsers = utils.database.getAllUsers()
+    for user in allUsers:
+        uid = user.uid
+        userDetails = utils.database.getUserDetails(uid)
+
+        userInfo = buildUserInfo(user, userDetails)
+        users_list.append(userInfo)
+
+        if checkAdminPrivileges(uid):
+            admins_list.append(userInfo)
+
+    return users_list, admins_list
+
+
+def buildUserInfo(user, userDetails=None):
+    """Helper function to build user info dictionary."""
+    user_info = {
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.display_name,
+        'contributor_status': 'N/A',  # Default value
+        'climber_id': 'N/A',  # Default value
+        'profile_completed': False # Default value
+    }
+
+    if userDetails:
+        user_info['contributor_status'] = userDetails.get('contributor_status', 'N/A')
+        user_info['climber_id'] = userDetails.get('climber_id', 'N/A')
+        user_info['profile_completed'] = True
+
+    return user_info
+
+
+def checkAdminPrivileges(uid):
+    user_record = utils.database.getUserRecord(uid)
+    if user_record.custom_claims:
+        return user_record.custom_claims.get('admin', False)
+    else:
+        return False
+    
+
+def getUserUid(id_token):
+    decoded_token = utils.database.verifyToken(id_token)
+    uid = decoded_token['uid']
+    return uid
+
+
+def getUserBasicData(uid):
+    user_data = {}
+    if uid:
+        user_record = utils.database.getUserRecord(uid)
+        user_data['uid'] = uid
+        user_data['displayName'] = user_record.display_name
+        user_data['email'] = user_record.email
+
+    return user_data
+
+
+def getUserData(uid):
+    user_data = {}
+    if uid:
+        user_data = getUserBasicData(uid)
+
+        user_details = utils.database.getUserDetails(uid)
+        if(user_details):
+            user_data.update(user_details)
+
+    return user_data
+
+
+def getUserStats(uid):
+    user_data = {}
+    if uid:
+        user_data = getUserData(uid)
+
+        account_creation_timestamp = getUserCreationTimestamp(uid)
+        account_creation_date = datetime.fromtimestamp(account_creation_timestamp)
+        user_data['dateCreated'] = account_creation_date.strftime('%Y-%m-%d')
+
+        time_since_creation = datetime.now() - account_creation_date
+        user_data['timeSinceCreation'] = str(time_since_creation.days) + " days"
+
+        contributor_stats = utils.zone_helpers.calculate_contributor_stats(user_data['climber_id'])
+        user_data['contributor_stats'] = contributor_stats
+        user_data['total_contributors'] = getContributorsCount()
+
+    return user_data
+
+
+def getUserEmail(uid):
+    user_record = utils.database.getUserRecord(uid)
+    return user_record.email
+
+
+def getUserDisplayName(uid):
+    user_record = utils.database.getUserRecord(uid)
+    return user_record.display_name
+
+
+def getUserCreationTimestamp(uid):
+    if uid:
+        user_metadata = utils.database.getUserMetadata(uid)
+        return user_metadata.creation_timestamp / 1000 # Convert from milliseconds to seconds
+
+
+def updateUserDisplayName(uid, display_name):
+    return utils.database.updateUserDisplayName(uid, display_name)
+
+
+def updateUserContributorStatus(uid, contributor_status):
+    return utils.database.updateUserDetails(uid, 'contributor_status', contributor_status)
+
+
+def updateUserClimberId(uid, climberId):
+    return utils.database.updateUserDetails(uid, 'climber_id', climberId)
+
+
+def updateUserAdminRole(uid, admin=False):
+    return utils.database.updateUserAdminRole(uid, admin)
+
+
+def deleteUser(uid):
+    return utils.database.deleteUser(uid)
+
+
+def removeUser(uid):
+    return utils.database.removeUser(uid)
+
