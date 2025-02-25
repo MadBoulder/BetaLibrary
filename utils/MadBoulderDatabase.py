@@ -193,6 +193,29 @@ def getAllProblems():
     return utils.database.getValue('problems')
 
 
+def getAllComments():
+    problems = getAllProblems()
+
+    comments = []
+    for problemId, problem in problems.items():
+        problemComments = problem.get('comments', {})
+        for commentId, comment in problemComments.items():
+            videoData = getVideoDataWithSlug(problemId)
+            userData = getUserBasicData(comment.get('user_uid'))
+            userDisplay = userData['displayName'] if userData['displayName'] else userData['email']
+            comments.append({
+                'problem_id': problemId,
+                'comment_id': commentId,
+                'text': comment.get('text'),
+                'date': comment.get('date'),
+                'user_uid': comment.get('user_uid'),
+                'user_display': userDisplay,
+                'videoData': videoData
+            })
+
+    return comments
+
+
 def getComments(problem_id):
     encodedProblemId = encodeSlug(problem_id)
     return utils.database.getValue(f'problems/{encodedProblemId}/comments')

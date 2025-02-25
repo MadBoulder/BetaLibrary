@@ -792,6 +792,22 @@ def settings_admin_missing_areas():
     return render_template('settings/settings-admin-missing-areas.html', sortedMissingAreasCount=sortedMissingAreasCount)
 
 
+@app.route('/settings/admin/comments', methods=['GET'])
+@admin_required
+def settings_admin_comments():
+    print("settings_admin_comments")
+    comments = utils.MadBoulderDatabase.getAllComments()
+    return render_template('settings/settings-admin-comments.html', comments=comments)
+
+
+@app.route('/settings/admin/ratings', methods=['GET'])
+@admin_required
+def settings_admin_ratings():
+    print("settings_admin_ratings")
+    ratings = utils.MadBoulderDatabase.getAllRatings()
+    return render_template('settings/settings-admin-ratings.html', ratings=ratings)
+
+
 @app.route('/update-slug', methods=['POST'])
 @admin_required
 def update_slug():
