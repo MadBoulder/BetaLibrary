@@ -804,7 +804,7 @@ def settings_admin_comments():
 @admin_required
 def settings_admin_ratings():
     print("settings_admin_ratings")
-    ratings = utils.MadBoulderDatabase.getAllRatings()
+    ratings = utils.MadBoulderDatabase.getAllRatingsStats()
     return render_template('settings/settings-admin-ratings.html', ratings=ratings)
 
 
@@ -990,6 +990,20 @@ def delete_rating():
 
     utils.MadBoulderDatabase.deleteRating(problem_id, user_uid)
     return jsonify({'status': 'success', 'message': 'Rating deleted successfully'}), 200
+
+
+@app.route('/delete-rating-admin', methods=['POST'])
+@admin_required
+def delete_rating_admin():
+    data = request.get_json()
+    problem_id = data.get('problem_id')
+    user_id = data.get('user_id')
+
+    if not problem_id or not user_id:
+        return jsonify({'status': 'error', 'message': 'Missing problem ID or user ID'}), 400
+
+    utils.MadBoulderDatabase.deleteRating(problem_id, user_id)
+    return jsonify({'status': 'success', 'message': 'Rating deleted successfully'}), 200
     
     
 @app.route('/submit-comment', methods=['POST'])
@@ -1023,6 +1037,21 @@ def delete_comment():
         return jsonify({'status': 'error', 'message': 'Missing data'}), 400
 
     utils.MadBoulderDatabase.deleteComment(problem_id, user_uid, comment_id)
+    return jsonify({'status': 'success', 'message': 'Comment deleted successfully'}), 200
+    
+
+@app.route('/delete-comment-admin', methods=['POST'])
+@admin_required
+def delete_comment_admin():
+    data = request.get_json()
+    problem_id = data.get('problem_id')
+    comment_id = data.get('comment_id')
+    user_id = data.get('user_id')
+
+    if not user_id or not problem_id or not comment_id:
+        return jsonify({'status': 'error', 'message': 'Missing data'}), 400
+
+    utils.MadBoulderDatabase.deleteComment(problem_id, user_id, comment_id)
     return jsonify({'status': 'success', 'message': 'Comment deleted successfully'}), 200
     
     

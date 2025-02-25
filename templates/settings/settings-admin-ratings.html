@@ -21,37 +21,24 @@
 							<div data-view-component="true" class="container-xl">
 								<div data-view-component="true" class="Subhead mt-0 mb-0">
 									<h2 id="public-profile-heading" data-view-component="true" class="Subhead-heading Subhead-heading--large">
-										Comments
+										Ratings
 									</h2>
 								</div>
 								<div class="table-responsive">
 									<table id="users-table" class="table table-hover">
 										<thead style="vertical-align: middle;">
 											<tr>
-												<th>{{ _("Date and Comment") }}</th>
 												<th>{{ _("Problem") }}</th>
-												<th></th>
+												<th>{{ _("Number of Ratings") }}</th>
+												<th>{{ _("Mean Rating") }}</th>
 											</tr>
 										</thead>
 										<tbody style="vertical-align: middle;">
-											{% for comment in comments %}
+											{% for rating in ratings %}
 												<tr>
-													<td class="date-column" data-sort="{{ comment.date }}">
-														<div><strong>{{ comment.user_display }}</strong> | {{ comment.date | format_date }}</div>
-														<div>{{ comment.text }}</div>
-													</td>
-													<td>
-														{% if comment.videoData %}
-															<a href="/problems/{{ comment.videoData.secure_slug }}" class="table-row-name text-bold">
-																{{ comment.videoData.title }}
-															</a>
-														{% else %}
-															<span>Problem not available</span>
-														{% endif %}
-													</td>
-													<td>
-														<i onclick="deleteComment('{{ comment.comment_id }}', '{{ comment.problem_id }}')" class="fas fa-times remove-project-icon"></i>
-													</td>
+													<td>{{ rating.problem_id }}</td>
+													<td>{{ rating.num_ratings }}</td>
+													<td>{{ rating.mean_rating }} / 5</td>
 												</tr>
 											{% endfor %}
 										</tbody>
@@ -61,20 +48,15 @@
 											$('#users-table').DataTable({
 												paging: false,
 												dom: 'tr',
-												order:[[0, 'desc']],
+												order:[[1, 'desc']],
 												columnDefs: [
 													{ 
 														orderable: true,
 														targets: 0,
-														type: 'date'
-													},
-													{ 
-														orderable: false,
-														targets: -1
 													}
 												],
 												language: {
-													emptyTable: "{{ _('No comments added yet.') }}"
+													emptyTable: "{{ _('No ratings added yet.') }}"
 												}
 											});
 										});
@@ -88,47 +70,4 @@
 		</main>
 		{% include 'elements/footer.html' %}
 	</body>
-	<script>
-		function updateSlug(oldSlug, newSlug) {
-			console.log("updateSlug");
-			console.log(oldSlug);
-			console.log(newSlug);
-			fetch('/update-slug', {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({ oldSlug: oldSlug, newSlug: newSlug })
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.status === 'success') {
-					location.reload();
-				} else {
-					console.error('Error updating slug');
-				}
-			})
-			.catch(error => {
-				console.error('Error:', error);
-			});
-		}
-
-		function deleteSlug(oldSlug) {
-			fetch('/delete-slug', {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({ oldSlug: oldSlug })
-			})
-			.then(response => response.json())
-			.then(data => {
-				if (data.status === 'success') {
-					console.log('Slug deleted');
-					location.reload();
-				} else {
-					console.error('Error deleting slug');
-				}
-			})
-			.catch(error => {
-				console.error('Error:', error);
-			});
-		}
-	</script>
 </html>

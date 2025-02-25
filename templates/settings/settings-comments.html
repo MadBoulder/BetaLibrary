@@ -43,12 +43,16 @@
 														<div>{{ comment.text }}</div>
 													</td>
 													<td>
-														<a href="/problems/{{ comment.videoData.secure_slug }}" class="table-row-name text-bold">
-															{{ comment.videoData.title }}
-														</a>
+														{% if comment.videoData %}
+															<a href="/problems/{{ comment.videoData.secure_slug }}" class="table-row-name text-bold">
+																{{ comment.videoData.title }}
+															</a>
+														{% else %}
+															<span>Problem not available</span>
+														{% endif %}
 													</td>
 													<td>
-														<i onclick="deleteComment('{{ comment.comment_id }}', '{{ comment.problem_id }}')" class="fas fa-times remove-project-icon"></i>
+														<i onclick="deleteComment('{{ comment.comment_id }}', '{{ comment.problem_id }}', '{{ comment.user_id }}')" class="fas fa-times remove-project-icon"></i>
 													</td>
 												</tr>
 											{% endfor %}
@@ -87,17 +91,17 @@
 		{% include 'elements/footer.html' %}
 	</body>
 	<script>
-		function deleteComment(comment_id, problemId) {
+		function deleteComment(comment_id, problemId, userId) {
 			const confirmation = confirm("Are you sure you want to delete this comment?");
 
 			if (confirmation){
 				const requestData = {
 					method: 'POST',
-					body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
+					body: JSON.stringify({comment_id: comment_id, problem_id: problemId, user_id: userId}),
 					headers: {'Content-Type': 'application/json'}
 				};
 				
-				fetch(`/delete-comment`, requestData)
+				fetch(`/delete-comment-admin`, requestData)
 				.then(response => response.json())
 				.then(data => {
 					if (data.status === 'success') {

@@ -173,8 +173,42 @@ def getRatings(problem_id):
     return utils.database.getValue(f'problems/{encodedProblemId}/ratings')
 
 
+def getAllRatingsStats():
+    problems = getAllProblemsWithCommentsOrRatings()
+
+    allRatings = []
+    for problemId, problem in problems.items():
+        ratings = problem.get('ratings', {})
+        if ratings:
+            num_ratings = len(ratings)
+            mean_rating = sum(ratings.values()) / num_ratings if num_ratings else 0
+            
+            allRatings.append({
+                'problem_id': problemId,
+                'num_ratings': num_ratings,
+                'mean_rating': mean_rating
+            })
+
+
+    return allRatings
+
+
 def getUserRatings(uid):
-    return []
+    problems = getAllProblemsWithCommentsOrRatings()
+
+    userRatings = []
+    for problemId, problem in problems.items():
+        ratings = problem.get('ratings', {})
+        if uid in ratings:
+            rating = ratings[uid]
+            videoData = getVideoDataWithSlug(problemId)
+            userRatings.append({
+                'problem_id': problemId,
+                'rating': rating,
+                'videoData': videoData
+            })
+
+    return userRatings
 
 
 def submitRating(problem_id, user_uid, rating):
@@ -189,18 +223,18 @@ def deleteRating(problem_id, user_uid):
 
 
 #Comments
-def getAllProblems():
+def getAllProblemsWithCommentsOrRatings():
     return utils.database.getValue('problems')
 
 
 def getAllComments():
-    problems = getAllProblems()
+    problems = getAllProblemsWithCommentsOrRatings()
 
     comments = []
     for problemId, problem in problems.items():
+        videoData = getVideoDataWithSlug(problemId)
         problemComments = problem.get('comments', {})
         for commentId, comment in problemComments.items():
-            videoData = getVideoDataWithSlug(problemId)
             userData = getUserBasicData(comment.get('user_uid'))
             userDisplay = userData['displayName'] if userData['displayName'] else userData['email']
             comments.append({
@@ -225,7 +259,7 @@ def getComment(problem_id, comment_id):
     return utils.database.getValue(f'problems/{encodedProblemId}/comments/{comment_id}')
 
 def getUserComments(uid):
-    problems = getAllProblems()
+    problems = getAllProblemsWithCommentsOrRatings()
 
     userComments = []
     for problemId, problem in problems.items():
@@ -345,7 +379,14 @@ def getVideoData(area, problemId):
     problemSlug = getProblemSlug(area, problemId)
     if(problemSlug):
         videoData = utils.database.getValue(f'{PROBLEMS_KEY}/items/{area}/{problemId}')
-    return videoData
+        if videoData:
+            return videoData
+        else:
+            print(f"No video data found for problemId: {problemId} in area: {area}")
+            return None
+    else:
+        print(f"Problem slug not found for problemId: {problemId} in area: {area}")
+        return None
 
 
 @lru_cache(maxsize=10)
