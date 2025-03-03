@@ -148,7 +148,7 @@
 										<h5 class="stats-title">Videos</h5>
 									</div>
 									<div class="text-center mt-1 mb-0">
-										<h3 class="stats-content">50</h3>
+										<h3 class="stats-content">2</h3>
 									</div>
 								</div>
 							</div>
@@ -162,7 +162,7 @@
 										<h5 class="stats-title">Views</h5>
 									</div>
 									<div class="text-center mt-1 mb-0">
-										<h3 class="stats-content">15264</h3>
+										<h3 class="stats-content">574</h3>
 									</div>
 								</div>
 							</div>
@@ -176,7 +176,7 @@
 										<h5 class="stats-title">Contributors</h5>
 									</div>
 									<div class="text-center mt-1 mb-0">
-										<h3 class="stats-content">28</h3>
+										<h3 class="stats-content">1</h3>
 									</div>
 								</div>
 							</div>
@@ -210,63 +210,7 @@
 				</div>
 				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
 					<h2>Previsión del Tiempo en Kings Canyon Boulder</h2>
-					
-						<div class="weather-widget weatherElement" data-zone-code="">
-	<div id="weather-widget-kings-canyon" class="weather-container dark">
-		<div class="weather-title-container" title="Kings Canyon">
-			<i class="fas fa-location-dot">location</i>
-			<div class="weather-title">
-				Kings Canyon
-			</div>
-		</div>
-		<div class="weather-info">
-			<div class="current-weather">
-				<div class="current-weather-icon">
-					<img loading="lazy" class="weather-icon"></img>
-				</div>
-				<div class="current-weather-desc">
-					<div class="current-weather-temperature weather-temperature"></div>
-					<div class="current-weather-description weather-description text-capitalize"></div>
-				</div>
-				<div class="current_weather-stats">
-					<div class="current_weather-stats-temp">
-						<div class="weather-max-temperature"></div>
-						<div class="weather-min-temperature"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-droplet mr-2">humidity</i>
-						<div class="weather-humidity"></div>
-					</div>
-					<div class="current_weather-stats-item">
-						<i class="fas fa-wind">air</i>
-						<div class="wind-speed"></div>
-					</div>
-				</div>
-			</div>
-			<div class="weather-forecast"></div>
-		</div>
-	</div>
-	<script>
-		$('#weather-widget-kings-canyon .weather-temperature').openWeather({
-			widgetId: 'weather-widget-kings-canyon',
-			lat: '36.791327',
-			lng: '-118.593661',
-			iconTarget: '#weather-widget-kings-canyon .weather-icon',
-			key: 'a7bf54fbd775796a64aad9c5ca7d26ef',
-			customIcons: 'images/weather_icons/',
-			minTemperatureTarget: '#weather-widget-kings-canyon .weather-min-temperature',
-			maxTemperatureTarget: '#weather-widget-kings-canyon .weather-max-temperature',
-			humidityTarget: '#weather-widget-kings-canyon .weather-humidity',
-			windSpeedTarget: '#weather-widget-kings-canyon .wind-speed',
-			windSpeedUnit: 'km/h',
-			descriptionTarget: '#weather-widget-kings-canyon .weather-description',
-			forecastTarget: 'weather-forecast',
-			lang: '',
-			query: 'onecall'
-		});
-	</script>
-</div>
-					
+					<div id="weather-widget-placeholder"></div>
 					<div class="weatherElement" id="days-since-last-rain">Cargando los dias desde la última lluvia...</div>
 					<div class="weatherElement compareWeatherButtonContainer">
 						<a class="mad-button" href="/es/comparador-pronostico-tiempo?default=kings-canyon">
@@ -275,20 +219,59 @@
 					</div>
 					<script>
 						$(document).ready(function() {
-							$('.weather-temperature').each(function() {
-								const openWeatherData = $(this).data('openWeather');
-								if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
-									openWeatherData.checkDaysSinceRain(function(days) {
-										let message;
-										if (days > 3) {
-											message = "Han pasado más de 3 días desde la última lluvia.";
-										} else {
-											message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "Han pasado más de 3 días desde la última lluvia.";
+											} else {
+												message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+							
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '36.791367',
+											lng: '-118.593821',
+											zone: 'Kings Canyon',
+											zone_code: 'kings-canyon',
+											uniqueId: 'weather-widget-' + 'kings-canyon',
+											current_lang: 'es'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
 										}
-										$('#days-since-last-rain').text(message);
 									});
 								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
 							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
 						});
 					</script>
 					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
@@ -308,10 +291,10 @@
 									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
 										<div id="area-thumbnail" title="Foto de Kings Canyon Boulder" style="opacity: 1; filter: saturate(100%);">
 											<picture>
-												<source media="(min-width: 1200px)" sizes="605px" srcset="">
-												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/img/no_thumbnail.jpg">
-												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/img/no_thumbnail.jpg">
-												<img class="img-fluid d-block" src="https://i.ytimg.com/img/no_thumbnail.jpg" alt="Foto de Kings Canyon Boulder">
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/jHzPd_Nk2b0/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/jHzPd_Nk2b0/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/jHzPd_Nk2b0/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/jHzPd_Nk2b0/mqdefault.jpg" alt="Foto de Kings Canyon Boulder">
 											</picture>
 										</div>
 									</div>
@@ -320,19 +303,19 @@
 											
 												<div id="features_info" class="position-relative">
 													<h2>Escalada en Kings Canyon</h2>
-													<p style="text-align: justify;">Kings Canyon, parte de la majestuosa Sierra Nevada, ofrece a los escaladores una experiencia en la naturaleza con sus formaciones de granito únicas. Este remoto tesoro es apreciado por su soledad y variados problemas de boulder, atrayendo a escaladores en otoño.</p>
+													<p style="text-align: justify;">Kings Canyon es una joya escondida para los amantes del boulder enclavada en la dramática cadena montañosa de Sierra Nevada. Situada principalmente en el Parque Nacional Kings Canyon y sus alrededores, la zona presume de impresionantes boulders de granito, enmarcados por antiguos bosques de secuoyas y con elevaciones variadas de alrededor de 2.120 metros. Las formaciones de granito, ásperas y desafiantes, ofrecen una experiencia de boulder auténtica y natural, especialmente durante la temporada óptima de mayo a noviembre, cuando el clima favorece la exploración prolongada.<br><br>La característica más distintiva de este lugar es la combinación única de imponentes afloramientos de granito con la serena belleza de las gigantescas secuoyas. Ya sea que te enfrentes a problemas de circuito clásico en el sector General Sherman, explores nuevas líneas en Eli's Paradise o te aventures hacia los boulder de Roads End, la diversidad de estilos de escalada y el clima montañoso siempre cambiante hacen de cada sesión una aventura renovada. Esta mezcla de desafíos naturales y paisajes impresionantes convierte a Kings Canyon en un destino de boulder verdaderamente inolvidable en Estados Unidos.</p>
 												</div>
 											
 											<div id="general_stats">
 												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
-													<b>Videos</b> 0
+													<b>Videos</b> 2
 													
 														<br>
 														<b>Tipo de Roca</b> Granite
 													
 													
 														<br>
-														<b>Altitud</b> 1561m
+														<b>Altitud</b> 1552m
 													
 												</p>
 											</div>
@@ -356,7 +339,7 @@
 							
 							  <a id="generic_link" href="https://www.kingscanyonbouldering.com/" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
 								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
-								KINGS CANYON BOULDERING
+								Kings Canyon Bouldering Guidebook
 								
 							  </a>
 							
@@ -404,7 +387,7 @@
 				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
 				</div>
 				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
-					<h2>Lista de 6 Sectores de Kings Canyon Boulder</h2>
+					<h2>Lista de 1 Sectores de Kings Canyon Boulder</h2>
 					<div class="container">
 						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 						<table id="sectors-table" class="table table-hover">
@@ -420,44 +403,9 @@
 								
 									<tr class="sector-row">
 										<td>
-											<a href="/sectors/kings-canyon/central-park" class="table-row-name text-bold">Central Park</a>
-										</td>
-										<td class="text-center">18</td>
-									</tr>
-								
-									<tr class="sector-row">
-										<td>
-											<a href="/sectors/kings-canyon/power-station-north" class="table-row-name text-bold">Power Station North</a>
-										</td>
-										<td class="text-center">17</td>
-									</tr>
-								
-									<tr class="sector-row">
-										<td>
-											<a href="/sectors/kings-canyon/power-station-south" class="table-row-name text-bold">Power Station South</a>
-										</td>
-										<td class="text-center">1</td>
-									</tr>
-								
-									<tr class="sector-row">
-										<td>
-											<a href="/sectors/kings-canyon/water-park" class="table-row-name text-bold">Water Park</a>
+											<a href="/sectors/kings-canyon/unknown" class="table-row-name text-bold">Unknown</a>
 										</td>
 										<td class="text-center">2</td>
-									</tr>
-								
-									<tr class="sector-row">
-										<td>
-											<a href="/sectors/kings-canyon/west-eucalyptus" class="table-row-name text-bold">West Eucalyptus</a>
-										</td>
-										<td class="text-center">1</td>
-									</tr>
-								
-									<tr class="sector-row">
-										<td>
-											<a href="/sectors/kings-canyon/zen-garden" class="table-row-name text-bold">Zen Garden</a>
-										</td>
-										<td class="text-center">11</td>
 									</tr>
 								
 							</tbody>
@@ -522,7 +470,7 @@
 					
 				</div>
 			</div>
-			<h2>Lista de 50 Bloques en Video de Kings Canyon Boulder</h2>
+			<h2>Lista de 2 Bloques en Video de Kings Canyon Boulder</h2>
 			<div class="container">
 				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
 				<table id="problems-table" class="table table-hover">
@@ -540,751 +488,31 @@
 							<tr class="problem-row">
 								<td>
 						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="167 knee bar, V3. Khon Kaen" href="/problems/khon-kaen/167-knee-bar-v3" tabindex="0" target="">
+						<a aria-hidden="false" aria-label="Disco Bounce House, V7. Kings Canyon" href="/problems/kings-canyon/disco-bounce-house-v7" tabindex="0" target="">
 							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de 167 knee bar, V3. Khon Kaen" src="https://img.youtube.com/vi/-zJlpG0F258/mqdefault.jpg">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Disco Bounce House, V7. Kings Canyon" src="https://img.youtube.com/vi/-MI7Ve4zGEg/mqdefault.jpg">
 							</div>
 						</a>
-						<a href="/problems/khon-kaen/167-knee-bar-v3" class="table-row-name text-bold">167 knee bar</a>
+						<a href="/problems/kings-canyon/disco-bounce-house-v7" class="table-row-name text-bold">Disco Bounce House</a>
 						</div>
 								</td>
-								<td>V3</td>
-								<td>Power Station South</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="2563 III, V6. Khon Kaen" href="/problems/khon-kaen/2563-iii-v6" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de 2563 III, V6. Khon Kaen" src="https://img.youtube.com/vi/E2niGwS2clg/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/2563-iii-v6" class="table-row-name text-bold">2563 III</a>
-						</div>
-								</td>
-								<td>V6</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Americas, V3. Khon Kaen" href="/problems/khon-kaen/americas-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Americas, V3. Khon Kaen" src="https://img.youtube.com/vi/IoJ4-Lr6dh8/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/americas-v3" class="table-row-name text-bold">Americas</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Another pad, V1. Khon Kaen" href="/problems/khon-kaen/another-pad-v1" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Another pad, V1. Khon Kaen" src="https://img.youtube.com/vi/YVfVk9sTPgs/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/another-pad-v1" class="table-row-name text-bold">Another pad</a>
-						</div>
-								</td>
-								<td>V1</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Blue Steel, V9. Khon Kaen" href="/problems/khon-kaen/blue-steel-v9" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Blue Steel, V9. Khon Kaen" src="https://img.youtube.com/vi/AUIQUav2kfc/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/blue-steel-v9" class="table-row-name text-bold">Blue Steel</a>
-						</div>
-								</td>
-								<td>V9</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Boaty, V9. Khon Kaen" href="/problems/khon-kaen/boaty-v9" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Boaty, V9. Khon Kaen" src="https://img.youtube.com/vi/yxy9pHYeC9s/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/boaty-v9" class="table-row-name text-bold">Boaty</a>
-						</div>
-								</td>
-								<td>V9</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Boby brown recluse, V4+. Khon Kaen" href="/problems/khon-kaen/boby-brown-recluse-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Boby brown recluse, V4+. Khon Kaen" src="https://img.youtube.com/vi/NX_KyH541iE/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/boby-brown-recluse-v4" class="table-row-name text-bold">Boby brown recluse</a>
-						</div>
-								</td>
-								<td>V4+</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Boob Friction, V2. Khon Kaen" href="/problems/khon-kaen/boob-friction-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Boob Friction, V2. Khon Kaen" src="https://img.youtube.com/vi/TVhFrStuPik/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/boob-friction-v2" class="table-row-name text-bold">Boob Friction</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Boot Up, V3. Khon Kaen" href="/problems/khon-kaen/boot-up-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Boot Up, V3. Khon Kaen" src="https://img.youtube.com/vi/T3ElLOCHLUI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/boot-up-v3" class="table-row-name text-bold">Boot Up</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Brain, V8. Khon Kaen" href="/problems/khon-kaen/brain-v8" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Brain, V8. Khon Kaen" src="https://img.youtube.com/vi/L9fQLrXWHJc/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/brain-v8" class="table-row-name text-bold">Brain</a>
-						</div>
-								</td>
-								<td>V8</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Chackie’s nightmare seat, V5. Khon Kaen" href="/problems/khon-kaen/chackies-nightmare-seat-v5" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Chackie’s nightmare seat, V5. Khon Kaen" src="https://img.youtube.com/vi/dJt5AYJh_cU/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/chackies-nightmare-seat-v5" class="table-row-name text-bold">Chackie’s nightmare seat</a>
-						</div>
-								</td>
-								<td>V5</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Chopsticks, V8. Khon Kaen" href="/problems/khon-kaen/chopsticks-v8" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Chopsticks, V8. Khon Kaen" src="https://img.youtube.com/vi/G92uVUD5ol4/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/chopsticks-v8" class="table-row-name text-bold">Chopsticks</a>
-						</div>
-								</td>
-								<td>V8</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Don’t snap the neck, V5. Khon Kaen" href="/problems/khon-kaen/dont-snap-the-neck-v5" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Don’t snap the neck, V5. Khon Kaen" src="https://img.youtube.com/vi/DcxYqGKoTxM/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/dont-snap-the-neck-v5" class="table-row-name text-bold">Don’t snap the neck</a>
-						</div>
-								</td>
-								<td>V5</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Fish Head Soup, V3+. Khon Kaen" href="/problems/khon-kaen/fish-head-soup-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Fish Head Soup, V3+. Khon Kaen" src="https://img.youtube.com/vi/3BFpeWIIboI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/fish-head-soup-v3" class="table-row-name text-bold">Fish Head Soup</a>
-						</div>
-								</td>
-								<td>V3+</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Fly baby fly, V2. Khon Kaen" href="/problems/khon-kaen/fly-baby-fly-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Fly baby fly, V2. Khon Kaen" src="https://img.youtube.com/vi/OK81KM0ycaQ/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/fly-baby-fly-v2" class="table-row-name text-bold">Fly baby fly</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Happy hippo, V8. Khon Kaen" href="/problems/khon-kaen/happy-hippo-v8" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Happy hippo, V8. Khon Kaen" src="https://img.youtube.com/vi/1AfwTLLoQvI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/happy-hippo-v8" class="table-row-name text-bold">Happy hippo</a>
-						</div>
-								</td>
-								<td>V8</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Heart of the Beast, V6. Khon Kaen" href="/problems/khon-kaen/heart-of-the-beast-v6" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Heart of the Beast, V6. Khon Kaen" src="https://img.youtube.com/vi/AWKJAcHYrRI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/heart-of-the-beast-v6" class="table-row-name text-bold">Heart of the Beast</a>
-						</div>
-								</td>
-								<td>V6</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Hitlist, V3. Khon Kaen" href="/problems/khon-kaen/hitlist-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Hitlist, V3. Khon Kaen" src="https://img.youtube.com/vi/QgeutrX_fEk/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/hitlist-v3" class="table-row-name text-bold">Hitlist</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="I Love Brad, V4+. Khon Kaen" href="/problems/khon-kaen/i-love-brad-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de I Love Brad, V4+. Khon Kaen" src="https://img.youtube.com/vi/YiqBh8_PNCs/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/i-love-brad-v4" class="table-row-name text-bold">I Love Brad</a>
-						</div>
-								</td>
-								<td>V4+</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="JV loves BJ, V2. Khon Kaen" href="/problems/khon-kaen/jv-loves-bj-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de JV loves BJ, V2. Khon Kaen" src="https://img.youtube.com/vi/mqP8m7mgJLI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/jv-loves-bj-v2" class="table-row-name text-bold">JV loves BJ</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Jum Bug, V6. Khon Kaen" href="/problems/khon-kaen/jum-bug-v6" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Jum Bug, V6. Khon Kaen" src="https://img.youtube.com/vi/RdByImBFUJA/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/jum-bug-v6" class="table-row-name text-bold">Jum Bug</a>
-						</div>
-								</td>
-								<td>V6</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Kensho, V9. Khon Kaen" href="/problems/khon-kaen/kensho-v9" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Kensho, V9. Khon Kaen" src="https://img.youtube.com/vi/bjrbYH7dgg4/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/kensho-v9" class="table-row-name text-bold">Kensho</a>
-						</div>
-								</td>
-								<td>V9</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Kevin is my name, V7. Khon Kaen" href="/problems/khon-kaen/kevin-is-my-name-v7" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Kevin is my name, V7. Khon Kaen" src="https://img.youtube.com/vi/FoynUrsGb7s/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/kevin-is-my-name-v7" class="table-row-name text-bold">Kevin is my name</a>
-						</div>
-								</td>
-								<td>V7</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Kiss me, V4. Khon Kaen" href="/problems/khon-kaen/kiss-me-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Kiss me, V4. Khon Kaen" src="https://img.youtube.com/vi/DSV6vkTs7FE/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/kiss-me-v4" class="table-row-name text-bold">Kiss me</a>
-						</div>
-								</td>
-								<td>V4</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Leopard Choss Right. Khon Kaen" href="/problems/khon-kaen/leopard-choss-right-unknown" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Leopard Choss Right. Khon Kaen" src="https://img.youtube.com/vi/sezW_RbdF2g/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/leopard-choss-right-unknown" class="table-row-name text-bold">Leopard Choss Right</a>
-						</div>
-								</td>
+								<td>V7</td>
 								<td>Unknown</td>
-								<td>Water Park</td>
 							</tr>
 						
 							<tr class="problem-row">
 								<td>
 						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Master Hipsin, V6. Khon Kaen" href="/problems/khon-kaen/master-hipsin-v6" tabindex="0" target="">
+						<a aria-hidden="false" aria-label="Fern down for what, V6. Kings Canyon" href="/problems/kings-canyon/fern-down-for-what-v6" tabindex="0" target="">
 							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Master Hipsin, V6. Khon Kaen" src="https://img.youtube.com/vi/rzofzPh5k9Y/mqdefault.jpg">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Fern down for what, V6. Kings Canyon" src="https://img.youtube.com/vi/jHzPd_Nk2b0/mqdefault.jpg">
 							</div>
 						</a>
-						<a href="/problems/khon-kaen/master-hipsin-v6" class="table-row-name text-bold">Master Hipsin</a>
+						<a href="/problems/kings-canyon/fern-down-for-what-v6" class="table-row-name text-bold">Fern down for what</a>
 						</div>
 								</td>
-								<td>V6</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Middle Path, V11 (sit). Khon Kaen" href="/problems/khon-kaen/middle-path-v11" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Middle Path, V11 (sit). Khon Kaen" src="https://img.youtube.com/vi/7wiU52pio28/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/middle-path-v11" class="table-row-name text-bold">Middle Path</a>
-						</div>
-								</td>
-								<td>v11</td>
-								<td>West Eucalyptus</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Ocular Cavity, V5. Khon Kaen" href="/problems/khon-kaen/ocular-cavity-v5" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Ocular Cavity, V5. Khon Kaen" src="https://img.youtube.com/vi/I8K74WaoKgw/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/ocular-cavity-v5" class="table-row-name text-bold">Ocular Cavity</a>
-						</div>
-								</td>
-								<td>V5</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="On the side, V2. Khon Kaen" href="/problems/khon-kaen/on-the-side-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de On the side, V2. Khon Kaen" src="https://img.youtube.com/vi/h6vlCsVciQ8/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/on-the-side-v2" class="table-row-name text-bold">On the side</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Pat the Giant, V11 (sit). Khon Kaen" href="/problems/khon-kaen/pat-the-giant-v11-sit" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Pat the Giant, V11 (sit). Khon Kaen" src="https://img.youtube.com/vi/nB2pZViXiRA/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/pat-the-giant-v11-sit" class="table-row-name text-bold">Pat the Giant</a>
-						</div>
-								</td>
-								<td>V11 (sit)</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Pattani Kid, V2. Khon Kaen" href="/problems/khon-kaen/pattani-kid-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Pattani Kid, V2. Khon Kaen" src="https://img.youtube.com/vi/Qv_l6usRVGE/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/pattani-kid-v2" class="table-row-name text-bold">Pattani Kid</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Peg Leg, V6. Khon Kaen" href="/problems/khon-kaen/peg-leg-v6" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Peg Leg, V6. Khon Kaen" src="https://img.youtube.com/vi/8dHzxutd_vY/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/peg-leg-v6" class="table-row-name text-bold">Peg Leg</a>
-						</div>
-								</td>
-								<td>V6</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Press Up, V3+. Khon Kaen" href="/problems/khon-kaen/press-up-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Press Up, V3+. Khon Kaen" src="https://img.youtube.com/vi/hyrK4Juavnw/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/press-up-v3" class="table-row-name text-bold">Press Up</a>
-						</div>
-								</td>
-								<td>V3+</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Rat Rail, V3. Khon Kaen" href="/problems/khon-kaen/rat-rail-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Rat Rail, V3. Khon Kaen" src="https://img.youtube.com/vi/Vu03exu033E/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/rat-rail-v3" class="table-row-name text-bold">Rat Rail</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Ray of light, V5. Khon Kaen" href="/problems/khon-kaen/ray-of-light-v5" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Ray of light, V5. Khon Kaen" src="https://img.youtube.com/vi/u-80Tcn7fPA/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/ray-of-light-v5" class="table-row-name text-bold">Ray of light</a>
-						</div>
-								</td>
-								<td>V5</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Religion, V5. Khon Kaen" href="/problems/khon-kaen/religion-v5" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Religion, V5. Khon Kaen" src="https://img.youtube.com/vi/wGLAF4znk9M/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/religion-v5" class="table-row-name text-bold">Religion</a>
-						</div>
-								</td>
-								<td>V5</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Religious Creeper, V10. Khon Kaen" href="/problems/khon-kaen/religious-creeper-v10" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Religious Creeper, V10. Khon Kaen" src="https://img.youtube.com/vi/_FsJacmSnQM/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/religious-creeper-v10" class="table-row-name text-bold">Religious Creeper</a>
-						</div>
-								</td>
-								<td>V10</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Runway, V1. Khon Kaen" href="/problems/khon-kaen/runway-v1" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Runway, V1. Khon Kaen" src="https://img.youtube.com/vi/KR2omtazzzo/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/runway-v1" class="table-row-name text-bold">Runway</a>
-						</div>
-								</td>
-								<td>V1</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Sabadilla left, V4. Khon Kaen" href="/problems/khon-kaen/sabadilla-left-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Sabadilla left, V4. Khon Kaen" src="https://img.youtube.com/vi/eBP4EivbZNw/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/sabadilla-left-v4" class="table-row-name text-bold">Sabadilla left</a>
-						</div>
-								</td>
-								<td>V4</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Sad Hippo, V8. Khon Kaen" href="/problems/khon-kaen/sad-hippo-v8" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Sad Hippo, V8. Khon Kaen" src="https://img.youtube.com/vi/CpIP0BFvicw/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/sad-hippo-v8" class="table-row-name text-bold">Sad Hippo</a>
-						</div>
-								</td>
-								<td>V8</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Sans Plomb, V3. Khon Kaen" href="/problems/khon-kaen/sans-plomb-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Sans Plomb, V3. Khon Kaen" src="https://img.youtube.com/vi/1c1hA_QEp6A/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/sans-plomb-v3" class="table-row-name text-bold">Sans Plomb</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Sky demon, V3. Khon Kaen" href="/problems/khon-kaen/sky-demon-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Sky demon, V3. Khon Kaen" src="https://img.youtube.com/vi/yEpVAjWyO5w/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/sky-demon-v3" class="table-row-name text-bold">Sky demon</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Slice of happiness, V3+. Khon Kaen" href="/problems/khon-kaen/slice-of-happiness-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Slice of happiness, V3+. Khon Kaen" src="https://img.youtube.com/vi/C9GluB43a4s/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/slice-of-happiness-v3" class="table-row-name text-bold">Slice of happiness</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Snackco Traverse, V4. Khon Kaen" href="/problems/khon-kaen/snackco-traverse-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Snackco Traverse, V4. Khon Kaen" src="https://img.youtube.com/vi/rGGTgABmRnY/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/snackco-traverse-v4" class="table-row-name text-bold">Snackco Traverse</a>
-						</div>
-								</td>
-								<td>V4</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="So Meannn, V8. Khon Kaen" href="/problems/khon-kaen/so-meannnl-v8" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de So Meannn, V8. Khon Kaen" src="https://img.youtube.com/vi/jId2w1d8K1g/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/so-meannnl-v8" class="table-row-name text-bold">So Meannnl</a>
-						</div>
-								</td>
-								<td>V8</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Sonntagsspaziergang, V3. Khon Kaen" href="/problems/khon-kaen/sonntagsspaziergang-v3" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Sonntagsspaziergang, V3. Khon Kaen" src="https://img.youtube.com/vi/JroMDXXS8Bg/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/sonntagsspaziergang-v3" class="table-row-name text-bold">Sonntagsspaziergang</a>
-						</div>
-								</td>
-								<td>V3</td>
-								<td>Water Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Totoro, V2. Khon Kaen" href="/problems/khon-kaen/totoro-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Totoro, V2. Khon Kaen" src="https://img.youtube.com/vi/FauYSt6DcYY/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/totoro-v2" class="table-row-name text-bold">Totoro</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Central Park</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Tusker, V4. Khon Kaen" href="/problems/khon-kaen/tusker-v4" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Tusker, V4. Khon Kaen" src="https://img.youtube.com/vi/E0OTGWYY0KY/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/tusker-v4" class="table-row-name text-bold">Tusker</a>
-						</div>
-								</td>
-								<td>V4</td>
-								<td>Zen Garden</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="Viper, V7. Khon Kaen" href="/problems/khon-kaen/viper-v7" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Viper, V7. Khon Kaen" src="https://img.youtube.com/vi/bd68P6zo6bI/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/viper-v7" class="table-row-name text-bold">Viper</a>
-						</div>
-								</td>
-								<td>V7</td>
-								<td>Power Station North</td>
-							</tr>
-						
-							<tr class="problem-row">
-								<td>
-						<div class="problem-thumbnail-cell">
-						<a aria-hidden="false" aria-label="ecoVerde, V2. Khon Kaen" href="/problems/khon-kaen/ecoverde-v2" tabindex="0" target="">
-							<div class="video-thumbnail-container">
-							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de ecoVerde, V2. Khon Kaen" src="https://img.youtube.com/vi/ajBkPVQBXpo/mqdefault.jpg">
-							</div>
-						</a>
-						<a href="/problems/khon-kaen/ecoverde-v2" class="table-row-name text-bold">ecoVerde</a>
-						</div>
-								</td>
-								<td>V2</td>
-								<td>Central Park</td>
+								<td>V6</td>
+								<td>Unknown</td>
 							</tr>
 						
 					</tbody>
