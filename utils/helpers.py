@@ -130,19 +130,23 @@ def generate_download_url(area, filename):
     return '/download/' + area + '/' + filename
 
 
-def generateDescription(name, climber, grade, zone, sector=None, isShort=False):
+def generateDescription(name, climber, grade, zone, sector=None, boulder=None, isShort=False):
     """Generate standardized video description with metadata and links"""
     zone_code = slugify(zone)
     
     # Build metadata section
-    metadata = [
-        f"Climber: {climber}",
-        f"Name: {name}",
-        f"Grade: {grade}",
-        f"Zone: {zone}"
-    ]
+    metadata = []
+    if climber:
+        metadata.append(f"Climber: {climber}")
+    if name:
+        metadata.append(f"Name: {name}")
+    if grade:
+        metadata.append(f"Grade: {grade}")
+    metadata.append(f"Zone: {zone}")  # Always included
     if sector:
         metadata.append(f"Sector: {sector}")
+    if boulder:
+        metadata.append(f"Boulder: {boulder}")
     
     # Build the full description without extra indentation
     description = f"""{chr(10).join(metadata)}
@@ -168,16 +172,36 @@ Do you enjoy our content? Please consider supporting what we do:
     return description
 
 
-def generateTags(name, zone, grade):
+def generateTags(name, zone, grade, sector=None):
     """Generate standardized video tags"""
-    return [
+    tags = [
         "madboulder", "boulder", "bouldering", "escalada", "climbing", "bloc",
         "escalade", "climb", "climber", "mad boulder", "bloque", "klettern",
         "arrampicata", "boulder beta", "beta library", "escalada en roca",
-        "rock climbing", f"{zone} Boulder", f"{zone} bouldering", f"{zone} {grade}",
-        f"{zone}", f"{zone} climbing", f"{name} {grade}", f"{name} {grade} {zone}",
-        f"{name} {zone}", f"{name}"
+        "rock climbing"
     ]
+
+    # Always include zone-related tags
+    if zone:
+        tags.extend([
+            f"{zone} Boulder", f"{zone} bouldering", f"{zone} climbing", f"{zone}"
+        ])
+        if grade:
+            tags.append(f"{zone} {grade}")
+        if sector:
+            tags.append(f"{zone} {sector}")
+
+    # Include name-related tags only if name is provided
+    if name:
+        tags.append(f"{name}")
+        if grade:
+            tags.append(f"{name} {grade}")
+        if zone:
+            tags.append(f"{name} {zone}")
+            if grade:
+                tags.append(f"{name} {grade} {zone}")
+
+    return tags
 
 
 def isVideoShort(file_id):

@@ -15,6 +15,9 @@
 
     <datalist id="sectorsList">
     </datalist>
+
+    <datalist id="bouldersList">
+    </datalist>
     
     <h1>MadBoulder Local Upload Hub</h1>
     
@@ -82,6 +85,9 @@
                  
                  <label for="modalSector">Sector:</label>
                  <input type="text" id="modalSector" name="modalSector" list="sectorsList">
+                 
+                 <label for="modalBoulder">Boulder:</label>
+                 <input type="text" id="modalBoulder" name="modalBoulder" list="bouldersList">
                  <br><br>
                  
                  <button id="popupSubmit" type="button">Submit Details</button>
@@ -277,6 +283,22 @@
                     })
                     .catch(error => console.error('Error fetching sectors:', error));
     
+                // Fetch boulders based on the selected zone
+                fetch(`/get-boulders?zone=${encodeURIComponent(parsedData.zone)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.boulders) {
+                            const bouldersList = document.getElementById('bouldersList');
+                            bouldersList.innerHTML = ''; // Clear existing options
+                            data.boulders.forEach(boulder => {
+                                const option = document.createElement('option');
+                                option.value = boulder[0];
+                                bouldersList.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching boulders:', error));
+                
                 // Show the metadata modal popup
                 document.getElementById('metadataModal').style.display = 'block';
             }
@@ -289,6 +311,7 @@
            const climber = document.getElementById('modalClimber').value;
            const zone = document.getElementById('modalZone').value;
            const sector = document.getElementById('modalSector').value;
+           const boulder = document.getElementById('modalBoulder').value;
            
            // Call the API endpoint to compute description, tags, and schedule info.
            fetch('/compute-upload-metadata', {
@@ -300,6 +323,7 @@
                   climber: climber,
                   zone: zone,
                   sector: sector,
+                  boulder: boulder,
                   is_short: window.isShortVideo || false
                })
            })

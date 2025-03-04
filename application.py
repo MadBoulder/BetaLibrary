@@ -400,11 +400,12 @@ def compute_upload_metadata():
         climber = data.get('climber', 'Unknown Climber')
         zone = data.get('zone', 'Unknown Zone')
         sector = data.get('sector', '')
+        boulder = data.get('boulder', '')
         is_short = data.get('is_short', False)
         
         schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
-        description = utils.helpers.generateDescription(problemName, climber, grade, zone, sector, is_short)
-        tags = utils.helpers.generateTags(problemName, zone, grade)
+        description = utils.helpers.generateDescription(problemName, climber, grade, zone, sector, boulder, is_short)
+        tags = utils.helpers.generateTags(problemName, zone, grade, sector)
         
         return jsonify({
              'description': description,
@@ -1774,6 +1775,22 @@ def get_sectors():
         return jsonify({'sectors': sectors}), 200
     except Exception as e:
         print(f"Error fetching sectors: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/get-boulders', methods=['GET'])
+def get_boulders():
+    """Endpoint to get boulders from a given zone code."""
+    zone = request.args.get('zone')
+    if not zone:
+        return jsonify({'error': 'Zone code is required'}), 400
+    
+    try:
+        zone_code = slugify(zone)
+        boulders = utils.zone_helpers.get_boulders_from_zone(zone_code)
+        return jsonify({'boulders': boulders}), 200
+    except Exception as e:
+        print(f"Error fetching boulders: {e}")
         return jsonify({'error': str(e)}), 500
 
 

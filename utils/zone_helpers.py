@@ -51,6 +51,28 @@ def getSectors(problems):
             return None
     return sectors
     
+    
+def get_boulders_from_zone(zone_code):
+    problems = utils.MadBoulderDatabase.getVideoDataFromZone(zone_code)
+    return getBoulders(problems)
+
+def getBoulders(problems):
+    boulders = []
+    for p in problems.values():
+        alreadyAdded=False
+        for s in boulders:
+            if s[1] == slugify(p['boulder']):
+                alreadyAdded=True
+                s[2] += 1
+                break
+        if not alreadyAdded:
+            boulders.append([p['boulder'], slugify(p['boulder']), 1])
+            
+    if len(boulders) == 1:
+        if boulders[0] == "Unknown":
+            return None
+    return boulders
+    
 
 def getRockTypeList():
     rockTypeMapping = {
