@@ -282,12 +282,15 @@ def ExtractFieldFromStr(pattern, sourceStr, case=Case.none):
         matches = reg_pattern.findall(sourceStr)
         if not matches:
             resultStr = 'Unknown'
-        elif case == Case.upper:
-            resultStr = matches[0].upper()
-        elif case == Case.lower:
-            resultStr = matches[0].lower()
         else:
-            resultStr = matches[0]
+            # Strip whitespace from the captured value
+            extracted = matches[0].strip()
+            if case == Case.upper:
+                resultStr = extracted.upper()
+            elif case == Case.lower:
+                resultStr = extracted.lower()
+            else:
+                resultStr = extracted
     return resultStr
 
 
