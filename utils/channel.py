@@ -385,6 +385,7 @@ def getScheduledVideos(days_back=7):
                     print(f"Error: Video ID {video_id} is private but has no publishAt date.")
 
         print(f"Private and scheduled videos found: {len(scheduled_videos)}")
+        print(f"Private and scheduled videos found: {scheduled_videos}")
         return scheduled_videos
 
     except Exception as e:
