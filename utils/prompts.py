@@ -13,19 +13,19 @@ class SchedulingPrompts:
 
     SHORT_SLOTS = """
     Hour Slots:
-        - 23:00h UTC previous day: Outside Europe (mostly US), any bouldering grade.
-        - 07:00h UTC: Europe, bouldering grade lower than 6a+.
-        - 11:00h UTC: Europe, bouldering grade between 6a+ and 6c.
-        - 15:00h UTC: Europe, bouldering grade between 6b+ and 7b.
-        - 19:00h UTC: Europe, bouldering grade 7b+ and above.
+        - 22:00h UTC previous day: Outside Europe (mostly US), any bouldering grade.
+        - 06:00h UTC: Europe, bouldering grade lower than 6a+.
+        - 10:00h UTC: Europe, bouldering grade between 6a+ and 6c.
+        - 14:00h UTC: Europe, bouldering grade between 6b+ and 7b.
+        - 18:00h UTC: Europe, bouldering grade 7b+ and above.
     """
 
     REGULAR_SLOTS = """
     Hour Slots:
-        - 23:00h UTC previous day: Outside Europe (mostly US), bouldering grade V5 and above.
-        - 07:00h UTC: Outside Europe (mostly US), bouldering grade below V5.
-        - 13:00h UTC: Europe, bouldering grade lower than 7a+.
-        - 19:00h UTC: Europe, bouldering grade 7a+ and above.
+        - 22:00h UTC previous day: Outside Europe (mostly US), bouldering grade V5 and above.
+        - 06:00h UTC: Outside Europe (mostly US), bouldering grade below V5.
+        - 12:00h UTC: Europe, bouldering grade lower than 7a+.
+        - 18:00h UTC: Europe, bouldering grade 7a+ and above.
     """
 
     TASK_SLOT_BLOCK = """
