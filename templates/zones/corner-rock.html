@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Corner Rock | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Corner Rock with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/corner-rock">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/corner-rock">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/corner-rock">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+			
+				> 
+				<a href="/states/north-carolina" class="zone-header-tree-link">North Carolina</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Corner Rock
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Corner Rock Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<!-- Zone summary -->
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">6</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">2887</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">4</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Corner Rock Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?default=corner-rock">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '35.772867',
+											lng: '-82.362834',
+											zone: 'Corner Rock',
+											zone_code: 'corner-rock',
+											uniqueId: 'weather-widget-' + 'corner-rock',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Corner Rock Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/dkSei4KrKow/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/dkSei4KrKow/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/dkSei4KrKow/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/dkSei4KrKow/mqdefault.jpg" alt="Photo of Corner Rock Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Corner Rock</h2>
+													<p style="text-align: justify;">Tucked away in the Big Ivy section of Pisgah National Forest, Corner Rock is a standout bouldering destination just 35 minutes north of Asheville, North Carolina. What makes it truly unique is the concentration of steep, powerful problems on a single, massive boulder—arguably one of the most stacked blocks in the state. The rock's texture allows for confident movement without relying heavily on friction, making it ideal for steep climbing year-round. Still, the best seasons to visit are fall (September to November) and spring (April to early June), when temperatures are cooler and conditions are optimal.<br><br>Access is straightforward during most of the year via a short 200-yard hike from Dillingham Road, but note that from January 1st to mid-April, a closed gate extends the approach to 1.7 miles. While camping isn’t allowed at the site, the beautiful forest setting and proximity to Asheville make it a convenient day trip. With over 25 established problems and several regional guidebooks covering the area, Corner Rock has earned its place as a must-visit Southeastern U.S. bouldering hub.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 8
+													
+														<br>
+														<b>Rock type</b> Granite
+													
+													
+														<br>
+														<b>Altitude</b> 1054m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/corner-rock">
+													Editar Zona
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guidebooks of Corner Rock Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://www.mountainproject.com/area/112379642/corner-rock" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Corner Rock Bouldering
+								
+								  <button class="btn-free-madboulder text-bold">
+									Free
+								  </button>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Corner Rock Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/corner-rock"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 1 Sectors of Corner Rock Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/corner-rock/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">6</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of Playlists from Corner Rock Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMyPeZ2OaQ6t4Br_dDPAa9k"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>List of 6 Problems in Video of Corner Rock Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Faux Hawkeye, V4. Corner Rock" href="/problems/corner-rock/faux-hawkeye-v4" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Faux Hawkeye, V4. Corner Rock" src="https://img.youtube.com/vi/0XhzAEE79GU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/faux-hawkeye-v4" class="table-row-name text-bold">Faux Hawkeye</a>
+									</div>
+								</td>
+								<td>V4</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Hatchet, V11. Corner Rock" href="/problems/corner-rock/hatchet-v11" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Hatchet, V11. Corner Rock" src="https://img.youtube.com/vi/dkSei4KrKow/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/hatchet-v11" class="table-row-name text-bold">Hatchet</a>
+									</div>
+								</td>
+								<td>V11</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Hawkeye, V6. Corner Rock" href="/problems/corner-rock/hawkeye-v6" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Hawkeye, V6. Corner Rock" src="https://img.youtube.com/vi/DWTqxlefy-M/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/hawkeye-v6" class="table-row-name text-bold">Hawkeye</a>
+									</div>
+								</td>
+								<td>V6</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Magnum, V13. Corner Rock" href="/problems/corner-rock/magnum-v13" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Magnum, V13. Corner Rock" src="https://img.youtube.com/vi/JBOIdp2QWNw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/magnum-v13" class="table-row-name text-bold">Magnum</a>
+									</div>
+								</td>
+								<td>V13</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Tomahawk Dyno, V6. Corner Rock" href="/problems/corner-rock/tomahawk-dyno-v6" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tomahawk Dyno, V6. Corner Rock" src="https://img.youtube.com/vi/fAQ0lSUloIA/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/tomahawk-dyno-v6" class="table-row-name text-bold">Tomahawk Dyno</a>
+									</div>
+								</td>
+								<td>V6</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Undertow, V11. Corner Rock" href="/problems/corner-rock/undertow-v11" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Undertow, V11. Corner Rock" src="https://img.youtube.com/vi/j78TfZ4rE60/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/corner-rock/undertow-v11" class="table-row-name text-bold">Undertow</a>
+									</div>
+								</td>
+								<td>V11</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
