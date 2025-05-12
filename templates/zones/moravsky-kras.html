@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Moravský Kras | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Moravský Kras with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/moravsky-kras">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/moravsky-kras">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/moravsky-kras">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/czech-republic" class="zone-header-tree-link">Czech Republic</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Moravský Kras
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Moravský Kras Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<!-- Zone summary -->
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">12</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">361</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">1</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Moravský Kras Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?default=moravsky-kras">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '49.408162',
+											lng: '16.772341',
+											zone: 'Moravský Kras',
+											zone_code: 'moravsky-kras',
+											uniqueId: 'weather-widget-' + 'moravsky-kras',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Moravský Kras Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/83c9Eekt4s8/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/83c9Eekt4s8/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/83c9Eekt4s8/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/83c9Eekt4s8/mqdefault.jpg" alt="Photo of Moravský Kras Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Moravský Kras</h2>
+													<p style="text-align: justify;">Moravský kras, particularly the Sloup sector, stands as the epicenter of bouldering in the Czech Republic, blending dramatic limestone formations with a dense concentration of hard problems. The climbing is defined by sharp crimps on steep and vertical faces, with lines that demand power and precision. The best seasons to visit are spring and autumn, when the cool, dry conditions allow the rock to offer its best friction. The terrain is accessible, and the atmosphere is vibrant—especially on weekends—as climbers gather to test themselves on classics like Ghost Rider or Brutal Rider, both benchmarks at the elite end of the Fontainebleau scale.<br><br>What sets Moravský kras apart is not just the difficulty of its problems, but the history etched into the stone by Czech legends like Adam Ondra and Martin Stráník. Though the area hosts routes suitable for beginners, it’s especially celebrated for pushing the boundaries of bouldering, with some of the hardest lines in the country. Being located in a protected nature reserve, climbers must respect access regulations and seasonal closures. Whether you're chasing a project or enjoying the technical elegance of limestone climbing, Moravský kras delivers a world-class experience in a truly unique setting.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 13
+													
+														<br>
+														<b>Rock type</b> Limestone
+													
+													
+														<br>
+														<b>Altitude</b> 510m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/moravsky-kras">
+													Editar Zona
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guidebooks of Moravský Kras Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://www.climbing-guide.eu/bouldering-guidebook-moravian-karst-boulders-11806/" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://www.climbing-guide.eu/media/image/ed/2c/01/Boulderfuehrer-Moravsky-kras-bouldry-Moravian-Karst-boulders-Kletterfuehrer-net.jpg" alt="Moravský kras buldry / Moravian Karst boulders">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Moravský kras buldry / Moravian Karst boulders</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+					  </div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Moravský Kras Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/moravsky-kras"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 1 Sectors of Moravský Kras Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/moravsky-kras/sloup" class="table-row-name text-bold">Sloup</a>
+										</td>
+										<td class="text-center">12</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of Playlists from Moravský Kras Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnOkNGEv4u7pEfTQQrOZfdbk"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>List of 12 Problems in Video of Moravský Kras Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Autofix, 8B+. Moravský kras" href="/problems/moravsky-kras/autofix-8b" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Autofix, 8B+. Moravský kras" src="https://img.youtube.com/vi/dJmh9YOBkXc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/autofix-8b" class="table-row-name text-bold">Autofix</a>
+									</div>
+								</td>
+								<td>8B+</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Autosil, 8B. Moravský kras" href="/problems/moravsky-kras/autosil-8b" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Autosil, 8B. Moravský kras" src="https://img.youtube.com/vi/83c9Eekt4s8/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/autosil-8b" class="table-row-name text-bold">Autosil</a>
+									</div>
+								</td>
+								<td>8B</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Drift, 8C. Moravský kras" href="/problems/moravsky-kras/drift-8c" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Drift, 8C. Moravský kras" src="https://img.youtube.com/vi/Li9zj0C-2_g/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/drift-8c" class="table-row-name text-bold">Drift</a>
+									</div>
+								</td>
+								<td>8C</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Ghost Rider, 8C. Moravský kras" href="/problems/moravsky-kras/ghost-rider-8c" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Ghost Rider, 8C. Moravský kras" src="https://img.youtube.com/vi/m1mY6dyBhUw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/ghost-rider-8c" class="table-row-name text-bold">Ghost Rider</a>
+									</div>
+								</td>
+								<td>8C</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="H5N1 SD, 8A+. Moravský kras" href="/problems/moravsky-kras/h5n1-sd-8a" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of H5N1 SD, 8A+. Moravský kras" src="https://img.youtube.com/vi/-vPBnLf8DYU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/h5n1-sd-8a" class="table-row-name text-bold">H5N1 SD</a>
+									</div>
+								</td>
+								<td>8A+</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Hypochondr, 8A. Moravský kras" href="/problems/moravsky-kras/hypochondr-8a" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Hypochondr, 8A. Moravský kras" src="https://img.youtube.com/vi/KqYL6eKGrbE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/hypochondr-8a" class="table-row-name text-bold">Hypochondr</a>
+									</div>
+								</td>
+								<td>8A</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="SARS, 8B. Moravský kras" href="/problems/moravsky-kras/sars-8b" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of SARS, 8B. Moravský kras" src="https://img.youtube.com/vi/ND970UXO_SA/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/sars-8b" class="table-row-name text-bold">SARS</a>
+									</div>
+								</td>
+								<td>8B</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Simulace, 8A+/8B. Moravský kras" href="/problems/moravsky-kras/simulace-8a-8b" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Simulace, 8A+/8B. Moravský kras" src="https://img.youtube.com/vi/Gbt-FtzsYWc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/simulace-8a-8b" class="table-row-name text-bold">Simulace</a>
+									</div>
+								</td>
+								<td>8A+/8B</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Simulant, 8A+. Moravský kras" href="/problems/moravsky-kras/simulant-8a" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Simulant, 8A+. Moravský kras" src="https://img.youtube.com/vi/rmaM3crwnAc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/simulant-8a" class="table-row-name text-bold">Simulant</a>
+									</div>
+								</td>
+								<td>8A+</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Sviní Mor, 8B. Moravský kras" href="/problems/moravsky-kras/svini-mor-8b" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sviní Mor, 8B. Moravský kras" src="https://img.youtube.com/vi/dwemFiWIqNI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/svini-mor-8b" class="table-row-name text-bold">Sviní Mor</a>
+									</div>
+								</td>
+								<td>8B</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Výbuch v Halifaxu, 8A+. Moravský kras" href="/problems/moravsky-kras/vybuch-v-halifaxu-8a" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Výbuch v Halifaxu, 8A+. Moravský kras" src="https://img.youtube.com/vi/YAYhXCaq3wk/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/vybuch-v-halifaxu-8a" class="table-row-name text-bold">Výbuch v Halifaxu</a>
+									</div>
+								</td>
+								<td>8A+</td>
+								<td>Sloup</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Švédský Závodník Hotofson SD, 8A. Moravský kras" href="/problems/moravsky-kras/svedsky-zavodnik-hotofson-sd-8a" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Švédský Závodník Hotofson SD, 8A. Moravský kras" src="https://img.youtube.com/vi/-5DTgOc-7CE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/moravsky-kras/svedsky-zavodnik-hotofson-sd-8a" class="table-row-name text-bold">Švédský Závodník Hotofson SD</a>
+									</div>
+								</td>
+								<td>8A</td>
+								<td>Sloup</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
