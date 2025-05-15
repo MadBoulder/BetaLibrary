@@ -242,16 +242,20 @@ def video_uploader():
     contributors = utils.MadBoulderDatabase.getContributorNames()
     climbers = contributors
     playlists = utils.MadBoulderDatabase.getPlaylistsData()
-    areas = {
-        playlist["zone_code"]: {
+    areas = {}
+    for playlist in playlists.values():
+        # This will fail if zone_code is missing
+        zone_code = playlist.get("zone_code")
+        if not zone_code:
+            print(f"WARNING: Playlist '{playlist.get('title')}' is missing zone_code!")
+            continue
+        areas[zone_code] = {
             "name": playlist["title"],
             "sectors": [
                 {"name": sector["name"], "sector_code": sector_code}
                 for sector_code, sector in playlist.get("sectors", {}).items()
             ],
         }
-        for playlist in playlists.values()
-    }
     return render_template('video-uploader.html', user_data=user_data, climbers=sorted(climbers), areas=areas)
 
 
