@@ -19,7 +19,7 @@ import utils.drive
 import dashboard
 import dashboard_videos
 import re
-import time
+from urllib.parse import unquote
 from slugify import slugify
 from functools import wraps
 from dotenv import load_dotenv
@@ -27,6 +27,7 @@ import traceback
 import requests
 import utils.searchManager
 from types import SimpleNamespace
+from bs4 import BeautifulSoup
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -1282,6 +1283,40 @@ def add_state():
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+    
+@app.route("/proxy/metadata")
+def proxy_metadata():
+    raw_url = request.args.get("url")
+    if not raw_url:
+        return jsonify({"error": "Missing URL"}), 400
+
+    url = unquote(raw_url)
+
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+        res = requests.get(url, headers=headers, timeout=5)
+        res.raise_for_status()
+
+        soup = BeautifulSoup(res.text, 'html.parser')
+
+        # Extract title
+        title = soup.title.string.strip() if soup.title and soup.title.string else ""
+
+        # Extract image from og:image
+        image = ""
+        og_image = soup.find("meta", property="og:image")
+        if og_image and og_image.get("content"):
+            image = og_image["content"]
+
+        return jsonify({
+            "title": title,
+            "image": image
+        })
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch metadata: {str(e)}"}), 500
 
 
 @app.route('/<string:sitemap_name>.xml')

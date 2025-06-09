@@ -602,10 +602,10 @@
 							<label>Name:</label>
 							<input type="text" class="form-control mb-1 guide-name" style="width:auto;" id="guideName${guideIndex}" placeholder="Enter guide name" value="${guide.name || ''}" required>
 							<label>Thumbnail URL:</label>
-							<input type="text" class="form-control mb-1 guide-thumbnail" style="width:auto;" placeholder="Enter thumbnail URL" value="${guide.thumbnail || ''}" required>
+							<input type="text" class="form-control mb-1 guide-thumbnail" style="width:auto;" id="guideThumbnail${guideIndex}" placeholder="Enter thumbnail URL" value="${guide.thumbnail || ''}" required>
 							<label>Link:</label>
 							<div id="guideLinks${guideIndex}" class="mb-2">
-								<input type="text" class="form-control mb-1 guide-link-amz-com" style="width:auto;" placeholder="Enter primary link" value="${link1}" required>
+								<input type="text" class="form-control mb-1 guide-link-amz-com" id="guideLink1-${guideIndex}" style="width:auto;" placeholder="Enter primary link" value="${link1}" required>
 								<input type="text" class="form-control mb-1 guide-link-amz-es" style="width:auto;" placeholder="Enter secondary link" value="${link2}">
 							</div>
 							<button class="btn btn-danger" onclick="removeGuide('guide${guideIndex}')">Remove Guide</button>
@@ -618,6 +618,45 @@
 					}, 0);
 					document.getElementById(`guideName${guideIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
 					attachGuideEvents(guideIndex)
+
+					const primaryLinkInput = document.getElementById(`guideLink1-${guideIndex}`);
+					primaryLinkInput.addEventListener('change', async () => {
+						console.log("link changed");
+						const url = primaryLinkInput.value;
+						if (!url || url.includes("amazon") || url.includes("amzn.to")) return;
+
+						const nameInput = document.getElementById(`guideName${guideIndex}`);
+						const thumbInput = document.getElementById(`guideThumbnail${guideIndex}`);
+
+						try {
+							const meta = await fetchPageMetadata(url);
+							console.log(meta);
+							if (!nameInput.value && meta.title) nameInput.value = meta.title;
+							if (!thumbInput.value && meta.image) thumbInput.value = meta.image;
+						} catch (err) {
+							console.warn("Could not fetch metadata", err);
+						}
+					});
+				}
+
+				async function fetchPageMetadata(url) {
+					try {
+						const encodedUrl = encodeURIComponent(url);
+						const res = await fetch(`/proxy/metadata?url=${encodedUrl}`);
+						const data = await res.json();
+						if (res.ok) {
+							console.log("Title:", data.title);
+							console.log("Image:", data.image);
+							// Use title and image as needed
+							return data;
+						} else {
+							console.error("Error fetching metadata", data.error);
+							return null;
+						}
+					} catch (err) {
+						console.error("Could not fetch metadata", err);
+						return null;
+					}
 				}
 
 				function attachGuideEvents(index) {
