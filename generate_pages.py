@@ -1,6 +1,7 @@
 import os
 from jinja2 import Environment, FileSystemLoader
 import json
+import html
 import utils.helpers
 import utils.zone_helpers
 import utils.MadBoulderDatabase
@@ -81,7 +82,11 @@ def main():
         statistics = generateAreaStatistics(problems_list, playlists)
 
         #overview
-        overview = area.get("overview", [""])[0]
+        overview_raw = area.get("overview", [""])[0]
+        overview = html.unescape(html.unescape(overview_raw))
+        paragraphs = overview.split("<br><br>")
+        overview = "".join(f"<p>{p.strip()}</p>" for p in paragraphs)
+
         
         output = templatePage.render(
             problems=problems_list,

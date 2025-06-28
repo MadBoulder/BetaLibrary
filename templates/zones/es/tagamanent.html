@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder en Tagamanent | MadBoulder</title>
+	<meta name="description" content="Página sobre boulder en Tagamanent con lista de videos de los bloques, información sobre guías de bloque y previsión del tiempo">
+	
+    <!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/es/tagamanent">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/tagamanent">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/tagamanent">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+			> 
+			<a href="/countries/spain" class="zone-header-tree-link">España</a>
+			
+				> 
+				<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+			Tagamanent
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Estadísticas de Tagamanent Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">6</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">4053</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">3</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Previsión del Tiempo en Tagamanent Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Cargando los dias desde la última lluvia...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/es/comparador-pronostico-tiempo?default=tagamanent">
+							Compara con otra zona
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "Han pasado más de 3 días desde la última lluvia.";
+											} else {
+												message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+							
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '41.742669',
+											lng: '2.274705',
+											zone: 'Tagamanent',
+											zone_code: 'tagamanent',
+											uniqueId: 'weather-widget-' + 'tagamanent',
+											current_lang: 'es'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Foto de Tagamanent Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/ykeT0dcsexc/sddefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/ykeT0dcsexc/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/ykeT0dcsexc/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/ykeT0dcsexc/mqdefault.jpg" alt="Foto de Tagamanent Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Escalada en Tagamanent</h2>
+													<p style="text-align: justify;">Tagamanent, también conocido como Artiga Creek, es una joya escondida en los bosques densos al norte de Barcelona. Esta zona de boulder se caracteriza por sus desplomes potentes y placas técnicas de caliza, ofreciendo una gran variedad de problemas para todos los niveles. La roca es sólida y variada, con formas intrincadas que premian tanto la fuerza como la precisión. Gracias a su microclima único y sombra constante, Tagamanent es uno de los pocos sectores de boulder en la región donde se puede escalar en verano, siendo un destino clave cuando el calor obliga a evitar sectores más expuestos.<br><br>En los últimos años ha habido un gran desarrollo en la zona, con nuevos bloques recogidos en 27Crags. El acceso es sencillo, pero es imprescindible aparcar solo en las zonas habilitadas y actuar con discreción, ya que se trata de terreno privado con antecedentes de conflictos. Respeta siempre el entorno y mantente en los caminos marcados. Con condiciones fiables, un entorno salvaje y un estilo de escalada físico, Tagamanent es una opción excelente durante todo el año, especialmente de otoño a primavera, cuando las condiciones son ideales.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 6
+													
+														<br>
+														<b>Tipo de Roca</b> Limestone
+													
+													
+														<br>
+														<b>Altitud</b> 529m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/tagamanent">
+													Edit Area
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guias de Tagamanent Boulder</h2>
+						
+						
+						  <div class="list-group">
+							
+							  <a id="generic_link" href="https://27crags.com/crags/bouldering-tagamanent" target="_blank" style="display: flex; align-items: center;" class="list-group-item list-group-item-action list-group-item-light text-bold">
+								<i class="fas fa-book" style="margin-right: 0.2rem;"></i>
+								Tagamanent Bouldering
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Mapa de Tagamanent Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/tagamanent"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>Lista de 2 Sectores de Tagamanent Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">Nombre</th>
+									<th scope="col" class="sorting">Bloques</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/tagamanent/artiga-creek" class="table-row-name text-bold">Artiga Creek</a>
+										</td>
+										<td class="text-center">5</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/tagamanent/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>Listas de Reproducción de Tagamanent Boulder</h2>
+					<div class="container">
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>Completa</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMpu5iMyi2Gyn0azLq_Soi8"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>Lista de 6 Bloques en Video de Tagamanent Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">Nombre</th>
+							<th scope="col" class="sorting">Grado</th>
+							<th scope="col" class="sorting">Sector</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El cortauñas, 7b. Tagamanent" href="/problems/tagamanent/el-cortaunas-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El cortauñas, 7b. Tagamanent" src="https://img.youtube.com/vi/JWGatUg54MA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/el-cortaunas-7b" class="table-row-name text-bold">El cortauñas</a>
+						</div>
+								</td>
+								<td>7b</td>
+								<td>Artiga Creek</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="El cortauñas (escaqueo), 6b. Tagamanent" href="/problems/tagamanent/el-cortaunas-escaqueo-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de El cortauñas (escaqueo), 6b. Tagamanent" src="https://img.youtube.com/vi/rGuwmuC1QKY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/el-cortaunas-escaqueo-6b" class="table-row-name text-bold">El cortauñas (escaqueo)</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Artiga Creek</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Mini proa, 6b. Tagamanent" href="/problems/tagamanent/mini-proa-6b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Mini proa, 6b. Tagamanent" src="https://img.youtube.com/vi/VUv8jzxPOr0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/mini-proa-6b" class="table-row-name text-bold">Mini proa</a>
+						</div>
+								</td>
+								<td>6b</td>
+								<td>Artiga Creek</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pa calentar 1, 5+. Tagamanent" href="/problems/tagamanent/pa-calentar-1-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Pa calentar 1, 5+. Tagamanent" src="https://img.youtube.com/vi/tluCUuv2oHg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/pa-calentar-1-5" class="table-row-name text-bold">Pa calentar 1</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Artiga Creek</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Pa calentar 2, 5+. Tagamanent" href="/problems/tagamanent/pa-calentar-2-5" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Pa calentar 2, 5+. Tagamanent" src="https://img.youtube.com/vi/jSR23ytPsrs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/pa-calentar-2-5" class="table-row-name text-bold">Pa calentar 2</a>
+						</div>
+								</td>
+								<td>5+</td>
+								<td>Artiga Creek</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tiburones. Tagamanent" href="/problems/tagamanent/tiburones-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Tiburones. Tagamanent" src="https://img.youtube.com/vi/ykeT0dcsexc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/tagamanent/tiburones-unknown" class="table-row-name text-bold">Tiburones</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
