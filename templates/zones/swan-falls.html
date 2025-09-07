@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder in Swan Falls | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Swan Falls with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+    
+	<!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/swan-falls">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/swan-falls">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/swan-falls">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">United States of America</a>
+			
+				> 
+				<a href="/states/idaho" class="zone-header-tree-link">Idaho</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+            Swan Falls
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Stats
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Stats of Swan Falls Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<!-- Zone summary -->
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">12</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">2957</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">2</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Weather Forecast in Swan Falls Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/weather-forecast-comparator?default=swan-falls">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '43.255418',
+											lng: '-116.388411',
+											zone: 'Swan Falls',
+											zone_code: 'swan-falls',
+											uniqueId: 'weather-widget-' + 'swan-falls',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Photo of Swan Falls Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/u8V85ZgXBls/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/u8V85ZgXBls/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/u8V85ZgXBls/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/u8V85ZgXBls/mqdefault.jpg" alt="Photo of Swan Falls Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Bouldering in Swan Falls</h2>
+													<p style="text-align: justify;"><p>Swan Falls, perched on the banks of the Snake River near Kuna, Idaho, offers one of the most accessible yet peaceful bouldering experiences in the region. The bulletproof basalt here has created more than 100 problems, ranging from beginner-friendly slabs to high-end testpieces. The climbing style is as varied as the rock formations—technical aretes, powerful overhangs, and solid faces all make their appearance across distinct sectors like the Black Slabbath Area and Hairpin Boulders. With easy approaches of 5 to 15 minutes from the parking near the dam, family-friendly trails, and nearby facilities, Swan Falls delivers quality climbing without the hassle.</p><p>The best season for bouldering here is spring, autumn, and winter, with early summer mornings also providing good conditions thanks to the eastern cliffs that keep the sun at bay. The lack of tree shade makes midsummer days too hot, but during cooler months the rock offers ideal friction. What sets Swan Falls apart is its uncrowded atmosphere—unlike many popular U.S. bouldering spots, climbers here can often enjoy entire sectors to themselves. Combined with its pristine setting in the Snake River Birds of Prey Natural Area and a detailed 2023 guidebook by Mike McClure, Swan Falls has become a must-visit destination for locals and traveling boulderers alike.</p></p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 12
+													
+														<br>
+														<b>Rock type</b> Basalt
+													
+													
+														<br>
+														<b>Altitude</b> 700m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/swan-falls">
+													Editar Zona
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: 1rem;">
+						<h2>Guidebooks of Swan Falls Boulder</h2>
+						
+						  <div class="pl-5 mb-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+							
+							  <div class="mr-2">
+								<a id="guide_link" class="text-bold" style="text-decoration: none; color: black;" href="https://nextascent.com/swan-falls-bouldering-guidebook/" target="_blank">
+								  <div class="card-body" style="background:none;box-shadow: none;">
+									<div class="card-body-image-container">
+									  <div class="card-body-image-container-container">
+										<img loading="lazy" class="card-body-image" style="object-fit: contain" src="https://nextascent.com/wp-content/uploads/2023/08/Swan-Jul1-3.png" alt="Swan Falls Bouldering Guidebook">
+									  </div>
+									</div>
+									<div class="card-body-title-container">
+									  <h6 class="text-bold card-title" style="text-align: center;">Swan Falls Bouldering Guidebook</h6>
+									</div>
+								  </div>
+								</a>
+							  </div>
+							
+						  </div>
+						
+						
+					  </div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Map of Swan Falls Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/swan-falls"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>List of 2 Sectors of Swan Falls Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">{{ _("Name") }}</th>
+									<th scope="col" class="sorting">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/swan-falls/black-slabbath" class="table-row-name text-bold">Black Slabbath</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/swan-falls/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">11</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>List of Playlists from Swan Falls Boulder</h2>
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>{{ _("Full") }}</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMsyDHT3DXFixbivZViFmjp"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>List of 12 Problems in Video of Swan Falls Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">{{ _("Name") }}</th>
+							<th scope="col" class="sorting">{{ _("Grade") }}</th>
+							<th scope="col" class="sorting">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="D.O.A., V11. Swan Falls" href="/problems/swan-falls/d-o-a-v11" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of D.O.A., V11. Swan Falls" src="https://img.youtube.com/vi/Bd6G3J5yxHM/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/d-o-a-v11" class="table-row-name text-bold">D.O.A.</a>
+									</div>
+								</td>
+								<td>V11</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Death Proof, V10. Swan Falls" href="/problems/swan-falls/death-proof-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Death Proof, V10. Swan Falls" src="https://img.youtube.com/vi/eKbhJC5_WTc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/death-proof-v10" class="table-row-name text-bold">Death Proof</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Follicle, V7. Swan Falls" href="/problems/swan-falls/follicle-v7" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Follicle, V7. Swan Falls" src="https://img.youtube.com/vi/uiRrpkaqbXQ/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/follicle-v7" class="table-row-name text-bold">Follicle</a>
+									</div>
+								</td>
+								<td>V7</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Funky Monks Low, V10. Swan Falls" href="/problems/swan-falls/funky-monks-low-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Funky Monks Low, V10. Swan Falls" src="https://img.youtube.com/vi/oNq9LamD3AE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/funky-monks-low-v10" class="table-row-name text-bold">Funky Monks Low</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Gutterball. Swan Falls" href="/problems/swan-falls/gutterball-unknown" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Gutterball. Swan Falls" src="https://img.youtube.com/vi/u8V85ZgXBls/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/gutterball-unknown" class="table-row-name text-bold">Gutterball</a>
+									</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Mondster, V9. Swan Falls" href="/problems/swan-falls/mondster-v9" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Mondster, V9. Swan Falls" src="https://img.youtube.com/vi/lyA72ySFemc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/mondster-v9" class="table-row-name text-bold">Mondster</a>
+									</div>
+								</td>
+								<td>V9</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Power Man, V8/V9. Swan Falls" href="/problems/swan-falls/power-man-v8-v9" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Power Man, V8/V9. Swan Falls" src="https://img.youtube.com/vi/fvuRQIz8Zpc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/power-man-v8-v9" class="table-row-name text-bold">Power Man</a>
+									</div>
+								</td>
+								<td>V8-V9</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Rabbit Hole, V6. Swan Falls" href="/problems/swan-falls/rabbit-hole-v6" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Rabbit Hole, V6. Swan Falls" src="https://img.youtube.com/vi/T3rJqNTuSUE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/rabbit-hole-v6" class="table-row-name text-bold">Rabbit Hole</a>
+									</div>
+								</td>
+								<td>V6</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Tessellate. Swan Falls" href="/problems/swan-falls/tessellate-unknown" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tessellate. Swan Falls" src="https://img.youtube.com/vi/2Ow8FIJuk0M/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/tessellate-unknown" class="table-row-name text-bold">Tessellate</a>
+									</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="The Mayor of Swan Falls, V10. Swan Falls" href="/problems/swan-falls/the-mayor-of-swan-falls-v10" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Mayor of Swan Falls, V10. Swan Falls" src="https://img.youtube.com/vi/EwHvmmLyqyI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/the-mayor-of-swan-falls-v10" class="table-row-name text-bold">The Mayor of Swan Falls</a>
+									</div>
+								</td>
+								<td>V10</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Tooth Decay, V4. Swan Falls" href="/problems/swan-falls/tooth-decay-v4" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tooth Decay, V4. Swan Falls" src="https://img.youtube.com/vi/Gs24G0XDtGU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/tooth-decay-v4" class="table-row-name text-bold">Tooth Decay</a>
+									</div>
+								</td>
+								<td>V4</td>
+								<td>Black Slabbath</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-hidden="false" aria-label="Toro, V7. Swan Falls" href="/problems/swan-falls/toro-v7" tabindex="0" target="">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Toro, V7. Swan Falls" src="https://img.youtube.com/vi/tEC-w8Cozw0/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/swan-falls/toro-v7" class="table-row-name text-bold">Toro</a>
+									</div>
+								</td>
+								<td>V7</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
