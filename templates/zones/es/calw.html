@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder en Calw | MadBoulder</title>
+	<meta name="description" content="Página sobre boulder en Calw con lista de videos de los bloques, información sobre guías de bloque y previsión del tiempo">
+	
+    <!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/es/calw">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/calw">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/calw">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+			> 
+			<a href="/countries/germany" class="zone-header-tree-link">Alemania</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+			Calw
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Estadísticas de Calw Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">10</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">10935</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">3</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Previsión del Tiempo en Calw Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Cargando los dias desde la última lluvia...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/es/comparador-pronostico-tiempo?default=calw">
+							Compara con otra zona
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "Han pasado más de 3 días desde la última lluvia.";
+											} else {
+												message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+							
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '48.762846',
+											lng: '8.722967',
+											zone: 'Calw',
+											zone_code: 'calw',
+											uniqueId: 'weather-widget-' + 'calw',
+											current_lang: 'es'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Foto de Calw Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/7sIC0lEtDcY/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/7sIC0lEtDcY/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/7sIC0lEtDcY/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/7sIC0lEtDcY/mqdefault.jpg" alt="Foto de Calw Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Escalada en Calw</h2>
+													<p style="text-align: justify;">Escondida en el norte de la Selva Negra, el zona de boulder de Calw reúne varios bloques de arenisca con un carácter salvaje y auténtico. Repartidos en sectores como Beinberg, Waldeck, Tiefenbronn y Ernstmühl, los problemas son muy variados: desde placas técnicas y muros de regletas hasta desplomes y algún que otro canto en forma de agujero. La roca, de tipo Buntsandstein medio, exige precisión y buenas condiciones, recompensando al escalador con un estilo técnico y a menudo exigente. El entorno boscoso aporta tranquilidad y soledad, con pocos visitantes y un ambiente íntimo. El acceso, sin embargo, es sensible: la escalada solo se tolera en zonas como Waldeck si se cumplen estrictamente las normas locales—no escalar en roca húmeda, usar poco magnesio y mantener siempre un perfil bajo.<br><br>La mejor temporada para escalar aquí es desde finales de primavera hasta otoño, cuando las temperaturas suaves (12–22°C en verano) y el tiempo seco hacen la arenisca más segura. El otoño, con su aire fresco y menor afluencia, ofrece condiciones ideales. A diferencia de zonas más conocidas de Alemania como Odenwald o Frankenjura, Calw sigue siendo tranquila y poco frecuentada, lo que es parte de su atractivo pero también una limitación, ya que las guías son escasas y el conocimiento local es clave. Lo que distingue a Calw es la combinación entre el ambiente salvaje del bosque y la responsabilidad que exige mantener la tolerancia de acceso. Para quienes sepan respetar este delicado equilibrio, es un destino íntimo y gratificante en pleno corazón de la Selva Negra.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 10
+													
+														<br>
+														<b>Tipo de Roca</b> Sandstone
+													
+													
+														<br>
+														<b>Altitud</b> 548m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/calw">
+													Edit Area
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Mapa de Calw Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/calw"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>Lista de 3 Sectores de Calw Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">Nombre</th>
+									<th scope="col" class="sorting">Bloques</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/calw/beinberg" class="table-row-name text-bold">Beinberg</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/calw/ernstmuhl" class="table-row-name text-bold">Ernstmühl</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/calw/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>Listas de Reproducción de Calw Boulder</h2>
+					<div class="container">
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>Completa</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnO42_D1NkS4CcxXwYkLYHYu"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>Lista de 10 Bloques en Video de Calw Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">Nombre</th>
+							<th scope="col" class="sorting">Grado</th>
+							<th scope="col" class="sorting">Sector</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Beinbergschnecke, 8a. Calw" href="/problems/calw/beinbergschnecke-8a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Beinbergschnecke, 8a. Calw" src="https://img.youtube.com/vi/hROhpgNFFBM/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/beinbergschnecke-8a" class="table-row-name text-bold">Beinbergschnecke</a>
+						</div>
+								</td>
+								<td>8a</td>
+								<td>Beinberg</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Der letzte Kreuzzug, 7b+. Calw" href="/problems/calw/der-letzte-kreuzzug-7b" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Der letzte Kreuzzug, 7b+. Calw" src="https://img.youtube.com/vi/3oFIUUCbjgg/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/der-letzte-kreuzzug-7b" class="table-row-name text-bold">Der letzte Kreuzzug</a>
+						</div>
+								</td>
+								<td>7b+</td>
+								<td>Ernstmühl</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Emergency Exit, 7c. Calw" href="/problems/calw/emergency-exit-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Emergency Exit, 7c. Calw" src="https://img.youtube.com/vi/pUS_sKray1o/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/emergency-exit-7c" class="table-row-name text-bold">Emergency Exit</a>
+						</div>
+								</td>
+								<td>7c</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Klinik, 7a. Calw" href="/problems/calw/klinik-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Klinik, 7a. Calw" src="https://img.youtube.com/vi/oUHxcy9IOeQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/klinik-7a" class="table-row-name text-bold">Klinik</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Ernstmühl</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Lotterbett, 7a. Calw" href="/problems/calw/lotterbett-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Lotterbett, 7a. Calw" src="https://img.youtube.com/vi/7sIC0lEtDcY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/lotterbett-7a" class="table-row-name text-bold">Lotterbett</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Mission Rock, 7a. Calw" href="/problems/calw/mission-rock-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Mission Rock, 7a. Calw" src="https://img.youtube.com/vi/Lj2riiS0duc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/mission-rock-7a" class="table-row-name text-bold">Mission Rock</a>
+						</div>
+								</td>
+								<td>7a</td>
+								<td>Beinberg</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="No name, 6c+. Calw" href="/problems/calw/no-name-6c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de No name, 6c+. Calw" src="https://img.youtube.com/vi/8LZ6R0dBKk8/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/no-name-6c" class="table-row-name text-bold">No name</a>
+						</div>
+								</td>
+								<td>6c+</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Race to Idle, 7c+. Calw" href="/problems/calw/race-to-idle-7c" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Race to Idle, 7c+. Calw" src="https://img.youtube.com/vi/fDwNqsJTD2w/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/race-to-idle-7c" class="table-row-name text-bold">Race to Idle</a>
+						</div>
+								</td>
+								<td>7c+</td>
+								<td>Beinberg</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Zehn kleine Pankah, 7a+. Calw" href="/problems/calw/zehn-kleine-pankah-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Zehn kleine Pankah, 7a+. Calw" src="https://img.youtube.com/vi/svI6H6z1WjA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/zehn-kleine-pankah-7a" class="table-row-name text-bold">Zehn kleine Pankah</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Beinberg</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Zieh den Stecker, 7a+. Calw" href="/problems/calw/zieh-den-stecker-7a" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Zieh den Stecker, 7a+. Calw" src="https://img.youtube.com/vi/t7Pgli4W-ss/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/calw/zieh-den-stecker-7a" class="table-row-name text-bold">Zieh den Stecker</a>
+						</div>
+								</td>
+								<td>7a+</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
