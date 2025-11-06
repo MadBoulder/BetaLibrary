@@ -79,16 +79,36 @@ def getVideoStream(file_id):
     
 
 def get_storage_info():
-    """Get Google Drive storage information in MB."""
+    """Display detailed Google Drive storage usage information in MB."""
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
-        quota = drive_service.about().get(fields='storageQuota').execute()['storageQuota']
-        
-        used_mb = int(quota['usage']) / (1024 * 1024)
-        total_mb = int(quota['limit']) / (1024 * 1024)
-        
-        print(f"Drive space: {used_mb:.0f}MB / {total_mb:.0f}MB")
-        return total_mb - used_mb
+        about = drive_service.about().get(fields='storageQuota').execute()
+        quota = about['storageQuota']
+
+        total_mb = int(quota.get('limit', 0)) / (1024 * 1024)
+        used_mb = int(quota.get('usage', 0)) / (1024 * 1024)
+        used_in_drive_mb = int(quota.get('usageInDrive', 0)) / (1024 * 1024)
+        used_in_trash_mb = int(quota.get('usageInDriveTrash', 0)) / (1024 * 1024)
+        used_in_photos_mb = int(quota.get('usageInPhotos', 0)) / (1024 * 1024)
+
+        print("\n=== Google Drive Storage Info ===")
+        print(f"Total space:       {total_mb:.0f} MB")
+        print(f"Used total:        {used_mb:.0f} MB")
+        print(f"  • In Drive:      {used_in_drive_mb:.0f} MB")
+        print(f"  • In Trash:      {used_in_trash_mb:.0f} MB")
+        print(f"  • In Photos:     {used_in_photos_mb:.0f} MB")
+        print(f"Free space:        {total_mb - used_mb:.0f} MB")
+        print("=================================\n")
+
+        return {
+            "total": total_mb,
+            "used_total": used_mb,
+            "used_drive": used_in_drive_mb,
+            "used_trash": used_in_trash_mb,
+            "used_photos": used_in_photos_mb,
+            "free": total_mb - used_mb
+        }
+
     except Exception as e:
         print(f"Failed to get storage info: {e}")
         return None
@@ -102,40 +122,75 @@ def check_storage():
     return available >= 200
 
 
-def empty_trash():
-    """Empty Google Drive trash to free up space."""
+def empty_trash(max_retries=3, delay=5):
+    """Empty Google Drive trash to free up space, with retry logic."""
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
         
         get_storage_info()  # Show storage before emptying
         
         print("Emptying trash...")
-        drive_service.files().emptyTrash().execute()
+        for attempt in range(1, max_retries + 1):
+            try:
+                drive_service.files().emptyTrash().execute()
+                print("Trash emptied successfully.")
+                break
+            except HttpError as e:
+                if e.resp.status in [500, 503]:
+                    print(f"Attempt {attempt} failed due to internal error, retrying in {delay}s...")
+                    time.sleep(delay)
+                else:
+                    raise
+        else:
+            print("Failed to empty trash after multiple retries.")
         
         get_storage_info()  # Show storage after emptying
-            
+
     except Exception as e:
         print(f"Failed to empty trash: {e}")
 
 
 def empty_custom_folder():
-    """Empty the custom folder and report storage changes."""
+    """Clean all files owned by the service account to free space."""
     try:
         drive_service = build('drive', 'v3', credentials=credentials)
-        
-        get_storage_info()  # Show storage before emptying
-        
-        # Delete files from custom folder
-        file_list = drive_service.files().list(
-            q=f"'{CUSTOM_FOLDER_ID}' in parents and trashed=false"
-        ).execute().get('files', [])
-        
-        for file in file_list:
-            print(f"Deleting file: {file.get('name', 'unnamed')}")
-            drive_service.files().delete(fileId=file['id']).execute()
 
-        drive_service.files().emptyTrash().execute()
-        get_storage_info()  # Show storage after emptying
-            
+        print("\n--- BEFORE CLEANUP ---")
+        get_storage_info()
+
+        # Delete all files owned by the service account (trashed or not)
+        print("\nDeleting all files owned by the service account...")
+        page_token = None
+        while True:
+            results = drive_service.files().list(
+                q="trashed=false",
+                fields="nextPageToken, files(id, name, owners)",
+                pageToken=page_token
+            ).execute()
+            for f in results.get('files', []):
+                try:
+                    print(f"Deleting {f['name']}")
+                    drive_service.files().delete(fileId=f['id']).execute()
+                except Exception as e:
+                    print(f"Could not delete {f['name']}: {e}")
+            page_token = results.get('nextPageToken', None)
+            if not page_token:
+                break
+
+        print("\nEmptying trash...")
+        try:
+            drive_service.files().emptyTrash().execute()
+        except Exception as e:
+            print(f"Failed to empty trash: {e}")
+
+        print("\n--- AFTER CLEANUP ---")
+        get_storage_info()
+
     except Exception as e:
         print(f"Failed to empty custom folder: {e}")
+
+
+
+        # start the server
+if __name__ == '__main__':
+    empty_custom_folder()
