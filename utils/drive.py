@@ -114,12 +114,20 @@ def get_storage_info():
         return None
 
 
-def check_storage():
-    """Check if Google Drive available storage is below 200MB."""
-    available = get_storage_info()
-    if available is None:
+def check_storage(threshold_mb=200):
+    """Check if Google Drive available storage is below the threshold."""
+    info = get_storage_info()
+    if not info:
+        print("Failed to retrieve storage info.")
         return False
-    return available >= 200
+
+    free_mb = info.get("free", 0)
+    if free_mb < threshold_mb:
+        print(f"Warning: Google Drive storage is below {threshold_mb}MB! (Free: {free_mb:.0f} MB)")
+        return False
+
+    print(f"Drive has {free_mb:.0f} MB free — OK.")
+    return True
 
 
 def empty_trash(max_retries=3, delay=5):
