@@ -7,7 +7,7 @@ from utils.prompts import SchedulingPrompts
 class GenerativeAI:
     def __init__(self):
         genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
 
     def get_schedule_recommendation(self, video_data, scheduled_videos):
         """

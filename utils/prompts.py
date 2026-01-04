@@ -13,19 +13,16 @@ class SchedulingPrompts:
 
     SHORT_SLOTS = """
     Hour Slots:
-        - 22:00h UTC previous day: Outside Europe (mostly US), any bouldering grade.
-        - 06:00h UTC: Europe, bouldering grade lower than 6a+.
-        - 10:00h UTC: Europe, bouldering grade between 6a+ and 6c.
-        - 14:00h UTC: Europe, bouldering grade between 6b+ and 7b.
-        - 18:00h UTC: Europe, bouldering grade 7b+ and above.
+        - 23:00h UTC previous day: Outside Europe (mostly US), any bouldering grade.
+        - 07:00h UTC: Europe, bouldering grade lower than 7b.
+        - 19:00h UTC: Europe, bouldering grade 7b+ and above.
     """
 
     REGULAR_SLOTS = """
     Hour Slots:
-        - 22:00h UTC previous day: Outside Europe (mostly US), bouldering grade V5 and above.
-        - 06:00h UTC: Outside Europe (mostly US), bouldering grade below V5.
-        - 12:00h UTC: Europe, bouldering grade lower than 7a+.
-        - 18:00h UTC: Europe, bouldering grade 7a+ and above.
+        - 23:00h UTC previous day: Outside Europe (mostly US), any bouldering grade.
+        - 07:00h UTC: Europe, bouldering grade lower than 7a.
+        - 19:00h UTC: Europe, bouldering grade 7a and above.
     """
 
     TASK_SLOT_BLOCK = """
@@ -56,22 +53,22 @@ class SchedulingPrompts:
 
     CONTEXT_SLOT_SHORTS_BLOCK = """
     Slot Examples:
-        - (Bouldering Crag: Fontainebleau, Grade: 7a+) fits onto 15:00h UTC Slot
+        - (Bouldering Crag: Fontainebleau, Grade: 7a+) fits onto 19:00h UTC Slot
         - (Bouldering Crag: Targasonne, Grade: 5) fits onto 07:00h UTC Slot
         - (Bouldering Crag: Magic Wood, Grade: 8b+) fits onto 19:00h UTC Slot
-        - (Bouldering Crag: Peak District, Grade: 6b+) fits onto 11:00h UTC Slot
+        - (Bouldering Crag: Peak District, Grade: 6b+) fits onto 07:00h UTC Slot
         - (Bouldering Crag: Magic Wood, Grade: 7c+) fits onto 19:00h UTC Slot
         - (Bouldering Crag: Red Rocks, Grade: V8) fits onto 23:00h UTC Slot
     """
 
     CONTEXT_SLOT_BLOCK = """
     Slot Examples:
-        - (Bouldering Crag: Fontainebleau, Grade: 7a+) fits onto 13:00h UTC Slot
-        - (Bouldering Crag: Targasonne, Grade: 5) fits onto 13:00h UTC Slot
+        - (Bouldering Crag: Fontainebleau, Grade: 6c) fits onto 07:00h UTC Slot
+        - (Bouldering Crag: Targasonne, Grade: 5) fits onto 07:00h UTC Slot
         - (Bouldering Crag: Magic Wood, Grade: 8b+) fits onto 19:00h UTC Slot
         - (Bouldering Crag: Peak District, Grade: 7b+) fits onto 19:00h UTC Slot
         - (Bouldering Crag: Red Rocks, Grade: V8) fits onto 23:00h UTC Slot
-        - (Bouldering Crag: Stonefort, Grade: V2) fits onto 07:00h UTC Slot
+        - (Bouldering Crag: Stonefort, Grade: V2) fits onto 23:00h UTC Slot
     """
 
     CONTEXT_DAY_BLOCK = """
