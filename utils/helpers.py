@@ -270,30 +270,6 @@ def suggestUploadTime(is_short, climber, grade, zone):
     return schedule_info
 
 
-def ExtractFieldFromStr(pattern, sourceStr, case=Case.none):
-    """
-    Given a regex pattern and a field, find the sequence that matches
-    the regex in the specified video field. Add the matched sequence as
-    the specified new video field
-    """
-    reg_pattern = re.compile(pattern)
-    resultStr = ''
-    if sourceStr:
-        matches = reg_pattern.findall(sourceStr)
-        if not matches:
-            resultStr = 'Unknown'
-        else:
-            # Strip whitespace from the captured value
-            extracted = matches[0].strip()
-            if case == Case.upper:
-                resultStr = extracted.upper()
-            elif case == Case.lower:
-                resultStr = extracted.lower()
-            else:
-                resultStr = extracted
-    return resultStr
-
-
 def ExtractInfoFromDescription(title, description):
     videoInfo = {
         'name': ExtractName(description),
@@ -320,33 +296,37 @@ def ExtractInfoFromDescription(title, description):
 
     return videoInfo
 
-def ExtractName(sourceStr):
-    name_regex = r'Name: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(name_regex, sourceStr)
+def ExtractField(label, sourceStr, *, stop_at_paren=False, case=Case.none):
+    """
+    Unified hardened extractor for all MadBoulder YouTube fields.
+    """
+    if not sourceStr:
+        return 'Unknown'
 
-def ExtractGrade(sourceStr):
-    regex = r'Grade:\s*(.+?)(?:\s*\([^)]*\))?(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
+    if stop_at_paren:
+        pattern = rf'{label}:\s*([^\s(]+)'
+    else:
+        pattern = rf'{label}:\s*(.*?)(?:\r?\n|$)'
 
-def ExtractGradeWithInfo(sourceStr):
-    regex = r'Grade: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
+    match = re.search(pattern, sourceStr)
+    if not match:
+        return 'Unknown'
 
-def ExtractClimber(sourceStr):
-    regex = r'Climber: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
+    value = match.group(1).strip()
 
-def ExtractZone(sourceStr):
-    regex = r'Zone: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
+    if case == Case.upper:
+        return value.upper()
+    elif case == Case.lower:
+        return value.lower()
+    return value
 
-def ExtractSector(sourceStr):
-    regex = r'Sector: \s*?(.*?)(?:\n|$)'
-    return ExtractFieldFromStr(regex, sourceStr)
-
-def ExtractBoulder(sourceStr):
-    regex = r'\bBoulder:\s*([^\n]+)'
-    return ExtractFieldFromStr(regex, sourceStr)
+def ExtractName(s): return ExtractField('Name', s)
+def ExtractGrade(s): return ExtractField('Grade', s, stop_at_paren=True)
+def ExtractGradeWithInfo(s): return ExtractField('Grade', s)
+def ExtractClimber(s): return ExtractField('Climber', s)
+def ExtractZone(s): return ExtractField('Zone', s)
+def ExtractSector(s): return ExtractField('Sector', s)
+def ExtractBoulder(s): return ExtractField('Boulder', s)
 
 
 def getProblemName(title, nameDescription, grade, zone):
