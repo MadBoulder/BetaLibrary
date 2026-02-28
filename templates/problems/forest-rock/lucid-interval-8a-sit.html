@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lucid Interval 8A+ (sit) {{ _("Boulder problem in") }} Forest Rock | MadBoulder</title>
+	<meta name="description" content="Video of Lucid Interval Boulder Problem in Forest Rock climbed by https://www.instagram.com/orrincoley/ | MadBoulder">
+	
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+	<link rel="canonical" href="https://www.madboulder.org/problems/forest-rock/lucid-interval-8a-sit">
+	
+	
+	</head>
+	<body>
+		
+		{% include 'elements/main-menu.html' %}
+		
+		<main>
+			<div class="zone-header">
+				<div class="container zone-header-tree">
+					<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
+					
+				</div>
+				<div style="display: flex; justify-content: center;">
+					<h1 class="zone-header-title text-bold">
+						Lucid Interval 8A+ (sit)
+					</h1>
+					<div class="ratingContainer" style="display: {{ 'none' if ratings.total_votes < 3 else 'flex' }};">
+						<div id="globalRating"></div>
+						  <div id="rating-stats" class="small text-muted"></div>
+					</div>
+				</div>
+			</div>
+			<div class="container problem-page" id="mainContainer">
+				<!-- Top Ad -->
+				<div class="horizontal-ad-container mobile-only">
+					<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="3780851964"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="problem-elements-container">
+					<!-- Left Ad -->
+					<div class="vertical-ad-container desktop-only">
+						<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+						<ins class="adsbygoogle vertical-ad" style="display:inline-block;width:120px;height:600px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="8969298147"></ins>
+						<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+					</div>
+					<div style="flex: auto;">
+						<div class="video-wrapper">
+							<div class="video-container" >
+								<iframe src="https://www.youtube.com/embed/V6x9bKJMKjs" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+							</div>
+							<div class="video-caption">
+								<p> {{ _("Climber") }}: <a href="/contributors/https-www-instagram-com-orrincoley">https://www.instagram.com/orrincoley/</a></p>
+							</div>
+						</div>
+						<div class="user-container">
+							{% if session['uid'] %}
+								<div class="d-flex mb-3">
+									<div class="ml-auto btn-group mb-auto">
+										<button id="addToProjectsButton" type="button" class="btn btn-sm btn-normal" 
+											{% if problem_in_projects %}disabled{% endif %}
+											onclick='addToProjects("forest-rock/lucid-interval-8a-sit", "Lucid Interval", "8A+ (sit)", "forest-rock", "Forest Rock")'>
+											{% if problem_in_projects %}{{ _("Added to Projects") }}{% else %}{{ _("Add to Projects") }}{% endif %}
+										</button>
+									</div>
+									<div class="ratingContainer">
+										
+											<span> {% if ratings.has_rated %} {{ _("Your rating: ") }}{% else %}{{ _("Rate this problem: ") }}{% endif %}</span>
+										
+										<i id="trashRating" onclick="submitRating(0);" class="fas fa-trash" title="Trash rating"></i>
+										<div id="userRating"></div>
+										<div id="rating-text"></div>
+										<i id="deleteRating" onclick="deleteRating()" class="fas fa-times"></i>
+									</div>
+								</div>
+							{% endif %}
+						</div>
+						<div id="comments-section" class="comments-section">
+							<div class="comments-header">
+								<h2>
+									
+									{% if num_comments == 1 %}
+										{{ _("1 Comment") }}
+									{% else %}
+										{{ comments|length }} {{ _("Comments") }}
+									{% endif %}
+									
+								</h2>
+							</div>
+							<div class="comment-box">
+								<div class="comment-form-container">
+									
+									{% if session['uid'] %}
+										<form id="comment-form" class="comment-form" method="post">
+											<textarea id="comment-input" name="comment" placeholder="Add a comment..." maxlength="6000" required></textarea>
+											<div id="char-count" class="form-char-count">6,000 characters</div>
+											<button id="comment-submit" type="submit" class="btn btn-primary-madboulder ">{{ _("Submit comment") }}</button>
+										</form>
+									{% else %}
+										<p><a href="{{ url_for('login', caller_url=request.url) }}">{{ _("Log in") }}</a> {{ _("to add a comment.") }}</p>
+									{% endif %}
+									
+								</div>
+							</div>
+							{% if comments %}
+								<table id="commentsTable" class="table-sm">
+									<thead>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody class="small">
+										
+										{% for comment in comments %}
+										<tr>
+											<td>{{ comment.user_name }}</td>
+											<td class="text-nowrap" data-iso-date="{{ comment.date }}"></td>
+											<td class="comment d-none d-md-table-cell">{{ comment.text }}</td>
+											<td>
+												{% if session['uid'] == comment.user_uid %}
+													<i onclick='deleteComment("{{ comment.id }}")' class="fas fa-times remove-project-icon" style="cursor: pointer;"></i>
+												{% endif %}
+											</td>
+										</tr>
+										<tr class="d-table-row d-md-none">
+											<td colspan="4" style="border-top:0; padding-left: 10px;">{{ comment.text }}</td>
+										</tr>
+										{% endfor %}
+										
+									</tbody>
+								</table>
+							{% endif %}
+						</div>
+						
+					</div>
+					<!-- Right Ad -->
+					<div class="vertical-ad-container desktop-only">
+						<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+						<ins class="adsbygoogle vertical-ad" style="display:inline-block;width:120px;height:600px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6189159935"></ins>
+						<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+					</div>
+				</div>
+			</div>
+		</main>
+		
+		{% include 'elements/footer.html' %}
+		
+	</body>
+	<script>
+		
+		
+		 {% if session['uid'] %} 
+			document.getElementById('comment-form').addEventListener('submit', function(e) {
+				e.preventDefault();
+				const problemId = 'forest-rock/lucid-interval-8a-sit';
+				const commentInput = document.getElementById('comment-input');
+				submitComment(problemId, commentInput);
+			});
+		 {% endif %}
+
+		function submitComment(problemId, comment) {
+			const commentText = comment.value.trim();
+			if (commentText) {
+				const requestData = {
+					method: 'POST',
+					body: JSON.stringify({ problem_id: problemId, comment: commentText }),
+					headers: {'Content-Type': 'application/json'}
+				};
+
+				fetch(`/submit-comment`, requestData)
+					.then(response => response.json())
+					.then(data => {
+						if (data.status === 'success') {
+							window.location.reload();
+						} else {
+							console.error('Error adding comment:', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error adding comment:', error);
+					});
+			} else {
+				alert('Your comment cannot be empty.');
+			}
+		}
+
+		function deleteComment(comment_id) {
+			const problemId = 'forest-rock/lucid-interval-8a-sit';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({comment_id: comment_id, problem_id: problemId}),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/delete-comment`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding comment:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding comment:', error);
+				});
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			initRatings()
+
+			document.querySelectorAll('td[data-iso-date]').forEach(function(td) {
+				var isoDateString = td.getAttribute('data-iso-date');
+				var formattedDate = formatDate(isoDateString);
+				td.textContent = formattedDate;
+			});
+
+			var commentInput = document.getElementById('comment-input');
+			var submitButton = document.getElementById('comment-submit');
+			var charCount = document.getElementById('char-count');
+
+			commentInput.addEventListener('focus', function() {
+				submitButton.style.display = 'block';
+				charCount.style.display = 'block';
+			});
+
+			commentInput.addEventListener('blur', function() {
+				if (commentInput.value.length === 0) {
+					submitButton.style.display = 'none';
+					charCount.style.display = 'none';
+				}
+			});
+		});
+
+		function formatDate(isoString) {
+			var date = new Date(isoString);
+			var options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+			return date.toLocaleDateString(undefined, options);
+		}
+
+		function initRatings() {
+			
+			const userRatingValue = {{ ratings.user_rating|tojson }};
+			const hasRated = {{ ratings.has_rated|tojson|lower }};
+
+			$("#globalRating").rateYo({
+				starWidth: "24px",
+		        rating: {{ ratings.average_rating }},
+				numStars: 3,
+				readOnly: true
+			});
+
+			const ratingStatsText = `{{ ratings.total_votes }} {{ _("votes") }}`;
+    		document.getElementById('rating-stats').textContent = ratingStatsText;
+
+			{% if session['uid'] %}
+			$("#userRating").rateYo({
+				starWidth: "24px",
+				rating: userRatingValue || 0,
+				numStars: 5,
+				fullStar: true,
+				readOnly: hasRated,
+				onSet: function (rating, rateYoInstance) {
+					submitRating(rating)
+				},
+
+				onChange: function (rating, rateYoInstance) {
+					if (rating) {
+						console.log(rating);
+						$("#rating-text").text(getRatingText(Math.floor(rating))).show(); // Show text on hover
+					} else {
+						$("#rating-text").hide(); // Hide text when not hovering over a star
+					}
+				},
+
+				onLeave: function () {
+					$("#rating-text").hide(); // Ensure text is hidden when mouse leaves the rating area
+				}
+			});
+
+			$("#trashRating").hover(
+				function() { $("#rating-text").text("{{ _('Crap') }}").show(); },
+				function() { $("#rating-text").hide(); }
+			);
+
+			if (hasRated) {
+				document.getElementById('deleteRating').style.display = 'inline';
+				document.getElementById('trashRating').style.display = 'none';
+			} else {
+				document.getElementById('deleteRating').style.display = 'none';
+			}
+			{% endif %}
+			
+		}
+
+		function getRatingText(rating) {
+			const descriptions = {
+				
+				0: "{{ _('Crap') }}",
+				1: "{{ _('Meh') }}",
+				2: "{{ _('Average') }}",
+				3: "{{ _('Good') }}",
+				4: "{{ _('Great') }}",
+				5: "{{ _('Excellent') }}"
+				
+			};
+			return descriptions[rating] || descriptions[0];
+		}
+
+		function submitRating(rating) {
+			const problemId = 'forest-rock/lucid-interval-8a-sit';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({ problem_id: problemId, rating: rating }),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/submit-rating`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding rating:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding rating:', error);
+				});
+		}
+
+		function deleteRating() {
+			const problemId = 'forest-rock/lucid-interval-8a-sit';
+			const requestData = {
+				method: 'POST',
+				body: JSON.stringify({problem_id: problemId}),
+				headers: {'Content-Type': 'application/json'}
+			};
+
+			fetch(`/delete-rating`, requestData)
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						window.location.reload();
+					} else {
+						console.error('Error adding comment:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error adding comment:', error);
+				});
+		}
+
+		function addToProjects(problem_id, problem_name, problem_grade, problem_area, problem_area_name) {
+			fetch('/add-problem-to-projects', {
+				method: 'POST',
+				body: JSON.stringify({'problem_id': problem_id, 'problem_name': problem_name, 'problem_grade': problem_grade, 'problem_area': problem_area, 'problem_area_name': problem_area_name}),
+				headers: {'Content-Type': 'application/json'}
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data.status === 'success') {
+					let button = document.getElementById('addToProjectsButton');
+					button.innerText = "{{ _('Added to Projects') }}";
+					button.setAttribute('disabled', true);
+				}
+			})
+			.catch(error => {
+				console.error('Error adding problem to projects:', error);
+			});
+		}
+	</script>
+</html>
