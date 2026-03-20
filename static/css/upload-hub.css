@@ -1,28 +1,413 @@
-.schedule-info {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 5px;
+/* =============================================
+   MadBoulder Local Upload Hub
+   ============================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Raleway", sans-serif;
+    background: #f0f0f0;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* Layout */
+.hub-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+}
+
+/* Header */
+.hub-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ffc800;
+}
+
+.hub-logo {
+    width: 48px;
+    height: 48px;
+    background: #555;
+    color: #ffc800;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.hub-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.hub-subtitle {
+    font-size: 13px;
+    color: #888;
+    margin: 2px 0 0;
+}
+
+/* Cards */
+.hub-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.hub-card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #ffc800;
+    color: #555;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.card-header-row h2 {
+    margin-bottom: 0;
+}
+
+/* Auth card */
+.hub-auth-card {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.hub-auth-card h2 {
+    justify-content: center;
+    font-size: 18px;
+}
+
+.hub-auth-card p {
+    color: #888;
+    margin-bottom: 20px;
+}
+
+/* Form elements */
+select,
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: "Raleway", sans-serif;
+    color: #333;
+    background: #fff;
+    transition: border-color 0.15s;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="date"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: #ffc800;
+    box-shadow: 0 0 0 3px rgba(255, 200, 0, 0.15);
+}
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group > label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Video preview */
+#videoPreview {
     display: none;
+    width: 100%;
+    max-height: 280px;
+    border-radius: 8px;
+    margin-top: 12px;
+    background: #000;
+    object-fit: contain;
 }
+
+/* Buttons */
+.btn-primary-hub {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #ffc800;
+    color: #555;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: "Raleway", sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary-hub:hover {
+    background: #e6b400;
+}
+
+.btn-secondary-hub {
+    display: inline-block;
+    padding: 8px 16px;
+    background: transparent;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: "Raleway", sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-secondary-hub:hover {
+    background: #f5f5f5;
+    border-color: #bbb;
+}
+
+.btn-upload-main {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    font-size: 16px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.btn-icon:hover {
+    background: #f5f5f5;
+    border-color: #bbb;
+}
+
+.btn-yt-studio {
+    display: inline-block;
+    padding: 12px 16px;
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Raleway", sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.15s;
+}
+
+.btn-yt-studio:hover {
+    background: #cc0000;
+}
+
+/* Schedule picker */
+.schedule-picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.schedule-date label,
+.schedule-time-slots label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.schedule-date input[type="date"] {
+    width: auto;
+    padding: 8px 12px;
+}
+
+.time-slot-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.time-slot-btn {
+    padding: 8px 14px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: "Raleway", sans-serif;
+    color: #555;
+    transition: all 0.15s;
+}
+
+.time-slot-btn:hover {
+    border-color: #aaa;
+    background: #f5f5f5;
+}
+
+.time-slot-btn.active {
+    border-color: #ffc800;
+    background: #fff8e1;
+    color: #333;
+}
+
+.schedule-preview {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.schedule-date-warning {
+    background: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+}
+
+/* Schedule info */
+.schedule-info {
+    margin: 12px 0 0;
+    padding: 14px;
+    border-radius: 8px;
+    display: none;
+    font-size: 14px;
+}
+
 .schedule-success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
 }
+
 .schedule-warning {
     background: #fff3cd;
     border: 1px solid #ffeeba;
 }
+
 .schedule-error {
-    background: #f8d7da;
+    background: #fce4ec;
     border: 1px solid #f5c6cb;
 }
+
 .reasoning {
     font-style: italic;
-    margin-top: 10px;
-    color: #666;
+    margin-top: 8px;
+    color: #777;
+    font-size: 13px;
 }
 
-/* Modal Popup Styles */
+/* Zone validation */
+.zone-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.zone-input-wrapper input {
+    flex: 1;
+}
+
+.zone-status {
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.zone-checking { color: #aaa; }
+.zone-exists { color: #28a745; }
+
+.zone-new {
+    color: #e67e00;
+    background: #fff8e1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #ffe082;
+}
+
+.zone-error { color: #dc3545; }
+
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -32,28 +417,182 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
+    background: #fff;
+    margin: 0 auto;
+    padding: 28px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 20px;
 }
 
 .close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    color: #bbb;
+    font-size: 24px;
     font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s;
 }
 
-.close-button:hover,
-.close-button:focus {
-    color: black;
+.close-button:hover {
+    color: #555;
+}
+
+.modal-content .btn-primary-hub {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* Upload progress overlay */
+.upload-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-progress-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 40px;
+    width: 90%;
+    max-width: 460px;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.upload-progress-card h2 {
+    margin: 0 0 24px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 28px;
+    background: #eee;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffc800, #e6b400);
+    border-radius: 14px;
+    transition: width 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+}
+
+.progress-text {
+    color: #555;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.upload-status-text {
+    color: #888;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Upload complete state */
+.complete-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    color: #28a745;
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.error-icon {
+    background: #fce4ec;
+    color: #dc3545;
+}
+
+.upload-complete-title {
+    color: #333 !important;
+    font-size: 20px !important;
+}
+
+.upload-complete-video {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    margin: 4px 0 8px;
+}
+
+.complete-schedule {
+    font-size: 14px;
+    color: #555;
+    margin: 8px 0;
+}
+
+.upload-complete-id {
+    font-size: 11px;
+    color: #bbb;
+    font-family: monospace;
+    margin: 8px 0 16px;
+}
+
+.upload-complete-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.upload-complete-actions a {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 6px;
     text-decoration: none;
-    cursor: pointer;
-} 
+    font-weight: 700;
+    font-size: 13px;
+    font-family: "Raleway", sans-serif;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .hub-container { padding: 16px 12px 32px; }
+    .hub-card { padding: 18px; }
+    .form-row-2 { grid-template-columns: 1fr; }
+    .upload-complete-actions { flex-direction: column; }
+    .time-slot-buttons { flex-wrap: wrap; }
+}
