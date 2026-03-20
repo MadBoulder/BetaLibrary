@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Completed - MadBoulder</title>
+    <link rel="stylesheet" href="/static/css/upload-hub.css">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .success-banner {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .success-banner h2 {
+            color: #155724;
+            margin: 0 0 8px 0;
+        }
+        .success-banner p {
+            color: #155724;
+            margin: 0;
+            font-size: 15px;
+        }
+        .detail-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+            text-align: right;
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .actions a {
+            flex: 1;
+            display: block;
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn-studio {
+            background: #ff0000;
+            color: #fff;
+        }
+        .btn-studio:hover {
+            background: #cc0000;
+        }
+        .btn-upload {
+            background: #007bff;
+            color: #fff;
+        }
+        .btn-upload:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-banner">
+            <h2>Video Upload Successful!</h2>
+            <p>{{ title }}</p>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-row">
+                <span class="detail-label">Video ID</span>
+                <span class="detail-value">{{ video_id }}</span>
+            </div>
+            {% if publish_time_utc %}
+            <div class="detail-row">
+                <span class="detail-label">Scheduled</span>
+                <span class="detail-value" id="publishTimeDisplay">{{ publish_time_utc }} UTC</span>
+            </div>
+            {% else %}
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">Private (no schedule set)</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <a href="https://studio.youtube.com/video/{{ video_id }}/edit" class="btn-studio" target="_blank">
+                Open in YouTube Studio
+            </a>
+            <a href="/local-upload-hub" class="btn-upload">
+                Upload Another Video
+            </a>
+        </div>
+    </div>
+
+    {% if publish_time_utc %}
+    <script>
+        (function() {
+            const utcDate = new Date('{{ publish_time_utc_iso }}Z');
+            const madridTime = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/Madrid',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(utcDate);
+            document.getElementById('publishTimeDisplay').textContent = madridTime + ' (Madrid time)';
+        })();
+    </script>
+    {% endif %}
+</body>
+</html>

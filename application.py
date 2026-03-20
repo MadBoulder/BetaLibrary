@@ -47,6 +47,9 @@ EXTENSION = '.html'
 EMAIL_SUBJECT_FIELDS = ['name', 'zone', 'climber']
 REMOVE_FIRST = slice(1, None, 1)
 
+# In-memory upload progress tracking (single-user local tool)
+upload_tasks = {}
+
 load_dotenv()  # Take environment variables from .env.  
 
 # create and configure the application object
@@ -411,10 +414,27 @@ def compute_upload_metadata():
         schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
         description = utils.helpers.generateDescription(problemName, climber, grade, zone, sector, boulder, is_short)
         tags = utils.helpers.generateTags(problemName, zone, grade, sector)
-        
+
+        # YouTube limit: 500 characters total for tags (joined by commas)
+        tags_truncated = False
+        tags_joined = ", ".join(tags)
+        if len(tags_joined) > 500:
+            truncated = []
+            length = 0
+            for tag in tags:
+                addition = len(tag) + (2 if truncated else 0)  # ", " separator
+                if length + addition > 500:
+                    break
+                truncated.append(tag)
+                length += addition
+            tags = truncated
+            tags_joined = ", ".join(tags)
+            tags_truncated = True
+
         return jsonify({
              'description': description,
-             'tags': ", ".join(tags),
+             'tags': tags_joined,
+             'tags_truncated': tags_truncated,
              'schedule_info': schedule_info
         })
     except Exception as e:
@@ -478,54 +498,117 @@ def process_upload_youtube_from_local():
         description = request.form['description']
         tags = request.form['tags']
         scheduled_time = request.form.get('scheduled_time', '')
-        
+
         # Get the full path from local videos folder
         video_path = Path(app.config['LOCAL_VIDEOS_FOLDER']) / video_filename
-        
+
         if not video_path.exists():
             raise Exception(f"Video file not found: {video_filename}")
-        
+
         title = os.path.splitext(video_filename)[0]
 
         # Extract zone and sector from description
         zone_match = re.search(r'Zone:\s*([^,\n]+)', description)
         sector_match = re.search(r'Sector:\s*([^,\n]+)', description)
-        
+
         zone = zone_match.group(1).strip() if zone_match else "Unknown Zone"
         sector = sector_match.group(1).strip() if sector_match else ""
-        
+
         # Generate slugified codes
         zone_code = slugify(zone)
         sector_code = slugify(sector)
 
-        # Upload to channel
-        with open(video_path, 'rb') as video_file:
-            response, publish_time, error = channel_uploader.process_channel_upload(
-                title=title,
-                description=description,
-                tags=tags,
-                scheduled_time=scheduled_time,
-                zone_code=zone_code,
-                sector_code=sector_code,
-                video_stream=video_file
-            )
-            
-            if error:
-                return error
+        # Create upload task for progress tracking
+        upload_id = str(uuid.uuid4())
+        upload_tasks[upload_id] = {
+            'progress': 0,
+            'phase': 'uploading',
+            'status': 'in_progress'
+        }
 
-        # Move the file to uploaded videos folder on success
-        uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
-        try:
-            uploaded_path.parent.mkdir(parents=True, exist_ok=True)
-            video_path.rename(uploaded_path)
-        except Exception as move_error:
-            print(f"Warning: Could not move file to done folder: {move_error}")
-                
-        return channel_uploader.generate_success_page(response['id'], title, publish_time)
+        def run_upload():
+            try:
+                def on_progress(percent):
+                    upload_tasks[upload_id]['progress'] = percent
+
+                with open(video_path, 'rb') as video_file:
+                    response, publish_time, error = channel_uploader.process_channel_upload(
+                        title=title,
+                        description=description,
+                        tags=tags,
+                        scheduled_time=scheduled_time,
+                        zone_code=zone_code,
+                        sector_code=sector_code,
+                        video_stream=video_file,
+                        progress_callback=on_progress
+                    )
+
+                    if error:
+                        upload_tasks[upload_id]['status'] = 'error'
+                        upload_tasks[upload_id]['error'] = 'Upload failed'
+                        return
+
+                upload_tasks[upload_id]['phase'] = 'playlists_done'
+
+                # Move the file to uploaded videos folder on success
+                uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+                try:
+                    uploaded_path.parent.mkdir(parents=True, exist_ok=True)
+                    video_path.rename(uploaded_path)
+                except Exception as move_error:
+                    print(f"Warning: Could not move file to done folder: {move_error}")
+
+                # Build result data
+                publish_time_utc = None
+                publish_time_utc_iso = None
+                if publish_time:
+                    publish_time_utc = publish_time.strftime('%Y-%m-%d %H:%M:%S')
+                    publish_time_utc_iso = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
+
+                upload_tasks[upload_id]['status'] = 'complete'
+                upload_tasks[upload_id]['result'] = {
+                    'video_id': response['id'],
+                    'title': title,
+                    'publish_time_utc': publish_time_utc,
+                    'publish_time_utc_iso': publish_time_utc_iso
+                }
+
+            except Exception as e:
+                print(f"Error in background upload: {e}")
+                upload_tasks[upload_id]['status'] = 'error'
+                upload_tasks[upload_id]['error'] = str(e)
+
+        thread = threading.Thread(target=run_upload)
+        thread.start()
+
+        return jsonify({'upload_id': upload_id})
 
     except Exception as e:
         print(f"Error in process_upload_youtube_from_local: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/upload-progress/<upload_id>')
+def upload_progress(upload_id):
+    task = upload_tasks.get(upload_id)
+    if not task:
+        return jsonify({'error': 'Unknown upload ID'}), 404
+
+    response = {
+        'progress': task['progress'],
+        'phase': task.get('phase', 'uploading'),
+        'status': task['status']
+    }
+
+    if task['status'] == 'complete':
+        response['result'] = task['result']
+        # Clean up after delivering result
+        del upload_tasks[upload_id]
+    elif task['status'] == 'error':
+        response['error'] = task.get('error', 'Unknown error')
+        del upload_tasks[upload_id]
+
+    return jsonify(response)
 
 @app.route('/process-upload-youtube-from-drive', methods=['POST'])
 def process_upload_youtube_from_drive():
@@ -1801,13 +1884,30 @@ def list_local_videos():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/validate-zone', methods=['GET'])
+def validate_zone():
+    """Check if a zone exists in the database."""
+    zone = request.args.get('zone')
+    if not zone:
+        return jsonify({'error': 'Zone is required'}), 400
+
+    try:
+        zone_code = slugify(zone)
+        area_data = utils.MadBoulderDatabase.getAreaData(zone_code)
+        exists = area_data is not None
+        return jsonify({'exists': exists, 'zone_code': zone_code}), 200
+    except Exception as e:
+        print(f"Error validating zone: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/get-sectors', methods=['GET'])
 def get_sectors():
     """Endpoint to get sectors from a given zone code."""
     zone = request.args.get('zone')
     if not zone:
         return jsonify({'error': 'Zone code is required'}), 400
-    
+
     try:
         zone_code = slugify(zone)
         sectors = utils.zone_helpers.get_sectors_from_zone(zone_code)

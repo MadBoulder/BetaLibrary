@@ -1,22 +1,23 @@
 from datetime import datetime
-from flask import jsonify
+from flask import jsonify, render_template
 import utils.channel
 import utils.MadBoulderDatabase
 import re  # Add this import at the top of the file
 
-def process_channel_upload(title, description, tags, scheduled_time, zone_code, sector_code, video_stream):
+def process_channel_upload(title, description, tags, scheduled_time, zone_code, sector_code, video_stream, progress_callback=None):
     """
     Common helper function to handle channel video uploads and playlist management.
-    
+
     Args:
         title: Video title
-        description: Video description 
+        description: Video description
         tags: Video tags (as list)
         scheduled_time: Optional scheduled publish time
         zone_code: Zone code for playlist
         sector_code: Sector code for playlist
         video_stream: File-like object containing video data
-    
+        progress_callback: Optional callback(percent) for upload progress
+
     Returns:
         Tuple of (upload_response, publish_time, error_response)
     """
@@ -33,7 +34,8 @@ def process_channel_upload(title, description, tags, scheduled_time, zone_code, 
             description=description,
             tags=tags if isinstance(tags, list) else tags.split(','),
             privacy_status='private',
-            publish_time=publish_time
+            publish_time=publish_time,
+            progress_callback=progress_callback
         )
 
         if response is None:
@@ -108,52 +110,20 @@ def process_channel_upload(title, description, tags, scheduled_time, zone_code, 
         return None, None, error_response
 
 def generate_success_page(video_id, title, publish_time=None):
-    """Generate success page HTML with video details"""
+    """Generate success page using the upload-completed template"""
     try:
-        youtube_url = f"https://studio.youtube.com/video/{video_id}/edit"
-        success_html = f"""
-        <h2>Video Upload Successful!</h2>
-        <p>Your video "{title}" has been uploaded to YouTube.</p>
-        """
-        
+        publish_time_utc = None
+        publish_time_utc_iso = None
         if publish_time:
-            # Format datetime to ISO format for JavaScript
-            utc_time = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
-            success_html += f"""
-            <script>
-                function formatMadridTime(utcString) {{
-                    const utcDate = new Date(utcString + 'Z');
-                    return new Intl.DateTimeFormat('en-GB', {{
-                        timeZone: 'Europe/Madrid',
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    }}).format(utcDate);
-                }}
-                
-                document.write(`
-                    <p>The video will be published at: ${{formatMadridTime("{utc_time}")}} (Madrid time)</p>
-                `);
-            </script>
-            <noscript>
-                <p>The video will be published at: {publish_time} (UTC)</p>
-            </noscript>
-            """
-        
-        success_html += f"""
-        <p>Continue the edition in Youtube Studio:</p>
-        <a href="{youtube_url}">{title}</a>
-        <br><br>
-        <p>Or add another one:</p>
-        <a href="/local-upload-hub" class="btn btn-primary">Return to Local Upload Hub</a>
-        """
-        
-        return success_html
-        
+            publish_time_utc = publish_time.strftime('%Y-%m-%d %H:%M:%S')
+            publish_time_utc_iso = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
+
+        return render_template('upload-completed.html',
+            video_id=video_id,
+            title=title,
+            publish_time_utc=publish_time_utc,
+            publish_time_utc_iso=publish_time_utc_iso
+        )
     except Exception as e:
         print(f"Error generating success page: {e}")
         return "<h2>Upload completed, but there was an error generating the success page.</h2>"

@@ -172,12 +172,12 @@ def getUrl(id):
     return f"https://www.youtube.com/watch?v={id}"
 
 
-def uploadVideo(video_stream, title, description, tags, privacy_status, publish_time=None):
+def uploadVideo(video_stream, title, description, tags, privacy_status, publish_time=None, progress_callback=None):
     """Upload a video to YouTube"""
     try:
         credentials = getCredentials()
         youtubeOauth = build(API_NAME, API_VERSION, credentials=credentials)
-        
+
         body = {
             'snippet': {
                 'title': title,
@@ -190,7 +190,7 @@ def uploadVideo(video_stream, title, description, tags, privacy_status, publish_
                 'selfDeclaredMadeForKids': False
             }
         }
-        
+
         # Add publishAt if we have a publish_time
         if publish_time:
             print(publish_time)
@@ -204,16 +204,22 @@ def uploadVideo(video_stream, title, description, tags, privacy_status, publish_
             body=body,
             media_body=MediaIoBaseUpload(video_stream, 'video/*', resumable=True)
         )
-        
+
         response = None
         while response is None:
             status, response = insert_request.next_chunk()
             if status:
-                print(f"Uploaded {int(status.progress() * 100)}%")
-        
+                progress = int(status.progress() * 100)
+                print(f"Uploaded {progress}%")
+                if progress_callback:
+                    progress_callback(progress)
+
+        if progress_callback:
+            progress_callback(100)
+
         print(f"Upload Complete! Video ID: {response['id']}")
         return response
-        
+
     except Exception as e:
         print(f"Error uploading video: {e}")
         raise e
