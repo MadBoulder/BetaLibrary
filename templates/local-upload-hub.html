@@ -53,6 +53,7 @@
                 <div class="form-group">
                     <label for="tags">Tags</label>
                     <input type="text" id="tags" name="tags" placeholder="comma-separated">
+                    <span id="tagsWarning" class="tags-warning" style="display:none;">Tags truncated to fit YouTube 500 char limit</span>
                 </div>
 
                 <div class="form-group">
@@ -151,7 +152,10 @@
                     </div>
                 </div>
 
-                <button id="popupSubmit" type="button" class="btn-primary-hub">Confirm Details</button>
+                <button id="popupSubmit" type="button" class="btn-primary-hub">
+                    <span id="popupSubmitText">Confirm Details</span>
+                    <span id="popupSubmitLoading" class="btn-loading" style="display:none;">Computing metadata...</span>
+                </button>
             </div>
         </div>
 
@@ -232,12 +236,28 @@
             `;
         }
 
+        function getTomorrowDateString() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+
         function applyScheduleToPickerFromUTC(utcTimeString) {
             const parts = utcTimeString.split(' ');
-            if (parts.length !== 2) return;
+            if (parts.length !== 2) return false;
 
-            const datePart = parts[0];
+            let datePart = parts[0];
             const hour = parseInt(parts[1].split(':')[0]);
+
+            // Check if the datetime is in the past
+            const scheduledDate = new Date(utcTimeString + 'Z');
+            const now = new Date();
+            let wasCorrected = false;
+
+            if (scheduledDate <= now) {
+                datePart = getTomorrowDateString();
+                wasCorrected = true;
+            }
 
             document.getElementById('schedule_date').value = datePart;
 
@@ -254,6 +274,17 @@
                 b.classList.toggle('active', parseInt(b.dataset.hour) === closest);
             });
 
+            updateScheduledTime();
+            return wasCorrected;
+        }
+
+        function applyTomorrowFallback() {
+            document.getElementById('schedule_date').value = getTomorrowDateString();
+            // Default to 07:00 slot
+            selectedHour = 7;
+            document.querySelectorAll('.time-slot-btn').forEach(b => {
+                b.classList.toggle('active', parseInt(b.dataset.hour) === 7);
+            });
             updateScheduledTime();
         }
 
@@ -276,18 +307,22 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    applyScheduleToPickerFromUTC(result.scheduled_time);
+                    const wasCorrected = applyScheduleToPickerFromUTC(result.scheduled_time);
                     scheduleInfo.className = 'schedule-info schedule-success';
-                    scheduleInfo.innerHTML = formatScheduleInfo(result.scheduled_time, result.reasoning);
+                    let infoHtml = formatScheduleInfo(result.scheduled_time, result.reasoning);
+                    if (wasCorrected) {
+                        infoHtml += '<div class="schedule-corrected">AI suggested a past date. Moved to tomorrow.</div>';
+                    }
+                    scheduleInfo.innerHTML = infoHtml;
                 } else {
-                    document.getElementById('scheduled_time').value = '';
+                    applyTomorrowFallback();
                     scheduleInfo.className = 'schedule-info schedule-warning';
-                    scheduleInfo.innerHTML = `<strong>Warning:</strong><br>${result.message || 'Could not determine schedule time'}`;
+                    scheduleInfo.innerHTML = '<div class="schedule-corrected">AI schedule unavailable. Defaulted to tomorrow 07:00 UTC.</div>';
                 }
             } catch (error) {
-                document.getElementById('scheduled_time').value = '';
+                applyTomorrowFallback();
                 scheduleInfo.className = 'schedule-info schedule-error';
-                scheduleInfo.innerHTML = `<strong>Error:</strong><br>${error.message || 'Failed to get scheduling recommendation'}`;
+                scheduleInfo.innerHTML = '<div class="schedule-corrected">AI error. Defaulted to tomorrow 07:00 UTC.</div>';
             }
 
             scheduleInfo.style.display = 'block';
@@ -453,6 +488,12 @@
            const sector = document.getElementById('modalSector').value;
            const boulder = document.getElementById('modalBoulder').value;
 
+           // Show loading state
+           const btn = document.getElementById('popupSubmit');
+           btn.disabled = true;
+           document.getElementById('popupSubmitText').style.display = 'none';
+           document.getElementById('popupSubmitLoading').style.display = 'inline';
+
            fetch('/compute-upload-metadata', {
                method: 'POST',
                headers: { 'Content-Type':'application/json' },
@@ -463,26 +504,48 @@
            })
            .then(response => response.json())
            .then(data => {
+               // Reset button state
+               btn.disabled = false;
+               document.getElementById('popupSubmitText').style.display = 'inline';
+               document.getElementById('popupSubmitLoading').style.display = 'none';
+
                if(data.error){
                    alert("Error computing metadata: " + data.error);
-               } else {
-                   document.getElementById('description').value = data.description;
-                   document.getElementById('tags').value = data.tags;
-                   if(data.schedule_info && data.schedule_info.success){
-                        applyScheduleToPickerFromUTC(data.schedule_info.scheduled_time);
-                        document.getElementById('scheduleContent').innerHTML = formatScheduleInfo(
-                            data.schedule_info.scheduled_time,
-                            data.schedule_info.reasoning
-                        );
-                   } else {
-                        document.getElementById('scheduled_time').value = "";
-                   }
-                   document.getElementById('uploadInformation').style.display = 'block';
+                   return;
                }
-           })
-           .catch(err => { console.error(err); });
 
-           document.getElementById('metadataModal').style.display = 'none';
+               document.getElementById('description').value = data.description;
+               document.getElementById('tags').value = data.tags;
+
+               // Show tags truncated warning if needed
+               const tagsWarning = document.getElementById('tagsWarning');
+               tagsWarning.style.display = data.tags_truncated ? 'block' : 'none';
+
+               const scheduleContent = document.getElementById('scheduleContent');
+               if(data.schedule_info && data.schedule_info.success){
+                    const wasCorrected = applyScheduleToPickerFromUTC(data.schedule_info.scheduled_time);
+                    let infoHtml = formatScheduleInfo(data.schedule_info.scheduled_time, data.schedule_info.reasoning);
+                    if (wasCorrected) {
+                        infoHtml += '<div class="schedule-corrected">AI suggested a past date. Moved to tomorrow.</div>';
+                    }
+                    scheduleContent.innerHTML = infoHtml;
+               } else {
+                    applyTomorrowFallback();
+                    scheduleContent.innerHTML = '<div class="schedule-corrected">AI schedule unavailable. Defaulted to tomorrow 07:00 UTC.</div>';
+               }
+               document.getElementById('uploadInformation').style.display = 'block';
+               document.getElementById('metadataModal').style.display = 'none';
+           })
+           .catch(err => {
+               console.error(err);
+               btn.disabled = false;
+               document.getElementById('popupSubmitText').style.display = 'inline';
+               document.getElementById('popupSubmitLoading').style.display = 'none';
+               alert("Failed to compute metadata. The form will open with empty fields for manual entry.");
+               applyTomorrowFallback();
+               document.getElementById('uploadInformation').style.display = 'block';
+               document.getElementById('metadataModal').style.display = 'none';
+           });
         });
 
         document.getElementById('closeModal').addEventListener('click', function(){

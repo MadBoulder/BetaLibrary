@@ -414,10 +414,27 @@ def compute_upload_metadata():
         schedule_info = utils.helpers.suggestUploadTime(is_short, climber, grade, zone)
         description = utils.helpers.generateDescription(problemName, climber, grade, zone, sector, boulder, is_short)
         tags = utils.helpers.generateTags(problemName, zone, grade, sector)
-        
+
+        # YouTube limit: 500 characters total for tags (joined by commas)
+        tags_truncated = False
+        tags_joined = ", ".join(tags)
+        if len(tags_joined) > 500:
+            truncated = []
+            length = 0
+            for tag in tags:
+                addition = len(tag) + (2 if truncated else 0)  # ", " separator
+                if length + addition > 500:
+                    break
+                truncated.append(tag)
+                length += addition
+            tags = truncated
+            tags_joined = ", ".join(tags)
+            tags_truncated = True
+
         return jsonify({
              'description': description,
-             'tags': ", ".join(tags),
+             'tags': tags_joined,
+             'tags_truncated': tags_truncated,
              'schedule_info': schedule_info
         })
     except Exception as e:
