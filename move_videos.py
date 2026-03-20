@@ -12,7 +12,7 @@ logging.basicConfig(
 
 # Define your source and destination directories
 origin_folder = r"C:\Users\Lenovoç\Videos\done2"
-destination_root = r"E:\MadBoulder\Uploaded"
+destination_root = r"D:\MadBoulder\Uploaded"
 
 def extract_area(file_name):
     """
