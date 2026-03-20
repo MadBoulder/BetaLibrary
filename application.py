@@ -527,56 +527,57 @@ def process_upload_youtube_from_local():
         }
 
         def run_upload():
-            try:
-                def on_progress(percent):
-                    upload_tasks[upload_id]['progress'] = percent
-
-                with open(video_path, 'rb') as video_file:
-                    response, publish_time, error = channel_uploader.process_channel_upload(
-                        title=title,
-                        description=description,
-                        tags=tags,
-                        scheduled_time=scheduled_time,
-                        zone_code=zone_code,
-                        sector_code=sector_code,
-                        video_stream=video_file,
-                        progress_callback=on_progress
-                    )
-
-                    if error:
-                        upload_tasks[upload_id]['status'] = 'error'
-                        upload_tasks[upload_id]['error'] = 'Upload failed'
-                        return
-
-                upload_tasks[upload_id]['phase'] = 'playlists_done'
-
-                # Move the file to uploaded videos folder on success
-                uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+            with app.app_context():
                 try:
-                    uploaded_path.parent.mkdir(parents=True, exist_ok=True)
-                    video_path.rename(uploaded_path)
-                except Exception as move_error:
-                    print(f"Warning: Could not move file to done folder: {move_error}")
+                    def on_progress(percent):
+                        upload_tasks[upload_id]['progress'] = percent
 
-                # Build result data
-                publish_time_utc = None
-                publish_time_utc_iso = None
-                if publish_time:
-                    publish_time_utc = publish_time.strftime('%Y-%m-%d %H:%M:%S')
-                    publish_time_utc_iso = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
+                    with open(video_path, 'rb') as video_file:
+                        response, publish_time, error = channel_uploader.process_channel_upload(
+                            title=title,
+                            description=description,
+                            tags=tags,
+                            scheduled_time=scheduled_time,
+                            zone_code=zone_code,
+                            sector_code=sector_code,
+                            video_stream=video_file,
+                            progress_callback=on_progress
+                        )
 
-                upload_tasks[upload_id]['status'] = 'complete'
-                upload_tasks[upload_id]['result'] = {
-                    'video_id': response['id'],
-                    'title': title,
-                    'publish_time_utc': publish_time_utc,
-                    'publish_time_utc_iso': publish_time_utc_iso
-                }
+                        if error:
+                            upload_tasks[upload_id]['status'] = 'error'
+                            upload_tasks[upload_id]['error'] = 'Upload failed'
+                            return
 
-            except Exception as e:
-                print(f"Error in background upload: {e}")
-                upload_tasks[upload_id]['status'] = 'error'
-                upload_tasks[upload_id]['error'] = str(e)
+                    upload_tasks[upload_id]['phase'] = 'playlists_done'
+
+                    # Move the file to uploaded videos folder on success
+                    uploaded_path = Path(app.config['UPLOADED_VIDEOS_FOLDER']) / video_filename
+                    try:
+                        uploaded_path.parent.mkdir(parents=True, exist_ok=True)
+                        video_path.rename(uploaded_path)
+                    except Exception as move_error:
+                        print(f"Warning: Could not move file to done folder: {move_error}")
+
+                    # Build result data
+                    publish_time_utc = None
+                    publish_time_utc_iso = None
+                    if publish_time:
+                        publish_time_utc = publish_time.strftime('%Y-%m-%d %H:%M:%S')
+                        publish_time_utc_iso = publish_time.strftime('%Y-%m-%dT%H:%M:%S')
+
+                    upload_tasks[upload_id]['status'] = 'complete'
+                    upload_tasks[upload_id]['result'] = {
+                        'video_id': response['id'],
+                        'title': title,
+                        'publish_time_utc': publish_time_utc,
+                        'publish_time_utc_iso': publish_time_utc_iso
+                    }
+
+                except Exception as e:
+                    print(f"Error in background upload: {e}")
+                    upload_tasks[upload_id]['status'] = 'error'
+                    upload_tasks[upload_id]['error'] = str(e)
 
         thread = threading.Thread(target=run_upload)
         thread.start()
@@ -641,12 +642,12 @@ def process_upload_youtube_from_drive():
         )
         
         if error:
-            return error
-            
+            return jsonify({'success': False, 'error': error}), 500
+
         return channel_uploader.generate_success_page(response['id'], title, publish_time)
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/login', methods=['GET'])

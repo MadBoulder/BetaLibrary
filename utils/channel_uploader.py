@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import jsonify, render_template
+from flask import render_template
 import utils.channel
 import utils.MadBoulderDatabase
 import re  # Add this import at the top of the file
@@ -32,7 +32,7 @@ def process_channel_upload(title, description, tags, scheduled_time, zone_code, 
             video_stream=video_stream,
             title=title,
             description=description,
-            tags=tags if isinstance(tags, list) else tags.split(','),
+            tags=tags if isinstance(tags, list) else [t.strip() for t in tags.split(',')],
             privacy_status='private',
             publish_time=publish_time,
             progress_callback=progress_callback
@@ -103,11 +103,7 @@ def process_channel_upload(title, description, tags, scheduled_time, zone_code, 
 
     except Exception as e:
         print(f"Error processing upload: {e}")
-        error_response = jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-        return None, None, error_response
+        return None, None, str(e)
 
 def generate_success_page(video_id, title, publish_time=None):
     """Generate success page using the upload-completed template"""

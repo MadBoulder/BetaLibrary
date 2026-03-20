@@ -61,7 +61,11 @@
                     <div class="schedule-picker">
                         <div class="schedule-date">
                             <label for="schedule_date">Date</label>
-                            <input type="date" id="schedule_date" name="schedule_date">
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <button type="button" class="btn-day-nav" id="prevDay" title="Previous day">&#9664;</button>
+                                <input type="date" id="schedule_date" name="schedule_date">
+                                <button type="button" class="btn-day-nav" id="nextDay" title="Next day">&#9654;</button>
+                            </div>
                         </div>
                         <div class="schedule-time-slots">
                             <label>Time slot (UTC)</label>
@@ -190,11 +194,8 @@
                 previewText.textContent = `${madridTime} (Madrid time)`;
                 preview.style.display = 'block';
 
-                const selectedDate = new Date(dateInput.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                selectedDate.setHours(0, 0, 0, 0);
-                preview.className = selectedDate <= today
+                const scheduledUTC = new Date(combined + 'Z');
+                preview.className = scheduledUTC <= new Date()
                     ? 'schedule-preview schedule-date-warning'
                     : 'schedule-preview';
             } else {
@@ -213,6 +214,16 @@
         });
 
         document.getElementById('schedule_date').addEventListener('change', updateScheduledTime);
+
+        function shiftDate(days) {
+            const input = document.getElementById('schedule_date');
+            const current = input.value ? new Date(input.value) : new Date();
+            current.setDate(current.getDate() + days);
+            input.value = current.toISOString().split('T')[0];
+            updateScheduledTime();
+        }
+        document.getElementById('prevDay').addEventListener('click', () => shiftDate(-1));
+        document.getElementById('nextDay').addEventListener('click', () => shiftDate(1));
 
         // =============================================
         // UTC to Madrid conversion
