@@ -21,7 +21,7 @@
 	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
 	{% endraw %}
 	<!-- Google Ads-->
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
 	{% raw %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
 	{% endraw %}
@@ -31,11 +31,15 @@
 		{% include 'elements/main-menu.html' %}
 		{% endraw %}
 		<main class="bouldering-areas-list">
-			<div class="zone-header">
-				<div class="container zone-header-tree">
-					<a href="/bouldering-areas-list" class="zone-header-tree-link">All Areas</a>
+			<div class="mb-section-header">
+				<div class="container">
+					<nav aria-label="breadcrumb">
+						<ol class="mb-breadcrumb">
+							<li><a href="/bouldering-areas-list">{% raw %}{{ _("All Areas") }}{% endraw %}</a></li>
+						</ol>
+					</nav>
 				</div>
-				<h1 class="zone-header-title text-bold">
+				<h1 class="mb-section-header-title">
 					{{ areas|length }} Bouldering Areas in {{ country_name }}
 				</h1>
 			</div>
@@ -64,32 +68,32 @@
 						document.addEventListener("DOMContentLoaded", function() {
 							var content = document.getElementById("overview");
 							var showMoreLink = document.getElementById("showMoreLink");
-			
-							if (checkOverflow(content)) { 
+
+							if (checkOverflow(content)) {
 								showMoreLink.style.display = "block";
 								ellipsis.style.display = "inline";
 								content.style.marginBottom = "0px";
 							}
 						});
-			
-						function checkOverflow(el) { 
-							let curOverf = el.style.overflow; 
-							 
-							if ( !curOverf || curOverf === "visible" ) 
-								el.style.overflow = "hidden"; 
-							 
+
+						function checkOverflow(el) {
+							let curOverf = el.style.overflow;
+
+							if ( !curOverf || curOverf === "visible" )
+								el.style.overflow = "hidden";
+
 							let isOverflowing = el.clientWidth < el.scrollWidth
-								|| el.clientHeight < el.scrollHeight; 
-							 
-							el.style.overflow = curOverf; 
-							 
-							return isOverflowing; 
+								|| el.clientHeight < el.scrollHeight;
+
+							el.style.overflow = curOverf;
+
+							return isOverflowing;
 						}
-			
+
 						function toggleShowMore() {
 							var content = document.getElementById("overview");
 							var showMoreLink = document.getElementById("showMoreLink");
-							if (checkOverflow(content)) { 
+							if (checkOverflow(content)) {
 								showMoreLink.textContent = "Show less";
 								content.style.maxHeight = "none";
 								ellipsis.style.display = "none";
@@ -106,7 +110,9 @@
 					<!--States List-->
 					<div class="container mb-3">
 						<h2>List of {{ states|length }} States</h2>
-						<input id="search-state" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="border-color: black;">
+						<div class="mb-table-search">
+							<input id="search-state" class="form-control" type="text" placeholder="Search" aria-label="Search">
+						</div>
 						<table id="states-table" class="table table-hover">
 							<thead>
 								<tr>
@@ -132,9 +138,9 @@
 									paging: false,
 									dom: 'tr'
 								});
-								
+
 								$("#search-state").trigger("keyup");
-								
+
 								$("#search-state").keyup(function() {
 									var search_query = $.trim($(this).val());
 									var items = $(".state-row");
@@ -144,7 +150,7 @@
 						</script>
 					</div>
 				{% endif %}
-				
+
 				<!-- Mid Ads -->
 				<div style="display: flex;justify-content: center;">
 					<div class="horizontal-ad-container mobile-only">
@@ -166,7 +172,7 @@
 					{% include 'elements/search-sort-filter-box.html' %}{% endraw %}
 
 					{% import 'templates/elements/area-card-macro.html' as card %}
-					<div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+					<div id="zones-list" class="mb-areas-grid">
 					  {% for areaCode, area in areas.items() %}
 						{{ card.render_card(area, areaCode, playlists) }}
 					  {% endfor %}

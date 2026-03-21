@@ -16,30 +16,28 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
 	{% endraw %}
 	<!-- Google Ads-->
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
-	{% raw %}
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
-	{% endraw %}
-    
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+
   </head>
   <body>
 	{% raw %}
 	{% include 'elements/main-menu.html' %}
 	{% endraw %}
 	<main>
-		<div class="zone-header">
-			<div class="container zone-header-tree">
-				<a href="/bouldering-areas-list" class="zone-header-tree-link">{% raw %}{{ _("All Areas") }}{% endraw %}</a>
-				> 
-			   <a href="/countries/{{areaInfo.country_code}}" class="zone-header-tree-link">{{ areaInfo.country_name[0] }}</a>
-			   {% if areaInfo.state_code %}
-				> 
-			   <a href="/states/{{areaInfo.state_code}}" class="zone-header-tree-link">{{ areaInfo.state_name[0] }}</a>
-			   {% endif %}
-				> 
-			   <a href="/{{zone_code}}" class="zone-header-tree-link">{{ zone_name }}</a>
+		<div class="mb-section-header">
+			<div class="container">
+				<nav aria-label="breadcrumb">
+					<ol class="mb-breadcrumb">
+						<li><a href="/bouldering-areas-list">{% raw %}{{ _("All Areas") }}{% endraw %}</a></li>
+						<li><a href="/countries/{{areaInfo.country_code}}">{{ areaInfo.country_name[0] }}</a></li>
+						{% if areaInfo.state_code %}
+						<li><a href="/states/{{areaInfo.state_code}}">{{ areaInfo.state_name[0] }}</a></li>
+						{% endif %}
+						<li><a href="/{{zone_code}}">{{ zone_name }}</a></li>
+					</ol>
+				</nav>
 			</div>
-			<h1 class="zone-header-title text-bold">
+			<h1 class="mb-section-header-title">
 				Sector {{ sector[0] }} of {{ zone_name }}
 			</h1>
 		</div>
@@ -56,13 +54,15 @@
 				</div>
 			</div>
 			{% if video_id %}
-			<div class="video-container" >
+			<div class="video-container" style="border-radius: var(--radius-md); overflow: hidden;">
 				<iframe src="https://www.youtube.com/embed/?listType=playlist&list={{ video_id }}" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 			</div>
 			{% endif %}
 			<h2>{% raw %} {{ _("List of Problems") }} {% endraw %}</h2>
 			<div class="container">
-				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search" aria-label="Search">
+				</div>
 				<table id="problems-table" class="table table-hover">
 					<thead>
 						<tr>
@@ -85,7 +85,7 @@
 										<a href="/problems/{{problem['secure_slug']}}" class="table-row-name text-bold">{{ problem["name"] }}</a>
 									</div>
 								</td>
-								<td>{{ problem["grade_with_info"] }}</td>
+								<td><span class="mb-badge mb-badge-grade">{{ problem["grade_with_info"] }}</span></td>
 							</tr>
 						{% endfor %}
 					</tbody>
@@ -103,9 +103,9 @@
 							],
 							order:[[1, 'desc']]
 						});
-						
+
 						$("#search-problem").trigger("keyup");
-						
+
 						$("#search-problem").keyup(function() {
 							var search_query = $.trim($(this).val());
 							var items = $(".problem-row");

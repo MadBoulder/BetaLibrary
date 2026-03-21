@@ -8,177 +8,292 @@
 	{% include 'elements/head-resources.html' %}
 	{% include 'scripts/cookie-scripts.html' %}
 	<!-- Google Ads-->
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script> 
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	<style>
+	.finder-search-container {
+		margin-bottom: var(--space-5);
+		padding-top: var(--space-4);
+	}
+	.finder-search-box {
+		display: flex;
+		align-items: center;
+		background: var(--color-bg);
+		border: 2px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--space-2) var(--space-3);
+		gap: var(--space-3);
+		transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+	}
+	.finder-search-box:focus-within {
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px rgba(255, 200, 0, 0.15), 0 0 16px rgba(255, 200, 0, 0.1);
+	}
+	.finder-search-icon {
+		color: var(--color-text-muted);
+		font-size: var(--font-lg);
+		flex-shrink: 0;
+	}
+	.finder-search-input {
+		flex: 1;
+		border: none;
+		outline: none;
+		font-size: var(--font-md);
+		font-family: var(--font-family);
+		background: transparent;
+		color: var(--color-text);
+		padding: var(--space-2) 0;
+	}
+	.finder-search-input::placeholder {
+		color: var(--color-text-muted);
+	}
+	.finder-filter-tabs {
+		display: flex;
+		gap: var(--space-2);
+		margin-bottom: var(--space-5);
+		padding-bottom: var(--space-3);
+		border-bottom: 1px solid var(--color-border);
+	}
+	.finder-filter-btn {
+		padding: var(--space-2) var(--space-4);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-full);
+		background: var(--color-bg);
+		color: var(--color-text-secondary);
+		font-size: var(--font-sm);
+		font-weight: var(--font-weight-semibold);
+		font-family: var(--font-family);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+	.finder-filter-btn:hover {
+		border-color: var(--color-text-secondary);
+		color: var(--color-text);
+	}
+	.finder-filter-btn.active {
+		background: var(--color-primary);
+		border-color: var(--color-primary);
+		color: var(--color-text);
+		box-shadow: 0 0 8px rgba(255, 200, 0, 0.2);
+	}
+	.finder-filter-count {
+		background: rgba(0,0,0,0.1);
+		padding: 1px 6px;
+		border-radius: var(--radius-full);
+		font-size: var(--font-xs);
+		margin-left: var(--space-1);
+	}
+	.finder-filter-btn.active .finder-filter-count {
+		background: rgba(0,0,0,0.15);
+	}
+	.finder-results-section {
+		margin-bottom: var(--space-5);
+	}
+	.finder-section-title {
+		font-size: var(--font-lg);
+		font-weight: var(--font-weight-bold);
+		color: var(--color-text);
+		margin-bottom: var(--space-3);
+		padding-bottom: var(--space-2);
+		border-bottom: 2px solid var(--color-primary);
+		display: inline-block;
+	}
+	.finder-result-item {
+		display: flex;
+		align-items: center;
+		padding: var(--space-3) var(--space-4);
+		border-bottom: 1px solid var(--color-border);
+		text-decoration: none;
+		color: var(--color-text);
+		transition: background-color var(--transition-fast);
+		gap: var(--space-3);
+	}
+	.finder-result-item:hover {
+		background-color: var(--color-bg-subtle);
+	}
+	.finder-result-item:hover .finder-result-arrow {
+		color: var(--color-primary);
+		transform: translateX(3px);
+	}
+	.finder-result-main {
+		display: flex;
+		align-items: center;
+		flex: 1;
+		min-width: 0;
+	}
+	.finder-result-name {
+		font-weight: var(--font-weight-semibold);
+		font-size: var(--font-base);
+	}
+	.finder-result-meta {
+		color: var(--color-text-secondary);
+		font-size: var(--font-sm);
+		white-space: nowrap;
+	}
+	.finder-result-arrow {
+		color: var(--color-text-muted);
+		transition: color var(--transition-fast), transform var(--transition-fast);
+		flex-shrink: 0;
+	}
+	.finder-no-results {
+		color: var(--color-text-secondary);
+		padding: var(--space-4);
+		text-align: center;
+	}
+	</style>
   </head>
   <body>
 	<div id="current-language" hidden>{{ current_lang }}</div>
 	{% include 'elements/main-menu.html' %}
 	<main>
-        <div class="container">
+        <div class="container" style="max-width: 900px;">
 			<!-- Top Ads -->
-			<div style="display: flex;justify-content: center;">
+			<div style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
 				<div class="horizontal-ad-container mobile-only">
 					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
-					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 				</div>
 				<div class="horizontal-ad-container desktop-only">
 					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
-					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 				</div>
 			</div>
-			<div id="searchElement" style="display: block; vertical-align: middle;">
-				<form id="searchForm" class="justify-content-center" style="display: flex;" method="post" action="/area-problem-finder">
-					<input id="searchInput" class="form-control btn-xl text-start" type="text" placeholder="Search Areas, Sectors, Problems.." name="searchterm" value="{{ search_term }}" style="align-self: center; border-color: black;">
-					<div class="input-group-append" style="display: flex;">
-					  <button class="btn" type="submit">
-						<i class="fa fa-search" style="font-size: 1.25rem;"></i>
-					  </button>
+
+			<!-- Search Bar -->
+			<div class="finder-search-container">
+				<form id="searchForm" method="post" action="/area-problem-finder">
+					<div class="finder-search-box">
+						<i class="fa fa-search finder-search-icon"></i>
+						<input id="searchInput" class="finder-search-input" type="text" placeholder="{{ _('Search areas, sectors, problems...') }}" name="searchterm" value="{{ search_term }}" autocomplete="off">
+						<button class="mb-btn mb-btn-primary" type="submit">{{ _("Search") }}</button>
 					</div>
 				</form>
 			</div>
-			<br />
-			<div id="search_filter_container" class="container text-center" style="display: block;">
-				<button class="btn btn-sort-madboulder filter-button" data-filter="all">
-					<span>{{ _("All results") }}</span>
+
+			<!-- Filter Tabs -->
+			<div id="search_filter_container" class="finder-filter-tabs">
+				<button class="finder-filter-btn active" data-filter="all">
+					{{ _("All results") }}
 				</button>
-				<button class="btn btn-sort-madboulder filter-button" data-filter="zone">
-					<span>{{ _("Areas") }} ({{areas|length}})</span>
+				<button class="finder-filter-btn" data-filter="zone">
+					{{ _("Areas") }} <span class="finder-filter-count">{{areas|length}}</span>
 				</button>
-				<button class="btn btn-sort-madboulder filter-button" data-filter="problem">
-					<span>{{ _("Problems") }} ({{problems|length}})</span>
+				<button class="finder-filter-btn" data-filter="problem">
+					{{ _("Problems") }} <span class="finder-filter-count">{{problems|length}}</span>
 				</button>
 			</div>
-			<br />
 
-			<!--Search results-->
-			<div id="zone_results" class="result-container">
-				<div class="result-container-header">
-					<h2 class="text-bold">{{ _("Areas") }}</h2>
-				</div>
+			<!-- Areas Results -->
+			<div id="zone_results" class="finder-results-section">
+				<h2 class="finder-section-title">{{ _("Areas") }}</h2>
 				{% for area in areas %}
-					<a id="{{ area[0] }}_{{ area[1]['country'] }}" href="/{{ area[0] }}" class="result-item">
-						<div class="result-item-header">
-							<div class="result-item-title-container">
-								<h4 class="result-item-title text-bold">{{ area[1]["name"] }}</h4>
-							</div>
+					<a id="{{ area[0] }}_{{ area[1]['country'] }}" href="/{{ area[0] }}" class="finder-result-item">
+						<div class="finder-result-main">
+							<span class="finder-result-name">{{ area[1]["name"] }}</span>
+							<span class="finder-result-meta result-item-description-container">{{ area[1]["country"] }}</span>
 						</div>
-						<div class="result-item-description-container">{{ area[1]["country"] }}</div>
+						<i class="fas fa-angle-right finder-result-arrow"></i>
 					</a>
 				{% endfor %}
 				{%- if not areas -%}
-					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
-				{%- endif -%}
-			</div>
-				
-			<div id="problem_results" class="result-container">
-				<div class="result-container-header">
-					<h2 class="text-bold">{{ _("Problems") }}</h2>
-				</div>
-				{% for problem in problems %}
-					<a href="/problems/{{ problem[1]['secure_slug'] }}" class="result-item">
-						<div class="result-item-header">
-							<div class="result-item-title-container">
-								<h4 class="result-item-title text-bold" style="margin: 0px 0.5rem 0px 0px;">{{ problem[1]["name"] }}</h4>
-								<div style="white-space: nowrap; line-height: 1.625rem;">{{ problem[1]["grade"] }}</div>
-							</div>
-						</div>
-						<div class="result-item-description-container">{{ problem[1]["zone"] }}</div>
-					</a>
-				{% endfor %}
-				{%- if not problems -%}
-					<p class="result-item-no-results-p">{{ _("No results found.") }}</p>
+					<p class="finder-no-results">{{ _("No results found.") }}</p>
 				{%- endif -%}
 			</div>
 
+			<!-- Problems Results -->
+			<div id="problem_results" class="finder-results-section">
+				<h2 class="finder-section-title">{{ _("Problems") }}</h2>
+				{% for problem in problems %}
+					<a href="/problems/{{ problem[1]['secure_slug'] }}" class="finder-result-item">
+						<div class="finder-result-main">
+							<span class="finder-result-name">{{ problem[1]["name"] }}</span>
+							<span class="mb-badge mb-badge-grade" style="margin-left: var(--space-2);">{{ problem[1]["grade"] }}</span>
+						</div>
+						<span class="finder-result-meta">{{ problem[1]["zone"] }}</span>
+						<i class="fas fa-angle-right finder-result-arrow"></i>
+					</a>
+				{% endfor %}
+				{%- if not problems -%}
+					<p class="finder-no-results">{{ _("No results found.") }}</p>
+				{%- endif -%}
+			</div>
+
+			<!-- Loading State -->
 			<div style="display: none" id="searchingElement">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header" style="justify-content: center">
-							<h5 class="modal-title">{{ _("Searching...") }}</h5>
-						</div>
-						<div class="modal-body">
-							<div class="text-center">
-								<!-- Loading spinner (replace with your preferred spinner) -->
-								<div class="spinner-border text-primary" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</div>
-							</div>
-						</div>
+				<div style="text-align: center; padding: var(--space-8) 0;">
+					<div class="spinner-border" style="color: var(--color-primary);" role="status">
+						<span class="visually-hidden">Loading...</span>
 					</div>
+					<p class="mb-mt-3" style="color: var(--color-text-secondary);">{{ _("Searching...") }}</p>
 				</div>
 			</div>
         </div>
 	</main>
 	{% include 'elements/footer.html' %}
-  </body>
-</html>
-<script>
-$(document).ready(function() {
-    $(".filter-button[data-filter='all']").addClass("active");
+	<script>
+	$(document).ready(function() {
+		$(".finder-filter-btn[data-filter='all']").addClass("active");
 
-    $(".filter-button").on("click", function() {
-		if ($(this).hasClass("active")) {
-			$(this).removeClass("active");
-			$(".filter-button[data-filter='all']").addClass("active");
-			$(".result-container").show();
-		}
-		else {
-			$(".filter-button").removeClass("active");
-			$(this).addClass("active");
-
-			var filter = $(this).data("filter");
-			if(filter.includes("all")){
-				$(".result-container").show();
+		$(".finder-filter-btn").on("click", function() {
+			if ($(this).hasClass("active") && $(this).data("filter") !== "all") {
+				$(this).removeClass("active");
+				$(".finder-filter-btn[data-filter='all']").addClass("active");
+				$(".finder-results-section").show();
 			}
 			else {
-				var show_container_id = "#" + filter + "_results";
-				$(".result-container").hide().not(show_container_id);
-				
-				if (!$(show_container_id).is(":visible")) {
+				$(".finder-filter-btn").removeClass("active");
+				$(this).addClass("active");
+
+				var filter = $(this).data("filter");
+				if(filter === "all"){
+					$(".finder-results-section").show();
+				}
+				else {
+					var show_container_id = "#" + filter + "_results";
+					$(".finder-results-section").hide();
 					$(show_container_id).show();
 				}
 			}
-		}	
-    });
-});
-
-fetch('/countries.json')
-	.then((response) => response.json())
-	.then((data) => {
-		const countryItems = data.items;
-
-		document.querySelectorAll('.result-item-description-container').forEach((descriptionContainer) => {
-			const countryCode = descriptionContainer.textContent.trim();
-			const countryItem = countryItems.find((item) => item.reduced_code === countryCode);
-			if (countryItem) {
-				var current_lang = $("#current-language")[0].childNodes[0].nodeValue;
-				const localizedCountryName = countryItem.name[current_lang === "en" ? 0 : 1];
-				if (localizedCountryName) {
-					descriptionContainer.textContent = localizedCountryName;
-				}
-			}
 		});
-	})
-	.catch((error) => console.error('Error fetching countries data:', error));
+	});
 
-$('#searchForm').submit(function(event) {
-    $(".result-container").hide();
-    $("#search_filter_container").hide();
-    $("#searchingElement").show();
-});
+	fetch('/countries.json')
+		.then((response) => response.json())
+		.then((data) => {
+			const countryItems = data.items;
+			document.querySelectorAll('.result-item-description-container').forEach((descriptionContainer) => {
+				const countryCode = descriptionContainer.textContent.trim();
+				const countryItem = countryItems.find((item) => item.reduced_code === countryCode);
+				if (countryItem) {
+					var current_lang = $("#current-language")[0].childNodes[0].nodeValue;
+					const localizedCountryName = countryItem.name[current_lang === "en" ? 0 : 1];
+					if (localizedCountryName) {
+						descriptionContainer.textContent = localizedCountryName;
+					}
+				}
+			});
+		})
+		.catch((error) => console.error('Error fetching countries data:', error));
 
-$(document).ready(function() {
-	function showsearchingElement() {
-		$(".result-container").hide();
+	$('#searchForm').submit(function(event) {
+		$(".finder-results-section").hide();
 		$("#search_filter_container").hide();
 		$("#searchingElement").show();
-	}
-
-	$(window).on('beforeunload', function(event) {
-		if (event.originalEvent && event.originalEvent.target.activeElement.nodeName === 'BODY') {
-			showsearchingElement();
-		}
 	});
-});
-</script>
+
+	$(document).ready(function() {
+		function showSearchingElement() {
+			$(".finder-results-section").hide();
+			$("#search_filter_container").hide();
+			$("#searchingElement").show();
+		}
+
+		$(window).on('beforeunload', function(event) {
+			if (event.originalEvent && event.originalEvent.target.activeElement.nodeName === 'BODY') {
+				showSearchingElement();
+			}
+		});
+	});
+	</script>
+  </body>
+</html>

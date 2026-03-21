@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>{% raw %}{{ _("Explore bouldering zones") }}{% endraw %} | MadBoulder</title>
 	<meta name="description" content="Discover the best bouldering places in the world | MadBoulder">
@@ -8,21 +8,23 @@
 	{% include 'scripts/tracking-tools-scripts.html' %}
 	{% include 'elements/head-resources.html' %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/zones.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
 	{% include 'scripts/cookie-scripts.html' %}
 	<script src="/static/js/jquery.translate.js" ></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
   {% endraw %}
-	
+
   </head>
   <body>
     {% raw %}{% include 'elements/main-menu.html' %}{% endraw %}
     <main class="bouldering-areas-list">
       <div class="container" id="mainContainer">
         {% raw %}{% if session['is_admin'] %}{% endraw %}
-          <a href="/add-area">
-            Add New Area
+          <a href="/add-area" class="mb-btn mb-btn-secondary mb-btn-sm mb-mb-3" style="display: inline-flex;">
+            <i class="fas fa-plus"></i> Add New Area
           </a>
         {% raw %}{% endif %}{% endraw %}
-        
+
         {% raw %}
         {% set show_video_filter = True %}
         {% set show_country_filter = True %}
@@ -30,8 +32,20 @@
         {% set show_rocktype_filter = True %}
         {% include 'elements/search-sort-filter-box.html' %}{% endraw %}
 
+		<!-- Ad Banner -->
+		<div style="display: flex; justify-content: center; margin: var(--space-4, 16px) 0;">
+			<div class="horizontal-ad-container mobile-only">
+				<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321" data-ad-format="auto" data-full-width-responsive="true"></ins>
+				<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+			</div>
+			<div class="horizontal-ad-container desktop-only">
+				<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+				<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+			</div>
+		</div>
+
         {% import 'templates/elements/area-card-macro.html' as card %}
-        <div id="zones-list" style="display: flex; flex-wrap: wrap; justify-content: center;">
+        <div id="zones-list" class="mb-areas-grid">
           {% for zone_code, zone in zones.items() %}
             {{ card.render_card(zone, zone_code, playlists) }}
           {% endfor %}

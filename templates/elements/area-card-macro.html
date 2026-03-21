@@ -2,41 +2,40 @@
   <div class="custom-card" id="{{ zone_code }}_{{ zone['country'] }}">
     {% set found_element = playlists.get(zone_code) %}
     {% if found_element %}
-    <a href="/{{ zone_code }}" style="text-decoration: none;">
-      <div class="card-body">
-        <div class="card-body-image-container">
-          <div class="card-body-image-container-container">
-            <p class="card-image-text"></p>
-            <img loading="lazy" class="card-body-image">
+    <a href="/{{ zone_code }}" class="zone-card-link">
+      <div class="area-card">
+        <img loading="lazy" class="area-card-img" alt="{{ zone['name'] }}">
+        <div class="area-card-overlay">
+          <h5 class="area-card-title">{{ zone['name'] }}</h5>
+          <div class="area-card-meta-row">
+            <span class="area-card-videos card-text"><i class="fas fa-play-circle"></i> <span class="card-text-value"></span></span>
+            <span class="area-card-alt card-image-text"></span>
           </div>
-        </div>
-        <div class="card-body-title-container">
-          <h5 class="text-bold card-title">{{ zone['name'] }}</h5>
-          <p class="card-text"></p>
         </div>
       </div>
     </a>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
           var card = document.getElementById("{{ zone_code }}_{{ zone['country'] }}");
-          var cardImage = card.querySelector(".card-body-image");
+          var cardImage = card.querySelector(".area-card-img");
           cardImage.src = "{{ found_element.thumbnails.maxres if found_element.thumbnails.maxres
             else found_element.thumbnails.standard if found_element.thumbnails.standard
             else found_element.thumbnails.high if found_element.thumbnails.high
             else found_element.thumbnails.medium if found_element.thumbnails.medium
             else found_element.thumbnails.default}}";
           var cardText = card.querySelector(".card-text");
+          var cardTextValue = card.querySelector(".card-text-value");
           var videoCount = {{ found_element.video_count }};
-          cardText.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
+          cardTextValue.textContent = videoCount + " " + (videoCount === 1 ? "video" : "videos");
           cardText.setAttribute("data-videos", videoCount);
-          
+
           var cardImageText = card.querySelector(".card-image-text");
           var altitude = {{ zone.altitude }};
-          cardImageText.textContent = altitude + " m";
+          cardImageText.innerHTML = '<i class="fas fa-mountain"></i> ' + altitude + " m";
           cardImageText.setAttribute("data-altitude", altitude);
           var rocktype = "{{ zone.rock_type }}";
           cardImageText.setAttribute("data-rocktype", rocktype);
-      });		
+      });
     </script>
     {% endif %}
   </div>

@@ -3,7 +3,7 @@
   <head>
     <title>25 Els Mestres Boulder in Sant Feliu de Guíxols | MadBoulder</title>
 	<meta name="description" content="Beta Videos in 25 Els Mestres Boulder in Sant Feliu de Guíxols | MadBoulder">
-	
+
 	
 	{% include 'scripts/tracking-tools-scripts.html' %}
 	{% include 'elements/head-resources.html' %}
@@ -20,36 +20,36 @@
 		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 	
-	
+
 	<!-- Google Ads-->
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
 	
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
 	
-    
+
   </head>
   <body>
 	
 	{% include 'elements/main-menu.html' %}
 	
 	<main>
-		<div class="zone-header">
-			<div class="container zone-header-tree">
-				<a href="/bouldering-areas-list" class="zone-header-tree-link">{{ _("All Areas") }}</a>
-				
-				> 
-				<a href="/countries/spain" class="zone-header-tree-link">Spain</a>
-				
-				> 
-				<a href="/states/catalonia" class="zone-header-tree-link">Catalunya</a>
-				
-				> 
-				<a href="/sant-feliu-de-guixols" class="zone-header-tree-link">Sant Feliu de Guíxols</a>
-				> 
-				<a href="/sectors/sant-feliu-de-guixols/parc-aventura" class="zone-header-tree-link">Parc Aventura</a>
-				
+		<div class="mb-section-header">
+			<div class="container">
+				<nav aria-label="breadcrumb">
+					<ol class="mb-breadcrumb">
+						<li><a href="/bouldering-areas-list">{{ _("All Areas") }}</a></li>
+						
+						<li><a href="/countries/spain">Spain</a></li>
+						
+						<li><a href="/states/catalonia">Catalunya</a></li>
+						
+						<li><a href="/sant-feliu-de-guixols">Sant Feliu de Guíxols</a></li>
+						<li><a href="/sectors/sant-feliu-de-guixols/parc-aventura">Parc Aventura</a></li>
+						
+					</ol>
+				</nav>
 			</div>
-			<h1 class="zone-header-title text-bold">
+			<h1 class="mb-section-header-title">
 				25 Els Mestres Boulder
 			</h1>
 		</div>
@@ -67,36 +67,36 @@
 			</div>
 			<div>
 				
-				<div class="map-container" id="mapid"></div>
+				<div class="mb-map-container" id="mapid"></div>
 				<script>
 					var mymap = L.map('mapid').setView([41.775046, 3.005127], 15);
-				
+
 					// Base layer
 					var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 						maxZoom: 18,
 					}).addTo(mymap);
-				
+
 					// Satellite layer (for ortho view)
 					var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { // Use a satellite imagery provider URL
 						attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
 						maxZoom: 18,
 					});
-				
+
 					var customIcon = L.icon({
 						iconUrl: '/static/images/marker/marker.webp', // URL to your custom icon
 						iconSize: [24, 24], // Size of the icon
 						iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
 						popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
 					});
-				
+
 					var marker = L.marker([41.775046, 3.005127], {icon: customIcon}).addTo(mymap);
-					marker.bindPopup("<b> {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.775046,3.005127' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();				
+					marker.bindPopup("<b> {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.775046,3.005127' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();
 					var baseLayers = {
 						"Street Map": streetMap,
 						"Satellite": satelliteMap
 					};
-				
+
 					L.control.layers(baseLayers).addTo(mymap);
 				</script>
 				
@@ -115,7 +115,9 @@
 			<!--Problem List-->
 			<h2> {{ _("List of Problems") }} </h2>
 			<div class="container">
-				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search" aria-label="Search">
+				</div>
 				<table id="problems-table" class="table table-hover">
 					<thead>
 						<tr>
@@ -138,7 +140,7 @@
 						<a href="/problems/sant-feliu-de-guixols/mestre-petit-5" class="table-row-name text-bold">Mestre petit</a>
 						</div>
 								</td>
-								<td>5+</td>
+								<td><span class="mb-badge mb-badge-grade">5+</span></td>
 							</tr>
 						
 					</tbody>
@@ -155,9 +157,9 @@
 								},
 							]
 						});
-						
+
 						$("#search-problem").trigger("keyup");
-							
+
 						$("#search-problem").keyup(function() {
 							var search_query = $.trim($(this).val());
 							var items = $(".problem-row");
