@@ -177,7 +177,8 @@
 		</div>
 
 		<script>
-			function loadSliders(){
+			/* Calculate min/max from card data (can run while hidden) */
+			function calculateSliderData(){
 				var $cards = $(".custom-card");
 
 				var minVideos = Number.MAX_VALUE;
@@ -209,12 +210,11 @@
 				$("#altitude_slider").data("min", minAltitudes);
 				$("#altitude_slider").data("max", maxAltitudes);
 				$("#altitude_slider").data("values", [minAltitudes, maxAltitudes]);
-
-				$('.range_container').initSlider();
 			};
 
-			function loadFilters(){
-				loadSliders();
+			/* Initialize slider widgets + select2 (must run when panel is VISIBLE) */
+			function initFilterWidgets(){
+				$('.range_container').initSlider();
 
 				$('#country-filter').select2({
 					width: '100%',
@@ -230,14 +230,16 @@
 					applyFilters();
 				});
 
-				//Avoids Dropdown opening when deselecting option
 				$('.select2-selection').on('click', '.select2-selection__choice__remove', function(evt) {
 					evt.stopPropagation();
-				})
+				});
 
 				const filtersApplied = checkIfFiltersApplied();
-      			toggleFilterMark(filtersApplied);
+				toggleFilterMark(filtersApplied);
 			};
+
+			function loadSliders(){ calculateSliderData(); $('.range_container').initSlider(); }
+			function loadFilters(){ calculateSliderData(); initFilterWidgets(); }
 
 			function toggleFilters(){
 				var filterBox = document.getElementById("filter-box");
@@ -245,7 +247,9 @@
 				filterBox.classList.toggle("mb-filter-open");
 				filterButton.classList.toggle("active");
 				if (filterBox.classList.contains("mb-filter-open")) {
-					$('.range_container').refreshSlider();
+					setTimeout(function() {
+						$('.range_container').refreshSlider();
+					}, 50);
 				}
 			}
 
@@ -362,19 +366,27 @@
 
     function Sort(asc) {
       $(".custom-card").sort(function(a, b) {
-        if (currentSortCriteria==="nvid") {
-          var aValue = parseInt($(a).find(".card-text").data("videos"));
-          var bValue = parseInt($(b).find(".card-text").data("videos"));
-          return (asc ? 1 : -1) * (aValue - bValue);
-        }
-        else if (currentSortCriteria==="alph") {
-          return (asc ? 1 : -1) * ($(a).find("h5")[0].textContent.localeCompare($(b).find("h5")[0].textContent));
-        }
-        else if (currentSortCriteria === "alt") {
-            var aAltitude = parseInt($(a).find(".card-image-text").data("altitude"));
-            var bAltitude = parseInt($(b).find(".card-image-text").data("altitude"));
+        try {
+          if (currentSortCriteria==="nvid") {
+            var aValue = parseInt($(a).find(".card-text").data("videos")) || 0;
+            var bValue = parseInt($(b).find(".card-text").data("videos")) || 0;
+            return (asc ? 1 : -1) * (aValue - bValue);
+          }
+          else if (currentSortCriteria==="alph") {
+            var aTitle = $(a).find(".area-card-title, .card-title, h5").first();
+            var bTitle = $(b).find(".area-card-title, .card-title, h5").first();
+            var aText = (aTitle.length ? aTitle.text() : "").trim();
+            var bText = (bTitle.length ? bTitle.text() : "").trim();
+            if (!aText) return 1;
+            if (!bText) return -1;
+            return (asc ? 1 : -1) * aText.localeCompare(bText);
+          }
+          else if (currentSortCriteria === "alt") {
+            var aAltitude = parseInt($(a).find(".card-image-text").data("altitude")) || 0;
+            var bAltitude = parseInt($(b).find(".card-image-text").data("altitude")) || 0;
             return (asc ? 1 : -1) * (aAltitude - bAltitude);
-        }
+          }
+        } catch(e) { return 0; }
       }).appendTo('#zones-list');
     };
 
