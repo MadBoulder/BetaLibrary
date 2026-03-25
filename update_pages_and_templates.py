@@ -5,6 +5,7 @@ from generate_problem_pages import main as generate_problem_pages_main
 from generate_sector_pages import main as generate_sector_pages
 from generate_boulder_pages import main as generate_boulder_pages
 from generate_contributor_pages import main as generate_contributor_pages
+from generate_home_stats import main as generate_home_stats
 
 def updatePages():
     print("\nUpdating and adding maps\n")
@@ -21,6 +22,8 @@ def updatePages():
     generate_boulder_pages()
     print("\nUpdating and adding contributor pages\n")
     generate_contributor_pages()
+    print("\nUpdating home page stats\n")
+    generate_home_stats()
 
 
 if __name__ == '__main__':

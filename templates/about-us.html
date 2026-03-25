@@ -6,54 +6,80 @@
 	<meta name="description" content="Our mission is to empower climbers with comprehensive information, promote sustainable practices, and foster a strong climbing community | MadBoulder">
 	<link rel="canonical" href="https://www.madboulder.org/about-us">
 	{% include 'elements/head-resources.html' %}
-	{% include 'scripts/cookie-scripts.html' %}
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}" />
+	{% include 'scripts/cookie-scripts.html' %}
   </head>
   <body>
 	{% include 'elements/main-menu.html' %}
 	<main>
-        <div class="container" id="mainContainer">
-          <div class="container" id="pageContent">
-			<div class="text-center">
-				<h1 class="section-heading text-uppercase text-bold" style="padding: 2rem;">{{ _("Welcome to MadBoulder!") }}</h1>
-				<p>
-				  {{ _("We are a dedicated team working towards a future where outdoor climbing is accessible to everyone while creating a positive and sustainable impact on climbing areas and their surroundings.") }}
-				</p>  
-				<br/>
-				<p>
-				  {{ _("As outdoor enthusiasts ourselves, we understand the importance of high-quality information tailored to our community's needs. That's why our platform stands out by providing valuable resources that enhance the entire climbing journey. We pride ourselves on delivering exceptional content and adapting to the unique preferences and requirements of climbers.") }}
+		<!-- Hero -->
+		<section class="about-hero">
+			<div class="about-container">
+				<p class="about-hero-eyebrow reveal">{{ _("About us") }}</p>
+				<h1 class="reveal">{{ _("Welcome to MadBoulder!") }}</h1>
+				<p class="about-hero-sub reveal">
+					{{ _("We are a dedicated team working towards a future where outdoor climbing is accessible to everyone while creating a positive and sustainable impact on climbing areas and their surroundings.") }}
 				</p>
 			</div>
-            <br/>
-			<div class="container text-center" style="display: flex; justify-content: space-between;">
-				<div class="card-stats" id="stats-areas">
-					<a class="card-link" href="/bouldering-areas-list">
-						<h3 class="card-stats-value text-bold">{{stats_list[0]['data']}}</h3>
-						<h3 class="card-stats-title text-bold">{{ _("Areas") }}</h3>
-					</a>
-				</div>
-				<div class="card-stats" id="stats-videos">
-					<h3 class="card-stats-value text-bold">{{stats_list[2]['data']}}</h3>
-					<h3 class="card-stats-title text-bold">{{ _("Videos") }}</h3>
-				</div>
-				<div class="card-stats" id="stats-contributors">
-					<a class="card-link" href="/contributors/contributors-list">
-						<h3 class="card-stats-value text-bold">{{stats_list[1]['data']}}</h3>
-						<h3 class="card-stats-title text-bold">{{ _("Contributors") }}</h3>
-					</a>
+		</section>
+
+		<!-- Stats -->
+		<section class="about-stats">
+			<div class="about-container">
+				<div class="about-stats-grid">
+					<div class="about-stats-item reveal reveal-delay-1">
+						<a href="/bouldering-areas-list">
+							<div class="about-stats-number">{{stats_list[0]['data']}}</div>
+							<div class="about-stats-label">{{ _("Areas") }}</div>
+						</a>
+					</div>
+					<div class="about-stats-item reveal reveal-delay-2">
+						<div class="about-stats-number">{{stats_list[2]['data']}}</div>
+						<div class="about-stats-label">{{ _("Videos") }}</div>
+					</div>
+					<div class="about-stats-item reveal reveal-delay-3">
+						<a href="/contributors/contributors-list">
+							<div class="about-stats-number">{{stats_list[1]['data']}}</div>
+							<div class="about-stats-label">{{ _("Contributors") }}</div>
+						</a>
+					</div>
 				</div>
 			</div>
-			<br />
-			<div class="text-center">
-				<p>{{ _("Join MadBoulder and make outdoor climbing sustainable and accessible for all!") }}</p>
-				<div class="container" style="display: flex; justify-content: center; align-items: center;">
-					<a class="btn btn-primary-madboulder btn-xl text-uppercase" href="/join-us">{{_("Join the Team")}}</a>
-				</div>
-			  </div>
-		  </div>
-        </div>
-        <br />
+		</section>
+
+		<!-- Mission -->
+		<section class="about-section about-mission">
+			<div class="about-container">
+				<p class="about-mission-text reveal">
+					{{ _("As outdoor enthusiasts ourselves, we understand the importance of high-quality information tailored to our community's needs. That's why our platform stands out by providing valuable resources that enhance the entire climbing journey. We pride ourselves on delivering exceptional content and adapting to the unique preferences and requirements of climbers.") }}
+				</p>
+			</div>
+		</section>
+
+		<!-- CTA -->
+		<section class="about-cta">
+			<div class="about-container" style="text-align:center;">
+				<p class="about-cta-text reveal">{{ _("Join MadBoulder and make outdoor climbing sustainable and accessible for all!") }}</p>
+				<a class="about-cta-btn reveal" href="/join-us">
+					{{_("Join the Team")}}
+				</a>
+			</div>
+		</section>
 	</main>
 	{% include 'elements/footer.html' %}
+
+	<script>
+		const revealElements = document.querySelectorAll('.reveal');
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('visible');
+				}
+			});
+		}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+		revealElements.forEach(el => observer.observe(el));
+	</script>
   </body>
 </html>
