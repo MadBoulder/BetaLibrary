@@ -244,8 +244,8 @@ $.fn.dataTable.ext.type.order['custom-grade-pre'] = function(data) {
 		'V19+': 110,
 	};
 	
-	// Remove parentheses and their contents using a regular expression
-	data = data.replace(/\([^)]*\)/g, '').replace(/\?/g, '').trim();
+	// Strip HTML tags, parentheses, and question marks
+	data = data.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\?/g, '').trim();
 	if (data.startsWith('V')) {
 		if (VScaleMapping[data]) {
 			return VScaleMapping[data];
