@@ -70,17 +70,16 @@
 	{% if session['uid'] %}
 		<dialog-helper>
 			<dialog data-target="deferred-side-panel.panel" id="userMenuDialog" aria-modal="true" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-small-portrait Overlay--motion-scaleFade Overlay--placement-right SidePanel">
-				<div styles="flex-direction: row;" data-view-component="true" class="Overlay-header">
+				<div data-view-component="true" class="Overlay-header">
 					<div class="Overlay-headerContentWrap">
-						<div hidden class="Overlay-titleWrap">
-							<div data-view-component="true" class="d-flex">
-								<div data-view-component="true" class="overflow-hidden d-flex width-full">
-									<div data-view-component="true" class="lh-condensed overflow-hidden d-flex flex-column flex-justify-center ml-2 f5 mr-auto width-full">
-										<span data-view-component="true" class="Truncate text-bold">
-											<span id="userMenuDialogName" data-view-component="true" class="Truncate-text">
-											</span>
-										</span>
-									</div>
+						<div class="Overlay-titleWrap">
+							<div class="user-menu-profile">
+								<div class="user-menu-avatar">
+									<i class="fas fa-user-circle"></i>
+								</div>
+								<div class="user-menu-info">
+									<span id="userMenuDialogName" class="user-menu-name"></span>
+									<span id="userMenuDialogEmail" class="user-menu-email"></span>
 								</div>
 							</div>
 						</div>
@@ -92,50 +91,36 @@
 					</div>
 				</div>
 				<scrollable-region style="overflow: auto;">
-				<div data-view-component="true" class="Overlay-body d-flex flex-column px-2">
-					<div data-view-component="true" class="d-flex flex-column mb-3">
-						<nav aria-label="User navigation" data-view-component="true" class="ActionList">
-							<nav-list data-catalyst="">
-								<ul data-target="nav-list.topLevelList" data-view-component="true" class="ActionListWrap">
-									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-										<a href="/settings/profile" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-											<i class="fa fa-user"></i>
-											<span data-view-component="true" class="ActionListItem-label">
-												{{ _("Your profile") }}
-											</span>
-										</a>
-									</li>
-									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-										<a href="/upload" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-											<span class="ActionListItem-visual ActionListItem-visual--leading">
-												<i class="fa fa-upload"></i>
-											</span>
-											<span data-view-component="true" class="ActionListItem-label">
-												{{ _("Upload") }}
-											</span>
-										</a>
-									</li>
-									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-										<a href="/settings/projects" data-view-component="true" class="ActionListContent ActionListContent--visual16">
-											<span data-view-component="true" class="ActionListItem-label">
-												{{ _("My Projects") }}
-											</span>
-										</a>
-									</li>
-									<li role="presentation" aria-hidden="true" data-view-component="true" class="ActionList-sectionDivider"></li>
-									<li data-item-id="" data-targets="nav-list.items" data-view-component="true" class="ActionListItem">
-										<a id="item-logout" href="#" data-view-component="true" class="ActionListContent">
-											<span data-view-component="true" class="ActionListItem-label">
-												{{ _("Sign out") }}
-											</span>
-										</a>
-									</li>
-								</ul>
-							</nav-list>
-						</nav>
-					</div>
+				<div data-view-component="true" class="Overlay-body">
+					<nav aria-label="User navigation" class="ActionList">
+						<ul class="ActionListWrap">
+							<li class="ActionListItem">
+								<a href="/settings/profile" class="ActionListContent">
+									<span class="ActionListItem-icon"><i class="fas fa-user"></i></span>
+									<span class="ActionListItem-label">{{ _("Your profile") }}</span>
+								</a>
+							</li>
+							<li class="ActionListItem">
+								<a href="/upload" class="ActionListContent">
+									<span class="ActionListItem-icon"><i class="fas fa-upload"></i></span>
+									<span class="ActionListItem-label">{{ _("Upload") }}</span>
+								</a>
+							</li>
+							<li class="ActionListItem">
+								<a href="/settings/projects" class="ActionListContent">
+									<span class="ActionListItem-icon"><i class="fas fa-folder"></i></span>
+									<span class="ActionListItem-label">{{ _("My Projects") }}</span>
+								</a>
+							</li>
+							<li role="presentation" aria-hidden="true" class="ActionList-sectionDivider"></li>
+							<li class="ActionListItem ActionListItem--danger">
+								<a id="item-logout" href="#" class="ActionListContent">
+									<span class="ActionListItem-icon"><i class="fas fa-sign-out-alt"></i></span>
+									<span class="ActionListItem-label">{{ _("Sign out") }}</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
 				</div>
 				</scrollable-region>
 			</dialog>
@@ -179,6 +164,15 @@
 		dialog.classList.add('above-faded-background');
 		const fadedBackground = document.getElementById('faded-background');
 		fadedBackground.style.display = 'block';
+
+		const auth = window.getAuth();
+		const user = auth.currentUser;
+		if (user) {
+			const nameEl = document.getElementById('userMenuDialogName');
+			const emailEl = document.getElementById('userMenuDialogEmail');
+			if (nameEl) nameEl.textContent = user.displayName || '';
+			if (emailEl) emailEl.textContent = user.email || '';
+		}
 	}
 	
 	function closeUserDialog() {
