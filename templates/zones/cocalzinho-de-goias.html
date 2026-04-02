@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+
+    <title>Bouldering in Cocalzinho de Goiás | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Cocalzinho de Goiás with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+
+	<!-- Weather Widget dependencies -->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies -->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/cocalzinho-de-goias">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/cocalzinho-de-goias">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/cocalzinho-de-goias">
+
+	<!-- Google Ads -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<!-- Section Header with Breadcrumb, Title, and Tabs -->
+		<div class="mb-section-header" style="padding-bottom: 0;">
+		  <div class="container">
+			<nav aria-label="breadcrumb">
+				<ol class="mb-breadcrumb">
+					<li><a href="/bouldering-areas-list">{{ _("All Areas") }}</a></li>
+					<li><a href="/countries/brazil">Brazil</a></li>
+					
+				</ol>
+			</nav>
+			<h1 class="mb-section-header-title" style="padding-bottom: var(--space-3);">
+				Cocalzinho de Goiás
+			</h1>
+		  </div>
+		  <nav>
+			<div class="mb-tabs-wrapper">
+			<div class="mb-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info-circle"></i> Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i> Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-layer-group"></i> Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-play-circle"></i> Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-cloud-sun"></i> Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map-marked-alt"></i> Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fas fa-chart-bar"></i> Stats
+					</a>
+				</li>
+			</div>
+			</div><!-- .mb-tabs-wrapper -->
+			<script>
+				// Scroll fade indicator for tabs
+				(function() {
+					var wrapper = document.querySelector('.mb-tabs-wrapper');
+					var tabs = document.querySelector('.mb-tabs');
+					if (wrapper && tabs) {
+						function checkScroll() {
+							var canScrollRight = tabs.scrollWidth > tabs.clientWidth &&
+								(tabs.scrollLeft + tabs.clientWidth) < (tabs.scrollWidth - 5);
+							wrapper.classList.toggle('has-scroll-right', canScrollRight);
+						}
+						tabs.addEventListener('scroll', checkScroll);
+						window.addEventListener('resize', checkScroll);
+						setTimeout(checkScroll, 100);
+					}
+				})();
+
+				$(document).ready(function () {
+					checkHash();
+
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+						}
+					}
+				});
+
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					e.preventDefault();
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<div class="tab-content" id="myTabContent">
+				<!-- Stats Tab -->
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2 class="mb-mb-4">Stats of Cocalzinho de Goiás Boulder</h2>
+					<div class="container">
+						<div id="zone-summary" class="row justify-content-center" style="gap: var(--space-4);">
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">19</div>
+										<div class="mb-stat-label">Videos</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">8710</div>
+										<div class="mb-stat-label">Views</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">3</div>
+										<div class="mb-stat-label">Contributors</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">0</div>
+										<div class="mb-stat-label">Sectors</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<!-- Weather Tab -->
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2 class="mb-mb-4">Weather Forecast in Cocalzinho de Goiás Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mb-btn mb-btn-secondary" href="/weather-forecast-comparator?default=cocalzinho-de-goias">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '-15.803886',
+											lng: '-408.848951',
+											zone: 'Cocalzinho de Goiás',
+											zone_code: 'cocalzinho-de-goias',
+											uniqueId: 'weather-widget-' + 'cocalzinho-de-goias',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								if (target === "#weather") {
+									loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+
+				<!-- Info Tab -->
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div class="row" style="margin-bottom: var(--space-5);">
+						<div class="col-md-6" style="align-self: center; margin-bottom: var(--space-4);">
+							<div id="area-thumbnail" title="Photo of Cocalzinho de Goiás Boulder" style="border-radius: var(--radius-md); overflow: hidden;">
+								<picture>
+									<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/2eJc7fZNdmY/maxresdefault.jpg">
+									<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/2eJc7fZNdmY/sddefault.jpg">
+									<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/2eJc7fZNdmY/hqdefault.jpg">
+									<img class="img-fluid d-block" src="https://i.ytimg.com/vi/2eJc7fZNdmY/mqdefault.jpg" alt="Photo of Cocalzinho de Goiás Boulder" style="border-radius: var(--radius-md);">
+								</picture>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div id="general-info" class="overflow-auto d-flex flex-column">
+								
+									<div id="features_info">
+										<h2>Bouldering in Cocalzinho de Goiás</h2>
+										<p style="text-align: justify;"><p>Set high in the wild Cerrado of the Serra dos Pireneus, Cocalzinho de Goiás is one of those places where climbing and nature blend into something special. Scattered across quartzite hills above 1,200 meters, you’ll find hundreds of problems on solid, fine-grained rock that mixes sharp crimps, pockets, and rounded slopers. The climbing style is diverse—steep compression lines, powerful roofs, and technical vertical faces—spread across iconic sectors like Casa da Cobra and Saci. Landings are usually friendly, approaches are short, and the whole area has that raw, open feel where you can move at your own pace and explore freely.</p><p>The best time to climb here is during the dry season from May to September, when the rock stays clean, the friction is reliable, and access roads are manageable. While it’s possible to boulder year-round, the wet season can make things tricky. What really makes Cocalzinho stand out is its scale and energy—it’s a true hub of Brazilian bouldering, with festivals like Rockocal bringing the community together, yet on a normal day you can still find your own quiet corner among the blocs. Respect the land, tread lightly, and you’ll tap into a place that feels both powerful and grounded, where hard climbing and good vibes go hand in hand.</p></p>
+									</div>
+								
+								<div id="general_stats" class="mb-mt-3">
+									<div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-video" style="margin-right: 4px;"></i> 26 Videos</span>
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-mountain" style="margin-right: 4px;"></i> Quartzite</span>
+										
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-arrow-up" style="margin-right: 4px;"></i> 1206m</span>
+										
+									</div>
+								</div>
+								{% if session['is_admin'] %}
+									<a href="/edit-area/cocalzinho-de-goias" class="mb-mt-3" style="font-size: var(--font-sm);">
+										Editar Zona
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					
+					  <div style="margin-bottom: var(--space-4);">
+						<h2 class="mb-mb-3">Guidebooks of Cocalzinho de Goiás Boulder</h2>
+						
+						
+						  <div class="list-group mb-mt-3" style="border-radius: var(--radius-md); overflow: hidden;">
+							
+							  <a href="https://27crags.com/crags/cocalzinho-de-goias-13062" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center" style="gap: var(--space-2);">
+								<i class="fas fa-book" style="color: var(--color-text-secondary);"></i>
+								<span class="text-bold">Cocalzinho de Goiás 27Crags</span>
+								
+							  </a>
+							
+						  </div>
+						
+					  </div>
+					
+				</div>
+
+				<!-- Map Tab -->
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2 class="mb-mb-4">Map of Cocalzinho de Goiás Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%; border-radius: var(--radius-md); overflow: hidden;">
+							<iframe
+								src="maps/cocalzinho-de-goias"
+								frameborder="0"
+								loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+
+				<!-- Problems Tab (empty, content below) -->
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+
+				<!-- Sectors Tab -->
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2 class="mb-mb-4">List of 9 Sectors of Cocalzinho de Goiás Boulder</h2>
+					<div class="container">
+						<div class="mb-table-search">
+							<input id="search-sector" class="form-control" type="text" placeholder="Search sectors..." aria-label="Search sectors">
+						</div>
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col">{{ _("Name") }}</th>
+									<th scope="col">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/alta-tensao" class="table-row-name text-bold">Alta tensão</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/casa-da-cobra-florestinha" class="table-row-name text-bold">Casa da Cobra / Florestinha</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/cinematografico" class="table-row-name text-bold">Cinematográfico</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/jurassic" class="table-row-name text-bold">Jurassic</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/moco" class="table-row-name text-bold">Mocó</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/saci" class="table-row-name text-bold">Saci</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/salao-de-guerra" class="table-row-name text-bold">Salão de Guerra</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/cocalzinho-de-goias/vizinho-da-cobra" class="table-row-name text-bold">Vizinho da Cobra</a>
+										</td>
+										<td class="text-center">4</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+
+				<!-- Playlists Tab -->
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2 class="mb-mb-4">List of Playlists from Cocalzinho de Goiás Boulder</h2>
+					<div class="row justify-content-center">
+						<div class="col-md-8 col-lg-6">
+							<p class="text-center text-bold mb-2">
+								{{ _("Full") }}
+							</p>
+							<div style="position: relative; padding-top: 56.25%; border-radius: var(--radius-md); overflow: hidden;">
+								<iframe
+									src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP738ibHC6DF_JUD32q6VbL"
+									frameborder="0"
+									loading="lazy"
+									allowfullscreen
+									style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+								</iframe>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+
+			<!-- Mid Ads -->
+			<div style="display: flex; justify-content: center; margin: var(--space-5) 0;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<!-- Problems List -->
+			<h2 class="mb-mb-4">19 Boulder Problems with Video Beta in Cocalzinho de Goiás</h2>
+			<div class="container">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search problems..." aria-label="Search problems">
+				</div>
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col">{{ _("Name") }}</th>
+							<th scope="col">{{ _("Grade") }}</th>
+							<th scope="col">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Abaulet, V6. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/abaulet-v6">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Abaulet, V6. Cocalzinho de Goiás" src="https://img.youtube.com/vi/ptYUbqcBWkE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/abaulet-v6" class="table-row-name text-bold">Abaulet</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V6</span></td>
+								<td>Casa da Cobra / Florestinha</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Aqui tem boulder, V5. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/aqui-tem-boulder-v5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Aqui tem boulder, V5. Cocalzinho de Goiás" src="https://img.youtube.com/vi/waYr-jfZlwI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/aqui-tem-boulder-v5" class="table-row-name text-bold">Aqui tem boulder</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V5</span></td>
+								<td>Saci</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Bicho Pau, 7c+. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/bicho-pau-7c">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Bicho Pau, 7c+. Cocalzinho de Goiás" src="https://img.youtube.com/vi/91YdQpEuhiY/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/bicho-pau-7c" class="table-row-name text-bold">Bicho Pau</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7c+</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Encravada, V8. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/encravada-v8">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Encravada, V8. Cocalzinho de Goiás" src="https://img.youtube.com/vi/BmFoBcrGlm0/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/encravada-v8" class="table-row-name text-bold">Encravada</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V8</span></td>
+								<td>Cinematográfico</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Faquir, V8_9. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/faquir-v8-9">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Faquir, V8_9. Cocalzinho de Goiás" src="https://img.youtube.com/vi/eaqZ69pQ4zc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/faquir-v8-9" class="table-row-name text-bold">Faquir</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V8/9</span></td>
+								<td>Vizinho da Cobra</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Fendinha, V2. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/fendinha-v2">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fendinha, V2. Cocalzinho de Goiás" src="https://img.youtube.com/vi/sqJ_guLNr_s/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/fendinha-v2" class="table-row-name text-bold">Fendinha</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V2</span></td>
+								<td>Mocó</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Fio negativo, V2. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/fio-negativo-v2">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fio negativo, V2. Cocalzinho de Goiás" src="https://img.youtube.com/vi/1OTSIcwD9mo/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/fio-negativo-v2" class="table-row-name text-bold">Fio negativo</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V2</span></td>
+								<td>Alta tensão</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Interestelar, V9. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/interestelar-v9">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Interestelar, V9. Cocalzinho de Goiás" src="https://img.youtube.com/vi/OPBofbi54Ko/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/interestelar-v9" class="table-row-name text-bold">Interestelar</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V9</span></td>
+								<td>Cinematográfico</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Massa cinzenta, V2. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/massa-cinzenta-v2">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Massa cinzenta, V2. Cocalzinho de Goiás" src="https://img.youtube.com/vi/Zx07gRu-W9I/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/massa-cinzenta-v2" class="table-row-name text-bold">Massa cinzenta</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V2</span></td>
+								<td>Mocó</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Moai sentado, V7. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/moai-sentado-v7">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Moai sentado, V7. Cocalzinho de Goiás" src="https://img.youtube.com/vi/icLb6U-qD9Q/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/moai-sentado-v7" class="table-row-name text-bold">Moai sentado</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V7</span></td>
+								<td>Mocó</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Obstinação, V3. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/obstinacao-v3">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Obstinação, V3. Cocalzinho de Goiás" src="https://img.youtube.com/vi/zbaYXoQHseI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/obstinacao-v3" class="table-row-name text-bold">Obstinação</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V3</span></td>
+								<td>Casa da Cobra / Florestinha</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Pirigrimage, V5. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/pirigrimage-v5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Pirigrimage, V5. Cocalzinho de Goiás" src="https://img.youtube.com/vi/GWhyrPZcWpI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/pirigrimage-v5" class="table-row-name text-bold">Pirigrimage</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V5</span></td>
+								<td>Casa da Cobra / Florestinha</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Piés no chão, V5 (sit). Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/pies-no-chao-v5-sit">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Piés no chão, V5 (sit). Cocalzinho de Goiás" src="https://img.youtube.com/vi/sZWpOdAMZFE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/pies-no-chao-v5-sit" class="table-row-name text-bold">Piés no chão</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V5 (sit)</span></td>
+								<td>Mocó</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Raizes, V5. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/raizes-v5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Raizes, V5. Cocalzinho de Goiás" src="https://img.youtube.com/vi/2eJc7fZNdmY/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/raizes-v5" class="table-row-name text-bold">Raizes</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V5</span></td>
+								<td>Casa da Cobra / Florestinha</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Sotogari, V7/8. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/sotogari-v7-8">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sotogari, V7/8. Cocalzinho de Goiás" src="https://img.youtube.com/vi/fBiBxci2zic/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/sotogari-v7-8" class="table-row-name text-bold">Sotogari</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V7/8</span></td>
+								<td>Vizinho da Cobra</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Tijolo, V7. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/tijolo-v7">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Tijolo, V7. Cocalzinho de Goiás" src="https://img.youtube.com/vi/o-bEBz10Ick/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/tijolo-v7" class="table-row-name text-bold">Tijolo</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V7</span></td>
+								<td>Jurassic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Vizinho da Cobra, V7. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/vizinho-da-cobra-v7">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Vizinho da Cobra, V7. Cocalzinho de Goiás" src="https://img.youtube.com/vi/-apuOGdKg1s/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/vizinho-da-cobra-v7" class="table-row-name text-bold">Vizinho da Cobra</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V7</span></td>
+								<td>Vizinho da Cobra</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Vulva, V3/4. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/vulva-v3-4">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Vulva, V3/4. Cocalzinho de Goiás" src="https://img.youtube.com/vi/M3JdkN5JpW4/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/vulva-v3-4" class="table-row-name text-bold">Vulva</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V3/4</span></td>
+								<td>Salão de Guerra</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="k-47 Sit,  V10. Cocalzinho de Goiás" href="/problems/cocalzinho-de-goias/k-47-sit-v10">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of k-47 Sit,  V10. Cocalzinho de Goiás" src="https://img.youtube.com/vi/DEbvL-SKe_U/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/cocalzinho-de-goias/k-47-sit-v10" class="table-row-name text-bold">k-47 Sit</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">V10</span></td>
+								<td>Vizinho da Cobra</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+
+						$("#search-problem").trigger("keyup");
+
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
