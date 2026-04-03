@@ -16,6 +16,9 @@
 
 	<link rel="canonical" href="https://www.madboulder.org/problems/can-boquet/comedor-de-llemas-6b">
 	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	
 
 	</head>
 	<body>
@@ -37,7 +40,7 @@
 							<li><a href="/can-boquet">Can Boquet</a></li>
 							<li><a href="/sectors/can-boquet/petit-paradis">Petit Paradís</a></li>
 							
-							<li><a href="/boulders/can-boquet/https-www-youtube-com-c-madboulder">https://www.youtube.com/c/MadBoulder</a></li>
+							<li><a href="/boulders/can-boquet/el-placer-del-gesto">El placer del gesto</a></li>
 							
 							
 						</ol>
@@ -78,7 +81,7 @@
 					<!-- Video -->
 					<div class="mb-video-wrapper">
 						<div class="mb-video-container">
-							<iframe src="https://www.youtube.com/embed/MABONrD0Kcw" allowfullscreen loading="lazy"></iframe>
+							<iframe src="https://www.youtube.com/embed/8pxCcDvy6FE" allowfullscreen loading="lazy"></iframe>
 						</div>
 						<div class="mb-video-climber-bar">
 							<span class="mb-video-climber">
@@ -172,6 +175,36 @@
 					</div>
 
 					<!-- Map -->
+					
+					<div class="mb-mt-5">
+						<h3 class="mb-map-header">{{ _("Location") }}</h3>
+						<div class="mb-map-container" id="mapid"></div>
+						<script>
+							var mymap = L.map('mapid').setView([41.508176, 2.334913], 15);
+
+							var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+								attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+								maxZoom: 18,
+							}).addTo(mymap);
+
+							var satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+								attribution: 'Tiles &copy; Esri',
+								maxZoom: 18,
+							});
+
+							var customIcon = L.icon({
+								iconUrl: '/static/images/marker/marker.webp',
+								iconSize: [24, 24],
+								iconAnchor: [12, 12],
+								popupAnchor: [0, -12]
+							});
+
+							var marker = L.marker([41.508176, 2.334913], {icon: customIcon}).addTo(mymap);
+							marker.bindPopup("<b>El placer del gesto {{ _('Boulder Location') }}</b><br><a href='https://www.google.com/maps?q=41.508176,2.334913' target='_blank'>{{ _('Open in Google Maps') }}</a>").openPopup();
+
+							L.control.layers({"Street Map": streetMap, "Satellite": satelliteMap}).addTo(mymap);
+						</script>
+					</div>
 					
 
 					<!-- Post-Content Ad -->
