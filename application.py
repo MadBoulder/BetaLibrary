@@ -1312,16 +1312,30 @@ def submit_area():
 def fetch_altitude():
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
-    url = f"https://api.opentopodata.org/v1/aster30m?locations={latitude},{longitude}"
-    
+
+    # Primary: Open-Meteo (free, no API key, global coverage)
     try:
-        response = requests.get(url)
+        url = f"https://api.open-meteo.com/v1/elevation?latitude={latitude}&longitude={longitude}"
+        response = requests.get(url, timeout=5)
         if response.status_code == 200:
-            return jsonify(response.json())
-        else:
-            return jsonify({'error': 'Failed to fetch data'}), response.status_code
-    except requests.RequestException as e:
-        return jsonify({'error': str(e)}), 500
+            data = response.json()
+            if 'elevation' in data and len(data['elevation']) > 0:
+                return jsonify({'results': [{'elevation': data['elevation'][0]}]})
+    except requests.RequestException:
+        pass
+
+    # Fallback: Open Elevation (free, global coverage)
+    try:
+        url = f"https://api.open-elevation.com/api/v1/lookup?locations={latitude},{longitude}"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            if 'results' in data and len(data['results']) > 0:
+                return jsonify({'results': [{'elevation': data['results'][0]['elevation']}]})
+    except requests.RequestException:
+        pass
+
+    return jsonify({'error': 'Failed to fetch elevation data'}), 502
     
     
 @app.route('/get-countries')
