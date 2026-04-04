@@ -13,87 +13,143 @@
   </head>
   <body>
 	{% include 'elements/main-menu.html' %}
+	<style>
+		.area-editor-page { max-width: 780px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+		.area-editor-page h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; }
+		.ae-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+		.ae-section-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; margin-bottom: 1rem; }
+		.ae-section label.form-label { font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.3rem; }
+		.ae-section .form-control, .ae-section .form-select { font-size: 0.875rem; border-radius: 6px; }
+		.ae-section .form-control:focus, .ae-section .form-select:focus { border-color: #ffc800; box-shadow: 0 0 0 2px rgba(255,200,0,0.15); }
+		.ae-section .form-control[readonly] { background-color: #f9fafb; color: #6b7280; }
+		.ae-inline-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+		.ae-map-wrapper { border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; margin-bottom: 0.75rem; }
+		.ae-map-wrapper #area-map, .ae-map-wrapper #parking-map { border-radius: 0; }
+		.ae-submit-bar { text-align: center; padding-top: 0.5rem; }
+		.ae-submit-bar .btn { min-width: 200px; font-size: 1rem; padding: 0.6rem 2rem; }
+		@media (max-width: 576px) { .area-editor-page { padding: 1rem 0.5rem 2rem; } .ae-section { padding: 1rem; } }
+	</style>
 	<main>
-		<div class="zone-header">
-			<div style="display: flex; justify-content: center;">
-				<h1 class="zone-header-title text-bold">
-					{{ action }}  Bouldering Area
-				</h1>
-			</div>
-		</div>
-		<div class="container" id="mainContainer">
+		<div class="area-editor-page" id="mainContainer">
+			<h1>{{ action }} Bouldering Area</h1>
 			<form id="areaForm" method="post">
-				<div class="mb-3">
-					<label for="name">Area Name:</label>
-					<input type="text" id="name" name="name" required>
-				</div>
-				<div class="mb-3" style="display: flex; align-items: center;">
-					<label for="country">Country:</label>
-					<select id="country-select" name="countryCode" class="form-select" onchange="updateStatesDropdown();" style="margin: 0.5rem;" required>
-						<option value="">Select a country</option>
-						{% for country_code, country_info in countries.items() %}
-							<option value="{{ country_code }}">{{ country_info['name'][0] }}</option>
-						{% endfor %}
-					</select>
-					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal" style="white-space: nowrap;">
-						Add New Country
-					</button>
-				</div>
-				<div class="mb-3 d-none" id="states-container" style="display: flex; align-items: center;">
-					<label for="area-state">State</label>
-					<select class="form-select" id="area-state" style="margin: 0.5rem;">
-						<option value="">Select a state</option>
-					</select>
-					<button type="button" class="btn btn-primary" onclick="addNewState();" style="white-space: nowrap;">
-						Add New State
-					</button>
-				</div>
-				<div id="area-map" style="height: 400px; width: 100%;"></div>
-				<input type="text" id="area-coordinates" class="form-control mb-3" placeholder="Latitude, Longitude" required readonly>
-				<div>
-					<label for="altitude">Altitude (meters):</label>
-					<input type="text" id="altitude" name="altitude" readonly>
-				</div>
-				<div class="mb-3">
-					<label for="zoom-level">Zoom Level</label>
-					<input type="number" id="zoom-level" name="zoom" class="form-control" value="16" required>
-				</div>
-				<div class="mb-3">
-					<label for="rock_type">Rock Type:</label>
-					<select id="rock_type" name="rock_type" class="form-select" required>
-						<option value="">Select Rock Type</option>
-						{% for rockTypeCode, rockTypeName in rockTypes.items() %}
-							<option value="{{ rockTypeCode }}">{{ rockTypeName }}</option>
-						{% endfor %}
-					</select>
-				</div>
-				<div class="mb-3">
-					<label>Overview (English)</label>
-					<textarea class="form-control" id="overview-en" rows="3"></textarea>
-				</div>
-				<div class="mb-3">
-					<label>Overview (Spanish)</label>
-					<textarea class="form-control" id="overview-es" rows="3"></textarea>
-				</div>
-				
-				<div class="mb-3">
-					<button id="addParkingButton" class="btn btn-primary" onclick="showParkingMap()">Add Parkings</button>
-					<div id="parkingMapContainer" style="display:none;">
-						<div id="parking-map" style="height: 400px; width: 100%;"></div>
-						<div id="parking-coordinates-container"></div>
-						<button type="button" id="clear-parkings" class="btn btn-warning">Clear Parkings</button>
+
+				<!-- Basic Info -->
+				<div class="ae-section">
+					<div class="ae-section-title">Basic Information</div>
+					<div class="mb-3">
+						<label for="name" class="form-label">Area Name</label>
+						<input type="text" id="name" name="name" class="form-control" placeholder="e.g. Albarracín" required>
+					</div>
+					<div class="mb-3">
+						<label for="country" class="form-label">Country</label>
+						<div class="ae-inline-row">
+							<select id="country-select" name="countryCode" class="form-select" onchange="updateStatesDropdown();" required>
+								<option value="">Select a country</option>
+								{% for country_code, country_info in countries.items() %}
+									<option value="{{ country_code }}">{{ country_info['name'][0] }}</option>
+								{% endfor %}
+							</select>
+							<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addCountryModal" style="white-space: nowrap;">
+								+ New Country
+							</button>
+						</div>
+					</div>
+					<div class="mb-3 d-none" id="states-container">
+						<label for="area-state" class="form-label">State</label>
+						<div class="ae-inline-row">
+							<select class="form-select" id="area-state">
+								<option value="">Select a state</option>
+							</select>
+							<button type="button" class="btn btn-outline-secondary btn-sm" onclick="addNewState();" style="white-space: nowrap;">
+								+ New State
+							</button>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="rock_type" class="form-label">Rock Type</label>
+						<select id="rock_type" name="rock_type" class="form-select" required>
+							<option value="">Select Rock Type</option>
+							{% for rockTypeCode, rockTypeName in rockTypes.items() %}
+								<option value="{{ rockTypeCode }}">{{ rockTypeName }}</option>
+							{% endfor %}
+						</select>
 					</div>
 				</div>
-				<div class="mb-3">
-					<button id="addLinkButton" class="btn btn-primary" onclick="addLinkFields()">Add New Link</button>
+
+				<!-- Location -->
+				<div class="ae-section">
+					<div class="ae-section-title">Location</div>
+					<p style="font-size:0.8rem; color:#6b7280; margin-bottom:0.75rem;">Click on the map to place the area marker. Right-click a marker to remove it.</p>
+					<div class="ae-map-wrapper">
+						<div id="area-map" style="height: 400px; width: 100%;"></div>
+					</div>
+					<div class="row g-3">
+						<div class="col-sm-5">
+							<label class="form-label">Coordinates</label>
+							<input type="text" id="area-coordinates" class="form-control" placeholder="Latitude, Longitude" required readonly>
+						</div>
+						<div class="col-sm-4">
+							<label for="altitude" class="form-label">Altitude (m)</label>
+							<input type="text" id="altitude" name="altitude" class="form-control" readonly>
+						</div>
+						<div class="col-sm-3">
+							<label for="zoom-level" class="form-label">Zoom Level</label>
+							<input type="number" id="zoom-level" name="zoom" class="form-control" value="16" required>
+						</div>
+					</div>
+				</div>
+
+				<!-- Description -->
+				<div class="ae-section">
+					<div class="ae-section-title">Description</div>
+					<div class="mb-3">
+						<label class="form-label">Overview (English)</label>
+						<textarea class="form-control" id="overview-en" rows="3"></textarea>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Overview (Spanish)</label>
+						<textarea class="form-control" id="overview-es" rows="3"></textarea>
+					</div>
+				</div>
+
+				<!-- Parkings -->
+				<div class="ae-section">
+					<div class="ae-section-title">Parkings</div>
+					<button type="button" id="addParkingButton" class="btn btn-outline-secondary btn-sm" onclick="showParkingMap()">
+						<i class="fas fa-parking"></i> Add Parkings
+					</button>
+					<div id="parkingMapContainer" style="display:none;">
+						<p style="font-size:0.8rem; color:#6b7280; margin:0.75rem 0 0.5rem;">Click on the map to add parking locations.</p>
+						<div class="ae-map-wrapper">
+							<div id="parking-map" style="height: 400px; width: 100%;"></div>
+						</div>
+						<div id="parking-coordinates-container"></div>
+						<button type="button" id="clear-parkings" class="btn btn-outline-danger btn-sm mt-2">Clear Parkings</button>
+					</div>
+				</div>
+
+				<!-- Links -->
+				<div class="ae-section">
+					<div class="ae-section-title">Links</div>
+					<button type="button" id="addLinkButton" class="btn btn-outline-secondary btn-sm" onclick="addLinkFields()">
+						<i class="fas fa-link"></i> Add New Link
+					</button>
 					<div id="linksContainer" class="mt-2"></div>
 				</div>
-				<div class="mb-3">
-					<button id="addGuideButton" class="btn btn-primary" onclick="addGuideFields()">Add New Guide</button>
+
+				<!-- Guides -->
+				<div class="ae-section">
+					<div class="ae-section-title">Guides</div>
+					<button type="button" id="addGuideButton" class="btn btn-outline-secondary btn-sm" onclick="addGuideFields()">
+						<i class="fas fa-book"></i> Add New Guide
+					</button>
 					<div id="guidesContainer" class="mt-2"></div>
 				</div>
-				<div class="mb-3" style="text-align: center;">
-					<button type="submit" class="btn btn-primary-madboulder">{{ action }}  Area</button>
+
+				<!-- Submit -->
+				<div class="ae-submit-bar">
+					<button type="submit" class="btn btn-primary-madboulder">{{ action }} Area</button>
 				</div>
 			</form>
 			<div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
