@@ -137,6 +137,53 @@ def inject_language():
     language = get_locale()
     return dict(current_lang=language)
 
+@app.context_processor
+def inject_footer_sitemap():
+    try:
+        areas_data = get_zone_data()
+        countries_data = utils.MadBoulderDatabase.getCountriesData()
+        locale = get_locale()
+        lang_idx = 1 if locale == 'es' else 0
+        sitemap = {}
+        for area_code, area in areas_data.items():
+            country_code = area.get('country', '')
+            if not country_code:
+                continue
+            country_info = countries_data.get(country_code, {})
+            country_names = country_info.get('name', ['', '']) if country_info else ['', '']
+            country_name = country_names[lang_idx] if len(country_names) > lang_idx and country_names[lang_idx] else (country_names[0] if country_names else country_code.replace('-', ' ').title())
+            state_code = area.get('state', '')
+            states_info = country_info.get('states', {})
+            state_name = ''
+            if state_code and state_code in states_info:
+                state_names = states_info[state_code].get('name', ['', ''])
+                state_name = state_names[lang_idx] if len(state_names) > lang_idx and state_names[lang_idx] else (state_names[0] if state_names else '')
+            if country_code not in sitemap:
+                sitemap[country_code] = {
+                    'name': country_name,
+                    'states': {},
+                    'areas_no_state': [],
+                }
+            area_entry = {'code': area_code, 'name': area.get('name', '')}
+            if state_name:
+                if state_code not in sitemap[country_code]['states']:
+                    sitemap[country_code]['states'][state_code] = {
+                        'name': state_name,
+                        'areas': [],
+                    }
+                sitemap[country_code]['states'][state_code]['areas'].append(area_entry)
+            else:
+                sitemap[country_code]['areas_no_state'].append(area_entry)
+        # Sort
+        for c in sitemap.values():
+            c['areas_no_state'].sort(key=lambda a: a['name'])
+            for s in c['states'].values():
+                s['areas'].sort(key=lambda a: a['name'])
+        sorted_sitemap = dict(sorted(sitemap.items(), key=lambda x: x[1]['name']))
+        return dict(footer_sitemap=sorted_sitemap)
+    except Exception:
+        return dict(footer_sitemap={})
+
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -1338,6 +1385,64 @@ def fetch_altitude():
     return jsonify({'error': 'Failed to fetch elevation data'}), 502
     
     
+@app.route('/guidebooks')
+def guidebooks():
+    areas_data = get_zone_data()
+    countries_data = utils.MadBoulderDatabase.getCountriesData()
+    locale = get_locale()
+    lang_idx = 1 if locale == 'es' else 0
+    guides_map = {}  # key: (name, link) -> guide dict with areas list
+    for area_code, area in areas_data.items():
+        for guide in area.get('guides', []):
+            if guide.get('link'):
+                link = guide['link']
+                if isinstance(link, list):
+                    link = link[lang_idx] if len(link) > lang_idx and link[lang_idx] else (link[0] if link[0] else '')
+                if link:
+                    key = (guide.get('name', ''), link)
+                    # Resolve country name
+                    country_code = area.get('country', '')
+                    country_info = countries_data.get(country_code, {})
+                    country_names = country_info.get('name', ['', '']) if country_info else ['', '']
+                    country_name = country_names[lang_idx] if len(country_names) > lang_idx and country_names[lang_idx] else (country_names[0] if country_names else country_code.replace('-', ' ').title())
+                    area_entry = {
+                        'area_name': area.get('name', ''),
+                        'area_code': area_code,
+                        'country_code': country_code,
+                        'country_name': country_name,
+                    }
+                    if key in guides_map:
+                        guides_map[key]['areas'].append(area_entry)
+                    else:
+                        # Extract provider from link
+                        provider = 'Other'
+                        if 'amazon' in link or 'amzn' in link:
+                            provider = 'Amazon'
+                        elif 'desnivel' in link:
+                            provider = 'Desnivel'
+                        elif 'barrabes' in link:
+                            provider = 'Barrabés'
+                        elif 'rockfax' in link:
+                            provider = 'Rockfax'
+                        elif 'vertical-life' in link or 'verticallife' in link:
+                            provider = 'Vertical Life'
+                        elif '27crags' in link:
+                            provider = '27 Crags'
+                        guides_map[key] = {
+                            'name': guide.get('name', ''),
+                            'link': link,
+                            'thumbnail': guide.get('thumbnail', ''),
+                            'provider': provider,
+                            'areas': [area_entry],
+                        }
+    all_guides = list(guides_map.values())
+    # Sort by first area name
+    all_guides.sort(key=lambda g: g['areas'][0]['area_name'])
+    # Collect unique providers for filter
+    providers = sorted(set(g['provider'] for g in all_guides))
+    return render_template('guidebooks.html', guides=all_guides, providers=providers)
+
+
 @app.route('/get-countries')
 def get_countries():
     countries = utils.MadBoulderDatabase.getCountriesData()

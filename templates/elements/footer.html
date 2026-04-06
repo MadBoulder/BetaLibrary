@@ -1,18 +1,39 @@
 <footer class="site-footer">
-  <div class="footer-content">
-	<div class="footer-social">
-	  <ul class="footer-social-list">
-		<li>
-		  <a href="https://www.instagram.com/madboulder/" aria-label="Follow MadBoulder on Instagram" target="_blank" class="footer-social-link">
-			<i class="fab fa-instagram fa-lg"></i>
-		  </a>
-		</li>
-		<li>
-		  <a href="https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA" aria-label="Subscribe to MadBoulder on YouTube" target="_blank" class="footer-social-link">
-			<i class="fab fa-youtube fa-lg"></i>
-		  </a>
-		</li>
-		<li>
+  <!-- Sitemap -->
+  <nav class="footer-sitemap" aria-label="Site navigation">
+	<div class="footer-sitemap-inner">
+	  <div class="footer-sitemap-col">
+		<h4>{{ _("Explore") }}</h4>
+		<ul>
+		  <li><a href="/bouldering-areas-map">{{ _("Map") }}</a></li>
+		  <li><a href="/bouldering-areas-list">{{ _("Areas") }}</a></li>
+		  <li><a href="/area-problem-finder">{{ _("Problem Finder") }}</a></li>
+		  <li><a href="/guidebooks">{{ _("Guidebooks") }}</a></li>
+		</ul>
+	  </div>
+	  <div class="footer-sitemap-col">
+		<h4>{{ _("Community") }}</h4>
+		<ul>
+		  <li><a href="/video-uploader">{{ _("Upload") }}</a></li>
+		  <li><a href="/contributors/contributors-list">{{ _("Contributors") }}</a></li>
+		  <li><a href="https://www.blog.madboulder.org/" target="_blank">{{ _("Blog") }}</a></li>
+		</ul>
+	  </div>
+	  <div class="footer-sitemap-col">
+		<h4>{{ _("About") }}</h4>
+		<ul>
+		  <li><a href="/about-us">{{ _("About Us") }}</a></li>
+		  <li><a href="/join-us">{{ _("Join Us") }}</a></li>
+		  <li><a href="/statistics">{{ _("Statistics") }}</a></li>
+		</ul>
+	  </div>
+	  <div class="footer-sitemap-col">
+		<h4>{{ _("Follow Us") }}</h4>
+		<ul>
+		  <li><a href="https://www.instagram.com/madboulder/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+		  <li><a href="https://www.youtube.com/channel/UCX9ok0rHnvnENLSK7jdnXxA" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
+		</ul>
+		<div style="margin-top: var(--space-3, 12px);">
 		  <select id="language-select" class="form-select footer-language-select" aria-label="Language Selector">
 			<option value="en">{{ _("English") }}</option>
 			<option value="es">{{ _("Spanish") }}</option>
@@ -29,11 +50,57 @@
 			  });
 			});
 		  </script>
-		</li>
-	  </ul>
+		</div>
+	  </div>
 	</div>
 	<div class="footer-newsletter" data-form="BX7QnH"></div>
+  </nav>
+
+  <!-- Browse by Country -->
+  {% if footer_sitemap %}
+  <div class="footer-browse">
+	<div class="footer-browse-inner">
+	  <button class="footer-browse-toggle" onclick="this.parentElement.classList.toggle('open'); this.querySelector('.footer-browse-arrow').classList.toggle('open');">
+		<h4>{{ _("Browse by Country") }} <span class="footer-browse-count">({{ footer_sitemap|length }})</span></h4>
+		<i class="fas fa-chevron-down footer-browse-arrow"></i>
+	  </button>
+	  <div class="footer-browse-content">
+		<div class="footer-countries-grid">
+		  {% for country_code, country in footer_sitemap.items() %}
+		  <div class="footer-country">
+			<div class="footer-country-toggle">
+			  <a href="/countries/{{ country_code }}" class="footer-country-name">{{ country.name }}</a>
+			  <button class="footer-country-expand" onclick="this.closest('.footer-country').classList.toggle('open');" aria-label="Expand">
+				<i class="fas fa-chevron-right footer-country-arrow"></i>
+			  </button>
+			</div>
+			<div class="footer-country-content">
+			  {% for state_code, state in country.states.items() %}
+			  <div class="footer-state">
+				<span class="footer-state-name">{{ state.name }}</span>
+				<div class="footer-area-list">
+				  {% for area in state.areas %}
+				  <a href="/{{ area.code }}">{{ area.name }}</a>
+				  {% endfor %}
+				</div>
+			  </div>
+			  {% endfor %}
+			  {% if country.areas_no_state %}
+			  <div class="footer-area-list">
+				{% for area in country.areas_no_state %}
+				<a href="/{{ area.code }}">{{ area.name }}</a>
+				{% endfor %}
+			  </div>
+			  {% endif %}
+			</div>
+		  </div>
+		  {% endfor %}
+		</div>
+	  </div>
+	</div>
   </div>
+  {% endif %}
+
   <hr class="footer-divider">
   <div class="footer-bottom">
 	<p class="footer-copyright">{{ _("All Rights Reserved.") }} <script>document.write(new Date().getFullYear())</script>.</p>
@@ -61,38 +128,186 @@
     margin-top: auto;
   }
 
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .footer-sitemap-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-5, 32px);
     max-width: 1200px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-    gap: var(--space-3, 12px);
+    margin: 0 auto var(--space-4, 16px);
   }
 
-  .footer-social {
-    display: flex;
-    align-items: center;
+  .footer-sitemap-col h4 {
+    font-size: var(--font-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--color-text, #1a1a1a);
+    margin: 0 0 var(--space-3, 12px);
   }
 
-  .footer-social-list {
+  .footer-sitemap-col ul {
     list-style: none;
-    display: flex;
-    align-items: center;
-    gap: var(--space-3, 12px);
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 8px);
   }
 
-  .footer-social-link {
+  .footer-sitemap-col a {
     color: var(--color-text-secondary, #6b7280);
+    text-decoration: none;
+    font-size: var(--font-sm, 0.875rem);
     transition: color var(--transition-fast, 150ms ease);
   }
 
-  .footer-social-link:hover {
+  .footer-sitemap-col a:hover {
     color: var(--color-primary, #ffc800);
   }
+
+  .footer-sitemap-col a i {
+    width: 16px;
+    margin-right: 4px;
+  }
+
+  /* Browse by Country */
+  .footer-browse {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 var(--space-3, 12px);
+  }
+
+  .footer-browse-inner { }
+
+  .footer-browse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2, 8px) 0;
+  }
+
+  .footer-browse-toggle h4 {
+    font-size: var(--font-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--color-text, #1a1a1a);
+    margin: 0;
+  }
+
+  .footer-browse-count {
+    font-weight: 400;
+    color: var(--color-text-muted, #9ca3af);
+  }
+
+  .footer-browse-arrow {
+    color: var(--color-text-muted, #9ca3af);
+    font-size: 0.7rem;
+    transition: transform 200ms ease;
+  }
+
+  .footer-browse-arrow.open {
+    transform: rotate(180deg);
+  }
+
+  .footer-browse-content {
+    display: none;
+    padding-top: var(--space-3, 12px);
+  }
+
+  .footer-browse-inner.open .footer-browse-content {
+    display: block;
+  }
+
+  .footer-countries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-1, 4px) var(--space-4, 16px);
+  }
+
+  .footer-country { }
+
+  .footer-country-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: var(--space-1, 4px) 0;
+  }
+
+  .footer-country-name {
+    color: var(--color-text-secondary, #6b7280);
+    font-size: var(--font-sm, 0.875rem);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .footer-country-name:hover {
+    color: var(--color-primary, #ffc800);
+  }
+
+  .footer-country-expand {
+    background: var(--color-bg-subtle, #f0f1f3);
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm, 6px);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer-country-expand:hover {
+    background: var(--color-border, #e5e7eb);
+  }
+
+  .footer-country-arrow {
+    color: var(--color-text-secondary, #6b7280);
+    font-size: 0.75rem;
+    transition: transform 200ms ease;
+  }
+
+  .footer-country.open .footer-country-arrow {
+    transform: rotate(90deg);
+  }
+
+  .footer-country-content {
+    display: none;
+    padding: var(--space-1, 4px) 0 var(--space-2, 8px) var(--space-3, 12px);
+  }
+
+  .footer-country.open .footer-country-content {
+    display: block;
+  }
+
+  .footer-state-name {
+    font-size: var(--font-xs, 0.75rem);
+    font-weight: 600;
+    color: var(--color-text-muted, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    display: block;
+    margin: var(--space-1, 4px) 0;
+  }
+
+  .footer-area-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px var(--space-2, 8px);
+  }
+
+  .footer-area-list a {
+    color: var(--color-text-secondary, #6b7280);
+    text-decoration: none;
+    font-size: var(--font-xs, 0.75rem);
+    transition: color 150ms ease;
+  }
+
+  .footer-area-list a:hover {
+    color: var(--color-primary, #ffc800);
+  }
+
 
   .footer-language-select {
     font-size: var(--font-sm, 0.875rem);
@@ -102,8 +317,8 @@
   }
 
   .footer-newsletter {
-    margin-left: auto;
-    margin-right: var(--space-2, 8px);
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .footer-divider {
