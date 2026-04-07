@@ -25,6 +25,9 @@ from functools import wraps
 from dotenv import load_dotenv
 import traceback
 import requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 import utils.searchManager
 from types import SimpleNamespace
 from bs4 import BeautifulSoup
@@ -69,6 +72,22 @@ app.jinja_env.filters['format_views'] = utils.helpers.format_views
 app.jinja_env.filters['format_date'] = utils.helpers.format_date
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+# Rate limiter — uses X-Forwarded-For behind Cloudflare/Heroku
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],  # no global limit, only on specific routes
+    storage_uri="memory://",
+)
+
+# Security headers (Talisman)
+Talisman(
+    app,
+    force_https=os.environ.get('FLASK_ENV') == 'production',
+    content_security_policy=None,  # don't break existing inline scripts/ads
+    session_cookie_secure=os.environ.get('FLASK_ENV') == 'production',
+)
 mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']
 })
@@ -698,6 +717,7 @@ def process_upload_youtube_from_drive():
 
 
 @app.route('/login', methods=['GET'])
+@limiter.limit("10 per minute")
 def login():
     caller_url = request.args.get('caller_url', None)
     if caller_url:
@@ -706,17 +726,20 @@ def login():
 
 
 @app.route('/signup', methods=['GET'])
+@limiter.limit("10 per minute")
 def signup():
     return render_template('signup.html')
 
 
 @app.route('/logout', methods=['POST'])
+@limiter.limit("10 per minute")
 def logout():
     session.clear()
     return jsonify({"message": "Session cleared on server."}), 200
 
 
 @app.route('/verify-token', methods=['POST'])
+@limiter.limit("10 per minute")
 def verify_token():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
