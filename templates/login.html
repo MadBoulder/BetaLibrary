@@ -38,6 +38,10 @@
 						<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
 					</div>
 					<form method="POST" id="form-login" data-form-primary="true" style="text-align: left;">
+							<!-- Honeypot field — hidden from real users, bots will fill it -->
+							<div style="position:absolute;left:-9999px;" aria-hidden="true">
+								<input type="text" name="website" id="honeypot-field" tabindex="-1" autocomplete="off" value="">
+							</div>
 							<div class="input-wrapper">
 								<input class="input" inputmode="email" type="email" id="email-input" name="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder=" ">
 								<label class="label" for="email-input">{{ _("Email address") }}</label>
@@ -124,6 +128,12 @@
 
 		function loginClick() {
 			clearErrorMessages();
+
+			// Honeypot check — if filled, silently block (only bots fill this)
+			const honeypot = document.getElementById('honeypot-field');
+			if (honeypot && honeypot.value) {
+				return;
+			}
 
 			const email = document.getElementById('email-input').value;
 			const password = document.getElementById('password-input').value;
