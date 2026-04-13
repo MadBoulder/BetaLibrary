@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+
+    <title>Bouldering in Schwarzwald | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Schwarzwald with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+
+	<!-- Weather Widget dependencies -->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies -->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/schwarzwald">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/schwarzwald">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/schwarzwald">
+
+	<!-- Google Ads -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<!-- Section Header with Breadcrumb, Title, and Tabs -->
+		<div class="mb-section-header" style="padding-bottom: 0;">
+		  <div class="container">
+			<nav aria-label="breadcrumb">
+				<ol class="mb-breadcrumb">
+					<li><a href="/bouldering-areas-list">{{ _("All Areas") }}</a></li>
+					<li><a href="/countries/germany">Germany</a></li>
+					
+				</ol>
+			</nav>
+			<h1 class="mb-section-header-title" style="padding-bottom: var(--space-3);">
+				Schwarzwald
+			</h1>
+		  </div>
+		  <nav>
+			<div class="mb-tabs-wrapper">
+			<div class="mb-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info-circle"></i> Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i> Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-layer-group"></i> Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-play-circle"></i> Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-cloud-sun"></i> Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map-marked-alt"></i> Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fas fa-chart-bar"></i> Stats
+					</a>
+				</li>
+				
+			</div>
+			</div><!-- .mb-tabs-wrapper -->
+			<script>
+				// Scroll fade indicator for tabs
+				(function() {
+					var wrapper = document.querySelector('.mb-tabs-wrapper');
+					var tabs = document.querySelector('.mb-tabs');
+					if (wrapper && tabs) {
+						function checkScroll() {
+							var canScrollRight = tabs.scrollWidth > tabs.clientWidth &&
+								(tabs.scrollLeft + tabs.clientWidth) < (tabs.scrollWidth - 5);
+							wrapper.classList.toggle('has-scroll-right', canScrollRight);
+						}
+						tabs.addEventListener('scroll', checkScroll);
+						window.addEventListener('resize', checkScroll);
+						setTimeout(checkScroll, 100);
+					}
+				})();
+
+				$(document).ready(function () {
+					checkHash();
+
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+						}
+					}
+				});
+
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					e.preventDefault();
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<div class="tab-content" id="myTabContent">
+				<!-- Stats Tab -->
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2 class="mb-mb-4">Stats of Schwarzwald Boulder</h2>
+					<div class="container">
+						<div id="zone-summary" class="row justify-content-center" style="gap: var(--space-4);">
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">9</div>
+										<div class="mb-stat-label">Videos</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">8794</div>
+										<div class="mb-stat-label">Views</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">2</div>
+										<div class="mb-stat-label">Contributors</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">0</div>
+										<div class="mb-stat-label">Sectors</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<!-- Weather Tab -->
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2 class="mb-mb-4">Weather Forecast in Schwarzwald Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mb-btn mb-btn-secondary" href="/weather-forecast-comparator?default=schwarzwald">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '48.67',
+											lng: '8.44',
+											zone: 'Schwarzwald',
+											zone_code: 'schwarzwald',
+											uniqueId: 'weather-widget-' + 'schwarzwald',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								if (target === "#weather") {
+									loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+
+				<!-- Info Tab -->
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div class="row" style="margin-bottom: var(--space-5);">
+						<div class="col-md-6" style="align-self: center; margin-bottom: var(--space-4);">
+							<div id="area-thumbnail" title="Photo of Schwarzwald Boulder" style="border-radius: var(--radius-md); overflow: hidden;">
+								<picture>
+									<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/5u5-YIFLqGo/sddefault.jpg">
+									<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/5u5-YIFLqGo/sddefault.jpg">
+									<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/5u5-YIFLqGo/hqdefault.jpg">
+									<img class="img-fluid d-block" src="https://i.ytimg.com/vi/5u5-YIFLqGo/mqdefault.jpg" alt="Photo of Schwarzwald Boulder" style="border-radius: var(--radius-md);">
+								</picture>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div id="general-info" class="overflow-auto d-flex flex-column">
+								
+									<div id="features_info">
+										<h2>Bouldering in Schwarzwald</h2>
+										<p style="text-align: justify;"><p>Schwarzwald, the Black Forest of southwest Germany, hides one of the most extensive sandstone bouldering playgrounds in central Europe, with something close to 900 documented blocks scattered throughout the Nordschwarzwald in particular. The stone is soft, featured sandstone that favours rounded holds, pockets and slopers rather than razor-sharp crimps, and the style of climbing tends to be more technical and balance-oriented than brute physical. Problems are spread across countless small sectors tucked deep in pine and fir woodland, so a typical day here involves as much walking between boulders as actual climbing — which fits the mood of the forest perfectly. Grades cover the full spread from easy warm-ups to serious testpieces, making it accessible for visiting climbers of any level.</p><p>The sandstone is sensitive to moisture, so climbing after rain is strictly off the table — the holds will break if you force it, and <a href="https://www.blog.madboulder.org/understanding-wet-sandstone/">respecting drying periods</a> is non-negotiable. The best conditions come in dry spells through spring, early summer and autumn, while hot midsummer and wet winters are best avoided. Access is easy from Karlsruhe, Stuttgart or Freiburg, with most sectors a short drive from small villages scattered through the forest. One local quirk worth knowing: ticks are common in the undergrowth, so check yourself carefully after walking into the blocks. Bouldering in Schwarzwald is less about a single famous crag and more about slowly working your way through a vast, quiet forest full of stone.</p></p>
+									</div>
+								
+								<div id="general_stats" class="mb-mt-3">
+									<div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-video" style="margin-right: 4px;"></i> 9 Videos</span>
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-mountain" style="margin-right: 4px;"></i> Sandstone</span>
+										
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-arrow-up" style="margin-right: 4px;"></i> 750m</span>
+										
+									</div>
+								</div>
+								{% if session['is_admin'] %}
+									<a href="/edit-area/schwarzwald" class="mb-mt-3" style="font-size: var(--font-sm);">
+										Editar Zona
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<!-- Map Tab -->
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2 class="mb-mb-4">Map of Schwarzwald Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%; border-radius: var(--radius-md); overflow: hidden;">
+							<iframe
+								src="maps/schwarzwald"
+								frameborder="0"
+								loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+
+				<!-- Problems Tab (empty, content below) -->
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+
+				<!-- Sectors Tab -->
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2 class="mb-mb-4">List of 3 Sectors of Schwarzwald Boulder</h2>
+					<div class="container">
+						<div class="mb-table-search">
+							<input id="search-sector" class="form-control" type="text" placeholder="Search sectors..." aria-label="Search sectors">
+						</div>
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col">{{ _("Name") }}</th>
+									<th scope="col">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/schwarzwald/dobel" class="table-row-name text-bold">Dobel</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/schwarzwald/monsterzecke" class="table-row-name text-bold">Monsterzecke</a>
+										</td>
+										<td class="text-center">2</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/schwarzwald/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">6</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+
+				<!-- Playlists Tab -->
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2 class="mb-mb-4">List of Playlists from Schwarzwald Boulder</h2>
+					<div class="row justify-content-center">
+						<div class="col-md-8 col-lg-6">
+							<p class="text-center text-bold mb-2">
+								{{ _("Full") }}
+							</p>
+							<div style="position: relative; padding-top: 56.25%; border-radius: var(--radius-md); overflow: hidden;">
+								<iframe
+									src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnP_wqQVwAcx-cBpSiXOOBMJ"
+									frameborder="0"
+									loading="lazy"
+									allowfullscreen
+									style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+								</iframe>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+
+				
+
+			<!-- Mid Ads -->
+			<div style="display: flex; justify-content: center; margin: var(--space-5) 0;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<!-- Problems List -->
+			<h2 class="mb-mb-4">9 Boulder Problems with Video Beta in Schwarzwald</h2>
+			<div class="container">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search problems..." aria-label="Search problems">
+				</div>
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col">{{ _("Name") }}</th>
+							<th scope="col">{{ _("Grade") }}</th>
+							<th scope="col">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Balboa, 7b. Schwarzwald" href="/problems/schwarzwald/balboa-7b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Balboa, 7b. Schwarzwald" src="https://img.youtube.com/vi/sV20ypy3EoA/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/balboa-7b" class="table-row-name text-bold">Balboa</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7b</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Captain Leseik, 7a. Schwarzwald" href="/problems/schwarzwald/captain-leseik-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Captain Leseik, 7a. Schwarzwald" src="https://img.youtube.com/vi/RkH9PiKQJNE/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/captain-leseik-7a" class="table-row-name text-bold">Captain Leseik</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a</span></td>
+								<td>Monsterzecke</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Dornröschen, 6c. Schwarzwald" href="/problems/schwarzwald/dornroschen-6c">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Dornröschen, 6c. Schwarzwald" src="https://img.youtube.com/vi/V8rI--XTJ1Y/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/dornroschen-6c" class="table-row-name text-bold">Dornröschen</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">6c</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Eiskante, 7a. Schwarzwald" href="/problems/schwarzwald/eiskante-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Eiskante, 7a. Schwarzwald" src="https://img.youtube.com/vi/xW2TseC8eVA/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/eiskante-7a" class="table-row-name text-bold">Eiskante</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a</span></td>
+								<td>Monsterzecke</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Geistige Minen, 7a. Schwarzwald" href="/problems/schwarzwald/geistige-minen-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Geistige Minen, 7a. Schwarzwald" src="https://img.youtube.com/vi/Qi6SWgc7fMQ/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/geistige-minen-7a" class="table-row-name text-bold">Geistige Minen</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Made in Black Forest, 7a+. Schwarzwald" href="/problems/schwarzwald/made-in-black-forest-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Made in Black Forest, 7a+. Schwarzwald" src="https://img.youtube.com/vi/0zfvkUMgJGQ/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/made-in-black-forest-7a" class="table-row-name text-bold">Made in Black Forest</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a+</span></td>
+								<td>Dobel</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Mom's Spaghetti, 7a. Schwarzwald" href="/problems/schwarzwald/mom-s-spaghetti-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Mom's Spaghetti, 7a. Schwarzwald" src="https://img.youtube.com/vi/M9_JrZSy1UA/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/mom-s-spaghetti-7a" class="table-row-name text-bold">Mom's Spaghetti</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Schnappschildkröte, 7a. Schwarzwald" href="/problems/schwarzwald/schnappschildkrote-7a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Schnappschildkröte, 7a. Schwarzwald" src="https://img.youtube.com/vi/3NF-yc6iZpw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/schnappschildkrote-7a" class="table-row-name text-bold">Schnappschildkröte</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7a</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Wölfe und Ratten, 7b+. Schwarzwald" href="/problems/schwarzwald/wolfe-und-ratten-7b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Wölfe und Ratten, 7b+. Schwarzwald" src="https://img.youtube.com/vi/5u5-YIFLqGo/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/schwarzwald/wolfe-und-ratten-7b" class="table-row-name text-bold">Wölfe und Ratten</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7b+</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+
+						$("#search-problem").trigger("keyup");
+
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+
+    <title>Bouldering in Els Graus | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Els Graus with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+
+	<!-- Weather Widget dependencies -->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies -->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/els-graus">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/els-graus">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/els-graus">
+
+	<!-- Google Ads -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<!-- Section Header with Breadcrumb, Title, and Tabs -->
+		<div class="mb-section-header" style="padding-bottom: 0;">
+		  <div class="container">
+			<nav aria-label="breadcrumb">
+				<ol class="mb-breadcrumb">
+					<li><a href="/bouldering-areas-list">{{ _("All Areas") }}</a></li>
+					<li><a href="/countries/spain">Spain</a></li>
+					
+					<li><a href="/states/catalonia">Catalunya</a></li>
+					
+				</ol>
+			</nav>
+			<h1 class="mb-section-header-title" style="padding-bottom: var(--space-3);">
+				Els Graus
+			</h1>
+		  </div>
+		  <nav>
+			<div class="mb-tabs-wrapper">
+			<div class="mb-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info-circle"></i> Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i> Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-layer-group"></i> Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-play-circle"></i> Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-cloud-sun"></i> Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map-marked-alt"></i> Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fas fa-chart-bar"></i> Stats
+					</a>
+				</li>
+				
+			</div>
+			</div><!-- .mb-tabs-wrapper -->
+			<script>
+				// Scroll fade indicator for tabs
+				(function() {
+					var wrapper = document.querySelector('.mb-tabs-wrapper');
+					var tabs = document.querySelector('.mb-tabs');
+					if (wrapper && tabs) {
+						function checkScroll() {
+							var canScrollRight = tabs.scrollWidth > tabs.clientWidth &&
+								(tabs.scrollLeft + tabs.clientWidth) < (tabs.scrollWidth - 5);
+							wrapper.classList.toggle('has-scroll-right', canScrollRight);
+						}
+						tabs.addEventListener('scroll', checkScroll);
+						window.addEventListener('resize', checkScroll);
+						setTimeout(checkScroll, 100);
+					}
+				})();
+
+				$(document).ready(function () {
+					checkHash();
+
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+						}
+					}
+				});
+
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					e.preventDefault();
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<div class="tab-content" id="myTabContent">
+				<!-- Stats Tab -->
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2 class="mb-mb-4">Stats of Els Graus Boulder</h2>
+					<div class="container">
+						<div id="zone-summary" class="row justify-content-center" style="gap: var(--space-4);">
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">13</div>
+										<div class="mb-stat-label">Videos</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">7101</div>
+										<div class="mb-stat-label">Views</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">1</div>
+										<div class="mb-stat-label">Contributors</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">0</div>
+										<div class="mb-stat-label">Sectors</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<!-- Weather Tab -->
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2 class="mb-mb-4">Weather Forecast in Els Graus Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mb-btn mb-btn-secondary" href="/weather-forecast-comparator?default=els-graus">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '42.208854',
+											lng: '1.754805',
+											zone: 'Els Graus',
+											zone_code: 'els-graus',
+											uniqueId: 'weather-widget-' + 'els-graus',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								if (target === "#weather") {
+									loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+
+				<!-- Info Tab -->
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div class="row" style="margin-bottom: var(--space-5);">
+						<div class="col-md-6" style="align-self: center; margin-bottom: var(--space-4);">
+							<div id="area-thumbnail" title="Photo of Els Graus Boulder" style="border-radius: var(--radius-md); overflow: hidden;">
+								<picture>
+									<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/iIOhPAyfOGY/maxresdefault.jpg">
+									<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/iIOhPAyfOGY/sddefault.jpg">
+									<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/iIOhPAyfOGY/hqdefault.jpg">
+									<img class="img-fluid d-block" src="https://i.ytimg.com/vi/iIOhPAyfOGY/mqdefault.jpg" alt="Photo of Els Graus Boulder" style="border-radius: var(--radius-md);">
+								</picture>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div id="general-info" class="overflow-auto d-flex flex-column">
+								
+									<div id="features_info">
+										<h2>Bouldering in Els Graus</h2>
+										<p style="text-align: justify;"><p>Els Graus lies on the flanks of the Pedraforca, above the village of Saldes in the Serra d'Ensija in Catalonia, and it's one of those zones that still feels like it's being written. The climbing happens across two large limestone quarries that have sat quietly in the mountains with barely any published reference, even though people have been exploring and opening lines here for years. The style is a proper mix: compact grey slabs demanding precise feet, steep walls and overhangs with powerful lines on crimps and pockets, and a handful of tall, committing highballs that raise the stakes well above the usual pad session. Expect smaller standalone blocks scattered across the terrain as well, and plenty of untouched stone — the new-routing potential is what really defines this place.</p><p>Conditions are unusual because of the altitude and orientation. In winter the zone tends to sit under snow, and in summer the near-total lack of trees means the sun beats down hard with no real escape, so the best windows fall in spring and autumn when temperatures are cool but the stone is dry. Saldes itself is the natural base — a tiny mountain village at the foot of the Pedraforca. The approach is not particularly short: from the parking you drop down to cross the Riera Salada and then climb back up to the quarries, and depending on which sector you're heading to, the walk can get fairly long. This is not a polished, guidebook-ready crag. Bouldering in Els Graus feels closer to exploration than ticking, which is exactly why it's worth the trip for anyone drawn to quiet Pyrenean limestone with room to leave their own mark.</p></p>
+									</div>
+								
+								<div id="general_stats" class="mb-mt-3">
+									<div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-video" style="margin-right: 4px;"></i> 13 Videos</span>
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-mountain" style="margin-right: 4px;"></i> Limestone</span>
+										
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-arrow-up" style="margin-right: 4px;"></i> 1600m</span>
+										
+									</div>
+								</div>
+								{% if session['is_admin'] %}
+									<a href="/edit-area/els-graus" class="mb-mt-3" style="font-size: var(--font-sm);">
+										Editar Zona
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<!-- Map Tab -->
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2 class="mb-mb-4">Map of Els Graus Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%; border-radius: var(--radius-md); overflow: hidden;">
+							<iframe
+								src="maps/els-graus"
+								frameborder="0"
+								loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+
+				<!-- Problems Tab (empty, content below) -->
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+
+				<!-- Sectors Tab -->
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2 class="mb-mb-4">List of 1 Sectors of Els Graus Boulder</h2>
+					<div class="container">
+						<div class="mb-table-search">
+							<input id="search-sector" class="form-control" type="text" placeholder="Search sectors..." aria-label="Search sectors">
+						</div>
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col">{{ _("Name") }}</th>
+									<th scope="col">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/els-graus/classic" class="table-row-name text-bold">Clàssic</a>
+										</td>
+										<td class="text-center">13</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+
+				<!-- Playlists Tab -->
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2 class="mb-mb-4">List of Playlists from Els Graus Boulder</h2>
+					<div class="row justify-content-center">
+						<div class="col-md-8 col-lg-6">
+							<p class="text-center text-bold mb-2">
+								{{ _("Full") }}
+							</p>
+							<div style="position: relative; padding-top: 56.25%; border-radius: var(--radius-md); overflow: hidden;">
+								<iframe
+									src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnMP4o7G3_U3bY_9RHYN5HKy"
+									frameborder="0"
+									loading="lazy"
+									allowfullscreen
+									style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+								</iframe>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+
+				
+
+			<!-- Mid Ads -->
+			<div style="display: flex; justify-content: center; margin: var(--space-5) 0;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<!-- Problems List -->
+			<h2 class="mb-mb-4">13 Boulder Problems with Video Beta in Els Graus</h2>
+			<div class="container">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search problems..." aria-label="Search problems">
+				</div>
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col">{{ _("Name") }}</th>
+							<th scope="col">{{ _("Grade") }}</th>
+							<th scope="col">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Aresta Dreta Gran Slab, 5. Els Graus" href="/problems/els-graus/aresta-dreta-gran-slab-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Aresta Dreta Gran Slab, 5. Els Graus" src="https://img.youtube.com/vi/iIOhPAyfOGY/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/aresta-dreta-gran-slab-5" class="table-row-name text-bold">Aresta Dreta Gran Slab</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Aresta Esquerra Gran Slab, 4+. Els Graus" href="/problems/els-graus/aresta-esquerra-gran-slab-4">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Aresta Esquerra Gran Slab, 4+. Els Graus" src="https://img.youtube.com/vi/xswqmhL3lao/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/aresta-esquerra-gran-slab-4" class="table-row-name text-bold">Aresta Esquerra Gran Slab</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">4+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Benvinguda, 5. Els Graus" href="/problems/els-graus/benvinguda-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Benvinguda, 5. Els Graus" src="https://img.youtube.com/vi/N4_V2Ez1Aqg/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/benvinguda-5" class="table-row-name text-bold">Benvinguda</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="El forat, 6a+. Els Graus" href="/problems/els-graus/el-forat-6a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of El forat, 6a+. Els Graus" src="https://img.youtube.com/vi/ZGD-MzjQXG0/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/el-forat-6a" class="table-row-name text-bold">El forat</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">6a+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Fugida endavant, 6a. Els Graus" href="/problems/els-graus/fugida-endavant-6a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fugida endavant, 6a. Els Graus" src="https://img.youtube.com/vi/KDCQ3LuGwEU/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/fugida-endavant-6a" class="table-row-name text-bold">Fugida endavant</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">6a</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Fugida endavant Short, 5. Els Graus" href="/problems/els-graus/fugida-endavant-short-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Fugida endavant Short, 5. Els Graus" src="https://img.youtube.com/vi/QJxn0AOmlDw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/fugida-endavant-short-5" class="table-row-name text-bold">Fugida endavant Short</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="L'enterrador, 6a. Els Graus" href="/problems/els-graus/l-enterrador-6a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'enterrador, 6a. Els Graus" src="https://img.youtube.com/vi/zA0Qs-fHlJM/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/l-enterrador-6a" class="table-row-name text-bold">L'enterrador</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">6a</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="L'enterrador Left, 5+. Els Graus" href="/problems/els-graus/l-enterrador-left-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of L'enterrador Left, 5+. Els Graus" src="https://img.youtube.com/vi/KqRYVqtR2Qo/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/l-enterrador-left-5" class="table-row-name text-bold">L'enterrador Left</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="La Placa Fàcil, 5+. Els Graus" href="/problems/els-graus/la-placa-facil-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Placa Fàcil, 5+. Els Graus" src="https://img.youtube.com/vi/zv4jHw5Y9-o/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/la-placa-facil-5" class="table-row-name text-bold">La Placa Fàcil</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="La Porta de Pedra, 6a+. Els Graus" href="/problems/els-graus/la-porta-de-pedra-6a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of La Porta de Pedra, 6a+. Els Graus" src="https://img.youtube.com/vi/ChlvzfPAK6M/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/la-porta-de-pedra-6a" class="table-row-name text-bold">La Porta de Pedra</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">6a+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Mantle technique, 5. Els graus" href="/problems/els-graus/mantle-technique-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Mantle technique, 5. Els graus" src="https://img.youtube.com/vi/i1OTqRbpF4s/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/mantle-technique-5" class="table-row-name text-bold">Mantle technique</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Okaeri, 5+. Els Graus" href="/problems/els-graus/okaeri-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Okaeri, 5+. Els Graus" src="https://img.youtube.com/vi/9TQrN19clxw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/okaeri-5" class="table-row-name text-bold">Okaeri</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5+</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Welcome, 5. Els Graus" href="/problems/els-graus/welcome-5">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Welcome, 5. Els Graus" src="https://img.youtube.com/vi/LtBiBG3OLh0/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/els-graus/welcome-5" class="table-row-name text-bold">Welcome</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5</span></td>
+								<td>Clàssic</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+
+						$("#search-problem").trigger("keyup");
+
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	
+    <title>Boulder en Wagon Wheel | MadBoulder</title>
+	<meta name="description" content="Página sobre boulder en Wagon Wheel con lista de videos de los bloques, información sobre guías de bloque y previsión del tiempo">
+	
+    <!-- Weather Widget dependencies-->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/es.min.js"
+	integrity="sha512-tgY2qswcbQir80Vp67s5ZdbKikl99YmVXp3V/C4Acthk4gI29ONbQ+MR8B5tpESkNoa0N1P7HnSuzC6nOflrwA=="
+	crossorigin="anonymous"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies-->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+	<link rel="canonical" href="https://www.madboulder.org/es/wagon-wheel">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/wagon-wheel">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/wagon-wheel">
+	<link href="/static/tabdrop/css/tabdrop.css" rel="stylesheet" >
+	<script src="/static/tabdrop/js/bootstrap-tabdrop.js" ></script>
+
+	<!-- Google Ads-->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<div class="zone-header">
+		  <div class="container zone-header-tree">
+			<a href="/bouldering-areas-list" class="zone-header-tree-link">Todas las zonas</a>
+			> 
+			<a href="/countries/united-states-of-america" class="zone-header-tree-link">Estados Unidos</a>
+			
+				> 
+				<a href="/states/california" class="zone-header-tree-link">California</a>
+			
+		  </div>
+          <h1 class="zone-header-title text-bold">
+			Wagon Wheel
+          </h1>
+		  <nav>
+			  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link text-bold" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info"></i>
+						Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold"  id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" type="button" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Bloques
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" type="button" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-list"></i>
+						Sectores
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" type="button" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-video-camera"></i>
+						Listas de Reproducción
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" type="button" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-sun"></i>
+						Tiempo
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" type="button" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map"></i>
+						Mapa
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-bold" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fa fa-chart-column"></i>
+						Estadísticas
+					</a>
+				</li>
+				
+			  </div>
+			  <script>
+				$(document).ready(function () {
+					checkHash();
+					$('.nav-tabs').tabdrop();
+					
+					window.addEventListener('hashchange', function() {
+						console.log("hashchange");
+						checkHash();
+					});
+					
+					function checkHash() {
+						console.log("checkHash");
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+							console.log("show tab: ", hash);
+						} 
+						else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+							console.log("show default tab");
+						}
+					}
+				});
+				
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					console.log("Tab shown:", e.target);
+
+					e.preventDefault();
+					
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+        
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2>Estadísticas de Wagon Wheel Boulder</h2>
+					<div class="container" style="padding-top: 1rem;">
+						<div id="zone-summary" class="row justify-content-center">
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Videos</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">18</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Views</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">2084</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Contributors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">1</h3>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2 col-sm-2 stats-col">
+								<div class="card mx-sm-1 p-2">
+									<div class="card p-2 my-card" style="border-radius: 50%; align-self: baseline;">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div class="text-center mt-2">
+										<h5 class="stats-title">Sectors</h5>
+									</div>
+									<div class="text-center mt-1 mb-0">
+										<h3 class="stats-content">0</h3>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2>Previsión del Tiempo en Wagon Wheel Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Cargando los dias desde la última lluvia...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mad-button" href="/es/comparador-pronostico-tiempo?default=wagon-wheel">
+							Compara con otra zona
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "Han pasado más de 3 días desde la última lluvia.";
+											} else {
+												message = `Ha pasado ${days} dia(s) desde la última lluvia.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+							
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '35.57791',
+											lng: '-117.537239',
+											zone: 'Wagon Wheel',
+											zone_code: 'wagon-wheel',
+											uniqueId: 'weather-widget-' + 'wagon-wheel',
+											current_lang: 'es'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								history.pushState(null, null, target);
+								if (target === "#weather") {
+								loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div id="main" class="row" style="margin-bottom: 1rem;">
+						<div class="col-md-12">
+							<div class="tab-content ">
+								<div class="row">
+									<div class="col-md-6" style="align-self: center; margin-bottom: 1rem;">
+										<div id="area-thumbnail" title="Foto de Wagon Wheel Boulder" style="opacity: 1; filter: saturate(100%);">
+											<picture>
+												<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/H0tBtWsnYOs/maxresdefault.jpg">
+												<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/H0tBtWsnYOs/sddefault.jpg">
+												<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/H0tBtWsnYOs/hqdefault.jpg">
+												<img class="img-fluid d-block" src="https://i.ytimg.com/vi/H0tBtWsnYOs/mqdefault.jpg" alt="Foto de Wagon Wheel Boulder">
+											</picture>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="general-info" class="overflow-auto d-flex flex-column">
+											
+												<div id="features_info" class="position-relative">
+													<h2>Escalada en Wagon Wheel</h2>
+													<p style="text-align: justify;">Wagon Wheel es un enorme campo de bloques de granito situado en el desierto de Mojave, al este de Ridgecrest, donde la magnitud del entorno define tanto la experiencia como la escalada. En lugar de un sector compacto, aquí encontrarás cientos de bloques de granito gris dispersos por un paisaje abierto, ofreciendo una sensación constante de exploración. El estilo es el típico del granito: escalada técnica de pies, regletas, adherencia y algunos movimientos más físicos sobre romos. Con más de mil problemas ya abiertos y un potencial prácticamente infinito, Wagon Wheel no es un destino “terminado”, sino un terreno en continua evolución.<br><br>La mejor época para escalar es durante los meses más frescos y las estaciones intermedias, cuando las temperaturas del desierto son más suaves y la fricción mejora notablemente. En verano, el calor y la exposición total al sol hacen que escalar sea poco recomendable. Lo que distingue a Wagon Wheel es su carácter salvaje y exploratorio: no hay sectores saturados ni clásicos pulidos, sino un terreno inmenso donde cada visita puede convertirse en una aventura. Entre semana es cuando se disfruta más la tranquilidad, ya que los fines de semana pueden coincidir con tráfico de vehículos off-road. Si buscas aislamiento, descubrimiento y auténtico granito en estado puro, este lugar no decepciona.</p>
+												</div>
+											
+											<div id="general_stats">
+												<p style="background: rgba(0,0,0,.075);color: #555555;padding: 5px; margin-bottom: 0;">
+													<b>Videos</b> 18
+													
+														<br>
+														<b>Tipo de Roca</b> Granite
+													
+													
+														<br>
+														<b>Altitud</b> 982m
+													
+												</p>
+											</div>
+											{% if session['is_admin'] %}
+												<a href="/edit-area/wagon-wheel">
+													Edit Area
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2>Mapa de Wagon Wheel Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%;">
+							<iframe
+								src="maps/wagon-wheel"
+								frameborder="0"
+							loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2>Lista de 1 Sectores de Wagon Wheel Boulder</h2>
+					<div class="container">
+						<input id="search-sector" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col" class="sorting">Nombre</th>
+									<th scope="col" class="sorting">Bloques</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/wagon-wheel/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">18</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+									
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2>Listas de Reproducción de Wagon Wheel Boulder</h2>
+					<div class="container">
+					<div class="row">
+						<div class="col-sm-3 col-md-3"></div>
+						<div class="col-sm-6 col-md-6">
+						<p class="text-center">
+							
+							<b>Completa</b>
+							
+						</p>
+						<div style="position: relative; padding-top: 56.25%;">
+							<iframe
+							src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnNi768vE4R3HZlTaogxRT9c"
+							frameborder="0"
+							loading="lazy"
+							allowfullscreen
+							style="
+								position: absolute;
+								top: 0;
+								left: 0%;
+								width: 100%;
+								height: 100%;
+							"
+							>
+							</iframe>
+						</div>
+						</div>
+						<div class="col-sm-3 col-md-3"></div>
+					</div>
+					
+				</div>
+			</div>
+
+				
+
+			<!-- Mid Ads -->
+			<div style="display: flex;justify-content: center;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:300px;height:50px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({}); </script>
+				</div>
+			</div>
+			<h2>Lista de 18 Bloques en Video de Wagon Wheel Boulder</h2>
+			<div class="container">
+				<input id="search-problem" class="form-control  mb-2" type="text" placeholder="Search" aria-label="Search" style="display: grid; align-self: center; border-color: black;">
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col" class="sorting">Nombre</th>
+							<th scope="col" class="sorting">Grado</th>
+							<th scope="col" class="sorting">Sector</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Bar Exam. Wagon Wheel" href="/problems/wagon-wheel/bar-exam-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Bar Exam. Wagon Wheel" src="https://img.youtube.com/vi/GNDb_jkNiIs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/bar-exam-unknown" class="table-row-name text-bold">Bar Exam</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Birdshit Crack. Wagon Wheel" href="/problems/wagon-wheel/birdshit-crack-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Birdshit Crack. Wagon Wheel" src="https://img.youtube.com/vi/Rw3Knb017jw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/birdshit-crack-unknown" class="table-row-name text-bold">Birdshit Crack</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Birdshit Direct (The Skidmark), V2. Wagon Wheel" href="/problems/wagon-wheel/birdshit-direct-the-skidmark-v2" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Birdshit Direct (The Skidmark), V2. Wagon Wheel" src="https://img.youtube.com/vi/sXU4Hnivgn4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/birdshit-direct-the-skidmark-v2" class="table-row-name text-bold">Birdshit Direct (The Skidmark)</a>
+						</div>
+								</td>
+								<td>V2</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Chock Full O’ Nuts. Wagon Wheel" href="/problems/wagon-wheel/chock-full-o-nuts-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Chock Full O’ Nuts. Wagon Wheel" src="https://img.youtube.com/vi/SPW8U9Ugrjw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/chock-full-o-nuts-unknown" class="table-row-name text-bold">Chock Full O’ Nuts</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Loctronix. Wagon Wheel" href="/problems/wagon-wheel/loctronix-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Loctronix. Wagon Wheel" src="https://img.youtube.com/vi/SibuqOKicmo/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/loctronix-unknown" class="table-row-name text-bold">Loctronix</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Onion Skin. Wagon Wheel" href="/problems/wagon-wheel/onion-skin-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Onion Skin. Wagon Wheel" src="https://img.youtube.com/vi/DUDbdD5NK00/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/onion-skin-unknown" class="table-row-name text-bold">Onion Skin</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Precious Bitch, V6. Wagon Wheel" href="/problems/wagon-wheel/precious-bitch-v6" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Precious Bitch, V6. Wagon Wheel" src="https://img.youtube.com/vi/8YcObqz_rdA/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/precious-bitch-v6" class="table-row-name text-bold">Precious Bitch</a>
+						</div>
+								</td>
+								<td>V6</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Short Overhang. Wagon Wheel" href="/problems/wagon-wheel/short-overhang-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Short Overhang. Wagon Wheel" src="https://img.youtube.com/vi/d-a0LyFtZSQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/short-overhang-unknown" class="table-row-name text-bold">Short Overhang</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Simon Barsinister Says Freeze. Wagon Wheel" href="/problems/wagon-wheel/simon-barsinister-says-freeze-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Simon Barsinister Says Freeze. Wagon Wheel" src="https://img.youtube.com/vi/21CRTEDuNpQ/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/simon-barsinister-says-freeze-unknown" class="table-row-name text-bold">Simon Barsinister Says Freeze</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Snake in Eagle's Shadow. Wagon Wheel" href="/problems/wagon-wheel/snake-in-eagle-s-shadow-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Snake in Eagle's Shadow. Wagon Wheel" src="https://img.youtube.com/vi/XeZb0BEECpw/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/snake-in-eagle-s-shadow-unknown" class="table-row-name text-bold">Snake in Eagle's Shadow</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Solid Garnish. Wagon Wheel" href="/problems/wagon-wheel/solid-garnish-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Solid Garnish. Wagon Wheel" src="https://img.youtube.com/vi/sJ-kd1ZBTis/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/solid-garnish-unknown" class="table-row-name text-bold">Solid Garnish</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Still Life Arête. Wagon Wheel" href="/problems/wagon-wheel/still-life-arete-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Still Life Arête. Wagon Wheel" src="https://img.youtube.com/vi/7b-wlQXOzkk/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/still-life-arete-unknown" class="table-row-name text-bold">Still Life Arête</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tendinitis. Wagon Wheel" href="/problems/wagon-wheel/tendinitis-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Tendinitis. Wagon Wheel" src="https://img.youtube.com/vi/0w-cH5VMGg4/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/tendinitis-unknown" class="table-row-name text-bold">Tendinitis</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="The Eradicator. Wagon Wheel" href="/problems/wagon-wheel/the-eradicator-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de The Eradicator. Wagon Wheel" src="https://img.youtube.com/vi/4cEiDhheUOY/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/the-eradicator-unknown" class="table-row-name text-bold">The Eradicator</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Through The Eyes. Wagon Wheel" href="/problems/wagon-wheel/through-the-eyes-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Through The Eyes. Wagon Wheel" src="https://img.youtube.com/vi/Y0JwoVLQfo0/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/through-the-eyes-unknown" class="table-row-name text-bold">Through The Eyes</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Tombstone Arête. Wagon Wheel" href="/problems/wagon-wheel/tombstone-arete-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Tombstone Arête. Wagon Wheel" src="https://img.youtube.com/vi/9a8fMAov0mU/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/tombstone-arete-unknown" class="table-row-name text-bold">Tombstone Arête</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Walter’s Crack. Wagon Wheel" href="/problems/wagon-wheel/walters-crack-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Walter’s Crack. Wagon Wheel" src="https://img.youtube.com/vi/Sz7h7BfbtTc/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/walters-crack-unknown" class="table-row-name text-bold">Walter’s Crack</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+						<div class="problem-thumbnail-cell">
+						<a aria-hidden="false" aria-label="Warmup Slab. Wagon Wheel" href="/problems/wagon-wheel/warmup-slab-unknown" tabindex="0" target="">
+							<div class="video-thumbnail-container">
+							<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail de Warmup Slab. Wagon Wheel" src="https://img.youtube.com/vi/H0tBtWsnYOs/mqdefault.jpg">
+							</div>
+						</a>
+						<a href="/problems/wagon-wheel/warmup-slab-unknown" class="table-row-name text-bold">Warmup Slab</a>
+						</div>
+								</td>
+								<td>Unknown</td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+						
+						$("#search-problem").trigger("keyup");
+							
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>

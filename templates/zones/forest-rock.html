@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	
+	{% include 'scripts/tracking-tools-scripts.html' %}
+	{% include 'elements/head-resources.html' %}
+	{% include 'scripts/cookie-scripts.html' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+	
+
+    <title>Bouldering in Forest Rock | MadBoulder</title>
+	<meta name="description" content="Page about bouldering in Forest Rock with a list of video betas of the boulder problems, information about bouldering guidebooks and weather forecast">
+
+	<!-- Weather Widget dependencies -->
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+	
+	<script src="{{url_for('static', filename='js/openWeather.js')}}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/weather-widget.css') }}" />
+
+	<!-- Table Widget dependencies -->
+	<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.js"></script>
+	<script defer src="{{url_for('static', filename='js/tabledata-utils.js')}}"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+	
+	<link rel="canonical" href="https://www.madboulder.org/forest-rock">
+	<link rel="alternate" hreflang="en" href="https://www.madboulder.org/forest-rock">
+	<link rel="alternate" hreflang="es" href="https://www.madboulder.org/es/forest-rock">
+
+	<!-- Google Ads -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2946344276077058" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/google-ads.css') }}" />
+	
+
+  </head>
+  <body>
+	
+	{% include 'elements/main-menu.html' %}
+	
+    <main>
+		<!-- Section Header with Breadcrumb, Title, and Tabs -->
+		<div class="mb-section-header" style="padding-bottom: 0;">
+		  <div class="container">
+			<nav aria-label="breadcrumb">
+				<ol class="mb-breadcrumb">
+					<li><a href="/bouldering-areas-list">{{ _("All Areas") }}</a></li>
+					<li><a href="/countries/united-kingdom">United Kingdom</a></li>
+					
+				</ol>
+			</nav>
+			<h1 class="mb-section-header-title" style="padding-bottom: var(--space-3);">
+				Forest Rock
+			</h1>
+		  </div>
+		  <nav>
+			<div class="mb-tabs-wrapper">
+			<div class="mb-tabs" id="nav-tab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" data-default-tab id="nav-info-tab" href="#info" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+						<i class="fas fa-info-circle"></i> Info
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-problems-tab" href="#problems" data-bs-toggle="tab" data-bs-target="#problems" role="tab" aria-controls="problems" aria-selected="false">
+						<i class="fas fa-list"></i> Problems
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-sectors-tab" href="#sectors" data-bs-toggle="tab" data-bs-target="#sectors" role="tab" aria-controls="sectors" aria-selected="false">
+						<i class="fas fa-layer-group"></i> Sectors
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-playlists-tab" href="#playlists" data-bs-toggle="tab" data-bs-target="#playlists" role="tab" aria-controls="playlists" aria-selected="false">
+						<i class="fas fa-play-circle"></i> Playlists
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-weather-tab" href="#weather" data-bs-toggle="tab" data-bs-target="#weather" role="tab" aria-controls="weather" aria-selected="true">
+						<i class="fas fa-cloud-sun"></i> Weather
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-map-tab" href="#map" data-bs-toggle="tab" data-bs-target="#map" role="tab" aria-controls="map" aria-selected="true">
+						<i class="fas fa-map-marked-alt"></i> Map
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-stats-tab" href="#stats" data-bs-toggle="tab" data-bs-target="#stats" role="tab" aria-controls="stats" aria-selected="true">
+						<i class="fas fa-chart-bar"></i> Stats
+					</a>
+				</li>
+				
+			</div>
+			</div><!-- .mb-tabs-wrapper -->
+			<script>
+				// Scroll fade indicator for tabs
+				(function() {
+					var wrapper = document.querySelector('.mb-tabs-wrapper');
+					var tabs = document.querySelector('.mb-tabs');
+					if (wrapper && tabs) {
+						function checkScroll() {
+							var canScrollRight = tabs.scrollWidth > tabs.clientWidth &&
+								(tabs.scrollLeft + tabs.clientWidth) < (tabs.scrollWidth - 5);
+							wrapper.classList.toggle('has-scroll-right', canScrollRight);
+						}
+						tabs.addEventListener('scroll', checkScroll);
+						window.addEventListener('resize', checkScroll);
+						setTimeout(checkScroll, 100);
+					}
+				})();
+
+				$(document).ready(function () {
+					checkHash();
+
+					window.addEventListener('hashchange', function() {
+						checkHash();
+					});
+
+					function checkHash() {
+						var hash = window.location.hash;
+						if (hash) {
+							$('a[data-bs-toggle="tab"][href="' + hash + '"]').tab('show');
+						} else {
+							$('a[data-bs-toggle="tab"][data-default-tab]').tab('show');
+						}
+					}
+				});
+
+				$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+					e.preventDefault();
+					var hash = $(e.target).attr('href');
+					history.pushState(null, null, hash);
+				});
+			</script>
+		  </nav>
+        </div>
+
+        <div class="container" id="pageContent">
+			<!-- Top Ads -->
+			<div style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="6780320321" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5515340112"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<div class="tab-content" id="myTabContent">
+				<!-- Stats Tab -->
+				<div class="tab tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats">
+					<h2 class="mb-mb-4">Stats of Forest Rock Boulder</h2>
+					<div class="container">
+						<div id="zone-summary" class="row justify-content-center" style="gap: var(--space-4);">
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-video-camera" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">14</div>
+										<div class="mb-stat-label">Videos</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-eye" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">1384</div>
+										<div class="mb-stat-label">Views</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fas fa-user" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">2</div>
+										<div class="mb-stat-label">Contributors</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-auto">
+								<div class="mb-stat-card">
+									<div class="mb-stat-icon">
+										<span class="fa fa-map-marked" aria-hidden="true"></span>
+									</div>
+									<div>
+										<div class="mb-stat-value">0</div>
+										<div class="mb-stat-label">Sectors</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<!-- Weather Tab -->
+				<div class="tab tab-pane fade" id="weather" role="tabpanel" aria-labelledby="weather">
+					<h2 class="mb-mb-4">Weather Forecast in Forest Rock Boulder</h2>
+					<div id="weather-widget-placeholder"></div>
+					<div class="weatherElement" id="days-since-last-rain">Loading days since last rain...</div>
+					<div class="weatherElement compareWeatherButtonContainer">
+						<a class="mb-btn mb-btn-secondary" href="/weather-forecast-comparator?default=forest-rock">
+							Compare with another Area
+						</a>
+					</div>
+					<script>
+						$(document).ready(function() {
+							function updateDaysSinceRain() {
+								$('.weather-temperature').each(function() {
+									const openWeatherData = $(this).data('openWeather');
+									if (openWeatherData && typeof openWeatherData.checkDaysSinceRain === 'function') {
+										openWeatherData.checkDaysSinceRain(function(days) {
+											let message;
+											if (days > 3) {
+												message = "It's been more than 3 days since it last rained.";
+											} else {
+												message = `It has been ${days} day(s) since it last rained.`;
+											}
+											$('#days-since-last-rain').text(message);
+										});
+									}
+								});
+							}
+
+							function loadWeatherWidget() {
+								if ($('#weather-widget-placeholder').is(':empty')) {
+									$.ajax({
+										url: '/element/weather-widget.html',
+										type: 'GET',
+										data: {
+											lat: '52.723',
+											lng: '-1.214',
+											zone: 'Forest Rock',
+											zone_code: 'forest-rock',
+											uniqueId: 'weather-widget-' + 'forest-rock',
+											current_lang: 'en'
+										},
+										success: function(data) {
+											$('#weather-widget-placeholder').html(data);
+											updateDaysSinceRain();
+										},
+										error: function(xhr, status, error) {
+											console.error("Error loading weather widget:", error);
+										}
+									});
+								}
+							}
+
+							$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+								var target = $(e.target).attr('href');
+								if (target === "#weather") {
+									loadWeatherWidget();
+								}
+							});
+
+							if (window.location.hash === "#weather") {
+								$('a[data-bs-toggle="tab"][href="#weather"]').tab('show');
+								loadWeatherWidget();
+							}
+						});
+					</script>
+				</div>
+
+				<!-- Info Tab -->
+				<div class="tab tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info">
+					<div class="row" style="margin-bottom: var(--space-5);">
+						<div class="col-md-6" style="align-self: center; margin-bottom: var(--space-4);">
+							<div id="area-thumbnail" title="Photo of Forest Rock Boulder" style="border-radius: var(--radius-md); overflow: hidden;">
+								<picture>
+									<source media="(min-width: 1200px)" sizes="605px" srcset="https://i.ytimg.com/vi/RBwYb33G3vc/maxresdefault.jpg">
+									<source media="(min-width: 997px)" sizes="450px" srcset="https://i.ytimg.com/vi/RBwYb33G3vc/sddefault.jpg">
+									<source media="(min-width: 768px)" sizes="330px" srcset="https://i.ytimg.com/vi/RBwYb33G3vc/hqdefault.jpg">
+									<img class="img-fluid d-block" src="https://i.ytimg.com/vi/RBwYb33G3vc/mqdefault.jpg" alt="Photo of Forest Rock Boulder" style="border-radius: var(--radius-md);">
+								</picture>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div id="general-info" class="overflow-auto d-flex flex-column">
+								
+									<div id="features_info">
+										<h2>Bouldering in Forest Rock</h2>
+										<p style="text-align: justify;"><p>Forest Rock sits in the middle of the quiet village of Woodhouse Eaves in Leicestershire, tucked inside what was once Great Hill Quarry — a disused slate pit reclaimed by climbers as one of the most concentrated steep bouldering spots in the English Midlands. The rock is dark, compact slate, and the main feature is a cave-like recess where the angle tilts from friendly slab at the mouth to seriously overhanging deep inside. The climbing gets properly interesting from 7A upwards, with powerful lines on crimps, slopers and pinches demanding good body tension and commitment. It's small, intense and focused — you don't come here for volume but for a handful of testpieces that have built a reputation well beyond the county.</p><p>Because so much of the crag overhangs, Forest Rock stays dry in poor weather and works well year-round, especially as a bad-weather option when the <a href="https://www.madboulder.org/peak-district">Peak District</a> is soaking. It sits right against a residential area, so access is sensitive — small groups, no shouting, no music, and leaving the place tidy are essential to keep the crag open. Getting there is easy by car from Loughborough or Leicester, with parking on the nearby village road. Expect a quiet, almost stealth-mode session rather than a social crag day, but for steep slate bouldering in the UK, Forest Rock offers a character you won't find elsewhere.</p></p>
+									</div>
+								
+								<div id="general_stats" class="mb-mt-3">
+									<div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-video" style="margin-right: 4px;"></i> 14 Videos</span>
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-mountain" style="margin-right: 4px;"></i> Slate</span>
+										
+										
+										<span class="mb-badge mb-badge-secondary"><i class="fas fa-arrow-up" style="margin-right: 4px;"></i> 102m</span>
+										
+									</div>
+								</div>
+								{% if session['is_admin'] %}
+									<a href="/edit-area/forest-rock" class="mb-mt-3" style="font-size: var(--font-sm);">
+										Editar Zona
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<!-- Map Tab -->
+				<div class="tab tab-pane fade" id="map" role="tabpanel" aria-labelledby="map">
+					<h2 class="mb-mb-4">Map of Forest Rock Boulder</h2>
+					<div class="container">
+						<div style="position: relative; padding-top: 56%; border-radius: var(--radius-md); overflow: hidden;">
+							<iframe
+								src="maps/forest-rock"
+								frameborder="0"
+								loading="lazy"
+								allowfullscreen
+								style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+							</iframe>
+						</div>
+					</div>
+				</div>
+
+				<!-- Problems Tab (empty, content below) -->
+				<div class="tab tab-pane fade" id="problems" role="tabpanel" aria-labelledby="problems">
+				</div>
+
+				<!-- Sectors Tab -->
+				<div class="tab tab-pane fade" id="sectors" role="tabpanel" aria-labelledby="sectors">
+					<h2 class="mb-mb-4">List of 2 Sectors of Forest Rock Boulder</h2>
+					<div class="container">
+						<div class="mb-table-search">
+							<input id="search-sector" class="form-control" type="text" placeholder="Search sectors..." aria-label="Search sectors">
+						</div>
+						<table id="sectors-table" class="table table-hover">
+							<thead>
+								<tr>
+									
+									<th scope="col">{{ _("Name") }}</th>
+									<th scope="col">{{ _("Problems") }}</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/forest-rock/cave" class="table-row-name text-bold">Cave</a>
+										</td>
+										<td class="text-center">1</td>
+									</tr>
+								
+									<tr class="sector-row">
+										<td>
+											<a href="/sectors/forest-rock/unknown" class="table-row-name text-bold">Unknown</a>
+										</td>
+										<td class="text-center">13</td>
+									</tr>
+								
+							</tbody>
+						</table>
+						<script>
+							$(document).ready(function () {
+								$('#sectors-table').DataTable({
+									paging: false,
+									dom: 'tr'
+								});
+								$("#search-sector").trigger("keyup");
+
+								$("#search-sector").keyup(function() {
+									var search_query = $.trim($(this).val());
+									var items = $(".sector-row");
+									filter_items_by_query(search_query, items)
+								});
+							});
+						</script>
+					</div>
+				</div>
+
+				<!-- Playlists Tab -->
+				<div class="tab tab-pane fade" id="playlists" role="tabpanel" aria-labelledby="playlists">
+					<h2 class="mb-mb-4">List of Playlists from Forest Rock Boulder</h2>
+					<div class="row justify-content-center">
+						<div class="col-md-8 col-lg-6">
+							<p class="text-center text-bold mb-2">
+								{{ _("Full") }}
+							</p>
+							<div style="position: relative; padding-top: 56.25%; border-radius: var(--radius-md); overflow: hidden;">
+								<iframe
+									src="https://www.youtube.com/embed/?listType=playlist&list=PLlwn5IhJiUnPT9JRiZWNtKar23mheCIJ5"
+									frameborder="0"
+									loading="lazy"
+									allowfullscreen
+									style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+								</iframe>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+
+				
+
+			<!-- Mid Ads -->
+			<div style="display: flex; justify-content: center; margin: var(--space-5) 0;">
+				<div class="horizontal-ad-container mobile-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:block" data-ad-client="ca-pub-2946344276077058" data-ad-slot="5728767573" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+				<div class="horizontal-ad-container desktop-only">
+					<ins class="adsbygoogle horizontal-ad" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2946344276077058" data-ad-slot="4665061365"></ins>
+					<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+				</div>
+			</div>
+
+			<!-- Problems List -->
+			<h2 class="mb-mb-4">14 Boulder Problems with Video Beta in Forest Rock</h2>
+			<div class="container">
+				<div class="mb-table-search">
+					<input id="search-problem" class="form-control" type="text" placeholder="Search problems..." aria-label="Search problems">
+				</div>
+				<table id="problems-table" class="table table-hover">
+					<thead>
+						<tr>
+							
+							<th scope="col">{{ _("Name") }}</th>
+							<th scope="col">{{ _("Grade") }}</th>
+							<th scope="col">{{ _("Sector") }}</th>
+							
+						</tr>
+					</thead>
+					<tbody style="vertical-align: middle;">
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Black Art, 7C+. Forest Rock" href="/problems/forest-rock/black-art-7c">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Black Art, 7C+. Forest Rock" src="https://img.youtube.com/vi/IPGD_j-Iluo/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/black-art-7c" class="table-row-name text-bold">Black Art</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7C+</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Easy Rider, 7C+. Forest Rock" href="/problems/forest-rock/easy-rider-7c">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Easy Rider, 7C+. Forest Rock" src="https://img.youtube.com/vi/4fuPAcCz8aw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/easy-rider-7c" class="table-row-name text-bold">Easy Rider</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7C+</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Enchantress, 7c. Forest Rock" href="/problems/forest-rock/enchantress-7c">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Enchantress, 7c. Forest Rock" src="https://img.youtube.com/vi/RBwYb33G3vc/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/enchantress-7c" class="table-row-name text-bold">Enchantress</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">7c</span></td>
+								<td>Cave</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Enchantress (sans kneebar), 8A. Forest Rock" href="/problems/forest-rock/enchantress-sans-kneebar-8a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Enchantress (sans kneebar), 8A. Forest Rock" src="https://img.youtube.com/vi/M-1MdW0icu0/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/enchantress-sans-kneebar-8a" class="table-row-name text-bold">Enchantress (sans kneebar)</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Limit Breaker, 8B. Forest Rock" href="/problems/forest-rock/limit-breaker-8b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Limit Breaker, 8B. Forest Rock" src="https://img.youtube.com/vi/0VJT3uj1How/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/limit-breaker-8b" class="table-row-name text-bold">Limit Breaker</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8B</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Lost in the Moment, 8B. Forest Rock" href="/problems/forest-rock/lost-in-the-moment-8b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Lost in the Moment, 8B. Forest Rock" src="https://img.youtube.com/vi/exoD54VLbJ8/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/lost-in-the-moment-8b" class="table-row-name text-bold">Lost in the Moment</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8B</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Lucid Interval, 8A+ (sit). Forest Rock" href="/problems/forest-rock/lucid-interval-8a-sit">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Lucid Interval, 8A+ (sit). Forest Rock" src="https://img.youtube.com/vi/V6x9bKJMKjs/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/lucid-interval-8a-sit" class="table-row-name text-bold">Lucid Interval</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A+ (sit)</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Necromancer, 8A. Forest Rock" href="/problems/forest-rock/necromancer-8a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Necromancer, 8A. Forest Rock" src="https://img.youtube.com/vi/8II-Z03odQw/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/necromancer-8a" class="table-row-name text-bold">Necromancer</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="One Clear Moment, 8A+ (sit). Forest Rock" href="/problems/forest-rock/one-clear-moment-8a-sit">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of One Clear Moment, 8A+ (sit). Forest Rock" src="https://img.youtube.com/vi/5Ix7JkRM1-Y/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/one-clear-moment-8a-sit" class="table-row-name text-bold">One Clear Moment</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A+ (sit)</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="One Clear Moment of Insanity, 8A (sit). Forest Rock" href="/problems/forest-rock/one-clear-moment-of-insanity-8a-sit">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of One Clear Moment of Insanity, 8A (sit). Forest Rock" src="https://img.youtube.com/vi/eSq10Wi7RnQ/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/one-clear-moment-of-insanity-8a-sit" class="table-row-name text-bold">One Clear Moment of Insanity</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A (sit)</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Relentless, 8B. Forest Rock" href="/problems/forest-rock/relentless-8b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Relentless, 8B. Forest Rock" src="https://img.youtube.com/vi/Ct0fGLnYNeI/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/relentless-8b" class="table-row-name text-bold">Relentless</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8B</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Sorcerer, 5b. Forest Rock" href="/problems/forest-rock/sorcerer-5b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Sorcerer, 5b. Forest Rock" src="https://img.youtube.com/vi/dCtiL_gci_g/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/sorcerer-5b" class="table-row-name text-bold">Sorcerer</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">5b</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="The Traverse Project, 8B+. Forest Rock" href="/problems/forest-rock/the-traverse-project-8b">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of The Traverse Project, 8B+. Forest Rock" src="https://img.youtube.com/vi/6Xd6LYHor-U/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/the-traverse-project-8b" class="table-row-name text-bold">The Traverse Project</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8B+</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+							<tr class="problem-row">
+								<td>
+									<div class="problem-thumbnail-cell">
+										<a aria-label="Witch Hunt, 8A. Forest Rock" href="/problems/forest-rock/witch-hunt-8a">
+											<div class="video-thumbnail-container">
+												<img class="video-thumbnail-img" loading="lazy" alt="Video thumbnail of Witch Hunt, 8A. Forest Rock" src="https://img.youtube.com/vi/IiBgUKk3jic/mqdefault.jpg">
+											</div>
+										</a>
+										<a href="/problems/forest-rock/witch-hunt-8a" class="table-row-name text-bold">Witch Hunt</a>
+									</div>
+								</td>
+								<td><span class="mb-badge mb-badge-grade">8A</span></td>
+								<td>Unknown</td>
+							</tr>
+						
+					</tbody>
+				</table>
+				<script>
+					$(document).ready(function () {
+						$('#problems-table').DataTable({
+							paging: false,
+							dom: 'tr',
+							columnDefs: [
+								{
+									targets: [1],
+									type: 'custom-grade',
+								},
+							],
+							order:[[1, 'desc']]
+						});
+
+						$("#search-problem").trigger("keyup");
+
+						$("#search-problem").keyup(function() {
+							var search_query = $.trim($(this).val());
+							var items = $(".problem-row");
+							filter_items_by_query(search_query, items)
+						});
+					});
+				</script>
+			</div>
+        </div>
+	</main>
+	
+	{% include 'elements/footer.html' %}
+	
+  </body>
+</html>
