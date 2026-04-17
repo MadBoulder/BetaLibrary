@@ -61,7 +61,7 @@
 							<select class="form-select" id="area-state">
 								<option value="">Select a state</option>
 							</select>
-							<button type="button" class="btn btn-outline-secondary btn-sm" onclick="addNewState();" style="white-space: nowrap;">
+							<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addStateModal" style="white-space: nowrap;">
 								+ New State
 							</button>
 						</div>
@@ -173,7 +173,7 @@
 									<label for="countryCode" >Reduced Code</label>
 									<input type="text" class="form-control" id="countryCode" required>
 								</div>
-								<div class="mb-3">	
+								<div class="mb-3">
 									<label for="countryOverviewEn">Overview (English)</label>
 									<textarea class="form-control" id="countryOverviewEn" rows="3" required></textarea>
 								</div>
@@ -182,6 +182,37 @@
 									<textarea class="form-control" id="countryOverviewEs" rows="3" required></textarea>
 								</div>
 								<button type="submit" class="btn btn-primary">Create New Country</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="addStateModal" tabindex="-1" aria-labelledby="addStateModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="addStateModalLabel">Add New State</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="newStateForm">
+								<div class="mb-3">
+									<label for="stateNameEn">State Name (English)</label>
+									<input type="text" class="form-control" id="stateNameEn" required>
+								</div>
+								<div class="mb-3">
+									<label for="stateNameEs">State Name (Spanish)</label>
+									<input type="text" class="form-control" id="stateNameEs" required>
+								</div>
+								<div class="mb-3">
+									<label for="stateOverviewEn">Overview (English)</label>
+									<textarea class="form-control" id="stateOverviewEn" rows="3"></textarea>
+								</div>
+								<div class="mb-3">
+									<label for="stateOverviewEs">Overview (Spanish)</label>
+									<textarea class="form-control" id="stateOverviewEs" rows="3"></textarea>
+								</div>
+								<button type="submit" class="btn btn-primary">Create New State</button>
 							</form>
 						</div>
 					</div>
@@ -393,40 +424,55 @@
 					});
 				});
 
-				function addNewState() {
+				document.getElementById('addStateModal').addEventListener('show.bs.modal', function(event) {
+					var selectedCountry = document.getElementById('country-select').value;
+					if (!selectedCountry) {
+						alert("Please select a country first.");
+						event.preventDefault();
+						bootstrap.Modal.getInstance(document.getElementById('addStateModal'))?.hide();
+						return false;
+					}
+				});
+
+				document.getElementById('newStateForm').addEventListener('submit', function(event) {
+					event.preventDefault();
+
 					var selectedCountry = document.getElementById('country-select').value;
 					if (!selectedCountry) {
 						alert("Please select a country first.");
 						return;
 					}
 
-					var newStateNameEn = prompt("Enter new state name (English):");
-					var newStateNameEs = prompt("Enter new state name (Spanish):");
+					const stateNameEn = document.getElementById('stateNameEn').value;
+					const stateNameEs = document.getElementById('stateNameEs').value;
+					const stateOverviewEn = document.getElementById('stateOverviewEn').value;
+					const stateOverviewEs = document.getElementById('stateOverviewEs').value;
 
-					if (newStateNameEn) {
-						const newStateData = {
-							country: selectedCountry,
-							name: [newStateNameEn, newStateNameEs]
-						};
+					const newStateData = {
+						country: selectedCountry,
+						name: [stateNameEn, stateNameEs],
+						overview: [stateOverviewEn, stateOverviewEs]
+					};
 
-						fetch('/add-state', {
-							method: 'POST',
-							headers: {
+					fetch('/add-state', {
+						method: 'POST',
+						headers: {
 							'Content-Type': 'application/json',
-							},
-							body: JSON.stringify(newStateData)
-						})
-						.then(response => response.json())
-						.then(data => {
-							console.log('Success:', data);
-							alert('State added successfully!');
-							fetchCountries()
-						})
-						.catch((error) => {
-							console.error('Error:', error);
-						});
-					}
-				}
+						},
+						body: JSON.stringify(newStateData)
+					})
+					.then(response => response.json())
+					.then(data => {
+						console.log('Success:', data);
+						$('#addStateModal').modal('hide');
+						alert('State added successfully!');
+						document.getElementById('newStateForm').reset();
+						fetchCountries();
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+				});
 
 				var areaMap, parkingMap;
 				var areaMarker, parkingMarkers = [];
