@@ -1498,17 +1498,21 @@ def add_state():
     try:
         data = request.get_json()
         countryCode = data['country']
-        stateCode = slugify(data['name'][0])
+        stateCode = data.get('state_code') or slugify(data['name'][0])
 
-        stateData = {
-            'name': data['name']
-        }
+        existingStateData = utils.MadBoulderDatabase.getStateData(countryCode, stateCode) or {}
+
+        stateData = dict(existingStateData)
+        if 'name' in data and data['name']:
+            stateData['name'] = data['name']
+        if 'overview' in data and data['overview'] is not None:
+            stateData['overview'] = data['overview']
 
         utils.MadBoulderDatabase.updateState(countryCode, stateCode, stateData)
-        return jsonify({'status': 'success', 'message': 'Country added successfully'}), 200
+        return jsonify({'status': 'success', 'message': 'State added/updated successfully'}), 200
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return jsonify({'status': 'error', 'message': 'Failed to add country'}), 500
+        return jsonify({'status': 'error', 'message': 'Failed to add/update state'}), 500
     
 @app.route("/proxy/metadata")
 def proxy_metadata():
@@ -1957,7 +1961,22 @@ def load_country_es(country_name):
 @app.route('/templates/states/<string:state_name>.html')
 def load_state(state_name):
     try:
-        return render_template(f'states/{slugify(state_name)}.html')
+        language_extension = ''
+        if get_locale() == 'es':
+            language_extension = 'es/'
+
+        page_path = 'states/' + language_extension + slugify(state_name) + EXTENSION
+        return render_template(page_path)
+    except Exception as e:
+        print("An error occurred:", e)
+        abort(404)
+
+
+@app.route('/states/es/<string:state_name>')
+@app.route('/templates/states/es/<string:state_name>.html')
+def load_state_es(state_name):
+    try:
+        return render_template(f'states/es/{slugify(state_name)}.html')
     except Exception as e:
         print("An error occurred:", e)
         abort(404)
