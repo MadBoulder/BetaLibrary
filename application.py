@@ -88,6 +88,20 @@ Talisman(
     content_security_policy=None,  # don't break existing inline scripts/ads
     session_cookie_secure=os.environ.get('FLASK_ENV') == 'production',
 )
+
+# Cache headers for static assets — lets Cloudflare/browsers cache them instead
+# of every request consuming Render outbound bandwidth. Flask defaults to no-cache.
+@app.after_request
+def add_static_cache_headers(response):
+    if request.path.startswith('/static/') and response.status_code == 200:
+        response.cache_control.no_cache = None
+        response.cache_control.public = True
+        if request.path.startswith(('/static/images/', '/static/webfonts/')):
+            response.cache_control.max_age = 31536000  # 1 year: filenames are stable
+        else:
+            response.cache_control.max_age = 86400  # 1 day: css/js have no version hash
+    return response
+
 mailerlite = MailerLite.Client({
     'api_key': os.environ['MAILERLITE_API_KEY']
 })
