@@ -93,13 +93,25 @@ Talisman(
 # of every request consuming Render outbound bandwidth. Flask defaults to no-cache.
 @app.after_request
 def add_static_cache_headers(response):
-    if request.path.startswith('/static/') and response.status_code == 200:
+    if response.status_code != 200:
+        return response
+    if request.path.startswith('/static/'):
         response.cache_control.no_cache = None
         response.cache_control.public = True
         if request.path.startswith(('/static/images/', '/static/webfonts/')):
             response.cache_control.max_age = 31536000  # 1 year: filenames are stable
         else:
             response.cache_control.max_age = 86400  # 1 day: css/js have no version hash
+    elif request.path.startswith(('/maps/', '/es/maps/')):
+        # Folium maps are static HTML regenerated once a day (world.html is ~6 MB).
+        # Cacheable so the CDN serves them instead of the origin.
+        response.cache_control.public = True
+        response.cache_control.max_age = 43200  # 12 hours
+    elif request.path.startswith('/download/'):
+        # PDF guidebooks (~12 MB each) — let the CDN serve them
+        response.cache_control.no_cache = None
+        response.cache_control.public = True
+        response.cache_control.max_age = 604800  # 7 days
     return response
 
 mailerlite = MailerLite.Client({
@@ -294,6 +306,7 @@ def search():
 
 
 @app.route('/search-api', methods=['GET'])
+@limiter.limit("30 per minute")
 def search_api():
     query = request.args.get('query', '')
     print(f"Search API request: {query}")
@@ -1588,6 +1601,8 @@ def random_zone():
 
 
 @app.route('/latest-news-and-videos')
+@limiter.limit("30 per minute")
+@cache.cached(timeout=3600, key_prefix='latest_news_and_videos')  # avoid a YouTube API call per request
 def render_latest():
     return render_template('latest-news-and-videos.html', video_urls=utils.helpers.getLastVideosFromChannel())
 
@@ -2013,6 +2028,7 @@ def load_contributor(contributor_name):
 @app.route('/es/maps/<string:area>')
 @app.route('/es/maps/<string:area>.html')
 @app.route('/es/templates/maps/<string:area>.html')
+@limiter.limit("30 per minute")
 def render_area(area):
     try:
         return render_template('maps/' + area + EXTENSION)
