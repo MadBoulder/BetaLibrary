@@ -25,9 +25,9 @@ def get_canonical_url(html_content):
 
 
 def construct_pdf_url(pdf_file):
-    parts = pdf_file.split(os.sep)
+    parts = pdf_file.replace('\\', '/').split('/')
     if len(parts) > 2:
-        folder_name = parts[1]  # Assuming 'data/zones' is the start, so actual folder of interest is at index 1
+        folder_name = parts[-2]  # zone folder, e.g. data/zones/<zone>/<file>.pdf -> /download/<zone>/<file>.pdf
         pdf_name = parts[-1]  # PDF file name is the last part
         return f"https://www.madboulder.org/download/{folder_name}/{pdf_name}"
     return None 
