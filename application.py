@@ -73,9 +73,20 @@ app.jinja_env.filters['format_date'] = utils.helpers.format_date
 babel = Babel(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# Rate limiter — uses X-Forwarded-For behind Cloudflare/Heroku
+# Rate limiter. get_remote_address returns request.remote_addr, which behind
+# Cloudflare + Render is the proxy, not the visitor: every visitor would share a
+# single bucket and real users would hit 429. Read the forwarded client IP instead.
+def get_client_ip():
+    cf_ip = request.headers.get('CF-Connecting-IP')
+    if cf_ip:
+        return cf_ip
+    forwarded_for = request.headers.get('X-Forwarded-For')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return get_remote_address()
+
 limiter = Limiter(
-    get_remote_address,
+    get_client_ip,
     app=app,
     default_limits=[],  # no global limit, only on specific routes
     storage_uri="memory://",
