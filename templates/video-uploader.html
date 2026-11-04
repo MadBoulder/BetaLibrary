@@ -333,34 +333,124 @@
 							});
 					}
 
-					function uploadFile(event) {
-						const formData = new FormData(form);
+					// The video is sent in chunks: Cloudflare rejects any request over 100 MB.
+					// The server forwards each chunk to a Google Drive resumable upload.
+					const CHUNK_SIZE = 8 * 1024 * 1024; // must be a multiple of 256 KB (Drive requirement)
+					const MAX_RETRIES = 10;
 
-						const xhr = new XMLHttpRequest();
-						xhr.open('POST', '/upload-file', true);
+					class UploadError extends Error {
+						constructor(message, retryable) {
+							super(message);
+							this.retryable = retryable;
+						}
+					}
 
-						xhr.upload.onprogress = function(evt) {
-							if (evt.lengthComputable) {
-								var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-								console.log("Upload: " + percentComplete + "% complete")
-								updateProgress(percentComplete);
+					function isRetryableStatus(status) {
+						return status === 0 || status === 429 || status >= 500;
+					}
+
+					function sendRequest(url, body, headers, onProgress) {
+						return new Promise((resolve, reject) => {
+							const xhr = new XMLHttpRequest();
+							xhr.open('POST', url, true);
+							xhr.timeout = 5 * 60 * 1000;
+							for (const [name, value] of Object.entries(headers || {})) {
+								xhr.setRequestHeader(name, value);
 							}
-						};
-	
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState === XMLHttpRequest.DONE) {
+							if (onProgress) {
+								xhr.upload.onprogress = function (evt) {
+									if (evt.lengthComputable) {
+										onProgress(evt.loaded);
+									}
+								};
+							}
+							xhr.onload = function () {
 								if (xhr.status === 200) {
-									uploadCompleted();
+									try {
+										resolve(JSON.parse(xhr.responseText));
+									} catch (e) {
+										reject(new UploadError('{{ _("Upload failed") }}', true));
+									}
 								} else {
-									console.error('Error:', xhr.status, xhr.statusText);
-									console.error('Response:', xhr.responseText);
-									uploadFailed(xhr.statusText);
+									console.error('Error:', xhr.status, xhr.responseText);
+									reject(new UploadError(`{{ _("Upload failed") }} (${xhr.status})`, isRetryableStatus(xhr.status)));
 								}
-							}
-						};
+							};
+							xhr.onerror = xhr.ontimeout = function () {
+								reject(new UploadError('{{ _("Connection lost") }}', true));
+							};
+							xhr.send(body);
+						});
+					}
 
-						xhr.send(formData);
+					function waitBeforeRetry(attempt) {
+						const previousText = document.getElementById('uploading-text').textContent;
+						updateUploadingText('{{ _("Connection lost, retrying...") }}');
+						const seconds = Math.min(30, 2 ** attempt);
+						return new Promise(resolve => setTimeout(resolve, seconds * 1000))
+							.then(() => updateUploadingText(previousText));
+					}
+
+					async function withRetries(action) {
+						for (let attempt = 1; ; attempt++) {
+							try {
+								return await action();
+							} catch (error) {
+								if (!error.retryable || attempt > MAX_RETRIES) throw error;
+								await waitBeforeRetry(attempt);
+							}
+						}
+					}
+
+					async function sendChunks(token, file) {
+						let offset = 0;
+						let failures = 0;
+						while (offset < file.size) {
+							try {
+								if (failures > 0) {
+									// After a failure, ask how much Drive already stored and resume from there
+									const status = await sendRequest('/upload-chunk', new Blob(), { 'X-Upload-Token': token, 'X-Chunk-Start': '0' });
+									offset = status.received;
+									if (status.complete) return;
+								}
+								const chunkStart = offset;
+								const chunk = file.slice(chunkStart, chunkStart + CHUNK_SIZE);
+								const result = await sendRequest('/upload-chunk', chunk, {
+									'X-Upload-Token': token,
+									'X-Chunk-Start': String(chunkStart),
+									'Content-Type': 'application/octet-stream'
+								}, loaded => updateProgress(100 * (chunkStart + loaded) / file.size));
+								offset = result.received;
+								failures = 0;
+								if (result.complete) return;
+							} catch (error) {
+								failures++;
+								if (!error.retryable || failures > MAX_RETRIES) throw error;
+								await waitBeforeRetry(failures);
+							}
+						}
+					}
+
+					async function uploadFile(event) {
+						const file = form.querySelector('input[name="file"]').files[0];
+						if (!file) return;
 						uploadStarted();
+						try {
+							const formData = new FormData(form);
+							formData.delete('file');
+							formData.append('filename', file.name);
+							formData.append('size', file.size);
+							const { token } = await withRetries(() => sendRequest('/upload-init', formData));
+
+							await sendChunks(token, file);
+
+							uploadFinishing();
+							await withRetries(() => sendRequest('/upload-complete', null, { 'X-Upload-Token': token }));
+							uploadCompleted();
+						} catch (error) {
+							console.error('Upload failed:', error);
+							uploadFailed(error.message);
+						}
 					}
 					
 					function uploadStarted(){

@@ -3,11 +3,39 @@ from googleapiclient.http import MediaIoBaseUpload
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+from google.auth.transport.requests import AuthorizedSession
 
 CUSTOM_FOLDER_ID = '1OSocLiJSYTjVJHH_kv0umNFgTZ_G5wBB'
 
 SERVICE_ACCOUNT_FILE = 'madboulder-f1887f0310ec.env'
 credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+
+RESUMABLE_UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id'
+
+
+DRIVE_PROPERTY_MAX_BYTES = 124  # Drive limit per property, key + value in UTF-8
+
+
+class UploadSessionExpired(Exception):
+    pass
+
+
+class UploadRejected(Exception):
+    """Drive refused the upload for a reason that retrying won't fix."""
+    pass
+
+
+def _fit_drive_properties(properties):
+    # Longer values make Drive reject the whole upload, so trim them
+    fitted = {}
+    for key, value in properties.items():
+        max_value_bytes = DRIVE_PROPERTY_MAX_BYTES - len(key.encode('utf-8'))
+        fitted[key] = value.encode('utf-8')[:max_value_bytes].decode('utf-8', 'ignore')
+    return fitted
+
+
+def _authorized_session():
+    return AuthorizedSession(credentials.with_scopes(['https://www.googleapis.com/auth/drive']))
 
 
 def getFileLink(file_id):
@@ -35,9 +63,9 @@ def upload(file, renamed_filename, properties):
             file_metadata = {
                 'name': renamed_filename,
                 'parents': [CUSTOM_FOLDER_ID],
-                'properties': properties
+                'properties': _fit_drive_properties(properties)
             }
-                             
+
             video_content = file.read()
             media = MediaIoBaseUpload(io.BytesIO(video_content), mimetype='video/mp4', chunksize=1024*1024, resumable=True)
             
@@ -63,7 +91,59 @@ def upload(file, renamed_filename, properties):
             raise Exception("Upload failed: Couldn't create Drive service")
     except Exception as e:
         raise Exception(e)
-    
+
+
+def create_upload_session(renamed_filename, properties, size):
+    """Starts a Drive resumable upload and returns its session URL.
+    The video bytes are then sent in chunks with upload_chunk(), so no single
+    request exceeds Cloudflare's 100 MB body limit."""
+    file_metadata = {
+        'name': renamed_filename,
+        'parents': [CUSTOM_FOLDER_ID],
+        'properties': _fit_drive_properties(properties),
+        'description': properties.get('notes', '')  # full notes, properties may be trimmed
+    }
+    response = _authorized_session().post(
+        RESUMABLE_UPLOAD_URL,
+        json=file_metadata,
+        headers={
+            'X-Upload-Content-Type': 'video/mp4',
+            'X-Upload-Content-Length': str(size),
+        },
+        timeout=30
+    )
+    if response.status_code != 200:
+        raise Exception(f"Couldn't create upload session: {response.status_code} {response.text}")
+    return response.headers['Location']
+
+
+def upload_chunk(session_url, data, start, total):
+    """Sends bytes [start, start + len(data)) of the video to the upload session.
+    With empty data it only asks Drive how many bytes it already has.
+    Returns (received_bytes, file_id); file_id is set once the upload is complete."""
+    if data:
+        content_range = f'bytes {start}-{start + len(data) - 1}/{total}'
+    else:
+        content_range = f'bytes */{total}'
+    response = _authorized_session().put(
+        session_url,
+        data=data,
+        headers={'Content-Range': content_range},
+        timeout=120
+    )
+    if response.status_code in (200, 201):
+        return total, response.json().get('id')
+    if response.status_code == 308:
+        # Range header looks like "bytes=0-1048575"; missing means nothing stored yet
+        range_header = response.headers.get('Range')
+        received = int(range_header.split('-')[1]) + 1 if range_header else 0
+        return received, None
+    if response.status_code in (404, 410):
+        raise UploadSessionExpired()
+    if 400 <= response.status_code < 500 and response.status_code not in (408, 429):
+        raise UploadRejected(f"{response.status_code} {response.text}")
+    raise Exception(f"Chunk upload failed: {response.status_code} {response.text}")
+
 
 def getVideoStream(file_id):
     drive_service = build('drive', 'v3', credentials=credentials)

@@ -43,6 +43,7 @@ from google.cloud import recaptchaenterprise_v1
 from google.cloud.recaptchaenterprise_v1 import Assessment
 
 from werkzeug.utils import secure_filename
+from itsdangerous import URLSafeTimedSerializer, BadSignature
 from pathlib import Path
 import utils.channel_uploader as channel_uploader
 
@@ -379,16 +380,7 @@ def upload_file():
 
     if uploaded_file:
         try:
-            properties_dict = {
-                'name': request.form.get('name', ''),
-                'email': request.form.get('email', ''),
-                'grade': request.form.get('grade', ''),
-                'zone': request.form.get('area', ''),
-                'climber': request.form.get('climber', ''),
-                'sector': request.form.get('sector', ''),
-                'notes': request.form.get('notes', '')
-            }
-            properties = SimpleNamespace(**properties_dict)
+            properties = SimpleNamespace(**get_upload_form_properties())
 
             renamed_file = rename_file(uploaded_file.filename, properties.name, properties.grade, properties.zone)
             
@@ -406,6 +398,128 @@ def upload_file():
             return jsonify({"error": "Internal server error occurred"}), 500
     else:
         return jsonify({"error": "File upload failed. Please check your request."}), 400
+
+
+def get_upload_form_properties():
+    return {
+        'name': request.form.get('name', ''),
+        'email': request.form.get('email', ''),
+        'grade': request.form.get('grade', ''),
+        'zone': request.form.get('area', ''),
+        'climber': request.form.get('climber', ''),
+        'sector': request.form.get('sector', ''),
+        'notes': request.form.get('notes', '')
+    }
+
+
+# Chunked video upload. Cloudflare rejects request bodies over 100 MB, so the
+# browser sends the video in small chunks that we forward to a Drive resumable
+# upload session. The session URL and form data travel in a signed token, so the
+# server keeps no state and an upload survives a restart.
+upload_serializer = URLSafeTimedSerializer(app.secret_key, salt='video-upload')
+UPLOAD_TOKEN_MAX_AGE = 7 * 24 * 3600  # Drive keeps resumable sessions for a week
+MAX_CHUNK_BYTES = 32 * 1024 * 1024
+notified_uploads = set()
+notified_uploads_lock = threading.Lock()
+
+
+def load_upload_token():
+    try:
+        return upload_serializer.loads(request.headers.get('X-Upload-Token', ''), max_age=UPLOAD_TOKEN_MAX_AGE)
+    except BadSignature:
+        return None
+
+
+@app.route('/upload-init', methods=['POST'])
+def upload_init():
+    filename = request.form.get('filename', '')
+    try:
+        size = int(request.form.get('size', 0))
+    except ValueError:
+        size = 0
+    if not filename or size <= 0:
+        return jsonify({"error": "File upload failed. Please check your request."}), 400
+
+    properties_dict = get_upload_form_properties()
+    renamed_file = rename_file(filename, properties_dict['name'], properties_dict['grade'], properties_dict['zone'])
+    try:
+        session_url = utils.drive.create_upload_session(renamed_file, properties_dict, size)
+    except Exception as e:
+        print(f"Upload init failed: {str(e)}")
+        return jsonify({"error": "Internal server error occurred"}), 500
+
+    token = upload_serializer.dumps({
+        'url': session_url,
+        'size': size,
+        'filename': renamed_file,
+        'properties': properties_dict,
+        'newsletter': bool(request.form.get('permission-newsletter')),
+    })
+    return jsonify({"token": token})
+
+
+@app.route('/upload-chunk', methods=['POST'])
+def upload_chunk():
+    """Forwards one chunk to Drive. An empty body only asks how many bytes Drive
+    already has, which the browser uses to resume after a failed chunk."""
+    upload = load_upload_token()
+    if not upload:
+        return jsonify({"error": "Invalid upload token"}), 403
+    if (request.content_length or 0) > MAX_CHUNK_BYTES:
+        return jsonify({"error": "Chunk too large"}), 413
+    try:
+        start = int(request.headers.get('X-Chunk-Start', 0))
+    except ValueError:
+        return jsonify({"error": "Invalid chunk start"}), 400
+    data = request.get_data()
+    if start < 0 or start + len(data) > upload['size']:
+        return jsonify({"error": "Invalid chunk range"}), 400
+
+    try:
+        received, file_id = utils.drive.upload_chunk(upload['url'], data, start, upload['size'])
+    except utils.drive.UploadSessionExpired:
+        return jsonify({"error": "Upload session expired"}), 410
+    except utils.drive.UploadRejected as e:
+        print(f"Upload chunk rejected: {str(e)}")
+        return jsonify({"error": "Upload rejected by storage"}), 422
+    except Exception as e:
+        print(f"Upload chunk failed: {str(e)}")
+        return jsonify({"error": "Upload to storage failed"}), 502
+    return jsonify({"received": received, "complete": file_id is not None})
+
+
+@app.route('/upload-complete', methods=['POST'])
+def upload_complete():
+    """Sends the notification once Drive confirms the whole video is stored.
+    Safe to retry: a video is only notified once."""
+    upload = load_upload_token()
+    if not upload:
+        return jsonify({"error": "Invalid upload token"}), 403
+    try:
+        _, file_id = utils.drive.upload_chunk(upload['url'], b'', 0, upload['size'])
+    except utils.drive.UploadSessionExpired:
+        return jsonify({"error": "Upload session expired"}), 410
+    except Exception as e:
+        print(f"Upload complete check failed: {str(e)}")
+        return jsonify({"error": "Upload to storage failed"}), 502
+    if not file_id:
+        return jsonify({"error": "Upload not complete"}), 409
+
+    with notified_uploads_lock:
+        if file_id not in notified_uploads:
+            properties = SimpleNamespace(**upload['properties'])
+            try:
+                mail.sendNewVideoBeta(properties, upload['filename'], file_id)
+            except Exception as e:
+                print(f"Upload notification failed: {str(e)}")
+                return jsonify({"error": "Internal server error occurred"}), 500
+            notified_uploads.add(file_id)
+            if upload['newsletter'] and properties.email:
+                try:
+                    register_new_subscriber(properties.email)
+                except Exception as e:
+                    print(f"Newsletter registration failed: {str(e)}")
+    return jsonify({"message": "File uploaded, renamed, and notification sent successfully"}), 200
 
 
 def rename_file(original_filename, name, grade, zone):
